@@ -1,0 +1,25 @@
+<head>
+  <title>lemverse</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script src="https://unpkg.com/hotkeys-js@3.8.7/dist/hotkeys.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/lemverse.png">
+</head>
+
+<body></body>
+
+<template name="layout">
+  {{> onlineStatus}}
+  {{> Template.dynamic template=main data=layoutData}}
+</template>
+
+<template name="onlineStatus">
+  {{#if eq status.status 'connecting'}}
+    <div class="status connecting">Connecting...</div>
+  {{else}}
+    {{#if contains disconnectedStatus status.status}}
+      <div class="status disconnected">Disconnected {{#if eq status.status 'waiting'}}(retry in {{retryIn}}. <a href="#" class="retry">retry now</a>){{/if}}</div>
+    {{/if}}
+  {{/if}}
+</template>

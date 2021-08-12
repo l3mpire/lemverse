@@ -1,0 +1,21 @@
+.zone-name-toaster {
+  position: absolute;
+  top: 15px;
+  z-index: 15;
+  left: 50%;
+  width: 400px;
+  opacity: 0;
+  transform: translate(-50%, -150%);
+  background-color: #ECEFF3;
+  border-radius: 5px;
+  border: 2px #3A3A50 solid;
+  padding: 15px;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.55, 0, 1, 0.45);
+
+  &.show {
+    opacity: 1;
+    transition: all 0.2s cubic-bezier(0, 0.55, 0.45, 1);
+    transform: translate(-50%, 0);
+  }
+}

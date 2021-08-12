@@ -1,0 +1,5 @@
+{
+  "compilerOptions": {
+  },
+  "exclude": ["**/.meteor/*", "**/node_modules/*", "**/.build/*"]
+}

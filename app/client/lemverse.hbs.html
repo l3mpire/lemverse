@@ -1,0 +1,60 @@
+<template name="lemverse">
+  <div class="lemverse">
+    <div class="simulation {{#if and (isLemverseBeta 'editMode' ) (neq (Session 'editor') 0)}}edit{{/if}}">
+      {{#if isGuest}}
+        {{> formAccount visible=isLoading}}
+      {{else}}
+        {{#if and (isLemverseBeta 'editMode' ) (neq (Session 'editor') 0)}}
+          {{> editToolbox}}
+        {{/if}}
+        <div class="js-videos">
+          {{#each remoteUser in allRemoteStreamsByUsers}}
+            {{> remoteStream remoteUser=remoteUser }}
+          {{/each}}
+        </div>
+        <div class="user-panel {{#unless isLoading}}visible{{/unless}}">
+          <button type="button" class="button js-notifications {{#if hasNotifications}}visible{{/if}}" data-count="{{ pendingNotificationsCount }}">🔔</button>
+          <div class="js-video-screen-me"></div>
+          <div class="js-video-me">
+            <video type="video/mp4" autoplay muted></video>
+            <div class="buttons">
+              <button class="button audio {{#if currentUser.profile.shareAudio}}active{{/if}}" type="button">🎤</button>
+              <button class="button video {{#if currentUser.profile.shareVideo}}active{{/if}}" type="button">🎥</button>
+              <button class="button screen {{#if currentUser.profile.shareScreen}}active{{/if}}" type="button">📺</button>
+              <button class="button settings {{#if (Session 'displaySettings')}}active{{/if}}" type="button">⚙️</button>
+            </div>
+          </div>
+        </div>
+        {{#if not (isLemverseBeta 'editMode' )}}
+          {{#if eq (Session 'editor') 1}}
+            {{> tilesetToolbox}}
+          {{/if}}
+          {{#if eq (Session 'editor') 2}}
+            {{> zonesToolbox}}
+          {{/if}}
+        {{/if}}
+        {{> reactionsToolbox}}
+      {{/if}}
+      {{> zonesName}}
+      <div id="game" class="{{#if and (isLemverseBeta 'editMode' ) (neq (Session 'editor') 0)}}edit{{/if}}"></div>
+    </div>
+    <div id="meet"></div>
+    <div id="webpage">
+      <iframe src="" frameborder="0" id="webpageIframe"></iframe>
+    </div>
+  </div>
+  {{#if Session 'displaySettings'}}
+    {{> settings}}
+  {{/if}}
+  {{#if Session 'displayNotificationsPanel'}}
+    {{> notifications}}
+  {{/if}}
+  {{> userList}}
+  {{> notification}}
+  <audio class="js-audio-webrtc-in">
+    <source src="/assets/lemverse/webrtc-in.mp3" type="audio/mp3">
+  </audio>
+  <audio class="js-audio-webrtc-out">
+    <source src="/assets/lemverse/webrtc-out.mp3" type="audio/mp3">
+  </audio>
+</template>

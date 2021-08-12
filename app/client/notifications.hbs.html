@@ -1,0 +1,23 @@
+<template name="notificationsItem">
+  <li class="notification {{#if read}}read{{/if}}">
+    <div>
+      <button type="button" class="js-play {{#if isPlaying}}playing{{/if}}"></button>
+      <span>{{duration}}</span>
+    </div>
+    <div>{{date}}</div>
+    <div>By <b>{{author}}</b></div>
+  </li>
+</template>
+
+
+<template name="notifications">
+  <div class="notifications modal">
+    <button class="js-close">X</button>
+    <h1>Notifications</h1>
+    <ul>
+      {{#each notification in notifications}}
+        {{> notificationsItem notification}}
+      {{/each}}
+    </ul>  
+  </div>
+</template>

@@ -1,0 +1,46 @@
+<template name="formSignIn">
+  <div class="form-account {{#unless visible}}visible{{/unless}}">
+    {{#if eq getStep 1}}
+      <h1 class="title">Welcome to lemverse</h1>
+      <p>You're a ghost, others can see you but you can't interact with them 👻.<br />If you want to join discussion create an account!</p>
+      <button type="button" class="js-next-step submit" aria-label="create an account">Join the living world</button><br />
+      <a href="?mode=login" class="link">Already have an account, go here!</a>
+    {{/if}}
+
+    {{#if eq getStep 2}}
+      <button type="button" class="js-previous-step" aria-label="go to the previous step">&laquo;</button>
+      <h1 class="title">✉️ Your email address</h1>
+      <p>Get all updates about lemverse! We don't spam.</p>
+      <form>
+        <div class="group-field">
+          <input name="email" type="email" value={{email}} class="js-edit js-email">
+        </div>
+        <button type="submit" class="submit" aria-label="go to the next step">Next step</button>
+      </form>
+    {{/if}}
+
+    {{#if eq getStep 3}}
+      <button type="button" class="js-previous-step" aria-label="go to the previous step">&laquo;</button>
+      <h1 class="title">🔑 Your password</h1>
+      <p>I need your password... Promise, I won't share it with anyone 🤐.</p>
+      <form>
+        <div class="group-field">
+          <input name="password" type="password" value={{password}} class="js-edit js-password">
+        </div>
+        <button type="submit" class="submit" aria-label="go to the next step">Next step</button>
+      </form>
+    {{/if}}
+
+    {{#if eq getStep 4}}
+      <button type="button" class="js-previous-step" aria-label="go to the previous step">&laquo;</button>
+      <h1 class="title">🧑 Your nickname</h1>
+      <p>This is the name that will appear above your character.</p>
+      <form>
+        <div class="group-field">
+          <input name="nickname" type="text" value={{nickname}} class="js-edit js-nickname">
+        </div>
+        <button type="submit" class="submit" aria-label="create my character">Create my character</button>
+      </form>
+    {{/if}}
+  </div>
+</template>

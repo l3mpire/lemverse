@@ -1,0 +1,89 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "mup@0.11.3",
+        "scope": null,
+        "escapedName": "mup",
+        "name": "mup",
+        "rawSpec": "0.11.3",
+        "spec": "0.11.3",
+        "type": "version"
+      },
+      "/Users/acemtp"
+    ]
+  ],
+  "_from": "mup@0.11.3",
+  "_id": "mup@0.11.3",
+  "_inCache": true,
+  "_location": "/mup",
+  "_nodeVersion": "4.1.0",
+  "_npmUser": {
+    "name": "arunoda",
+    "email": "arunoda.susiripala@gmail.com"
+  },
+  "_npmVersion": "2.14.3",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "mup@0.11.3",
+    "scope": null,
+    "escapedName": "mup",
+    "name": "mup",
+    "rawSpec": "0.11.3",
+    "spec": "0.11.3",
+    "type": "version"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/mup/-/mup-0.11.3.tgz",
+  "_shasum": "080c14be32a0525efaba907a446e045e4d5eb0e1",
+  "_shrinkwrap": null,
+  "_spec": "mup@0.11.3",
+  "_where": "/Users/acemtp",
+  "author": {
+    "name": "Arunoda Susiripala",
+    "email": "arunoda.susiripala@gmail.com"
+  },
+  "bin": {
+    "mup": "./bin/mup18"
+  },
+  "bugs": {
+    "url": "https://github.com/arunoda/meteor-up/issues"
+  },
+  "dependencies": {
+    "@zodern/nodemiral": "^1.3.0",
+    "archiver": "3.0.x",
+    "async": "^3.0.0",
+    "cjson": "0.5.x",
+    "colors": "1.3.x",
+    "rimraf": "2.x.x",
+    "underscore": "1.9.1",
+    "uuid": "3.3.x"
+  },
+  "description": "Production Quality Meteor Deployments",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "080c14be32a0525efaba907a446e045e4d5eb0e1",
+    "tarball": "https://registry.npmjs.org/mup/-/mup-0.11.3.tgz"
+  },
+  "gitHead": "91e33a24dc26e306f5bf10c319a57211dfc832b1",
+  "homepage": "https://github.com/arunoda/meteor-up",
+  "license": "MIT",
+  "maintainers": [
+    {
+      "name": "arunoda",
+      "email": "arunoda.susiripala@gmail.com"
+    }
+  ],
+  "name": "mup",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/arunoda/meteor-up.git"
+  },
+  "scripts": {},
+  "version": "0.11.3"
+}

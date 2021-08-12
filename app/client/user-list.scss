@@ -1,0 +1,48 @@
+.user-list, .zone-list {
+  padding: 10px 0;
+  user-select: none;
+  
+
+  .list-title {
+    font-size: 1.25rem;
+    margin: 2px 5px;
+    padding: 4px 5px;
+  }
+
+  .user, .zone {
+    margin: 2px 10px;
+    padding: 4px 10px;
+    border-radius: 5px;
+    line-height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .summon {
+      cursor: pointer;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .infos {
+      .js-toggle-edition {
+        position: relative;
+
+        &.denied:after {
+          content: '❌';
+          position: absolute;
+          z-index: 2;
+          top: 0;
+          left: 0;
+          transform: scale(0.8) translate(0, -5px);
+        }
+      }
+    }
+  }
+
+  .infos:hover, .summon:hover {
+    background-color: #eee;
+  }
+}

@@ -1,0 +1,47 @@
+<template name="settingsCharacter">
+  <div class="modal">
+    <div class="settingsCharacter">
+      <div class="renderCharacter">
+        {{#each getAppearance}}
+          <div class="renderCharacterWrapper">
+            <img height="{{zoom height 2}}" width="{{zoom width 2}}" src="{{concat '/api/files/' fileId}}" alt="" class="partCharacter">
+          </div>
+        {{/each}}
+      </div>
+      <div class="customize">
+        <div class="customize-menus">
+          <div class="js-customize-menu customize-menu customize-body {{#if eq (Session 'settings-character-category') "body"}}selected{{/if}}" data-category="body">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M21,9H15V22H13V16H11V22H9V9H3V7H21M12,2A2,2 0 0,1 14,4A2,2 0 0,1 12,6C10.89,6 10,5.1 10,4C10,2.89 10.89,2 12,2Z" /></svg>
+          </div>
+          <div class="js-customize-menu customize-menu customize-outfit {{#if eq (Session 'settings-character-category') "outfit"}}selected{{/if}}" data-category="outfit">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M12 4A3.5 3.5 0 0 0 8.5 7.5H10.5A1.5 1.5 0 0 1 12 6A1.5 1.5 0 0 1 13.5 7.5A1.5 1.5 0 0 1 12 9C11.45 9 11 9.45 11 10V11.75L2.4 18.2A1 1 0 0 0 3 20H21A1 1 0 0 0 21.6 18.2L13 11.75V10.85A3.5 3.5 0 0 0 15.5 7.5A3.5 3.5 0 0 0 12 4M12 13.5L18 18H6Z" /></svg>
+          </div>
+          <div class="js-customize-menu customize-menu customize-eye {{#if eq (Session 'settings-character-category') "eye"}}selected{{/if}}" data-category="eye">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,4.5C16.86,4.5 21.22,7.5 23,12C20.61,18.08 13.75,21.06 7.67,18.67C4.62,17.47 2.2,15.06 1,12C2.78,7.5 7.14,4.5 12,4.5M3.18,12C5.56,16.87 11.45,18.89 16.32,16.5C18.28,15.54 19.86,13.96 20.82,12C18.44,7.13 12.55,5.11 7.68,7.5C5.72,8.46 4.14,10.04 3.18,12M9,22H7V24H9V22M13,22H11V24H13V22M17,22H15V24H17V22Z" /></svg>
+          </div>
+          <div class="js-customize-menu customize-menu customize-hair {{#if eq (Session 'settings-character-category') "hair"}}selected{{/if}}" data-category="hair">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M10 12.73A70.39 70.39 0 0 0 17 11V4S10.5 2 7.5 2A5.5 5.5 0 0 0 6.12 12.82L7 19H8A3 3 0 0 0 9.46 21.33A3.15 3.15 0 0 1 11 24H12A4.12 4.12 0 0 0 10.09 20.55C9.39 20 9 19.63 9 19H10M4 7.5A3.5 3.5 0 0 1 7.5 4A37.08 37.08 0 0 1 15 5.5V9.5A37.08 37.08 0 0 1 7.5 11A3.5 3.5 0 0 1 4 7.5M22 9A4.32 4.32 0 0 1 19.78 8.45A3.4 3.4 0 0 0 18 8V7A4.32 4.32 0 0 1 20.22 7.55A3.4 3.4 0 0 0 22 8M22 6A3.4 3.4 0 0 1 20.22 5.55A4.32 4.32 0 0 0 18 5V6A3.4 3.4 0 0 1 19.78 6.45A4.32 4.32 0 0 0 22 7M22 10A3.4 3.4 0 0 1 20.22 9.55A4.32 4.32 0 0 0 18 9V10A3.4 3.4 0 0 1 19.78 10.45A4.32 4.32 0 0 0 22 11M9 7.5A1.5 1.5 0 1 1 7.5 6A1.5 1.5 0 0 1 9 7.5Z" /></svg>
+          </div>
+          <div class="js-customize-menu customize-menu customize-accessory {{#if eq (Session 'settings-character-category') "accessory"}}selected{{/if}}" data-category="accessory">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M15.34 13.16C16.66 13.16 18.56 12.89 18.56 11.32C18.57 11.2 18.56 11.08 18.53 10.96L17.75 7.56C17.57 6.81 17.41 6.47 16.09 5.81C15.07 5.29 12.85 4.43 12.19 4.43C11.58 4.43 11.4 5.22 10.67 5.22C9.97 5.22 9.45 4.63 8.79 4.63C8.16 4.63 7.75 5.06 7.43 5.94C7.43 5.94 6.55 8.44 6.43 8.8C6.42 8.87 6.41 8.93 6.41 9C6.41 9.97 10.23 13.15 15.34 13.15M18.77 11.96C18.95 12.82 18.95 12.91 18.95 13C18.95 14.5 17.29 15.31 15.12 15.31C10.2 15.31 5.89 12.43 5.89 10.53C5.89 10.26 5.95 10 6.05 9.76C4.28 9.84 2 10.16 2 12.18C2 15.5 9.84 19.57 16.05 19.57C20.81 19.57 22 17.42 22 15.72C22 14.38 20.85 12.86 18.77 11.96" /></svg>
+          </div>
+        </div>
+
+        <div class="customize-selection">
+          {{#if or (eq (Session 'settings-character-category') "hair") (eq (Session 'settings-character-category') "accessory")}}
+            <div class="characters-choices {{#if isBodyPart this._id}}selected{{/if}}">
+              <div class="js-new-part spriteCharacter empty-choices" data-id="null"></div>
+            </div>
+          {{/if}}
+          {{#each getAllImages}}
+            <div class="characters-choices {{#if isBodyPart this._id}}selected{{/if}}">
+              <img class="js-new-part spriteCharacter" height="{{zoom height 2}}" width="{{zoom width 2}}" data-id="{{this._id}}" src="{{concat '/api/files/' this.fileId}}" />
+            </div>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+
+    <button class='js-back'>Back</button>
+  </div>
+</template>

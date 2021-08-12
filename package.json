@@ -1,0 +1,30 @@
+{
+  "name": "lemverse",
+  "version": "1.0.0",
+  "description": "lemverse master root",
+  "main": ".eslintrc.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/l3mpire/lemverse.git"
+  },
+  "resolutions": {
+    "@babel/parser": "7.12.11"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/l3mpire/lemverse/issues"
+  },
+  "homepage": "https://github.com/l3mpire/lemverse#readme",
+  "devDependencies": {
+    "@babel/core": "^7.14.8",
+    "@babel/eslint-parser": "^7.14.7",
+    "@babel/eslint-plugin": "^7.14.5",
+    "eslint": "^7.31.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4"
+  }
+}

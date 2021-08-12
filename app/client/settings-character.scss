@@ -1,0 +1,115 @@
+@import "_variables";
+
+:root {
+  --settings-characters-size-height: 32px;
+  --settings-characters-size-width: 16px;
+}
+
+.settingsCharacter {
+  position: relative;
+  display: flex;
+  height: 300px;
+  margin-bottom: 2rem;
+
+  .renderCharacter {
+    width: 75px;
+    display: flex;
+    align-items: center;
+
+    .renderCharacterWrapper {
+      margin: 0;
+      margin-left: 15px;
+      position: absolute;
+      width: 46px;
+      height: 120px;
+      overflow: hidden;
+
+      .partCharacter {
+        image-rendering: pixelated;
+        margin: 0;
+        position: absolute;
+        top: -200px;
+        left: -865px;
+        display: block;
+      }
+    }
+  }
+
+  .customize {
+    flex-grow: 1;
+    display: flex;
+
+    .customize-menus {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      width: 50px;
+
+      .customize-menu {
+        background-color: $lem-color-8;
+        border: 2px solid $lem-color-9;
+        border-right: 0;
+        border-radius: 1rem 0 0 1rem;
+        width: 50px;
+        cursor: pointer;
+
+        svg {
+          margin: 0.3rem;
+          height: 36px;
+          width: 36px;
+          fill: white;
+        }
+
+        &.selected {
+          background-color: $lem-color-6;
+        }
+      }
+    }
+
+
+    .customize-selection {
+      flex-grow: 1;
+      background-color: $lem-color-4;
+      border: 2px solid $lem-color-9;
+      height: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      max-width: 265px;
+      gap: 0.3rem;
+      overflow: scroll;
+
+      .characters-choices {
+        border: 2px solid white;
+        border-radius: 0.5rem;
+        cursor: pointer;
+
+        margin: 0;
+        position: relative;
+        width: 48px;
+        height: 120px;
+        overflow: hidden;
+
+        &.selected {
+          border-color: $lem-color-6;
+        }
+
+        .spriteCharacter {
+          image-rendering: pixelated;
+          margin: 0;
+          position: absolute;
+          top: -200px;
+          left: -866px;
+          display: block;
+
+          &.empty-choices {
+            width: 48px;
+            height: 120px;
+            top: 0;
+            left: 0;
+          }
+        }
+      }
+
+    }
+  }
+}

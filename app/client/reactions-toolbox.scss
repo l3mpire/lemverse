@@ -1,0 +1,45 @@
+:root {
+  --emoji-button-size: 32px;
+  --emoji-size: 19px;
+}
+
+.reactions-toolbox {
+  position: fixed;
+  left: 10px;
+  top: 10px;
+  padding: 5px;
+  margin: 5px;
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  color: #2E3440;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.15s;
+
+  .buttons {
+    display: flex;
+    flex-direction: row;
+
+    button {
+      width: var(--emoji-button-size);
+      height: var(--emoji-button-size);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 5px;
+  
+      div.emoji {
+        pointer-events: none;
+        font-size: var(--emoji-size);
+        line-height: var(--emoji-size);
+        width: var(--emoji-size);
+        height: var(--emoji-size);
+      }
+    }
+  }
+
+  &.visible {
+    opacity: 1;
+  }
+}

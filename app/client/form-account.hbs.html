@@ -1,0 +1,7 @@
+<template name="formAccount">
+  {{#if showLogForm}}
+    {{> formLogIn visible=isLoading}}
+  {{else}}
+    {{> formSignIn visible=isLoading}}
+  {{/if}}
+</template>

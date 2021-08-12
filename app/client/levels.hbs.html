@@ -1,0 +1,36 @@
+<template name="levels">
+  <div class="levels">
+    {{#if loading}}
+      <div class="loading">
+        <span>⌛</span>
+        <span>Loading …</span>
+      </div>
+    {{else}}
+      <div class="container">
+        <div class="tabs">
+          <button type="button" data-mode="list" class="js-tab-switcher {{#if showList}}active{{/if}}">Levels</button>
+          <button type="button" data-mode="create" class="js-tab-switcher {{#if showCreate}}active{{/if}}">Create</button>
+        </div>
+        {{#if showList}}
+          <ul class="levels-list">
+            {{#each level in levels}}
+              <li>
+                <button type="button" data-level-id={{level._id}} class="js-level-select">
+                  <span class="left">{{levelName level}} {{#if isLevelOwner level}}👑{{/if}}</span>
+                  <span class="small">{{levelVisitCount level}}</span>
+                </button>
+              </li>
+            {{/each}}
+          </ul>
+        {{else}}
+          <div class="level-create">
+            <div>
+              <button class="button js-create-level">Create a new level</button>
+            </div>
+          </div>
+        {{/if}}
+      </div>
+    {{/if}}
+  </div>
+</template>
+

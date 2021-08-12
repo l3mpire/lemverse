@@ -1,0 +1,10 @@
+<template name="notification">
+  {{#if Session 'displayNotification'}}
+    <div class="modal notif">
+      <div class="notification-message">
+        {{message}}
+      </div>
+      <button type="button" class='close'>Close</button>
+    </div>
+  {{/if}}
+</template>

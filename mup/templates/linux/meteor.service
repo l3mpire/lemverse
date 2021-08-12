@@ -1,0 +1,15 @@
+[Unit]
+Description=Meteor Up - <%= appName %> on <%= masterName %>
+After=mongod.service
+
+[Service]
+Restart=always
+LimitNOFILE=65536
+User=meteoruser
+Group=meteoruser
+EnvironmentFile=/lib/systemd/system/<%= appName %>.env
+WorkingDirectory=/opt/<%= masterName %>
+ExecStart=/opt/nodejs/bin/node --title=<%= appName %> --max-old-space-size=8192 --expose-gc /opt/<%= masterName %>/app/main.js
+
+[Install]
+WantedBy=multi-user.target

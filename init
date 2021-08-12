@@ -1,0 +1,36 @@
+#!/bin/bash
+
+echo init...
+
+if [ -f ~/.nvm/nvm.sh ]; then
+  echo 'sourcing nvm from ~/.nvm'
+  . ~/.nvm/nvm.sh
+elif command -v brew; then
+  # https://docs.brew.sh/Manpage#--prefix-formula
+  BREW_PREFIX=$(brew --prefix nvm)
+  if [ -f "$BREW_PREFIX/nvm.sh" ]; then
+    echo "sourcing nvm from brew ($BREW_PREFIX)"
+    . $BREW_PREFIX/nvm.sh
+  fi
+fi
+nvm use 12
+
+rm -rf ./node_modules
+rm package-lock.json
+
+npm install
+
+# init lemverse
+cd app
+./init
+cd ..
+
+# must be the last because it changes node with the nvm use 4
+cd mup
+./init
+cd ..
+
+# Restore latest used node version
+nvm use 12
+
+echo init end!

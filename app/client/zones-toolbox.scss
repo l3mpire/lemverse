@@ -1,0 +1,68 @@
+.zones-toolbox {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  background-color: #ECEFF4;
+  border-radius: 10px;
+  padding: 5px;
+  margin: 5px;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  color: #2E3440;
+  z-index: 5;
+
+  .zones {
+    max-height: 200px;
+    overflow: auto;
+
+    .zone {
+      display: block;
+      padding: 4px 0;
+    }
+
+    .js-properties,
+    .js-set1,
+    .js-set2 {
+      cursor: pointer;
+    }
+
+
+    .zone:hover {
+      background-color: #E5E9F0;
+    }
+
+    .zone.active {
+      background-color: #D8DEE9;
+
+      .point.active {
+        background-color: #4C566A;
+      }
+    }
+  }
+}
+
+.modal.zones-toolbox-properties {
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+
+  >div {
+    display: flex;
+  }
+
+  > :first-child {
+    flex-direction: column;
+    flex: 1;
+  }
+
+  textarea {
+    width: 100%;
+    height: 210px;
+    flex: 1;
+  }
+
+  .js-zone-delete {
+    margin-left: auto;
+  }
+}

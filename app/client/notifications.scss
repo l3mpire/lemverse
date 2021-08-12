@@ -1,0 +1,56 @@
+.modal.notifications {
+  width: 500px;
+  padding: 10px 20px;
+
+  .js-close {
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+  }
+
+  ul {
+    padding: 0;
+
+    li {
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 5px 0;
+      background-color: lighten(#0078e7, 49%);
+      color: black;
+
+      div {
+        width: 100%;
+
+        &:first-child {
+          max-width: 100px;
+        }
+
+        &:last-child {
+          text-align: right;
+        }
+      }
+
+      &.read {
+        background-color: transparent;
+      }
+
+      button.js-play {
+        cursor: pointer;
+        background: none;
+        border: 0;
+
+        &:after {
+          content: '▶️';
+        }
+
+        &.playing:after {
+          content: '⏸';
+        }
+      }
+    }
+  }
+}

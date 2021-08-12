@@ -1,0 +1,48 @@
+<template name="tileImg">
+  <div style="display: inline-block; background-image: url('/api/files/{{tileset.fileId}}'); width: 16px; height: 16px; background-position: -{{tileToTilesetX}}px -{{tileToTilesetY}}px;"></div>
+</template>
+
+<template name="tilesetToolbox">
+  <div class="tileset-toolbox">
+    <div class="tileset-toolbox-img">
+      {{#with selectedTileset}}
+        <img src="/api/files/{{fileId}}" style="width:{{zoom width 1}}px; height:{{zoom height 1}}px;" draggable="false">
+      {{/with}}
+      {{> marker tileIndex=(Session 'pointerTileIndex') w=1 h=1 color='#00FF00'}}
+
+      {{#with Session 'selectedTiles'}}
+        {{> marker tileIndex=index w=w h=h color='#0000FF'}}
+      {{/with}}
+    </div>
+    <div class="tileset-toolbox-erase">
+      <span class="button js-erase-0 {{#if eq selectedTilesIndex -1}}active{{/if}}">🧽0</span>
+      <span class="button js-erase-1 {{#if eq selectedTilesIndex -2}}active{{/if}}">🧽1</span>
+      <span class="button js-erase-2 {{#if eq selectedTilesIndex -3}}active{{/if}}">🧽2</span>
+      <span class="button js-erase-3 {{#if eq selectedTilesIndex -4}}active{{/if}}">🧽3</span>
+      <span class="button js-erase-4 {{#if eq selectedTilesIndex -5}}active{{/if}}">🧽4</span>
+      <span class="button js-erase-5 {{#if eq selectedTilesIndex -6}}active{{/if}}">🧽5</span>
+      <span class="button js-erase-6 {{#if eq selectedTilesIndex -7}}active{{/if}}">🧽6</span>
+      <span class="button js-erase-7 {{#if eq selectedTilesIndex -8}}active{{/if}}">🧽7</span>
+      <span class="button js-erase-8 {{#if eq selectedTilesIndex -9}}active{{/if}}">🧽8</span>
+      <span class="button js-erase-all {{#if eq selectedTilesIndex -99}}active{{/if}}">🧽C</span>
+      <select class="js-tilesets-select">
+        {{#each tilesets}}
+          <option selected="{{#if eq selectedTilesId _id}}selected{{/if}}" value={{_id}}>{{name}}</option>
+        {{/each}}
+      </select>
+    </div>
+    <div class="tileset-toolbox-info">
+      {{#with Session 'selectedTiles'}}
+        Selected {{tileLayer}} {{> tileImg}}
+      {{/with}}
+      Pointer {{worldToTileX (Session 'pointerX')}}/{{worldToTileY (Session 'pointerY')}} ({{Session 'pointerX'}}/{{Session 'pointerY'}})
+      {{#each pointerTile}}
+        {{tileLayer}} {{> tileImg}}
+        {{!-- {{#with user createdBy}}
+          {{email}}
+        {{/with}}
+        {{fromNow createdAt}} --}}
+      {{/each}}
+    </div>
+  </div>
+</template>

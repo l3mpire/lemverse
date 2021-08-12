@@ -1,0 +1,33 @@
+<template name="remoteStream">
+  <div class="stream js-video-{{remoteUser._id}}">
+    <div class="stream-name">
+        {{remoteUser.name}}
+    </div>
+    <div class="js-webcam webcam">
+      {{#unless mediaState.shareAudio}}
+        <div class="mute">
+          <div>🎤</div>
+          <div>❌</div>
+        </div>
+      {{/unless}}
+      {{#unless mediaState.shareVideo}}
+        <img src={{remoteUser.avatar}} alt="avatar">
+      {{/unless}}
+      {{#if hasWebcamOrMicro mediaState.shareVideo mediaState.shareAudio}}
+        {{> webcam remoteUser}}
+      {{/if}}
+    </div>
+    {{#if mediaState.shareScreen}}
+      <div class="js-screenshare screenshare">
+        {{> screenshare remoteUser}}
+      </div>
+    {{/if}}
+  </div>
+</template>
+
+<template name="webcam">
+  <video id="webcam-{{_id}}" type="video/mp4" autoplay></video>
+</template>
+<template name="screenshare">
+  <video id="video-screen-{{_id}}" type="video/mp4" autoplay muted></video>
+</template>

@@ -1,0 +1,43 @@
+.tileset-toolbox {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  background-color: #ECEFF4;
+  border-radius: 10px;
+  padding: 5px;
+  margin: 5px;
+  width: 470px;
+  display: flex;
+  flex-direction: column;
+  color: #2E3440;
+  z-index: 5;
+
+  .marker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 1px solid black;
+    pointer-events: none;
+  }
+
+  .tileset-toolbox-img {
+    position: relative;
+    overflow: scroll;
+    height: 240px;
+
+    img {
+      image-rendering: pixelated;
+    }
+  }
+
+  .tileset-toolbox-info {
+    height: 20px;
+    font-size: 16px;
+  }
+
+  .tileset-toolbox-erase {
+    .js-tilesets-select {
+      width: 100%;
+    }
+  }
+}

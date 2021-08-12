@@ -1,0 +1,125 @@
+@import "_variables";
+
+.editor-characters {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+
+  &>* {
+    user-select: none;
+    width: 576px;
+  }
+
+  &.is-over> :first-child {
+    display: none;
+  }
+
+  &.is-over> :last-child {
+    display: initial;
+  }
+
+  .button.small {
+    height: 2rem;
+    width: 5rem;
+  }
+
+  .drop-zone {
+    display: none;
+    text-align: center;
+
+    .drop-title {
+      color: $lem-color-1;
+    }
+
+    .drop-info {
+      color: $gray500;
+      font-weight: bold;
+    }
+  }
+
+  .editor {
+    >img {
+      display: block;
+    }
+
+    .selector-menus {
+      .filters {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        align-items: center;
+
+        button {
+          flex-grow: 1;
+          border: 1px solid $lem-color-9;
+          border-radius: $radius;
+          height: 2rem;
+          cursor: pointer;
+
+          &.selected {
+            background-color: $lem-color-6;
+          }
+        }
+      }
+
+      #characters-list {
+        width: 100%;
+        height: 2rem;
+      }
+    }
+
+    .placeholder {
+      border: 1px dashed $lem-color-1;
+      text-align: center;
+      display: flex;
+      align-items: center;
+
+      span {
+
+        flex-grow: 1;
+      }
+    }
+
+    .categorize-infos {
+      padding-top: 2rem;
+      padding-bottom: 1rem;
+    }
+
+    .categorize {
+      display: flex;
+      flex-direction: row;
+      gap: 0.5rem;
+
+      .btn-category {
+        flex-grow: 1;
+        text-align: center;
+        border: 1px solid $lem-color-9;
+        background-color: $lem-color-2;
+        border-radius: $radius;
+        cursor: pointer;
+
+        svg {
+          width: 5rem;
+          height: 5rem;
+          fill: $lem-color-8;
+        }
+
+        &>p {
+          margin: 0;
+          padding: 0;
+          font-size: small;
+          font-weight: bold;
+          color: $lem-color-8;
+        }
+
+
+        &.selected {
+          background-color: $lem-color-5;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+.loading {
+  background-color: black;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font: 20px "Verdana";
+  color: white;
+
+  & img {
+    width: 128px;
+    height: 128px;
+    margin-bottom: 20px;
+  }
+}

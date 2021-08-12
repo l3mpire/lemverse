@@ -1,0 +1,9 @@
+<template name="reactionsToolbox">
+  <div class="reactions-toolbox {{#unless isLoading}}visible{{/unless}}">
+    <div class="buttons">
+      {{#each reaction in reactions}}
+        <button class="button js-reaction" data-value="{{reaction}}" type="button"><div class="emoji">{{reaction}}</div></button>
+      {{/each}}
+    </div>
+  </div>
+</template>
