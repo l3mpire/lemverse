@@ -26,7 +26,7 @@ Template.levels.onCreated(function () {
 Template.levels.events({
   'click .js-create-level'() {
     Template.instance().loading.set(true);
-    Meteor.call('createLevel', 'default', (err, levelId) => {
+    Meteor.call('createLevel', Meteor.settings.public.templateLevelId, (err, levelId) => {
       if (err) {
         Template.instance().loading.set(false);
         error(err);

@@ -11,7 +11,7 @@
 
     "debug": false,
 
-    "defaultReaction" : "❤️",
+    "defaultReaction": "❤️",
 
     "zoom": 1,
 
@@ -21,7 +21,7 @@
         "port": 443,
         "path": "/peer",
         "config": {
-          "iceServers": [{ 
+          "iceServers": [{
             "urls": "stun:stun.l.google.com:19302"
           }],
           "sdpSemantics": "unified-plan"
@@ -53,7 +53,9 @@
     "skins": {
       "guest": "Ghost",
       "default": "Basic"
-    }
+    },
+
+    "templateLevelId": "lvl_iLOVEaLOTlemverse"
   },
 
   "defaultLevelId": "lvl_iLOVEaLOTlemverse"

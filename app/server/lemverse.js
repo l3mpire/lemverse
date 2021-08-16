@@ -68,7 +68,30 @@ Meteor.methods({
       createdBy: Meteor.userId(),
     });
 
-    if (templateId !== undefined) {
+    if (templateId) {
+      const tiles = Tiles.find({ levelId: templateId }).fetch();
+      const zones = Zones.find({ levelId: templateId }).fetch();
+
+      tiles.forEach(tile => {
+        Tiles.insert({
+          ...tile,
+          _id: Tiles.id(),
+          createdAt: new Date(),
+          createdBy: Meteor.userId(),
+          levelId: newLevelId,
+        });
+      });
+
+      zones.forEach(zone => {
+        Zones.insert({
+          ...zone,
+          _id: Zones.id(),
+          createdAt: new Date(),
+          createdBy: Meteor.userId(),
+          levelId: newLevelId,
+        });
+      });
+    } else {
       const { levelId } = Meteor.user().profile;
 
       Zones.insert({
