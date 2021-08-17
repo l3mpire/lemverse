@@ -17,9 +17,10 @@ Template.webcam.onRendered(function () {
         if (this.data?.user?.srcObject) {
           this.firstNode.srcObject = this.data?.user?.srcObject;
 
-          // Force playing video, sometimes the user has not interacted with the page, which causes an error related to the security of Chrome (https://stackoverflow.com/a/50742427)
-          // videoElm.muted = !remoteUser.shareAudio;
-          this.firstNode.play().catch(() => error(`unable to player remote user's media: playback interrupted (${this.data._id})`));
+          this.firstNode.play().catch(() => {
+            error(`unable to player remote user's media: playback interrupted (${this.data._id}) : ${attempt}`);
+            setTimeout(checkMediaAvailable, delayBetweenAttempt);
+          });
         } else if (attempt < maxAttempt) {
           attempt++;
           log(`Tried to get ${this.data?.name}'s audio and/or video and failed, attempt : ${attempt}`);

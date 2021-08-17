@@ -41,6 +41,11 @@ userProximitySensor = {
     _.each(this.nearUsers, user => this.onProximityStarted(user));
   },
 
+  callProximityEndedForAllNearUsers() {
+    _.each(this.nearUsers, user => this.onProximityEnded(user));
+    this.nearUsers = {};
+  },
+
   isUserNear(user) {
     return this.nearUsers[user._id] !== undefined;
   },

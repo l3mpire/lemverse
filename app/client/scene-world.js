@@ -63,6 +63,7 @@ WorldScene = new Phaser.Class({
     this.wasMoving = false;
     this.input.keyboard.enabled = false;
     this.marker = undefined;
+    this.checkProximity = true;
     this.scene.pause();
     this.teleporterGraphics = [];
     userChatCircle.destroy();
@@ -165,6 +166,7 @@ WorldScene = new Phaser.Class({
     this.players[user._id].setDepth(y);
 
     this.playerUpdate(user);
+    this.checkProximity = true;
 
     return this.players[user._id];
   },
@@ -248,7 +250,10 @@ WorldScene = new Phaser.Class({
         player.lwTargetX = user.profile.x;
         player.lwTargetY = user.profile.y;
         player.lwTargetDate = moment().add(100, 'milliseconds');
+        if (!guest && lp.isLemverseBeta('newPeer')) userProximitySensor.checkDistances(Meteor.user(), [user]);
       }
+
+      if (!guest && lp.isLemverseBeta('newPeer') && user.profile.shareScreen !== oldUser.profile.shareScreen) peerBeta.onStreamSettingsChanged(user);
     }
 
     player.getByName('stateIndicator').visible = !guest && !shareAudio;
@@ -831,15 +836,24 @@ WorldScene = new Phaser.Class({
         this.physics.world.update(time, delta);
         throttledSavePlayer(this.player);
         zones.checkDistances();
+        this.checkProximity = true;
       } else if (this.wasMoving) {
         this.physics.world.update(time, delta);
         savePlayer(this.player);
         zones.checkDistances();
+        this.checkProximity = true;
       }
-
-      if (!this.player.guest && (moving || this.wasMoving)) peer.checkDistances();
-
       this.wasMoving = moving;
+
+      if (!this.player.guest && this.checkProximity) {
+        if (lp.isLemverseBeta('newPeer') && !meet.api) {
+          const currentUser = Meteor.user();
+          const otherUsers = Meteor.users.find({ _id: { $ne: currentUser._id } }).fetch();
+          userProximitySensor.checkDistances(currentUser, otherUsers);
+        } else peer.checkDistances();
+
+        this.checkProximity = false;
+      }
 
       userChatCircle.update(this.player.x, this.player.y);
     }

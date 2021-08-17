@@ -60,9 +60,11 @@ Template.lemverse.onCreated(function () {
     Session.set('tilesetsLoaded', true);
   });
 
+  const getPeerInstance = () => (lp.isLemverseBeta('newPeer') ? peerBeta : peer);
+
   this.autorun(() => {
     if (game || !Session.get('tilesetsLoaded')) return;
-    if (Meteor.user()) peer.createMyPeer();
+    if (Meteor.user()) getPeerInstance().createMyPeer();
     game = new Phaser.Game(config);
     game.scene.add('BootScene', BootScene, true);
   });
@@ -76,22 +78,22 @@ Template.lemverse.onCreated(function () {
   this.autorun(() => {
     const user = Meteor.user({ fields: { 'profile.shareAudio': 1 } });
     if (!user) return;
-    if (userProximitySensor.nearUsersCount() === 0) peer.destroyStream();
-    else peer.createStream().then(() => peer.audio(user.profile.shareAudio, true));
+    if (userProximitySensor.nearUsersCount() === 0) getPeerInstance().destroyStream();
+    else getPeerInstance().createStream().then(() => getPeerInstance().audio(user.profile.shareAudio, true));
   });
 
   this.autorun(() => {
     const user = Meteor.user({ fields: { 'profile.shareVideo': 1 } });
     if (!user) return;
-    if (userProximitySensor.nearUsersCount() === 0) peer.destroyStream();
-    else peer.createStream().then(() => peer.video(user.profile.shareVideo, true));
+    if (userProximitySensor.nearUsersCount() === 0) getPeerInstance().destroyStream();
+    else getPeerInstance().createStream().then(() => getPeerInstance().video(user.profile.shareVideo, true));
   });
 
   this.autorun(() => {
     const user = Meteor.user({ fields: { 'profile.shareScreen': 1 } });
     if (!user) return;
-    if (user.profile.shareScreen) peer.createScreenStream().then(() => peer.screen(true, true));
-    else peer.screen(false);
+    if (user.profile.shareScreen) getPeerInstance().createScreenStream().then(() => getPeerInstance().screen(true, true));
+    else getPeerInstance().screen(false);
   });
 
   this.autorun(() => {
@@ -106,16 +108,16 @@ Template.lemverse.onCreated(function () {
     this.handleObserveUsers = Meteor.users.find({ status: { $exists: true } }).observe({
       added(user) {
         game.scene.keys.WorldScene.playerCreate(user);
-        lp.defer(() => peer.checkDistances(user));
+        if (!lp.isLemverseBeta('newPeer')) lp.defer(() => peer.checkDistances(user));
       },
       changed(user, oldUser) {
         game.scene.keys.WorldScene.playerUpdate(user, oldUser);
-        if (user._id !== Meteor.userId()) lp.defer(() => peer.checkDistances(user));
+        if (!lp.isLemverseBeta('newPeer') && user._id !== Meteor.userId()) lp.defer(() => peer.checkDistances(user));
       },
       removed(user) {
         game.scene.keys.WorldScene.playerRemove(user);
         userProximitySensor.removeNearUser(user);
-        lp.defer(() => peer.close(user._id));
+        lp.defer(() => getPeerInstance().close(user._id));
       },
     });
 
@@ -292,10 +294,10 @@ Template.lemverse.onCreated(function () {
     userVoiceRecorderAbility.onSoundRecorded = callback;
 
     if (event.type === 'keydown' && !userVoiceRecorderAbility.isRecording()) {
-      peer.audio(false);
+      getPeerInstance().audio(false);
       userVoiceRecorderAbility.start();
     } else if (event.type === 'keyup') {
-      peer.audio(Meteor.user()?.profile.shareAudio);
+      getPeerInstance().audio(Meteor.user()?.profile.shareAudio);
       userVoiceRecorderAbility.stop();
     }
   };
