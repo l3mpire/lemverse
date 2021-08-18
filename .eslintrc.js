@@ -113,6 +113,7 @@ module.exports = {
     characterPopIns: 'writable',
     updateSkin: 'writable',
     peerConfig: 'writable',
+    generateTURNCredentials: 'writable',
 
     tileGlobalIndex: 'writable',
     tileLayer: 'writable',

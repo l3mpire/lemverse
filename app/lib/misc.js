@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 nearestDuration = duration => {
   const message = [];
   message.push(lp.s.lpad(moment.duration(duration).asHours() | 0, 2, '0'));
@@ -6,7 +8,6 @@ nearestDuration = duration => {
 
   return message.join(':');
 };
-
 
 isEditionAllowed = userId => {
   if (!userId) return false;
@@ -42,4 +43,18 @@ updateSkin = (user, levelId) => {
   }
 
   Meteor.users.update(user._id, { $set: { profile: { ...newProfile } } });
+};
+
+generateTURNCredentials = (name, secret) => {
+  const unixTimeStamp = parseInt(Date.now() / 1000, 10) + Meteor.settings.peer.server.credentialDuration;
+  const username = [unixTimeStamp, name].join(':');
+  const hmac = crypto.createHmac('sha1', secret);
+  hmac.setEncoding('base64');
+  hmac.write(username);
+  hmac.end();
+
+  return {
+    username,
+    password: hmac.read(),
+  };
 };

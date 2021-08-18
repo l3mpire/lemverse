@@ -16,17 +16,6 @@
     "zoom": 1,
 
     "peer": {
-      "server": {
-        "url": "peer.example.com",
-        "port": 443,
-        "path": "/peer",
-        "config": {
-          "iceServers": [{
-            "urls": "stun:stun.l.google.com:19302"
-          }],
-          "sdpSemantics": "unified-plan"
-        }
-      },
       "answerMaxAttempt": 5,
       "answerDelayBetweenAttempt": 750,
       "avatars": [
@@ -58,5 +47,21 @@
     "templateLevelId": "lvl_iLOVEaLOTlemverse"
   },
 
-  "defaultLevelId": "lvl_iLOVEaLOTlemverse"
+  "defaultLevelId": "lvl_iLOVEaLOTlemverse",
+
+  "peer": {
+    "server": {
+      "url": "peer.example.com",
+      "port": 443,
+      "path": "/peer",
+      "credentialDuration": 86400,
+      "secret": "",
+      "config": { 
+        "iceServers": [{ 
+          "urls": "stun:stun.l.google.com:19302"
+        }],
+        "sdpSemantics": "unified-plan"
+      }
+    }
+  }
 }

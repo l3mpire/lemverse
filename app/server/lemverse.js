@@ -138,6 +138,23 @@ Meteor.methods({
     updateSkin(Meteor.user(), profile.levelId);
     Accounts.setPassword(this.userId, password, { logout: false });
   },
+  getPeerConfig() {
+    if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
+    const { url, path, config, port, secret } = Meteor.settings.peer.server;
+    const { username, password: credential } = generateTURNCredentials(this.userId, secret);
+
+    const newConfig = config.iceServers.map(({ urls, auth }) => {
+      if (!auth) return { urls };
+      return { urls, username, credential };
+    });
+
+    return {
+      url,
+      port,
+      path,
+      config: newConfig,
+    };
+  },
 });
 
 lp.defer(() => {
