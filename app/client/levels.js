@@ -56,7 +56,8 @@ Template.levels.helpers({
     if (level.name) return level.name;
 
     const user = Meteor.users.findOne(level.createdBy);
-    if (!user) return `${level.createdBy}'s world`;
+    if (!user && level.createdBy) return `${level.createdBy}'s world`;
+    else if (!user) return `Guest's world`;
 
     return `${user.profile.name}'s world`;
   },
