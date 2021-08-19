@@ -84,18 +84,19 @@ peerBeta = {
       // Update the reactiveVar remoteStreamsByUsers
       remoteStreamsByUsers.set(streamsByUsers);
 
-      if (!activeCallsCount) {
-        if (debug) log('close call: call was already inactive', userId);
-        return;
-      }
-
       $(`.js-video-${userId}-user`).remove();
-      sounds.play('webrtc-out');
 
       if (userProximitySensor.nearUsersCount() === 0) {
         if (debug) log('kill my stream');
         this.destroyStream();
       }
+
+      if (!activeCallsCount) {
+        if (debug) log('close call: call was already inactive', userId);
+        return;
+      }
+
+      sounds.play('webrtc-out');
     }, timeOut);
   },
 
@@ -104,9 +105,9 @@ peerBeta = {
   },
 
   createPeerCall(user, type) {
-    this.cancelCallClose(user._id);
     if (!myPeer) return;
     if (calls[`${user._id}-${type}`]) return;
+    if (!userProximitySensor.nearUsers[user._id]) { log(`peer call: creation cancelled (user is too far)`, user._id); return; }
 
     if (Meteor.user().options?.debug) log(`me -> you ${type} ***** new call with near`, user._id);
     if (myPeer.disconnected) {
@@ -263,11 +264,11 @@ peerBeta = {
 
   onProximityStarted(user) {
     if (!calls[`${user._id}-user`] && !calls[`${user._id}-screen`]) sounds.play('webrtc-in');
+    this.cancelCallClose(user._id);
     this.createPeerCalls(user);
   },
 
   onProximityEnded(user) {
-    this.cancelCallClose(user);
     this.closeCall(user._id, 1000);
   },
 
@@ -312,11 +313,14 @@ peerBeta = {
     const remoteUser = Meteor.users.findOne({ _id: remoteUserId });
     if (!remoteUser) { log(`answer stream: user not found "${remoteUserId}"`); return false; }
 
-    const debug = Meteor.user()?.options?.debug;
+    // ensures the user is near to answer and this check will trigger a peer creation if it didn't exist with the other user
+    userProximitySensor.checkDistance(Meteor.user(), remoteUser);
+    if (!userProximitySensor.nearUsers[remoteUserId]) { log(`answer stream: user is too far`, remoteUserId); return true; }
 
     const callIdentifier = `${remoteUserId}-${remoteCall.metadata.type}`;
     remoteCalls[callIdentifier] = remoteCall;
 
+    const debug = Meteor.user()?.options?.debug;
     if (debug) log('you -> me ****** answer stream', { userId: remoteUserId, type: remoteCall.metadata.type });
 
     // Get the updated stream table of the reactiveVar remoteStreamsByUsers
@@ -363,7 +367,6 @@ peerBeta = {
 
       const debug = Meteor.user()?.options?.debug;
       const { port, url: host, path, config } = result;
-      console.log(result);
 
       myPeer = new Peer(Meteor.userId(), {
         debug: debug ? 3 : 0,
