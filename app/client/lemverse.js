@@ -64,7 +64,6 @@ Template.lemverse.onCreated(function () {
 
   this.autorun(() => {
     if (game || !Session.get('tilesetsLoaded')) return;
-    if (Meteor.user()) getPeerInstance().createMyPeer();
     game = new Phaser.Game(config);
     game.scene.add('BootScene', BootScene, true);
   });
@@ -227,7 +226,9 @@ Template.lemverse.onCreated(function () {
     if (this.handleUsersSubscribe) this.handleUsersSubscribe.stop();
     if (this.handleObserveTiles) this.handleObserveTiles.stop();
     if (this.handleTilesSubscribe) this.handleTilesSubscribe.stop();
-    this.handleUsersSubscribe = this.subscribe('users', levelId);
+    this.handleUsersSubscribe = this.subscribe('users', levelId, () => {
+      if (Meteor.user()) getPeerInstance().createMyPeer();
+    });
     this.handleZonesSubscribe = this.subscribe('zones', levelId, () => zones.checkDistances());
 
     log(`Loading tiles for the level ${levelId || 'unknown'}…`);
