@@ -86,10 +86,7 @@ peerBeta = {
 
       $(`.js-video-${userId}-user`).remove();
 
-      if (userProximitySensor.nearUsersCount() === 0) {
-        if (debug) log('kill my stream');
-        this.destroyStream();
-      }
+      if (userProximitySensor.nearUsersCount() === 0) this.destroyStream(myStream);
 
       if (!activeCallsCount) {
         if (debug) log('close call: call was already inactive', userId);
@@ -158,7 +155,6 @@ peerBeta = {
         return stream;
       })
       .catch(err => {
-        myStream = null;
         error('requestUserMedia failed', err);
         Meteor.users.update(Meteor.userId(), { $set: { 'profile.userMediaError': true } });
       });
@@ -171,7 +167,6 @@ peerBeta = {
       .getDisplayMedia({})
       .then(stream => { myScreenStream = stream; return stream; })
       .catch(err => {
-        myScreenStream = null;
         error('requestDisplayMedia failed', err);
         Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } });
       });
@@ -224,10 +219,15 @@ peerBeta = {
       });
   },
 
-  destroyStream() {
-    this.stopTracks(myStream);
-    myStream = null;
+  destroyStream(stream) {
+    stream = stream ?? myStream;
+
+    if (stream && Meteor.user()?.options?.debug) log('kill stream', stream);
+    this.stopTracks(stream);
     if (videoElement) videoElement.hide();
+
+    if (stream === myStream) myStream = undefined;
+    else if (stream === myScreenStream) myScreenStream = undefined;
   },
 
   updatePeersStream() {
@@ -384,7 +384,7 @@ peerBeta = {
         });
       });
 
-      myPeer.on('close', () => { log('peer closed and destroyed'); myPeer = null; });
+      myPeer.on('close', () => { log('peer closed and destroyed'); myPeer = undefined; });
 
       myPeer.on('error', peerErr => {
         log(`peer error ${peerErr.type}`, peerErr);
