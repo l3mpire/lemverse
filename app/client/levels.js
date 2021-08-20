@@ -17,7 +17,7 @@ Template.levels.onCreated(function () {
   this.tab = new ReactiveVar(listMode);
 
   this.autorun(() => {
-    const levels = Levels.find({}, { fields: { createdBy: 1 } }).fetch();
+    const levels = Levels.find({ _id: { $ne: Meteor.settings.public.templateLevelId } }, { fields: { createdBy: 1 } }).fetch();
     const userIds = levels.map(level => level.createdBy).filter(Boolean);
     if (userIds?.length) this.subscribe('usernames', userIds);
   });
