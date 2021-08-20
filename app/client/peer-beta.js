@@ -41,61 +41,59 @@ peerBeta = {
 
   closeAll() {
     if (Meteor.user().options?.debug) log('peer.closeAll: start');
-    _.each(userProximitySensor.nearUsers, user => this.closeCall(user, 100));
+    _.each(userProximitySensor.nearUsers, user => this.close(user, 100));
   },
 
-  closeCall(userId, timeOut = 0) {
+  closeCall(userId) {
+    let activeCallsCount = 0;
+    const close = (remote, user, type) => {
+      const callsSource = remote ? remoteCalls : calls;
+      const call = callsSource[`${user}-${type}`];
+      if (call) {
+        activeCallsCount++;
+        call.close();
+      }
+
+      delete callsSource[`${user}-${type}`];
+    };
+
+    close(false, userId, 'user');
+    close(false, userId, 'screen');
+    close(true, userId, 'user');
+    close(true, userId, 'screen');
+    this.cancelCallClose(userId);
     this.cancelCallOpening(userId);
-    if (callsToClose[userId] && timeOut !== 0) return;
-    Meteor.clearTimeout(callsToClose[userId]);
-    callsToClose[userId] = Meteor.setTimeout(() => {
-      let activeCallsCount = 0;
-      const close = (remote, user, type) => {
-        const callsSource = remote ? remoteCalls : calls;
-        const call = callsSource[`${user}-${type}`];
-        if (call) {
-          activeCallsCount++;
-          call.close();
-        }
 
-        delete callsSource[`${user}-${type}`];
-      };
+    const debug = Meteor.user()?.options?.debug;
+    if (activeCallsCount && debug) log('close call: start', userId);
 
-      close(false, userId, 'user');
-      close(false, userId, 'screen');
-      close(true, userId, 'user');
-      close(true, userId, 'screen');
-      this.cancelCallClose(userId);
-      this.cancelCallOpening(userId);
+    let streamsByUsers = remoteStreamsByUsers.get();
+    streamsByUsers.map(usr => {
+      if (usr._id === userId) {
+        delete usr.user.srcObject;
+        delete usr.screen.srcObject;
+      }
 
-      const debug = Meteor.user()?.options?.debug;
-      if (activeCallsCount && debug) log('close call: start', userId);
+      return usr;
+    });
+    // We clean up remoteStreamsByUsers table by deleting all the users who have neither webcam or screen sharing active
+    streamsByUsers = streamsByUsers.filter(usr => usr.user.srcObject !== undefined || usr.screen.srcObject !== undefined);
+    remoteStreamsByUsers.set(streamsByUsers);
 
-      let streamsByUsers = remoteStreamsByUsers.get();
-      streamsByUsers.map(usr => {
-        if (usr._id === userId) {
-          delete usr.user.srcObject;
-          delete usr.screen.srcObject;
-        }
+    $(`.js-video-${userId}-user`).remove();
 
-        return usr;
-      });
-      // We clean up remoteStreamsByUsers table by deleting all the users who have neither webcam or screen sharing active
-      streamsByUsers = streamsByUsers.filter(usr => usr.user.srcObject !== undefined || usr.screen.srcObject !== undefined);
-      remoteStreamsByUsers.set(streamsByUsers);
+    if (userProximitySensor.nearUsersCount() === 0) this.destroyStream(myStream);
+    if (!activeCallsCount) return;
 
-      $(`.js-video-${userId}-user`).remove();
-
-      if (userProximitySensor.nearUsersCount() === 0) this.destroyStream(myStream);
-      if (!activeCallsCount) return;
-
-      if (debug) log('close call: call closed successfully', userId);
-      sounds.play('webrtc-out');
-    }, timeOut);
+    if (debug) log('close call: call closed successfully', userId);
+    sounds.play('webrtc-out');
   },
 
-  close(userId) {
-    this.closeCall(userId);
+  close(userId, timeout = 0) {
+    this.cancelCallOpening(userId);
+    if (callsToClose[userId] && timeout !== 0) return;
+    Meteor.clearTimeout(callsToClose[userId]);
+    callsToClose[userId] = Meteor.setTimeout(() => this.closeCall(userId), timeout);
   },
 
   createPeerCall(user, type) {
@@ -262,11 +260,12 @@ peerBeta = {
 
   onProximityStarted(user) {
     this.cancelCallClose(user._id);
-    if (!callsOpening[user._id]) callsOpening[user._id] = Meteor.setTimeout(() => this.createPeerCalls(user), Meteor.settings.public.peer.callDelay);
+    Meteor.clearTimeout(callsOpening[user._id]);
+    callsOpening[user._id] = Meteor.setTimeout(() => this.createPeerCalls(user), Meteor.settings.public.peer.callDelay);
   },
 
   onProximityEnded(user) {
-    this.closeCall(user._id, 1000);
+    this.close(user._id, 1000);
   },
 
   cancelCallClose(userId) {
@@ -352,7 +351,7 @@ peerBeta = {
 
     // Update the reactiveVar remoteStreamsByUsers
     remoteStreamsByUsers.set(streamsByUsers);
-    remoteCall.on('close', () => this.closeCall(remoteUserId));
+    remoteCall.on('close', () => this.close(remoteUserId));
 
     return true;
   },
