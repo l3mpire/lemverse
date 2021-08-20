@@ -24,7 +24,8 @@
         "https://cdn.radiofrance.fr/s3/cruiser-production/2018/12/9f19b228-269f-4995-ba7f-eda054945811/1136_gettyimages-155607257.jpg",
         "https://chatfaitdubien.fr/wp-content/uploads/2016/09/chaton.jpg",
         "https://i.pinimg.com/564x/8b/f7/c6/8bf7c6e26f7250944e963f23f364b68f.jpg"
-      ]
+      ],
+      "callDelay": 250
     },
 
     "meet": {

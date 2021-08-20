@@ -1,8 +1,8 @@
 import Peer from 'peerjs';
 
-let videoElement;
-
 const callsToClose = {};
+const callsOpening = {};
+let videoElement;
 
 peerBeta = {
   audio(enabled, notifyNearUsers = false) {
@@ -45,6 +45,7 @@ peerBeta = {
   },
 
   closeCall(userId, timeOut = 0) {
+    this.cancelCallOpening(userId);
     if (callsToClose[userId] && timeOut !== 0) return;
     Meteor.clearTimeout(callsToClose[userId]);
     callsToClose[userId] = Meteor.setTimeout(() => {
@@ -65,6 +66,7 @@ peerBeta = {
       close(true, userId, 'user');
       close(true, userId, 'screen');
       this.cancelCallClose(userId);
+      this.cancelCallOpening(userId);
 
       const debug = Meteor.user()?.options?.debug;
       if (activeCallsCount && debug) log('close call: start', userId);
@@ -131,6 +133,7 @@ peerBeta = {
   createPeerCalls(user) {
     const { shareAudio, shareScreen, shareVideo } = Meteor.user().profile;
 
+    if (!calls[`${user._id}-user`] && !calls[`${user._id}-screen`]) sounds.play('webrtc-in');
     if (shareAudio || shareVideo) this.createStream().then(() => this.createPeerCall(user, 'user'));
     if (shareScreen) this.createScreenStream().then(() => this.createPeerCall(user, 'screen'));
   },
@@ -258,9 +261,8 @@ peerBeta = {
   },
 
   onProximityStarted(user) {
-    if (!calls[`${user._id}-user`] && !calls[`${user._id}-screen`]) sounds.play('webrtc-in');
     this.cancelCallClose(user._id);
-    this.createPeerCalls(user);
+    if (!callsOpening[user._id]) callsOpening[user._id] = Meteor.setTimeout(() => this.createPeerCalls(user), Meteor.settings.public.peer.callDelay);
   },
 
   onProximityEnded(user) {
@@ -272,6 +274,13 @@ peerBeta = {
 
     Meteor.clearTimeout(callsToClose[userId]);
     delete callsToClose[userId];
+  },
+
+  cancelCallOpening(userId) {
+    if (!callsOpening[userId]) return;
+
+    Meteor.clearTimeout(callsOpening[userId]);
+    delete callsOpening[userId];
   },
 
   sendData(users, data) {
