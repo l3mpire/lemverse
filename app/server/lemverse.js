@@ -62,7 +62,7 @@ Meteor.methods({
     const newLevelId = Levels.id();
     Levels.insert({
       _id: newLevelId,
-      name: `${Meteor.user().profile.name}'s world`,
+      name: `${Meteor.user().profile.name || Meteor.user().username}'s world`,
       spawn: { x: 200, y: 200 },
       createdAt: new Date(),
       createdBy: Meteor.userId(),
