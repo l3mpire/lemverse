@@ -143,7 +143,7 @@ Meteor.methods({
     const { url, path, config, port, secret } = Meteor.settings.peer.server;
     const { username, password: credential } = generateTURNCredentials(this.userId, secret);
 
-    const newConfig = config.iceServers.map(({ urls, auth }) => {
+    const iceServers = config.iceServers.map(({ urls, auth }) => {
       if (!auth) return { urls };
       return { urls, username, credential };
     });
@@ -152,7 +152,10 @@ Meteor.methods({
       url,
       port,
       path,
-      config: newConfig,
+      config: {
+        ...config,
+        iceServers,
+      },
     };
   },
 });
