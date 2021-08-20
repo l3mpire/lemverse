@@ -470,7 +470,12 @@ WorldScene = new Phaser.Class({
       });
     });
 
-    this.events.on('postupdate', this.postUpdate.bind(this));
+    // set focus to the canvas and blur focused element on scene clicked
+    this.input.on('pointerdown', () => {
+      if (isModalOpen()) return;
+      this.enableKeyboard(true, true);
+      document.activeElement.blur();
+    });
 
     // edition
     this.marker = this.add.graphics();
@@ -504,7 +509,8 @@ WorldScene = new Phaser.Class({
     }
 
     // events
-    this.input?.keyboard?.enableGlobalCapture();
+    this.events.on('postupdate', this.postUpdate.bind(this));
+    this.enableKeyboard(true, true);
 
     zones.onZoneChanged = zone => {
       characterPopIns.destroy(Meteor.userId());
@@ -658,9 +664,7 @@ WorldScene = new Phaser.Class({
     if (!this.player) return;
     const user = Meteor.users.findOne(this.player.userId);
     if (!this.player.nippleMoving) this.player.body.setVelocity(0);
-
-    const displayModal = Session.get('displaySettings') || Session.get('displayZoneId');
-    if (displayModal) return;
+    if (isModalOpen()) return;
 
     let velocity = this.cursors.shift.isDown ? Meteor.settings.public.character.runSpeed : Meteor.settings.public.character.walkSpeed;
     let direction;

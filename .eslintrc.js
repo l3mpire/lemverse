@@ -114,6 +114,7 @@ module.exports = {
     updateSkin: 'writable',
     peerConfig: 'writable',
     generateTURNCredentials: 'writable',
+    isModalOpen: 'writable',
 
     tileGlobalIndex: 'writable',
     tileLayer: 'writable',

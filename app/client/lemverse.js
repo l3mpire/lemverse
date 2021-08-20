@@ -11,6 +11,8 @@ Template.registerHelper('worldToTileY', y => game?.scene.keys.WorldScene.map.wor
 
 game = undefined;
 
+isModalOpen = () => Session.get('displaySettings') || Session.get('displayZoneId') || Session.get('displayNotificationsPanel');
+
 const config = {
   type: Phaser.AUTO,
   parent: 'game',
@@ -49,6 +51,8 @@ Template.lemverse.onCreated(function () {
     Session.set('displayZoneId', false);
     Session.set('displayNotificationsPanel', false);
     Session.set('displayUserList', false);
+    game.scene.keys.WorldScene.enableKeyboard(true, true);
+    document.activeElement.blur();
   });
 
   this.subscribe('characters');
@@ -69,9 +73,9 @@ Template.lemverse.onCreated(function () {
   });
 
   this.autorun(() => {
-    const isModalOpen = Session.get('displaySettings') || Session.get('displayZoneId') || Session.get('displayNotificationsPanel');
-    game?.scene?.keys?.WorldScene?.enableKeyboard(!isModalOpen, !isModalOpen);
-    game?.scene?.keys?.WorldScene?.playerPauseAnimation(undefined, isModalOpen);
+    const modalOpen = isModalOpen();
+    game?.scene?.keys?.WorldScene?.enableKeyboard(!modalOpen, !modalOpen);
+    game?.scene?.keys?.WorldScene?.playerPauseAnimation(undefined, modalOpen);
   });
 
   this.autorun(() => {
