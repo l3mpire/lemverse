@@ -48,9 +48,6 @@ peerBeta = {
     if (callsToClose[userId] && timeOut !== 0) return;
     Meteor.clearTimeout(callsToClose[userId]);
     callsToClose[userId] = Meteor.setTimeout(() => {
-      const debug = Meteor.user()?.options?.debug;
-      if (debug) log('close call: start', userId);
-
       let activeCallsCount = 0;
       const close = (remote, user, type) => {
         const callsSource = remote ? remoteCalls : calls;
@@ -69,30 +66,28 @@ peerBeta = {
       close(true, userId, 'screen');
       this.cancelCallClose(userId);
 
-      // Get the updated streamsByUsers of the reactiveVar remoteStreamsByUsers
+      const debug = Meteor.user()?.options?.debug;
+      if (activeCallsCount && debug) log('close call: start', userId);
+
       let streamsByUsers = remoteStreamsByUsers.get();
-      // Iterate on remoteStreamsByUsers table to find the remote user and delete the concerned media
       streamsByUsers.map(usr => {
         if (usr._id === userId) {
           delete usr.user.srcObject;
           delete usr.screen.srcObject;
         }
+
         return usr;
       });
       // We clean up remoteStreamsByUsers table by deleting all the users who have neither webcam or screen sharing active
       streamsByUsers = streamsByUsers.filter(usr => usr.user.srcObject !== undefined || usr.screen.srcObject !== undefined);
-      // Update the reactiveVar remoteStreamsByUsers
       remoteStreamsByUsers.set(streamsByUsers);
 
       $(`.js-video-${userId}-user`).remove();
 
       if (userProximitySensor.nearUsersCount() === 0) this.destroyStream(myStream);
+      if (!activeCallsCount) return;
 
-      if (!activeCallsCount) {
-        if (debug) log('close call: call was already inactive', userId);
-        return;
-      }
-
+      if (debug) log('close call: call closed successfully', userId);
       sounds.play('webrtc-out');
     }, timeOut);
   },
