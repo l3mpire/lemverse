@@ -613,6 +613,11 @@ WorldScene = new Phaser.Class({
       _.each(tilesets, tileset => {
         if (findTileset(tileset._id)) return;
         const tilesetImage = this.map.addTilesetImage(tileset._id, tileset._id, 16, 16, 0, 0, tileset.gid);
+        if (!tilesetImage) {
+          log('unable to load tileset', tileset._id);
+          return;
+        }
+
         tilesetImage.tileData = tileset.tiles;
         newTilesets.push(tilesetImage);
 
