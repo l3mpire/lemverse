@@ -103,6 +103,9 @@ WorldScene = new Phaser.Class({
     this.cameras.main.startFollow(player);
     this.cameras.main.roundPixels = true;
 
+    if (Meteor.user().guest) hotkeys.setScope('guest');
+    else hotkeys.setScope('player');
+
     this.player = player;
   },
 
@@ -396,8 +399,7 @@ WorldScene = new Phaser.Class({
     this.keyAlt = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ALT);
 
     // default scope
-    if (Meteor.user().guest) hotkeys.setScope('guest');
-    else hotkeys.setScope('player');
+    hotkeys.setScope('guest');
     userChatCircle.init(this);
 
     // layers
@@ -895,7 +897,7 @@ WorldScene = new Phaser.Class({
 
     setTimeout(() => game.scene.keys.LoadingScene.hide(() => {
       this.input.keyboard.enabled = true;
-      this.player.visible = true;
+      if (this.player) this.player.visible = true;
       this.scene.resume();
     }), 0);
 
