@@ -22,6 +22,9 @@ Template.userList.helpers({
 });
 
 Template.userList.events({
+  'click .js-close-button'() {
+    Session.set('displayUserList', false);
+  },
   'click .js-toggle-edition'() {
     Meteor.call('toggleLevelEditionPermission', this._id);
   },

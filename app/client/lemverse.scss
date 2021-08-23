@@ -202,7 +202,7 @@ button:focus {
       height: 20px;
       line-height: 22px;
     }
-    
+
     &[data-count="0"]:after {
       display: none;
     }
@@ -244,11 +244,11 @@ button:focus {
         width: 20px;
         font-size: 12pt;
         box-sizing: content-box;
-  
+
         &:hover {
           background-color: #E5E9F0;
         }
-  
+
         &.active {
           background-color: green;
         }
@@ -309,4 +309,16 @@ button:focus {
   overflow: auto;
   padding: 5px;
   transform: translate(-50%, -50%);
+
+  .js-close-button {
+    position: absolute;
+    display: block;
+    top: 5px;
+    right: 15px;
+    font-size: 17pt;
+    transform: translate(3px, 0);
+    appearance: none;
+    border: none;
+    cursor: pointer;
+  }
 }

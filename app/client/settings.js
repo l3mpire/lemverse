@@ -29,6 +29,9 @@ Template.settings.events({
   'click .js-character-designer'() {
     Session.set('settingsMode', Session.get('settingsMode') === 'character' ? null : 'character');
   },
+  'click .js-close-button'() {
+    Session.set('displaySettings', false);
+  },
   'input .js-name'(event) {
     event.preventDefault();
     event.stopPropagation();

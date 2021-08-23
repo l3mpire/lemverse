@@ -1,6 +1,7 @@
 <template name="userList">
   {{#if Session 'displayUserList'}}
     <div class="modal">
+      <button type="button" class="js-close-button">x</button>
       <div class="user-list">
         <h2 class="list-title">Users ({{ usersCount }}) {{#if guestsCount}}(and {{guestsCount}} 👻){{/if}}</h2>
         {{#each users}}
