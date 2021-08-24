@@ -16,7 +16,7 @@
           <button type="button" class="button js-notifications {{#if hasNotifications}}visible{{/if}}" data-count="{{ pendingNotificationsCount }}">🔔</button>
           <div class="js-video-screen-me"></div>
           <div class="js-video-me">
-            <video type="video/mp4" autoplay muted></video>
+            <video type="video/mp4" width="160" height="120" autoplay muted></video>
             <div class="buttons">
               <button class="button audio {{#if currentUser.profile.shareAudio}}active{{/if}}" type="button">🎤</button>
               <button class="button video {{#if currentUser.profile.shareVideo}}active{{/if}}" type="button">🎥</button>

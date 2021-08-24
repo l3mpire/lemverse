@@ -15,7 +15,7 @@ Template.webcam.onRendered(function () {
 
       if (remoteUser.shareAudio || remoteUser.shareVideo) {
         if (this.data?.user?.srcObject) {
-          this.firstNode.srcObject = this.data?.user?.srcObject;
+          this.firstNode.srcObject = this.data.user.srcObject;
 
           this.firstNode.play().catch(() => {
             error(`unable to player remote user's media: playback interrupted (${this.data._id}) : ${attempt}`);

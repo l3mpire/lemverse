@@ -136,14 +136,21 @@ peerBeta = {
     if (shareScreen) this.createScreenStream().then(() => this.createPeerCall(user, 'screen'));
   },
 
+  applyConstraints(stream, type, constraints) {
+    if (!stream) return;
+    const tracks = type === 'video' ? stream.getVideoTracks() : stream.getAudioTracks();
+    tracks.forEach(track => track.applyConstraints(constraints));
+  },
+
   requestUserMedia() {
     if (myStream) return new Promise(resolve => resolve(myStream));
     const { shareVideo, shareAudio, videoRecorder, audioRecorder } = Meteor.user().profile;
 
     return navigator.mediaDevices
       .getUserMedia({
-        video: { deviceId: shareVideo && videoRecorder || false },
-        audio: { deviceId: shareAudio && audioRecorder || false },
+        video: { deviceId: shareVideo && videoRecorder || false, max: 320 },
+        audio: { deviceId: shareAudio && audioRecorder || false, max: 240 },
+        frameRate: { max: 30 },
       })
       .then(stream => {
         myStream = stream;
@@ -160,7 +167,11 @@ peerBeta = {
     if (myScreenStream) return new Promise(resolve => resolve(myScreenStream));
 
     return navigator.mediaDevices
-      .getDisplayMedia({})
+      .getDisplayMedia({
+        width: { max: 1920 },
+        height: { max: 1080 },
+        frameRate: { max: 15 },
+      })
       .then(stream => { myScreenStream = stream; return stream; })
       .catch(err => {
         error('requestDisplayMedia failed', err);
