@@ -51,7 +51,17 @@ Template.levels.events({
 
 Template.levels.helpers({
   isLevelOwner(level) { return Meteor.userId() === level.createdBy; },
-  levels() { return Levels.find({}, { sort: { visit: -1 } }).fetch(); },
+  levels() {
+    const levels = Levels.find({}, { sort: { visit: -1 } }).fetch();
+    const userId = Meteor.userId();
+
+    return levels.sort((a, b) => {
+      if (a.createdBy === userId && b.createdBy !== userId) return -1;
+      if (b.createdBy === userId && a.createdBy !== userId) return 1;
+
+      return a.visit - b.visit;
+    });
+  },
   levelName(level) {
     if (level.name) return level.name;
 
