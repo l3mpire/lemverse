@@ -217,6 +217,7 @@ button:focus {
     border: 2px solid white;
     margin: 5px;
     z-index: 30;
+    transform: scale(-1, 1);
 
     video {
       width: 160px;
