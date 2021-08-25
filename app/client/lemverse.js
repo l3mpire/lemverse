@@ -398,12 +398,18 @@ Template.lemverse.onRendered(function () {
   this.autorun(() => {
     if (!Session.get('gameCreated')) return;
 
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') game.scene.keys.WorldScene?.render.resume();
+      else game.scene.keys.WorldScene?.render.pause();
+    });
+
     if (!this.resizeObserver) {
       const resizeObserver = new ResizeObserver(entries => {
         entries.forEach(entry => {
           config.width = entry.contentRect.width / Meteor.settings.public.zoom;
           config.height = entry.contentRect.height / Meteor.settings.public.zoom;
           game.scale.resize(config.width, config.height);
+          game.scene.keys.WorldScene.render.resume();
         });
       });
       const simulation = document.querySelector('.simulation');
