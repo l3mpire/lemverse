@@ -26,7 +26,7 @@ const checkMediaAvailable = (template, type) => {
     template.firstNode.srcObject = source;
     template.firstNode.play().catch(() => {
       error(`unable to player remote user's media: playback interrupted (${template.data._id}) : ${template.attempt}`);
-      setTimeout(checkMediaAvailable, delayBetweenAttempt);
+      setTimeout(() => checkMediaAvailable(template, type), delayBetweenAttempt);
     });
   } else if (template.attempt < maxAttempt) {
     template.attempt++;
