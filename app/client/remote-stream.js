@@ -1,75 +1,55 @@
 const maxAttempt = 10;
 const delayBetweenAttempt = 2000; // in ms
 
+const isRemoteUserSharingMedia = (user, type) => (type === 'screen' ? user.shareScreen : user.shareAudio || user.shareVideo);
+
+const checkMediaAvailable = (template, type) => {
+  if (!template.data?._id) {
+    log(`Missing user id in template data`);
+    return;
+  }
+
+  const remoteUserIsNear = remoteStreamsByUsers.get().find(usr => usr._id === template.data._id);
+  if (!remoteUserIsNear) {
+    log(`Stop retry to get ${template.data?.name}'s ${type}, ${template.data?.name} is too far`);
+    return;
+  }
+
+  const remoteUser = Meteor.users.findOne({ _id: template.data._id })?.profile;
+  if (!isRemoteUserSharingMedia(remoteUser, type)) {
+    log(`Remote user has nothing to share`);
+    return;
+  }
+
+  const source = type === 'screen' ? template.data.screen?.srcObject : template.data.user?.srcObject;
+  if (source) {
+    template.firstNode.srcObject = source;
+    template.firstNode.play().catch(() => {
+      error(`unable to player remote user's media: playback interrupted (${template.data._id}) : ${template.attempt}`);
+      setTimeout(checkMediaAvailable, delayBetweenAttempt);
+    });
+  } else if (template.attempt < maxAttempt) {
+    template.attempt++;
+    log(`Tried to get ${template.data?.name}'s ${type} and failed, attempt : ${template.attempt}`);
+    setTimeout(() => checkMediaAvailable(template, type), delayBetweenAttempt);
+  } else {
+    error(`unable to get user's ${type}`);
+  }
+};
+
 Template.webcam.onRendered(function () {
-  let attempt = 1;
-  const checkMediaAvailable = () => {
-    if (this.data?._id) {
-      const remoteUser = Meteor.users.findOne({ _id: this.data._id })?.profile;
-      const remoteUserIsNear = remoteStreamsByUsers.get().find(usr => usr._id === this.data._id);
-
-      if (!remoteUserIsNear) {
-        log(`Stop retry to get ${this.data?.name}'s audio & video, ${this.data?.name} is too far`);
-        return;
-      }
-
-      if (remoteUser.shareAudio || remoteUser.shareVideo) {
-        if (this.data?.user?.srcObject) {
-          this.firstNode.srcObject = this.data.user.srcObject;
-
-          this.firstNode.play().catch(() => {
-            error(`unable to player remote user's media: playback interrupted (${this.data._id}) : ${attempt}`);
-            setTimeout(checkMediaAvailable, delayBetweenAttempt);
-          });
-        } else if (attempt < maxAttempt) {
-          attempt++;
-          log(`Tried to get ${this.data?.name}'s audio and/or video and failed, attempt : ${attempt}`);
-          setTimeout(checkMediaAvailable, delayBetweenAttempt);
-        } else {
-          error(`unable to get user's medias`);
-        }
-      }
-    }
-  };
-  checkMediaAvailable();
+  this.attempt = 1;
+  checkMediaAvailable(this, 'video-audio');
 });
 
 Template.screenshare.onRendered(function () {
-  let attempt = 1;
-  const checkMediaAvailable = () => {
-    if (this.data?._id) {
-      const remoteUser = Meteor.users.findOne({ _id: this.data._id })?.profile;
-      const allRemoteStreamsByUsers = remoteStreamsByUsers.get();
-      const remoteUserIsNear = allRemoteStreamsByUsers.find(usr => usr._id === this.data._id);
-
-      if (!remoteUserIsNear) {
-        log(`Stop retry to get ${this.data?.name}'s screenshare, ${this.data?.name} is too far`);
-        return;
-      }
-      if (remoteUser.shareScreen) {
-        if (this.data?.screen?.srcObject) {
-          this.firstNode.srcObject = this.data?.screen?.srcObject;
-        } else if (attempt < maxAttempt) {
-          attempt++;
-          log(`Tried to get ${this.data?.name}'s screenshare and failed, attempt : ${attempt}`);
-          setTimeout(checkMediaAvailable, delayBetweenAttempt);
-        } else {
-          error(`unable to get user screenshare media`);
-        }
-      }
-    }
-  };
-  checkMediaAvailable();
+  this.attempt = 1;
+  checkMediaAvailable(this, 'screen');
 });
 
 Template.remoteStream.helpers({
-  mediaState() {
-    const user = Meteor.users.findOne({ _id: this.remoteUser._id })?.profile;
-    return user;
-  },
-  hasWebcamOrMicro(webcam, micro) {
-    return webcam || micro;
-  },
+  mediaState() { return Meteor.users.findOne({ _id: this.remoteUser._id })?.profile; },
+  hasWebcamOrMicro(webcam, micro) { return webcam || micro; },
 });
 
 Template.remoteStream.events({
