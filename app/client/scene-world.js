@@ -216,6 +216,7 @@ WorldScene = new Phaser.Class({
       });
 
       if (hasUpdatedSkin) {
+        delete player.lastDirection;
         this.playerUpdateAnimation(player);
         this.playerPauseAnimation(player, true, true);
       }
@@ -309,6 +310,8 @@ WorldScene = new Phaser.Class({
     const user = Meteor.users.findOne(player.userId);
     if (!user) return;
     direction = direction ?? (user.profile.direction || defaultCharacterDirection);
+    if (player.lastDirection === direction) return;
+    player.lastDirection = direction;
 
     if (user.profile.guest) {
       if (_.isObject(Meteor.settings.public.skins.guest)) {
@@ -822,15 +825,15 @@ WorldScene = new Phaser.Class({
         return;
       }
 
+      this.playerPauseAnimation(player, false);
+      this.playerUpdateAnimation(player);
+
       if (player.lwTargetDate <= moment()) {
         player.x = player.lwTargetX;
         player.y = player.lwTargetY;
         delete player.lwTargetDate;
         return;
       }
-
-      this.playerPauseAnimation(player, false);
-      this.playerUpdateAnimation(player);
 
       const elapsedTime = ((moment() - player.lwOriginDate) / (player.lwTargetDate - player.lwOriginDate));
       player.x = player.lwOriginX + (player.lwTargetX - player.lwOriginX) * elapsedTime;
