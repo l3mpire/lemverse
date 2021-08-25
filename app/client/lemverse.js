@@ -1,3 +1,5 @@
+import PhaserPauseRenderPlugin from './pause-render-plugin';
+
 const Phaser = require('phaser');
 
 hotkeys.filter = function (event) {
@@ -29,6 +31,11 @@ const config = {
   },
   dom: {
     createContainer: true,
+  },
+  plugins: {
+    global: [
+      { key: 'PhaserPauseRenderPlugin', plugin: PhaserPauseRenderPlugin, mapping: 'render' },
+    ],
   },
 };
 
