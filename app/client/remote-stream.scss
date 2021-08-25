@@ -28,7 +28,6 @@
     width: 320px;
     height: 240px;
     cursor: pointer;
-    transform: scale(-1, 1);
 
     .mute {
       position: absolute;
@@ -59,6 +58,10 @@
       background-size: inherit;
       background-repeat: no-repeat;
       background-position: center;
+    }
+
+    video {
+      transform: scale(-1, 1);
     }
 
     img {
