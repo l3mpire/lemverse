@@ -269,13 +269,8 @@ Template.lemverse.onCreated(function () {
   });
 
   hotkeys('e', { scope: 'all' }, event => {
-    if (event.repeat) return;
-    event.preventDefault();
-
-    if (isEditionAllowed(Meteor.userId())) {
-      if (lp.isLemverseBeta('editMode')) Session.set('editor', (Session.get('editor') + 1) % 2);
-      else Session.set('editor', (Session.get('editor') + 1) % 3);
-    }
+    if (event.repeat || !isEditionAllowed(Meteor.userId())) return;
+    Session.set('editor', (Session.get('editor') + 1) % 3);
   });
 
   hotkeys('l', { keyup: true, scope: 'player' }, event => {
