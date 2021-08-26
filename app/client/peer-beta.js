@@ -367,7 +367,7 @@ peerBeta = {
     return true;
   },
 
-  createMyPeer() {
+  createMyPeer(skipConfig = false) {
     if (myPeer || !Meteor.user()) return;
     if (Meteor.user().profile?.guest) return;
 
@@ -382,13 +382,16 @@ peerBeta = {
       const debug = Meteor.user()?.options?.debug;
       const { port, url: host, path, config } = result;
 
-      myPeer = new Peer(Meteor.userId(), {
+      const peerConfig = {
         debug: debug ? 3 : 0,
         host,
         port,
         path,
         config,
-      });
+      };
+
+      if (skipConfig) delete peerConfig.config;
+      myPeer = new Peer(Meteor.userId(), peerConfig);
 
       if (debug) log('createMyBetaPeer : myPeerCreated', { myPeer });
 
