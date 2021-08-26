@@ -4,6 +4,7 @@ const Phaser = require('phaser');
 
 const defaultCharacterDirection = 'down';
 const defaultUserMediaColorError = '0xd21404';
+const defaultLayer = 2;
 const defaultLayerCount = 9;
 const defaultLayerDepth = {
   6: 10000,
@@ -39,10 +40,11 @@ tileGlobalIndex = tile => {
 };
 
 tileLayer = tile => {
+  if (!tile.tilesetId) return defaultLayer;
   const tileset = findTileset(tile.tilesetId);
   const tileProperties = tileset.tileData?.[tile.index];
 
-  return tileProperties?.layer ?? 2;
+  return tileProperties?.layer ?? defaultLayer;
 };
 
 WorldScene = new Phaser.Class({
