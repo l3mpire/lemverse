@@ -249,14 +249,17 @@ Template.lemverse.onCreated(function () {
           const layer = tileLayer(tile);
           game.scene.keys.WorldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
           game.scene.keys.WorldScene.drawTeleporters(false);
+          game.scene.keys.WorldScene.render.resume();
         },
         changed(tile) {
           const layer = tileLayer(tile);
           game.scene.keys.WorldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
+          game.scene.keys.WorldScene.render.resume();
         },
         removed(tile) {
           const layer = tileLayer(tile);
           game.scene.keys.WorldScene.map.removeTileAt(tile.x, tile.y, false, false, layer);
+          game.scene.keys.WorldScene.render.resume();
         },
       });
 

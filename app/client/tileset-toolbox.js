@@ -100,6 +100,8 @@ hotkeys('c', event => {
 });
 
 Template.tilesetToolbox.onCreated(() => {
+  game.scene.keys.WorldScene.render.disableAutoPause(true);
+  game.scene.keys.WorldScene.render.resume();
   hotkeys.setScope('tileset-toolbox');
   Session.set('editor', 1);
 
@@ -110,6 +112,7 @@ Template.tilesetToolbox.onCreated(() => {
 });
 
 Template.tilesetToolbox.onDestroyed(() => {
+  game.scene.keys.WorldScene.render.disableAutoPause(false);
   hotkeys.setScope('player');
 });
 

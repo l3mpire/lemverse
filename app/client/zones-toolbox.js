@@ -66,6 +66,8 @@ Template.zonesToolboxProperties.events({
 Template.zonesToolbox.onCreated(() => {
   if (lp.isLemverseBeta('editMode')) hotkeys.setScope('editor-menu');
   Session.set('editor', 2);
+  game.scene.keys.WorldScene.render.disableAutoPause(true);
+  game.scene.keys.WorldScene.render.resume();
 });
 
 Template.zonesToolbox.onRendered(function () {
@@ -88,6 +90,7 @@ Template.zonesToolbox.onRendered(function () {
 
 Template.zonesToolbox.onDestroyed(() => {
   clearZoneRectangles();
+  game.scene.keys.WorldScene.render.disableAutoPause(false);
   if (lp.isLemverseBeta('editMode')) hotkeys.setScope('player');
 });
 
