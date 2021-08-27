@@ -1,0 +1,19 @@
+.level-toolbox {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  background-color: #ECEFF4;
+  border-radius: 10px;
+  padding: 5px;
+  margin: 5px;
+  width: 470px;
+  display: flex;
+  flex-direction: column;
+  color: #2E3440;
+  z-index: 5;
+
+  h1 {
+    font-size: 14pt;
+    text-align: center;
+  }
+}

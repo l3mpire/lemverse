@@ -32,6 +32,9 @@
           {{#if eq (Session 'editor') 2}}
             {{> zonesToolbox}}
           {{/if}}
+          {{#if eq (Session 'editor') 3}}
+            {{> levelToolbox}}
+          {{/if}}
         {{/if}}
         {{> reactionsToolbox}}
       {{/if}}

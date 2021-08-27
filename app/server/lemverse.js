@@ -158,6 +158,18 @@ Meteor.methods({
       },
     };
   },
+  updateLevel(name, position) {
+    if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
+    check(name, String);
+    check(position, { x: Number, y: Number });
+
+    const { levelId } = Meteor.user().profile;
+    const level = Levels.findOne(levelId);
+    if (!level || level.sandbox) throw new Meteor.Error('invalid-level', 'A valid level is required');
+    if (!isEditionAllowed(this.userId)) throw new Meteor.Error('permission-error', `You can't edit this level`);
+
+    Levels.update(levelId, { $set: { name, spawn: { x: position.x, y: position.y } } });
+  },
 });
 
 lp.defer(() => {
