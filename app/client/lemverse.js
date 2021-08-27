@@ -270,7 +270,8 @@ Template.lemverse.onCreated(function () {
 
   hotkeys('e', { scope: 'all' }, event => {
     if (event.repeat || !isEditionAllowed(Meteor.userId())) return;
-    Session.set('editor', (Session.get('editor') + 1) % 3);
+    if (lp.isLemverseBeta('editMode')) Session.set('editor', !Session.get('editor'));
+    else Session.set('editor', (Session.get('editor') + 1) % 3);
   });
 
   hotkeys('l', { keyup: true, scope: 'player' }, event => {
