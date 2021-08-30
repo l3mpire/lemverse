@@ -21,7 +21,7 @@ Template.settingsCharacter.helpers({
 
 Template.settingsCharacter.events({
   'click .js-back'() {
-    Session.set('settingsMode', Session.get('settingsMode') === 'character' ? null : 'character');
+    Session.set('settingsMode', 'default');
   },
   'click .js-customize-menu'(e) {
     Session.set('settings-character-category', e.currentTarget.dataset.category);

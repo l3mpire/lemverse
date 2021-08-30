@@ -1,36 +1,13 @@
-Session.setDefault('audioRecorders', []);
-Session.setDefault('videoRecorders', []);
-
-settings = {
-  enumerateDevices() {
-    navigator.mediaDevices.enumerateDevices().then(devices => {
-      const mics = [];
-      const cams = [];
-      devices.forEach(device => {
-        if (device.kind === 'audioinput') mics.push({ deviceId: device.deviceId, kind: device.kind, label: device.label });
-        if (device.kind === 'videoinput') cams.push({ deviceId: device.deviceId, kind: device.kind, label: device.label });
-      });
-      Session.set('audioRecorders', mics);
-      Session.set('videoRecorders', cams);
-    });
-  },
-};
-
-Template.settings.onRendered(() => {
-  peer.requestUserMedia().then(settings.enumerateDevices);
-  navigator.mediaDevices.ondevicechange = () => peer.requestUserMedia().then(settings.enumerateDevices);
-});
-
-Template.settings.onDestroyed(() => {
-  if (userProximitySensor.nearUsersCount() === 0) peer.destroyStream();
-});
-
 Template.settings.events({
   'click .js-character-designer'() {
-    Session.set('settingsMode', Session.get('settingsMode') === 'character' ? null : 'character');
+    Session.set('settingsMode', 'character');
+  },
+  'click .js-medias-settings'() {
+    Session.set('settingsMode', 'medias');
   },
   'click .js-close-button'() {
-    Session.set('displaySettings', false);
+    if (Session.get('settingsMode') !== 'default') Session.set('settingsMode', 'default');
+    else Session.set('displaySettings', false);
   },
   'input .js-name'(event) {
     event.preventDefault();
