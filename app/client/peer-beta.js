@@ -270,6 +270,7 @@ peerBeta = {
   },
 
   onProximityStarted(user) {
+    if (meet.api) return;
     this.cancelCallClose(user._id);
     Meteor.clearTimeout(callsOpening[user._id]);
     callsOpening[user._id] = Meteor.setTimeout(() => this.createPeerCalls(user), Meteor.settings.public.peer.callDelay);
