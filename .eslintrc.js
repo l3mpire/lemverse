@@ -97,7 +97,6 @@ module.exports = {
     undoTiles: 'writable',
     redoTiles: 'writable',
     peer: 'writable',
-    peerBeta: 'writable',
     settings: 'writable',
     sounds: 'writable',
     meet: 'writable',

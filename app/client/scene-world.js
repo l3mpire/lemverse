@@ -258,10 +258,10 @@ WorldScene = new Phaser.Class({
         player.lwTargetX = user.profile.x;
         player.lwTargetY = user.profile.y;
         player.lwTargetDate = moment().add(100, 'milliseconds');
-        if (!guest && lp.isLemverseBeta('newPeer')) userProximitySensor.checkDistances(Meteor.user(), [user]);
+        if (!guest) userProximitySensor.checkDistances(Meteor.user(), [user]);
       }
 
-      if (!guest && lp.isLemverseBeta('newPeer') && user.profile.shareScreen !== oldUser.profile.shareScreen) peerBeta.onStreamSettingsChanged(user);
+      if (!guest && user.profile.shareScreen !== oldUser.profile.shareScreen) peer.onStreamSettingsChanged(user);
     }
 
     player.getByName('stateIndicator').visible = !guest && !shareAudio;
@@ -866,11 +866,11 @@ WorldScene = new Phaser.Class({
       this.wasMoving = moving;
 
       if (!this.player.guest && this.checkProximity) {
-        if (lp.isLemverseBeta('newPeer') && !meet.api) {
+        if (!meet.api) {
           const currentUser = Meteor.user();
           const otherUsers = Meteor.users.find({ _id: { $ne: currentUser._id } }).fetch();
           userProximitySensor.checkDistances(currentUser, otherUsers);
-        } else peer.checkDistances();
+        }
 
         this.checkProximity = false;
       }

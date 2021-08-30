@@ -1,18 +1,15 @@
 import Peer from 'peerjs';
 
-const Phaser = require('phaser');
-
+const callsToClose = {};
+const callsOpening = {};
 let videoElement;
 
-// webrtc
 myStream = undefined;
 myScreenStream = undefined;
 myPeer = undefined;
 calls = {};
 remoteCalls = {};
-
 remoteStreamsByUsers = new ReactiveVar();
-
 remoteStreamsByUsers.set([]);
 
 peer = {
@@ -52,46 +49,65 @@ peer = {
 
   closeAll() {
     if (Meteor.user().options?.debug) log('peer.closeAll: start');
-    _.each(_.union(_.keys(calls), _.keys(remoteCalls)), k => peer.close(k.split('-')[0]));
+    _.each(userProximitySensor.nearUsers, user => this.close(user, 100));
   },
 
-  close(userId) {
+  closeCall(userId) {
+    let activeCallsCount = 0;
+    const close = (remote, user, type) => {
+      const callsSource = remote ? remoteCalls : calls;
+      const call = callsSource[`${user}-${type}`];
+      if (call) {
+        activeCallsCount++;
+        call.close();
+      }
+
+      delete callsSource[`${user}-${type}`];
+    };
+
+    close(false, userId, 'user');
+    close(false, userId, 'screen');
+    close(true, userId, 'user');
+    close(true, userId, 'screen');
+    this.cancelCallClose(userId);
+    this.cancelCallOpening(userId);
+
     const debug = Meteor.user()?.options?.debug;
-    if (debug) log('peer.close: start', userId);
-    if (calls[`${userId}-user`]) {
-      if (debug) log('me -> you user ****** force close call', userId);
-      calls[`${userId}-user`].close();
-      delete calls[`${userId}-user`];
-      sounds.play('webrtc-out');
-    }
+    if (activeCallsCount && debug) log('close call: start', userId);
 
-    // Get the updated streamsByUsers of the reactiveVar remoteStreamsByUsers
     let streamsByUsers = remoteStreamsByUsers.get();
-
-    // Iterate on remoteStreamsByUsers table to find the remote user and delete the concerned media
     streamsByUsers.map(usr => {
       if (usr._id === userId) {
         delete usr.user.srcObject;
         delete usr.screen.srcObject;
       }
+
       return usr;
     });
     // We clean up remoteStreamsByUsers table by deleting all the users who have neither webcam or screen sharing active
     streamsByUsers = streamsByUsers.filter(usr => usr.user.srcObject !== undefined || usr.screen.srcObject !== undefined);
-    // Update the reactiveVar remoteStreamsByUsers
     remoteStreamsByUsers.set(streamsByUsers);
 
-    if (remoteCalls[`${userId}-user`]) {
-      if (debug) log('you -> me user ****** force close remoteCall', userId);
-      remoteCalls[`${userId}-user`].close();
-      delete remoteCalls[`${userId}-user`];
-      $(`.js-video-${userId}-user`).remove();
-    }
+    $(`.js-video-${userId}-user`).remove();
+
+    if (userProximitySensor.nearUsersCount() === 0) this.destroyStream(myStream);
+    if (!activeCallsCount) return;
+
+    if (debug) log('close call: call closed successfully', userId);
+    sounds.play('webrtc-out');
+  },
+
+  close(userId, timeout = 0) {
+    this.cancelCallOpening(userId);
+    if (callsToClose[userId] && timeout !== 0) return;
+    Meteor.clearTimeout(callsToClose[userId]);
+    callsToClose[userId] = Meteor.setTimeout(() => this.closeCall(userId), timeout);
   },
 
   createPeerCall(user, type) {
     if (!myPeer) return;
     if (calls[`${user._id}-${type}`]) return;
+    if (!userProximitySensor.nearUsers[user._id]) { log(`peer call: creation cancelled (user is too far)`, user._id); return; }
 
     if (Meteor.user().options?.debug) log(`me -> you ${type} ***** new call with near`, user._id);
     if (myPeer.disconnected) {
@@ -118,15 +134,20 @@ peer = {
       call.on('close', () => { log(`me -> you ${type} ****** call closed`, user._id); });
     }
     calls[`${user._id}-${type}`] = call;
-
-    if (type === 'user') sounds.play('webrtc-in');
   },
 
   createPeerCalls(user) {
     const { shareAudio, shareScreen, shareVideo } = Meteor.user().profile;
 
+    if (!calls[`${user._id}-user`] && !calls[`${user._id}-screen`]) sounds.play('webrtc-in');
     if (shareAudio || shareVideo) this.createStream().then(() => this.createPeerCall(user, 'user'));
     if (shareScreen) this.createScreenStream().then(() => this.createPeerCall(user, 'screen'));
+  },
+
+  applyConstraints(stream, type, constraints) {
+    if (!stream) return;
+    const tracks = type === 'video' ? stream.getVideoTracks() : stream.getAudioTracks();
+    tracks.forEach(track => track.applyConstraints(constraints));
   },
 
   requestUserMedia() {
@@ -135,8 +156,9 @@ peer = {
 
     return navigator.mediaDevices
       .getUserMedia({
-        video: { deviceId: shareVideo && videoRecorder || false },
+        video: { deviceId: shareVideo && videoRecorder || false, width: { ideal: 320 }, height: { ideal: 240 } },
         audio: { deviceId: shareAudio && audioRecorder || false },
+        frameRate: { max: 30 },
       })
       .then(stream => {
         myStream = stream;
@@ -144,7 +166,6 @@ peer = {
         return stream;
       })
       .catch(err => {
-        myStream = null;
         error('requestUserMedia failed', err);
         Meteor.users.update(Meteor.userId(), { $set: { 'profile.userMediaError': true } });
       });
@@ -157,7 +178,6 @@ peer = {
       .getDisplayMedia({})
       .then(stream => { myScreenStream = stream; return stream; })
       .catch(err => {
-        myScreenStream = null;
         error('requestDisplayMedia failed', err);
         Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } });
       });
@@ -210,10 +230,15 @@ peer = {
       });
   },
 
-  destroyStream() {
-    this.stopTracks(myStream);
-    myStream = null;
+  destroyStream(stream) {
+    stream = stream ?? myStream;
+
+    if (stream && Meteor.user()?.options?.debug) log('kill stream', stream);
+    this.stopTracks(stream);
     if (videoElement) videoElement.hide();
+
+    if (stream === myStream) myStream = undefined;
+    else if (stream === myScreenStream) myScreenStream = undefined;
   },
 
   updatePeersStream() {
@@ -248,7 +273,30 @@ peer = {
     }
   },
 
-  onProximityEnded() { },
+  onProximityStarted(user) {
+    if (meet.api) return;
+    this.cancelCallClose(user._id);
+    Meteor.clearTimeout(callsOpening[user._id]);
+    callsOpening[user._id] = Meteor.setTimeout(() => this.createPeerCalls(user), Meteor.settings.public.peer.callDelay);
+  },
+
+  onProximityEnded(user) {
+    this.close(user._id, 1000);
+  },
+
+  cancelCallClose(userId) {
+    if (!callsToClose[userId]) return;
+
+    Meteor.clearTimeout(callsToClose[userId]);
+    delete callsToClose[userId];
+  },
+
+  cancelCallOpening(userId) {
+    if (!callsOpening[userId]) return;
+
+    Meteor.clearTimeout(callsOpening[userId]);
+    delete callsOpening[userId];
+  },
 
   sendData(users, data) {
     users.forEach(user => {
@@ -267,105 +315,32 @@ peer = {
     });
   },
 
-  checkDistances(changedUser) {
-    const { player } = game?.scene?.keys?.WorldScene || {};
-    if (!myPeer || !player || meet.api) return;
-    const debug = Meteor.user()?.options?.debug;
+  onStreamSettingsChanged(changedUser) {
+    const streamsByUsers = remoteStreamsByUsers.get();
+    const streamsCurrentUser = streamsByUsers.find(user => user._id === changedUser._id);
+    if (!streamsCurrentUser || !streamsCurrentUser.screen.srcObject) return;
 
-    // init
-    if (!videoElement) videoElement = $(`.js-video-me video`);
-    userProximitySensor.onProximityStarted = userProximitySensor.onProximityStarted ?? this.createPeerCalls.bind(this);
-    userProximitySensor.onProximityEnded = userProximitySensor.onProximityEnded ?? this.onProximityEnded.bind(this);
-
-    // listeners
-    const currentUser = Meteor.user();
-    const changedUsers = changedUser ? [changedUser] : Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch();
-    userProximitySensor.checkDistances(currentUser, changedUsers);
-
-    //
-    // Close peer calls for too far people
-    //
-
-    const prepareClosing = (dist, myCall, userId, type) => {
-      const direction = myCall ? 'me -> you' : 'you -> me';
-      const call = myCall ? calls[`${userId}-${type}`] : remoteCalls[`${userId}-${type}`];
-      if (dist >= userProximitySensor.farDistance && call && !call.closeHandler) {
-        if (debug) log(`${direction} ${type} ****** too far call soon`, userId);
-        call.closeHandler = Meteor.setTimeout(() => {
-          if (debug) log(`${direction} ${type} ****** too far call closing`, userId);
-          call.close();
-          if (myCall) {
-            delete calls[`${userId}-${type}`];
-            if (type === 'user') {
-              sounds.play('webrtc-out');
-              if (_.keys(calls).filter(c => c.indexOf('-user') >= 0).length === 0) {
-                if (debug) log('kill my stream');
-                this.destroyStream();
-              }
-            }
-          } else {
-            delete remoteCalls[`${userId}-${type}`];
-            // Get the updated streams of the reactiveVar remoteStreamsByUsers
-            let streamsByUsers = remoteStreamsByUsers.get();
-
-            // Iterate on remoteStreamsByUsers table to find the remote user and delete the concerned media
-            streamsByUsers.map(usr => {
-              if (usr._id === userId) {
-                delete usr[type].srcObject;
-              }
-              return usr;
-            });
-            // We clean up remoteStreamsByUsers table by deleting all the users who have neither webcam or screen sharing active
-            streamsByUsers = streamsByUsers.filter(usr => usr.user.srcObject !== undefined || usr.screen.srcObject !== undefined);
-
-            // Update the reactiveVar remoteStreamsByUsers
-            remoteStreamsByUsers.set(streamsByUsers);
-          }
-        }, 1000);
-      }
-      if (dist < userProximitySensor.nearDistance && call?.closeHandler) {
-        if (debug) log(`${direction} ${type} ****** too far call abort`, userId);
-
-        Meteor.clearTimeout(call.closeHandler);
-        delete call.closeHandler;
-      }
-    };
-
-    const cleanMedia = () => {
-      if (changedUsers.length) {
-        const streamsByUsers = remoteStreamsByUsers.get();
-        let setUpdated = false;
-        changedUsers.forEach(changedUsr => {
-          const streamsCurrentUser = streamsByUsers.find(user => user._id === changedUsr._id);
-          if (streamsCurrentUser) {
-            if (!changedUsr.profile.shareScreen && streamsCurrentUser.screen.srcObject) {
-              delete streamsCurrentUser.screen.srcObject;
-              setUpdated = true;
-            }
-          }
-        });
-        if (setUpdated) remoteStreamsByUsers.set(streamsByUsers);
-      }
-    };
-    cleanMedia();
-
-    _.each(changedUsers, user => {
-      // eslint-disable-next-line new-cap
-      const dist = Phaser.Math.Distance.Between(user.profile.x, user.profile.y, player.x, player.y);
-      prepareClosing(dist, true, user._id, 'user');
-      prepareClosing(dist, false, user._id, 'user');
-      prepareClosing(dist, true, user._id, 'screen');
-      prepareClosing(dist, false, user._id, 'screen');
-    });
+    if (!changedUser.profile.shareScreen) {
+      delete streamsCurrentUser.screen.srcObject;
+      remoteStreamsByUsers.set(streamsByUsers);
+    }
   },
 
   answerStreamCall(remoteCall, remoteStream) {
+    const remoteUserId = remoteCall.metadata?.userId;
+    if (!remoteUserId) { log(`answer stream: incomplete metadata for the remote call`); return false; }
+    const remoteUser = Meteor.users.findOne({ _id: remoteUserId });
+    if (!remoteUser) { log(`answer stream: user not found "${remoteUserId}"`); return false; }
+
+    // ensures the user is near to answer and this check will trigger a peer creation if it didn't exist with the other user
+    userProximitySensor.checkDistance(Meteor.user(), remoteUser);
+    if (!userProximitySensor.nearUsers[remoteUserId]) { log(`answer stream: user is too far`, remoteUserId); return true; }
+
+    const callIdentifier = `${remoteUserId}-${remoteCall.metadata.type}`;
+    remoteCalls[callIdentifier] = remoteCall;
+
     const debug = Meteor.user()?.options?.debug;
-
-    if (debug) log('you -> me ****** answer stream', { userId: remoteCall.metadata.userId, type: remoteCall.metadata.type });
-
-    const remoteUser = Meteor.users.findOne({ _id: remoteCall.metadata.userId });
-    if (!remoteUser) { log(`incomplete metadata for the remote user "${remoteCall.metadata?.userId}"`); return false; }
+    if (debug) log('you -> me ****** answer stream', { userId: remoteUserId, type: remoteCall.metadata.type });
 
     // Get the updated stream table of the reactiveVar remoteStreamsByUsers
     const streamsByUsers = remoteStreamsByUsers.get();
@@ -392,14 +367,7 @@ peer = {
 
     // Update the reactiveVar remoteStreamsByUsers
     remoteStreamsByUsers.set(streamsByUsers);
-
-    if (debug) {
-      remoteCall.on('close', () => {
-        log('you -> me ****** answer closed', { userId: remoteCall.metadata.userId, type: remoteCall.metadata.type });
-      });
-    }
-
-    remoteCalls[`${remoteCall.metadata.userId}-${remoteCall.metadata.type}`] = remoteCall;
+    remoteCall.on('close', () => this.close(remoteUserId));
 
     return true;
   },
@@ -408,11 +376,17 @@ peer = {
     if (myPeer || !Meteor.user()) return;
     if (Meteor.user().profile?.guest) return;
 
+    // init
+    if (!videoElement) videoElement = $(`.js-video-me video`);
+    userProximitySensor.onProximityStarted = userProximitySensor.onProximityStarted ?? this.onProximityStarted.bind(this);
+    userProximitySensor.onProximityEnded = userProximitySensor.onProximityEnded ?? this.onProximityEnded.bind(this);
+
     Meteor.call('getPeerConfig', (err, result) => {
       if (err) { lp.notif.error(err); return; }
 
       const debug = Meteor.user()?.options?.debug;
       const { port, url: host, path, config } = result;
+
       const peerConfig = {
         debug: debug ? 3 : 0,
         host,
@@ -424,7 +398,7 @@ peer = {
       if (skipConfig) delete peerConfig.config;
       myPeer = new Peer(Meteor.userId(), peerConfig);
 
-      if (debug) log('createMyPeer : myPeerCreated', { myPeer });
+      if (debug) log('createMyBetaPeer : myPeerCreated', { myPeer });
 
       myPeer.on('connection', connection => {
         connection.on('data', dataReceived => {
@@ -432,7 +406,7 @@ peer = {
         });
       });
 
-      myPeer.on('close', () => { log('peer closed and destroyed'); myPeer = null; });
+      myPeer.on('close', () => { log('peer closed and destroyed'); myPeer = undefined; });
 
       myPeer.on('error', peerErr => {
         log(`peer error ${peerErr.type}`, peerErr);

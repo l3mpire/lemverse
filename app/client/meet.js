@@ -58,9 +58,7 @@ meet = {
     meet.api = new window.JitsiMeetExternalAPI(Meteor.settings.public.meet.serverURL, options);
     $('#meet').addClass('show');
 
-    if (lp.isLemverseBeta('newPeer')) peerBeta.closeAll();
-    else peer.closeAll();
-
+    peer.closeAll();
     userProximitySensor.callProximityEndedForAllNearUsers();
   },
 
