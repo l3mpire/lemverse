@@ -34,8 +34,12 @@ Template.settingsMedias.onDestroyed(() => {
 Template.settingsMedias.events({
   'change .js-mic-select'(event) {
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.audioRecorder': event.target.value } });
+    if (!myStream) return;
+    peer.applyConstraints(myStream, 'audio', { deviceId: event.target.value });
   },
   'change .js-cam-select'(event) {
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.videoRecorder': event.target.value } });
+    if (!myStream) return;
+    peer.applyConstraints(myStream, 'video', { deviceId: event.target.value });
   },
 });
