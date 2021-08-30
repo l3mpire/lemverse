@@ -156,9 +156,8 @@ peer = {
 
     return navigator.mediaDevices
       .getUserMedia({
-        video: { deviceId: shareVideo && videoRecorder || false, width: { ideal: 320 }, height: { ideal: 240 } },
+        video: { deviceId: shareVideo && videoRecorder || false, width: { ideal: 320 }, height: { ideal: 240 }, frameRate: { max: 30 } },
         audio: { deviceId: shareAudio && audioRecorder || false },
-        frameRate: { max: 30 },
       })
       .then(stream => {
         myStream = stream;
@@ -175,7 +174,7 @@ peer = {
     if (myScreenStream) return new Promise(resolve => resolve(myScreenStream));
 
     return navigator.mediaDevices
-      .getDisplayMedia({})
+      .getDisplayMedia({ frameRate: { max: 30 } })
       .then(stream => { myScreenStream = stream; return stream; })
       .catch(err => {
         error('requestDisplayMedia failed', err);
