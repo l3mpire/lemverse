@@ -59,7 +59,7 @@ Template.levels.helpers({
       if (a.createdBy === userId && b.createdBy !== userId) return -1;
       if (b.createdBy === userId && a.createdBy !== userId) return 1;
 
-      return a.visit - b.visit;
+      return b.visit - a.visit;
     });
   },
   levelName(level) {
