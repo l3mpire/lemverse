@@ -42,4 +42,14 @@ Template.settingsMedias.events({
     if (!myStream) return;
     peer.applyConstraints(myStream, 'video', { deviceId: event.target.value });
   },
+  'change .js-screen-framerate'(event) {
+    Meteor.users.update(Meteor.userId(), { $set: { 'profile.screenShareFrameRate': event.target.value } });
+    if (myScreenStream) peer.applyConstraints(myScreenStream, 'video', { frameRate: event.target.value });
+  },
+});
+
+Template.settingsMedias.helpers({
+  frameRate() {
+    return Meteor.user().profile.screenShareFrameRate || 22;
+  },
 });

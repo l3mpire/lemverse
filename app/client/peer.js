@@ -1,5 +1,6 @@
 import Peer from 'peerjs';
 
+const screenSharingDefaultFrameRate = 22;
 const callsToClose = {};
 const callsOpening = {};
 let videoElement;
@@ -172,9 +173,10 @@ peer = {
 
   requestDisplayMedia() {
     if (myScreenStream) return new Promise(resolve => resolve(myScreenStream));
+    const { screenShareFrameRate } = Meteor.user().profile;
 
     return navigator.mediaDevices
-      .getDisplayMedia({ frameRate: { max: 30 } })
+      .getDisplayMedia({ frameRate: { ideal: screenShareFrameRate || screenSharingDefaultFrameRate, max: 30 } })
       .then(stream => { myScreenStream = stream; return stream; })
       .catch(err => {
         error('requestDisplayMedia failed', err);

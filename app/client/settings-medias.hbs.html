@@ -22,6 +22,11 @@
               {{/each}}
             </select>
           </div>
+
+          <div>
+            <label for="video-framerate">Screen sharing framerate ({{frameRate}})</label>
+            <input type="range" class="js-screen-framerate" name="video-framerate" min="10" max="30" value={{frameRate}}>
+          </div>
         </div>
       </div>
     </div>

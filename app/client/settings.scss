@@ -58,6 +58,10 @@ div.settings {
     font-size: 15px;
     color: #404040;
     outline: none;
+
+    &[type="range"] {
+      appearance: revert;
+    }
   }
 
   video {
