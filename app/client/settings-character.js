@@ -1,7 +1,4 @@
-const getImage = id => {
-  const character = Characters.findOne(id);
-  return character;
-};
+const getImage = id => Characters.findOne(id);
 
 Template.settingsCharacter.onCreated(() => {
   if (!Session.get('settings-character-category')) Session.set('settings-character-category', 'body');
@@ -20,9 +17,6 @@ Template.settingsCharacter.helpers({
 });
 
 Template.settingsCharacter.events({
-  'click .js-back'() {
-    Session.set('settingsMode', 'default');
-  },
   'click .js-customize-menu'(e) {
     Session.set('settings-character-category', e.currentTarget.dataset.category);
   },
