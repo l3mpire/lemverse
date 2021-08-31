@@ -172,7 +172,7 @@ Meteor.methods({
   },
   increaseLevelVisits(levelId) {
     check(levelId, String);
-    Levels.update(levelId, { $inc: { visit: 1 } });
+    Levels.update({ _id: levelId, createdBy: { $ne: Meteor.userId() } }, { $inc: { visit: 1 } });
   },
 });
 
