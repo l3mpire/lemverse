@@ -18,13 +18,17 @@ settings = {
   },
 };
 
-Template.settingsMedias.onRendered(() => {
-  const video = document.querySelector('#js-video-preview');
-  peer.requestUserMedia().then(settings.enumerateDevices).then(stream => {
+const initStream = () => {
+  peer.requestUserMedia(true).then(settings.enumerateDevices).then(stream => {
+    const video = document.querySelector('#js-video-preview');
     video.srcObject = stream;
     video.onloadedmetadata = () => video.play();
   });
-  navigator.mediaDevices.ondevicechange = () => peer.requestUserMedia().then(settings.enumerateDevices);
+};
+
+Template.settingsMedias.onRendered(() => {
+  initStream();
+  navigator.mediaDevices.ondevicechange = () => peer.requestUserMedia(true).then(settings.enumerateDevices);
 });
 
 Template.settingsMedias.onDestroyed(() => {
@@ -34,11 +38,13 @@ Template.settingsMedias.onDestroyed(() => {
 Template.settingsMedias.events({
   'change .js-mic-select'(event) {
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.audioRecorder': event.target.value } });
+    initStream();
     if (!myStream) return;
     peer.applyConstraints(myStream, 'audio', { deviceId: event.target.value });
   },
   'change .js-cam-select'(event) {
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.videoRecorder': event.target.value } });
+    initStream();
     if (!myStream) return;
     peer.applyConstraints(myStream, 'video', { deviceId: event.target.value });
   },
