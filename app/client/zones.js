@@ -17,6 +17,13 @@ zones = {
     Zones.update(zone._id, { $set: { fullscreen: !!value } });
   },
 
+  getCenter(zone) {
+    return {
+      x: zone.x1 + (zone.x2 - zone.x1) / 2,
+      y: zone.y1 + (zone.y2 - zone.y1) / 2,
+    };
+  },
+
   usersInZone(zone) {
     if (!zone) return [];
 
