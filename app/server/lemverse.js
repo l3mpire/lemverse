@@ -170,6 +170,10 @@ Meteor.methods({
 
     Levels.update(levelId, { $set: { name, spawn: { x: position.x, y: position.y } } });
   },
+  increaseLevelVisits(levelId) {
+    check(levelId, String);
+    Levels.update(levelId, { $inc: { visit: 1 } });
+  },
 });
 
 lp.defer(() => {

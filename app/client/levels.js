@@ -1,7 +1,7 @@
 const listMode = 'list';
 
 const askLoadLevel = (levelId, incrementVisit = false) => {
-  if (incrementVisit) Levels.update(levelId, { $inc: { visit: 1 } });
+  if (incrementVisit) Meteor.call('increaseLevelVisits', levelId);
 
   if (window.self !== window.top) {
     const data = { userId: Meteor.userId(), levelId, type: 'load-level' };
