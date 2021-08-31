@@ -151,7 +151,8 @@ peer = {
     tracks.forEach(track => track.applyConstraints(constraints));
   },
 
-  requestUserMedia() {
+  requestUserMedia(forceNew = false) {
+    if (forceNew) this.destroyStream();
     if (myStream) return new Promise(resolve => resolve(myStream));
     const { shareVideo, shareAudio, videoRecorder, audioRecorder } = Meteor.user().profile;
 
@@ -163,6 +164,10 @@ peer = {
       .then(stream => {
         myStream = stream;
         Meteor.users.update(Meteor.userId(), { $set: { 'profile.userMediaError': false } });
+
+        // ensures peers are using last stream & tracks available
+        this.updatePeersStream();
+
         return stream;
       })
       .catch(err => {
@@ -196,9 +201,6 @@ peer = {
         const { shareVideo, shareAudio } = Meteor.user().profile;
         this.audio(shareAudio);
         this.video(shareVideo);
-
-        // ensures peers are using last stream & tracks available
-        this.updatePeersStream();
 
         return stream;
       });
