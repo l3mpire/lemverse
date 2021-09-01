@@ -5,16 +5,11 @@ const hideMenu = event => {
   const editToolbox = document.querySelector('.edit-toolbox');
   editToolbox.classList.toggle('minimize');
 };
-hotkeys('h', { scope: 'editor-menu' }, hideMenu);
-hotkeys('h', { scope: 'tileset-toolbox' }, hideMenu); // TODO: Remove this once editor UI is validated
 
+hotkeys('h', { scope: 'editor-menu' }, hideMenu);
 hotkeys('shift+1', { scope: 'editor-menu' }, () => { Session.set('editor', 1); });
 hotkeys('shift+2', { scope: 'editor-menu' }, () => { Session.set('editor', 2); });
 hotkeys('shift+3', { scope: 'editor-menu' }, () => { Session.set('editor', 3); });
-// TODO: Remove this once editor UI is validated
-hotkeys('shift+1', { scope: 'tileset-toolbox' }, () => { Session.set('editor', 1); });
-hotkeys('shift+2', { scope: 'tileset-toolbox' }, () => { Session.set('editor', 2); });
-hotkeys('shift+3', { scope: 'tileset-toolbox' }, () => { Session.set('editor', 3); });
 
 Template.editToolbox.onCreated(() => {
   if (!Session.get('editor')) Session.set('editor', 1);

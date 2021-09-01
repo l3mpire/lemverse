@@ -1,10 +1,10 @@
 <template name="lemverse">
   <div class="lemverse">
-    <div class="simulation {{#if and (isLemverseBeta 'editMode' ) (neq (Session 'editor') 0)}}edit{{/if}}">
+    <div class="simulation {{#if neq (Session 'editor') 0}}edit{{/if}}">
       {{#if isGuest}}
         {{> formAccount visible=isLoading}}
       {{else}}
-        {{#if and (isLemverseBeta 'editMode' ) (neq (Session 'editor') 0)}}
+        {{#if neq (Session 'editor') 0}}
           {{> editToolbox}}
         {{/if}}
         <div class="js-videos">
@@ -25,21 +25,10 @@
             </div>
           </div>
         </div>
-        {{#if not (isLemverseBeta 'editMode' )}}
-          {{#if eq (Session 'editor') 1}}
-            {{> tilesetToolbox}}
-          {{/if}}
-          {{#if eq (Session 'editor') 2}}
-            {{> zonesToolbox}}
-          {{/if}}
-          {{#if eq (Session 'editor') 3}}
-            {{> levelToolbox}}
-          {{/if}}
-        {{/if}}
         {{> reactionsToolbox}}
       {{/if}}
       {{> zonesName}}
-      <div id="game" class="{{#if and (isLemverseBeta 'editMode' ) (neq (Session 'editor') 0)}}edit{{/if}}"></div>
+      <div id="game" class="{{#if neq (Session 'editor') 0}}edit{{/if}}"></div>
     </div>
     <div id="meet"></div>
     <div id="webpage">

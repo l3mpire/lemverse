@@ -41,8 +41,6 @@ Template.notificationsItem.helpers({
   },
   author() {
     const { createdBy } = Template.instance().data;
-
-    // todo: find a way to get user's name when the user is offline
     return Meteor.users.findOne(createdBy)?.profile.name || createdBy;
   },
 });
