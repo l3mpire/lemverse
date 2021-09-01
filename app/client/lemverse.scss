@@ -1,3 +1,5 @@
+@import "_variables";
+
 :root {
   --edit-border-size: 1rem;
   --edit-border-radius: 1rem;
@@ -80,6 +82,49 @@ button:focus {
     box-sizing: border-box;
     z-index: 200 !important;
     background-color: white;
+
+    &.with-arrow:before {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      width: 0;
+      transform: translateX(-50%);
+      border-top: 12px solid white;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+    }
+
+    &.wood-style {
+      padding: 10px;
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+      background-color: $lem-color-3;
+      color: $lem-color-1;
+      border-radius: 5px;
+
+      &.with-arrow:before {
+        border-top: 12px solid $lem-color-3;
+      }
+    }
+
+    &.animated-text p {
+      overflow: hidden;
+      width: 0;
+      white-space: nowrap;
+      margin: 0;
+      letter-spacing: .15em;
+      animation: typing 1.0s steps(40, end) forwards;
+    }
+
+    @keyframes typing {
+      from {
+        width: 0
+      }
+
+      to {
+        width: 100%
+      }
+    }
 
     iframe {
       width: 100%;

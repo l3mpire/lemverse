@@ -540,7 +540,16 @@ WorldScene = new Phaser.Class({
             this.loadLevel(result);
           });
         }
-      } else if (inlineURL) characterPopIns.createOrUpdate(Meteor.userId(), inlineURL);
+      } else if (inlineURL) {
+        const config = zone.popInConfiguration || {};
+        if (config.static) {
+          const zoneCenter = zones.getCenter(zone);
+          config.x = Number(config.x) + zoneCenter.x;
+          config.y = Number(config.y) + zoneCenter.y;
+        }
+
+        characterPopIns.createOrUpdate(Meteor.userId(), inlineURL, config);
+      }
     };
 
     characterPopIns.onPopInEvent = e => {

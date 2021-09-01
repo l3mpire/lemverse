@@ -16,7 +16,7 @@ characterPopIns = {
     window.document.addEventListener('pop-in-event', e => this.onPopInEvent && this.onPopInEvent(e), false);
   },
 
-  createOrUpdate(userId, popInContent) {
+  createOrUpdate(userId, popInContent, config = {}) {
     const content = isUrl(popInContent) ? this.createIframeFromURL(popInContent) : popInContent;
 
     let characterPopIn = this.popIns[userId];
@@ -30,11 +30,16 @@ characterPopIns = {
     } else characterPopIn.setHTML(content);
 
     const { style } = characterPopIn.node;
-    style.width = `${this.dimensions.width}px`;
-    style.height = `${this.dimensions.height}px`;
+    style.width = `${config.width || this.dimensions.width}px`;
+    style.height = `${config.height || this.dimensions.height}px`;
     characterPopIn.updateSize();
-    characterPopIn.setClassName(this.className);
+
+    const className = config.className ? [this.className, config.className].join(' ') : this.className;
+    characterPopIn.setClassName(className);
     characterPopIn.visible = false;
+    characterPopIn.static = config.static || false;
+    characterPopIn.x = config.x || 0;
+    characterPopIn.y = config.y || 0;
 
     this.popIns[userId] = characterPopIn;
   },
@@ -62,8 +67,10 @@ characterPopIns = {
       if (!player) return;
 
       const characterPopIn = this.popIns[userId];
-      characterPopIn.x = Math.max(player.x + this.offset.x, characterPopIn.displayWidth / 2);
-      characterPopIn.y = Math.max(player.y + this.offset.y, characterPopIn.displayHeight / 2);
+      if (!characterPopIn.static) {
+        characterPopIn.x = Math.max(player.x + this.offset.x, characterPopIn.displayWidth / 2);
+        characterPopIn.y = Math.max(player.y + this.offset.y, characterPopIn.displayHeight / 2);
+      }
       characterPopIn.visible = true;
     });
   },

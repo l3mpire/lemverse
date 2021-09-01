@@ -103,7 +103,15 @@ To edit those information, simply click on the name of the room (bold text).
   "url": "https://mczak.com/code/piano/pianoframe", // If present, this will popup an iframe with this url inside
   "unhide": "", // Automatically show cam in jitsi (useful to show people face automatically on platform in conference room)
   "fullscreen": false, // Set the iframe if full screen or not
-  "targetedLevelId": "" // Used for teleport zone. Should be the id of the level to teleport to.
+  "targetedLevelId": "", // Used for teleport zone. Should be the id of the level to teleport to.,
+  "popInConfiguration": {
+    "width": 120, // Custom width
+    "height": 45, // Custom height
+    "x": 0, // Relative position from the zone's center on X
+    "y": -60, // Relative position from the zone's center on Y
+    "static": true, // Avoid pop-in following the player
+    "className": "wood welcome" // List of CSS classes to customize pop-in's style
+  }
 }
 ```
 ### Edit spawn position
