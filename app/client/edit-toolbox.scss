@@ -1,5 +1,5 @@
 :root {
-  --edit-content: 300px;
+  --edit-content: 260px;
   --edit-menus-size: 250px;
   --edit-menus-backdrop: 15px;
   --edit-menus-z-index: 50;
@@ -99,6 +99,7 @@
 
     border-radius: 100% 0 0 0;
 
+    .menus-level,
     .menus-tileset,
     .menus-zone {
       position: absolute;
@@ -153,10 +154,15 @@
     }
 
     .menus-level {
+      &>.icon {
+        bottom: 34px;
+        left: 50px;
+      }
+
       position: absolute;
-      right: 20px;
-      bottom: 10px;
-      height: 65px;
+      left: 113px;
+      top: 113px;
+      height: 120px;
       color: white;
     }
   }

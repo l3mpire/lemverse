@@ -17,15 +17,6 @@ const updateLevel = (name, spawnPosition) => {
   });
 };
 
-Template.levelToolbox.onCreated(() => {
-  if (!Session.get('editor')) Session.set('editor', 3);
-  hotkeys.setScope('editor-menu');
-});
-
-Template.levelToolbox.onDestroyed(() => {
-  hotkeys.setScope('player');
-});
-
 Template.levelToolbox.events({
   'focus input'() { hotkeys.setScope('form'); game?.scene?.keys?.WorldScene?.enableKeyboard(false, false); },
   'blur input'() { hotkeys.setScope('player'); game?.scene?.keys?.WorldScene?.enableKeyboard(true, false); },

@@ -728,7 +728,7 @@ WorldScene = new Phaser.Class({
     this.marker.visible = false;
 
     // edition
-    if (Session.get('editor') === 0) return;
+    if (!Session.get('editor')) return;
 
     const worldPoint = this.input.activePointer.positionToCamera(this.cameras.main);
     // Rounds down to nearest tile
@@ -737,7 +737,7 @@ WorldScene = new Phaser.Class({
     Session.set('pointerX', worldPoint.x | 0);
     Session.set('pointerY', worldPoint.y | 0);
 
-    if (Session.get('editor') === 2) {
+    if (Session.get('editorSelectedMenu') === 2) {
       if (this.input.manager.activePointer.isDown && this.input.manager.activePointer.downElement.nodeName === 'CANVAS') this.isMouseDown = true;
 
       if (this.isMouseDown && !this.input.manager.activePointer.isDown) {
@@ -756,7 +756,7 @@ WorldScene = new Phaser.Class({
           }
         }
       }
-    } else if (Session.get('editor') === 1) {
+    } else if (Session.get('editorSelectedMenu') === 1) {
       // Snap to tile coordinates, but in world space
       this.marker.visible = true;
       this.marker.x = this.map.tileToWorldX(pointerTileX);

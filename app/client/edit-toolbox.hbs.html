@@ -1,20 +1,20 @@
 <template name="editToolbox">
   <div class="edit-toolbox">
     <div class="edit-content">
-      {{#if eq (Session 'editor') 1}}
+      {{#if eq (Session 'editorSelectedMenu') 1}}
         {{> tilesetToolbox}}
       {{/if}}
-      {{#if eq (Session 'editor') 2}}
+      {{#if eq (Session 'editorSelectedMenu') 2}}
         {{> zonesToolbox}}
       {{/if}}
-      {{#if eq (Session 'editor') 3}}
+      {{#if eq (Session 'editorSelectedMenu') 3}}
         {{> levelToolbox}}
       {{/if}}
     </div>
     <div class="menus-backdrop"></div>
     <div class="menus">
       {{!-- Tileset Editor --}}
-      <div class="js-menus-select menus-tileset {{#if eq (Session 'editor') 1}}selected{{/if}}" data-menu='1'>
+      <div class="js-menus-select menus-tileset {{#if eq (Session 'editorSelectedMenu') 1}}selected{{/if}}" data-menu='1'>
         <svg class='icon' xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M20 2H4C2.9 2 2 2.9 2 4V20C2 21.11 2.9 22 4 22H20C21.11 22 22 21.11 22 20V4C22 2.9 21.11 2 20 2M4 6L6 4H10.9L4 10.9V6M4 13.7L13.7 4H18.6L4 18.6V13.7M20 18L18 20H13.1L20 13.1V18M20 10.3L10.3 20H5.4L20 5.4V10.3Z" /></svg>
 
         <svg class='shape' width="123" height="123" viewBox="0 0 1 1">
@@ -22,7 +22,7 @@
         </svg>
       </div>
       {{!-- Zone Editor --}}
-      <div class="js-menus-select menus-zone {{#if eq (Session 'editor') 2}}selected{{/if}}" data-menu='2'>
+      <div class="js-menus-select menus-zone {{#if eq (Session 'editorSelectedMenu') 2}}selected{{/if}}" data-menu='2'>
         <svg class='icon' xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M13.78 15.3L19.78 21.3L21.89 19.14L15.89 13.14L13.78 15.3M17.5 10.1C17.11 10.1 16.69 10.05 16.36 9.91L4.97 21.25L2.86 19.14L10.27 11.74L8.5 9.96L7.78 10.66L6.33 9.25V12.11L5.63 12.81L2.11 9.25L2.81 8.55H5.62L4.22 7.14L7.78 3.58C8.95 2.41 10.83 2.41 12 3.58L9.89 5.74L11.3 7.14L10.59 7.85L12.38 9.63L14.2 7.75C14.06 7.42 14 7 14 6.63C14 4.66 15.56 3.11 17.5 3.11C18.09 3.11 18.61 3.25 19.08 3.53L16.41 6.2L17.91 7.7L20.58 5.03C20.86 5.5 21 6 21 6.63C21 8.55 19.45 10.1 17.5 10.1Z" /></svg>
 
         <svg class='shape' width="123" height="123" viewBox="0 0 1 1">
@@ -30,8 +30,12 @@
         </svg>
       </div>
       {{!-- Level Editor --}}
-      <div class="js-menus-select menus-level {{#if eq (Session 'editor') 3}}selected{{/if}}" data-menu='3'>
-        Level editor
+      <div class="js-menus-select menus-level {{#if eq (Session 'editorSelectedMenu') 3}}selected{{/if}}" data-menu='3'>
+        <svg class='icon' xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M7,17L10.2,10.2L17,7L13.8,13.8L7,17M12,11.1A0.9,0.9 0 0,0 11.1,12A0.9,0.9 0 0,0 12,12.9A0.9,0.9 0 0,0 12.9,12A0.9,0.9 0 0,0 12,11.1M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z" /></svg>
+
+        <svg class='shape' width="123" height="120" viewBox="0 0 1 1">
+          <path stroke-width="0.02" d="M0.821617+0.94C0.821617+0.94+0.942723+0.932888+0.945449+0.815802C0.948563+0.682034+0.946074+0.312383+0.943886+0.156744C0.943475+0.127457+0.928702+0.018689+0.763319+0.0587566C0.595837+0.0993325+0.422383+0.167415+0.290182+0.319685C0.240464+0.376949+0.00793317+0.710235+0.0566746+0.858317C0.0627933+0.876906+0.0690082+0.926869+0.136424+0.939657C0.165213+0.945118+0.821617+0.94+0.821617+0.94Z" stroke-linecap="butt" opacity="1" stroke-linejoin="round"/>
+        </svg>
       </div>
     </div>
     <div class="js-menus-shrink menus-shrink">

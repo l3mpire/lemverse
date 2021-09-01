@@ -2,13 +2,10 @@
   position: fixed;
   left: 0;
   bottom: 0;
-  background-color: #ECEFF4;
-  border-radius: 10px;
-  padding: 5px;
-  margin: 5px;
-  width: 470px;
+  padding: 0;
+  margin: 0;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   color: #2E3440;
   z-index: 5;
 
@@ -30,14 +27,27 @@
     }
   }
 
-  .tileset-toolbox-info {
-    height: 20px;
-    font-size: 16px;
+  .js-tilesets-select {
+    width: 100%;
   }
 
   .tileset-toolbox-erase {
-    .js-tilesets-select {
-      width: 100%;
+    height: 200px;
+    display: grid;
+    grid-auto-flow: row;
+    grid-gap: 0px;
+    grid-template-columns: 60px 60px;
+    margin-left: 10px;
+
+    .button {
+      width: 50px;
+      height: 30px;
     }
+  }
+
+  .tileset-toolbox-info {
+    margin-left: 10px;
+    height: 20px;
+    font-size: 16px;
   }
 }
