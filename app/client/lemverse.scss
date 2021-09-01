@@ -29,6 +29,10 @@ button:focus {
     flex-basis: 100%;
 
     &.edit {
+
+      .user-panel,
+      .reactions-toolbox,
+      .js-videos,
       .user-panel {
         display: none;
       }
