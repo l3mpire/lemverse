@@ -24,6 +24,38 @@ zones = {
     };
   },
 
+  computePositionFromString(zone, positionName) {
+    const width = zone.x2 - zone.x1;
+    const height = zone.y2 - zone.y1;
+
+    switch (positionName) {
+      case 'top':
+        return {
+          x: zone.x1 + width / 2,
+          y: zone.y1,
+        };
+      case 'bottom':
+        return {
+          x: zone.x1 + width / 2,
+          y: zone.y2,
+        };
+      case 'left':
+        return {
+          x: zone.x1,
+          y: zone.y1 + height / 2,
+        };
+      case 'right':
+        return {
+          x: zone.x2,
+          y: zone.y1 + height / 2,
+        };
+      default:
+        break;
+    }
+
+    return this.getCenter(zone);
+  },
+
   usersInZone(zone) {
     if (!zone) return [];
 

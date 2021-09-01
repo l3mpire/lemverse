@@ -64,7 +64,8 @@ button:focus {
     border-radius: var(--edit-border-radius);
     box-sizing: border-box;
 
-    canvas {
+    canvas,
+    >div {
       position: absolute;
       top: calc(-1 * var(--edit-border-size));
       left: calc(-1 * var(--edit-border-size));
@@ -117,7 +118,7 @@ button:focus {
       white-space: nowrap;
       margin: 0;
       letter-spacing: .15em;
-      animation: typing 1.0s steps(40, end) forwards;
+      animation: typing 0.75s steps(40, end) forwards;
     }
 
     @keyframes typing {

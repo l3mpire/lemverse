@@ -542,10 +542,15 @@ WorldScene = new Phaser.Class({
         }
       } else if (inlineURL) {
         const config = zone.popInConfiguration || {};
-        if (config.static) {
-          const zoneCenter = zones.getCenter(zone);
-          config.x = Number(config.x) + zoneCenter.x;
-          config.y = Number(config.y) + zoneCenter.y;
+        if (config.position) {
+          const position = zones.computePositionFromString(zone, config.position);
+          if (config.position === 'relative') {
+            position.x += Number(config.x || 0);
+            position.y += Number(config.y || 0);
+          }
+
+          config.x = position.x;
+          config.y = position.y;
         }
 
         characterPopIns.createOrUpdate(Meteor.userId(), inlineURL, config);

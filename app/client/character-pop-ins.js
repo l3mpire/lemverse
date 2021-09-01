@@ -5,8 +5,9 @@ const isUrl = string => {
 characterPopIns = {
   className: 'character-pop-in',
   container: undefined,
-  offset: { x: 0, y: -125 },
+  offset: { x: 0, y: -35 }, // y = character's height / 2
   dimensions: { width: 350, height: 200 },
+  arrowHeight: 12,
   onPopInEvent: undefined,
   popIns: [],
 
@@ -30,16 +31,17 @@ characterPopIns = {
     } else characterPopIn.setHTML(content);
 
     const { style } = characterPopIn.node;
+    const height = config.height || this.dimensions.height;
     style.width = `${config.width || this.dimensions.width}px`;
-    style.height = `${config.height || this.dimensions.height}px`;
+    style.height = `${height}px`;
     characterPopIn.updateSize();
 
     const className = config.className ? [this.className, config.className].join(' ') : this.className;
     characterPopIn.setClassName(className);
     characterPopIn.visible = false;
-    characterPopIn.static = config.static || false;
+    characterPopIn.static = config.position || false;
     characterPopIn.x = config.x || 0;
-    characterPopIn.y = config.y || 0;
+    characterPopIn.y = (config.y || 0) - height / 2 - characterPopIns.arrowHeight;
 
     this.popIns[userId] = characterPopIn;
   },
@@ -69,7 +71,7 @@ characterPopIns = {
       const characterPopIn = this.popIns[userId];
       if (!characterPopIn.static) {
         characterPopIn.x = Math.max(player.x + this.offset.x, characterPopIn.displayWidth / 2);
-        characterPopIn.y = Math.max(player.y + this.offset.y, characterPopIn.displayHeight / 2);
+        characterPopIn.y = Math.max(player.y + this.offset.y - characterPopIn.displayHeight / 2, characterPopIn.displayHeight / 2);
       }
       characterPopIn.visible = true;
     });
