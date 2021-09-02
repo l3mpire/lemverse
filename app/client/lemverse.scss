@@ -53,6 +53,7 @@ button:focus {
 
   >canvas {
     z-index: 1;
+    pointer-events: none;
   }
 
   &.edit {
@@ -71,6 +72,10 @@ button:focus {
       left: calc(-1 * var(--edit-border-size));
       bottom: calc(-1 * var(--edit-border-size));
       right: calc(-1 * var(--edit-border-size));
+    }
+
+    >canvas {
+      pointer-events: all;
     }
   }
 
