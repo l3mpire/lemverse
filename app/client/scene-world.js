@@ -195,33 +195,31 @@ WorldScene = new Phaser.Class({
 
     // create missing character body parts or update it
     const characterBodyContainer = player.getByName('body');
-    const isNewCharacter = !!user.profile?.body;
     const charactersPartsKeys = Object.keys(charactersParts);
-    if (isNewCharacter) {
-      let hasUpdatedSkin = false;
-      charactersPartsKeys.filter(part => user.profile[part]).forEach(part => {
-        if (user.profile[part] === oldUser?.profile[part]) return;
-        hasUpdatedSkin = true;
 
-        const characterPart = characterBodyContainer.getByName(part);
-        if (!characterPart) {
-          const missingPart = this.add.sprite(0, 0, user.profile[part]);
-          missingPart.setScale(3);
-          missingPart.name = part;
-          characterBodyContainer.add(missingPart);
-        } else characterPart.setTexture(user.profile[part]);
-      });
+    let hasUpdatedSkin = false;
+    charactersPartsKeys.filter(part => user.profile[part]).forEach(part => {
+      if (user.profile[part] === oldUser?.profile[part]) return;
+      hasUpdatedSkin = true;
 
-      // remove potential item from the user
-      charactersPartsKeys.filter(part => !user.profile[part] && part !== 'body').forEach(part => {
-        if (!user.profile[part]) characterBodyContainer?.getByName(part)?.destroy();
-      });
+      const characterPart = characterBodyContainer.getByName(part);
+      if (!characterPart) {
+        const missingPart = this.add.sprite(0, 0, user.profile[part]);
+        missingPart.setScale(3);
+        missingPart.name = part;
+        characterBodyContainer.add(missingPart);
+      } else characterPart.setTexture(user.profile[part]);
+    });
 
-      if (hasUpdatedSkin) {
-        delete player.lastDirection;
-        this.playerUpdateAnimation(player);
-        this.playerPauseAnimation(player, true, true);
-      }
+    // remove potential item from the user
+    charactersPartsKeys.filter(part => !user.profile[part] && part !== 'body').forEach(part => {
+      if (!user.profile[part]) characterBodyContainer?.getByName(part)?.destroy();
+    });
+
+    if (hasUpdatedSkin) {
+      delete player.lastDirection;
+      this.playerUpdateAnimation(player);
+      this.playerPauseAnimation(player, true, true);
     }
 
     // update tint
@@ -288,24 +286,14 @@ WorldScene = new Phaser.Class({
     player.paused = value;
 
     const user = Meteor.users.findOne(player.userId);
-    const isNewCharacter = !!user.profile?.body;
     const playerBodyParts = player.getByName('body');
-    if (isNewCharacter) {
-      Object.keys(charactersParts).filter(part => user.profile[part]).forEach(part => {
-        const characterPart = playerBodyParts.getByName(part);
-        if (value) {
-          characterPart.anims.pause();
-          if (characterPart.anims.hasStarted) characterPart.anims.setProgress(0.5);
-        } else characterPart.anims.resume();
-      });
-    } else {
-      const characterBodyPart = playerBodyParts.getByName('body');
+    Object.keys(charactersParts).filter(part => user.profile[part]).forEach(part => {
+      const characterPart = playerBodyParts.getByName(part);
       if (value) {
-        characterBodyPart.anims.pause();
-        if (characterBodyPart.anims.hasStarted) characterBodyPart.anims.setProgress(0.5);
-        else characterBodyPart.anims.resume();
-      }
-    }
+        characterPart.anims.pause();
+        if (characterPart.anims.hasStarted) characterPart.anims.setProgress(0.5);
+      } else characterPart.anims.resume();
+    });
   },
 
   playerUpdateAnimation(player, direction) {
@@ -332,21 +320,10 @@ WorldScene = new Phaser.Class({
       }
     }
 
-    const isNewCharacter = !!user.profile?.body;
-    let newCharacter = user.profile;
-    if (!isNewCharacter) newCharacter = user.profile?.guest ? Meteor.settings.public.skins.guest : Meteor.settings.public.skins.default;
-    const skin = user.profile.guest && !isNewCharacter ? Meteor.settings.public.skins.guest : newCharacter;
-
-    if (isNewCharacter) {
-      Object.keys(charactersParts).filter(part => user.profile[part]).forEach(part => {
-        const characterPart = player.getByName('body').getByName(part);
-        if (characterPart) characterPart.anims.play(`${skin[part]}${direction}`, true);
-      });
-    } else {
-      const characterBodyParContainer = player.getByName('body');
-      const characterBody = characterBodyParContainer.getByName('body');
-      characterBody.anims.play(`${skin}${direction}`, true);
-    }
+    Object.keys(charactersParts).filter(part => user.profile[part]).forEach(part => {
+      const characterPart = player.getByName('body').getByName(part);
+      if (characterPart) characterPart.anims.play(`${user.profile[part]}${direction}`, true);
+    });
   },
 
   tileRefresh(x, y) {
