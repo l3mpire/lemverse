@@ -17,10 +17,27 @@ characterPopIns = {
     window.document.addEventListener('pop-in-event', e => this.onPopInEvent && this.onPopInEvent(e), false);
   },
 
-  createOrUpdate(userId, popInContent, config = {}) {
+  initFromZone(zone) {
+    const config = zone.popInConfiguration || {};
+    if (config.position) {
+      const position = zones.computePositionFromString(zone, config.position);
+      if (config.position === 'relative') {
+        position.x += Number(config.x || 0);
+        position.y += Number(config.y || 0);
+      }
+
+      config.x = position.x;
+      config.y = position.y;
+    }
+
+    this.createOrUpdate(Meteor.userId(), zone._id, zone.inlineURL, config);
+  },
+
+  createOrUpdate(userId, popInIdentifier, popInContent, config = {}) {
     const content = isUrl(popInContent) ? this.createIframeFromURL(popInContent) : popInContent;
 
-    let characterPopIn = this.popIns[userId];
+    if (!this.popIns[userId]) this.popIns[userId] = [];
+    let characterPopIn = this.popIns[userId][popInIdentifier];
     if (!characterPopIn) {
       characterPopIn = this.container.add.dom(this.dimensions.width, this.dimensions.height).createFromHTML(content);
       characterPopIn.addListener('click');
@@ -42,19 +59,21 @@ characterPopIns = {
     characterPopIn.static = config.position || false;
     characterPopIn.x = config.x || 0;
     characterPopIn.y = (config.y || 0) - height / 2 - characterPopIns.arrowHeight;
-
-    this.popIns[userId] = characterPopIn;
+    this.popIns[userId][popInIdentifier] = characterPopIn;
   },
 
   createIframeFromURL(url) {
     return `<div class="toggle-full-screen"></div><iframe frameborder="0" src="${url}"></iframe>`;
   },
 
-  destroy(userId) {
-    const characterPopIn = this.popIns[userId];
-    if (!characterPopIn) return;
+  destroy(userId, popInIdentifier) {
+    const characterPopIns = this.popIns[userId];
+    if (!characterPopIns) return;
 
-    characterPopIn.destroy();
+    const popIn = characterPopIns[popInIdentifier];
+    if (!popIn) return;
+
+    popIn.destroy();
     delete this.popIns[userId];
   },
 
@@ -68,12 +87,14 @@ characterPopIns = {
       const player = userId === Meteor.userId() ? userPlayer : players[userId];
       if (!player) return;
 
-      const characterPopIn = this.popIns[userId];
-      if (!characterPopIn.static) {
-        characterPopIn.x = Math.max(player.x + this.offset.x, characterPopIn.displayWidth / 2);
-        characterPopIn.y = Math.max(player.y + this.offset.y - characterPopIn.displayHeight / 2, characterPopIn.displayHeight / 2);
-      }
-      characterPopIn.visible = true;
+      Object.keys(this.popIns[userId]).forEach(popInIdentifier => {
+        const characterPopIn = this.popIns[userId][popInIdentifier];
+        if (!characterPopIn.static) {
+          characterPopIn.x = Math.max(player.x + this.offset.x, characterPopIn.displayWidth / 2);
+          characterPopIn.y = Math.max(player.y + this.offset.y - characterPopIn.displayHeight / 2, characterPopIn.displayHeight / 2);
+        }
+        characterPopIn.visible = true;
+      });
     });
   },
 };

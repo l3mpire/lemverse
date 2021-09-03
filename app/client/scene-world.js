@@ -522,8 +522,8 @@ WorldScene = new Phaser.Class({
     this.events.on('postupdate', this.postUpdate.bind(this));
     this.enableKeyboard(true, true);
 
-    zones.onZoneChanged = zone => {
-      characterPopIns.destroy(Meteor.userId());
+    zones.onZoneChanged = (zone, previousZone) => {
+      if (previousZone) characterPopIns.destroy(Meteor.userId(), previousZone._id);
       if (!zone) return;
 
       const { targetedLevelId: levelId, userLevelTeleporter, inlineURL } = zone;
@@ -540,21 +540,7 @@ WorldScene = new Phaser.Class({
             this.loadLevel(result);
           });
         }
-      } else if (inlineURL) {
-        const config = zone.popInConfiguration || {};
-        if (config.position) {
-          const position = zones.computePositionFromString(zone, config.position);
-          if (config.position === 'relative') {
-            position.x += Number(config.x || 0);
-            position.y += Number(config.y || 0);
-          }
-
-          config.x = position.x;
-          config.y = position.y;
-        }
-
-        characterPopIns.createOrUpdate(Meteor.userId(), inlineURL, config);
-      }
+      } else if (inlineURL) characterPopIns.initFromZone(zone);
     };
 
     characterPopIns.onPopInEvent = e => {
