@@ -1,5 +1,5 @@
 zones = {
-  currentZoneName: undefined,
+  activeZone: undefined,
   onZoneChanged: undefined,
   toastTimerInstance: undefined,
   toastBloc: undefined,
@@ -110,9 +110,9 @@ zones = {
       return mz;
     }, {});
 
-    if (this.currentZoneName !== zone?.name) {
-      if (this.onZoneChanged) this.onZoneChanged(!_.isEmpty(zone) ? zone : undefined);
-      this.currentZoneName = zone?.name;
+    if (this.activeZone?.name !== zone?.name) {
+      if (this.onZoneChanged) this.onZoneChanged(!_.isEmpty(zone) ? zone : undefined, this.activeZone);
+      this.activeZone = zone;
       this.toastZoneName(zone?.name);
 
       const dataPlayer = Meteor.users.findOne({ _id: player.userId });
