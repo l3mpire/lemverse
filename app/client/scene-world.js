@@ -523,7 +523,7 @@ WorldScene = new Phaser.Class({
     this.enableKeyboard(true, true);
 
     zones.onZoneChanged = (zone, previousZone) => {
-      if (previousZone) characterPopIns.destroy(Meteor.userId(), previousZone._id);
+      if (previousZone && !previousZone.popInConfiguration?.autoOpen) characterPopIns.destroy(Meteor.userId(), previousZone._id);
       if (!zone) return;
 
       const { targetedLevelId: levelId, userLevelTeleporter, inlineURL } = zone;

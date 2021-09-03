@@ -104,13 +104,14 @@ To edit those information, simply click on the name of the room (bold text).
   "unhide": "", // Automatically show cam in jitsi (useful to show people face automatically on platform in conference room)
   "fullscreen": false, // Set the iframe if full screen or not
   "targetedLevelId": "", // Used for teleport zone. Should be the id of the level to teleport to.,
+  "inlineURL": "https://status.lemlist.com|<p>My custom text</p>", // Create a pop-in with URL or HTML content
   "popInConfiguration": {
-    "width": 120, // Custom width
-    "height": 45, // Custom height
-    "position": "top", // Pop-in position on the zone (center, left, right, bottom or top), set "relative" for custom position using "x" & "y"
+    "position": "top", // Optional: Pop-in position on the zone (center, left, right, bottom or top), set "relative" for custom position using "x" & "y" (default center)
     "x": 0, // Optional: Relative position from the zone's center on X (you need to set "position" to "relative")
     "y": -60, // Optional: Relative position from the zone's center on Y (you need to set "position" to "relative")
-    "className": "wood welcome" // List of CSS classes to customize pop-in's style
+    "width": 120, // Optional: Custom width
+    "height": 45, // Optional: Custom height
+    "className": "wood welcome" // Optional: List of CSS classes to customize pop-in's style
   }
 }
 ```

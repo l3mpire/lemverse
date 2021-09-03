@@ -215,6 +215,9 @@ Template.lemverse.onCreated(function () {
 
     if (this.handleObserveZones) this.handleObserveZones.stop();
     this.handleObserveZones = Zones.find().observe({
+      added(zone) {
+        if (zone.popInConfiguration?.autoOpen) characterPopIns.initFromZone(zone);
+      },
       changed(zone) {
         const currentZone = zones.currentZone(Meteor.user());
         if (!currentZone || currentZone._id !== zone._id) return;
