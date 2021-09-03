@@ -107,9 +107,9 @@ To edit those information, simply click on the name of the room (bold text).
   "popInConfiguration": {
     "width": 120, // Custom width
     "height": 45, // Custom height
-    "x": 0, // Relative position from the zone's center on X
-    "y": -60, // Relative position from the zone's center on Y
-    "static": true, // Avoid pop-in following the player
+    "position": "top", // Pop-in position on the zone (center, left, right, bottom or top), set "relative" for custom position using "x" & "y"
+    "x": 0, // Optional: Relative position from the zone's center on X (you need to set "position" to "relative")
+    "y": -60, // Optional: Relative position from the zone's center on Y (you need to set "position" to "relative")
     "className": "wood welcome" // List of CSS classes to customize pop-in's style
   }
 }
