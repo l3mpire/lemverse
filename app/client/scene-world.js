@@ -696,36 +696,26 @@ WorldScene = new Phaser.Class({
   postUpdate(time, delta) {
     this.updateCharacterNamesPositions();
     characterPopIns.update(this.player, this.players);
+    if (!this.player) return;
 
-    if (this.player) {
-      userVoiceRecorderAbility.update(this.player.x, this.player.y, delta);
+    userChatCircle.update(this.player.x, this.player.y);
+    userVoiceRecorderAbility.update(this.player.x, this.player.y, delta);
 
-      const moving = Math.abs(this.player.body.velocity.x) > Number.EPSILON || Math.abs(this.player.body.velocity.y) > Number.EPSILON;
-      if (moving) {
-        this.physics.world.update(time, delta);
-        throttledSavePlayer(this.player);
-        zones.checkDistances();
-        this.checkProximity = true;
-      } else if (this.wasMoving) {
-        this.physics.world.update(time, delta);
-        savePlayer(this.player);
-        zones.checkDistances();
-        this.checkProximity = true;
-      }
-      this.wasMoving = moving;
-
-      if (!this.player.guest && this.checkProximity) {
-        if (!meet.api) {
-          const currentUser = Meteor.user();
-          const otherUsers = Meteor.users.find({ _id: { $ne: currentUser._id } }).fetch();
-          userProximitySensor.checkDistances(currentUser, otherUsers);
-        }
-
-        this.checkProximity = false;
-      }
-
-      userChatCircle.update(this.player.x, this.player.y);
+    const moving = Math.abs(this.player.body.velocity.x) > Number.EPSILON || Math.abs(this.player.body.velocity.y) > Number.EPSILON;
+    if (this.moving || this.wasMoving) {
+      this.physics.world.update(time, delta);
+      this.checkProximity = true;
+      zones.checkDistances();
+      throttledSavePlayer(this.player);
     }
+    this.wasMoving = moving;
+
+    if (!this.player.guest || !this.checkProximity || meet.api) return;
+
+    const currentUser = Meteor.user();
+    const otherUsers = Meteor.users.find({ _id: { $ne: currentUser._id } }).fetch();
+    userProximitySensor.checkDistances(currentUser, otherUsers);
+    this.checkProximity = false;
   },
 
   updateCharacterNamesPositions() {
