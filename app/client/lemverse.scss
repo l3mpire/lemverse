@@ -93,6 +93,11 @@ button:focus {
     z-index: 200 !important;
     background-color: white;
 
+    p {
+      margin: 0;
+      overflow: hidden;
+    }
+
     &.with-arrow:before {
       content: "";
       position: absolute;
@@ -118,10 +123,8 @@ button:focus {
     }
 
     &.animated-text p {
-      overflow: hidden;
       width: 0;
       white-space: nowrap;
-      margin: 0;
       letter-spacing: .15em;
       animation: typing 0.75s steps(40, end) forwards;
     }
