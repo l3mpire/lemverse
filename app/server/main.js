@@ -22,7 +22,11 @@ Accounts.onLogin(param => {
   if (currentLevel?.spawn && !user.profile?.x) {
     Meteor.users.update(user._id, { $set: { 'profile.x': currentLevel.spawn.x, 'profile.y': currentLevel.spawn.y } });
   }
-  if (!user.profile?.guest && !user.profile?.body) {
+
+  if (user.profile.guest) return;
+
+  const isBodyValid = user.profile.body.includes('chr_') || Meteor.settings.public.characterNames.includes(user.profile.body);
+  if (!user.profile.body || !isBodyValid) {
     log('onLogin: setting default skin', { userId: user._id, ip: param.connection?.httpHeaders?.['x-forwarded-for'], userAgent: param.connection?.httpHeaders?.['user-agent'], languages: param.connection?.httpHeaders?.['accept-language'] });
     updateSkin(user, Meteor.settings.defaultLevelId);
   }
