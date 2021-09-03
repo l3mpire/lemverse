@@ -106,7 +106,7 @@ Template.lemverse.onCreated(function () {
 
   this.autorun(() => {
     if (!Session.get('gameCreated')) return;
-    game.scene.keys.WorldScene.updateEditionMarker(Session.get('selectedTiles'));
+    game.scene.keys.EditorScene.updateEditionMarker(Session.get('selectedTiles'));
   });
 
   this.autorun(() => {

@@ -60,11 +60,8 @@ WorldScene = new Phaser.Class({
     this.isMouseDown = false;
     this.layers = [];
     this.players = {};
-    this.undoTiles = [];
-    this.redoTiles = [];
     this.wasMoving = false;
     this.input.keyboard.enabled = false;
-    this.marker = undefined;
     this.checkProximity = true;
     this.scene.pause();
     this.teleporterGraphics = [];
@@ -408,13 +405,6 @@ WorldScene = new Phaser.Class({
       document.activeElement.blur();
     });
 
-    // edition
-    this.marker = this.add.graphics();
-    this.marker.setDepth(10);
-    this.marker.lineStyle(2, 0x00FF00, 1);
-    this.marker.strokeRect(0, 0, this.map.tileWidth, this.map.tileHeight);
-    this.marker.visible = false;
-
     Session.set('gameCreated', true);
 
     if (window.matchMedia('(pointer: coarse)').matches) {
@@ -526,7 +516,6 @@ WorldScene = new Phaser.Class({
     this.interpolatePlayerPositions();
 
     if (!this.player) return;
-    const user = Meteor.users.findOne(this.player.userId);
     if (!this.player.nippleMoving) this.player.body.setVelocity(0);
     if (isModalOpen()) return;
 
@@ -565,104 +554,6 @@ WorldScene = new Phaser.Class({
     } else this.playerPauseAnimation(this.player, true);
 
     this.player.setDepth(this.player.y);
-    this.marker.visible = false;
-
-    // edition
-    if (!Session.get('editor')) return;
-
-    const worldPoint = this.input.activePointer.positionToCamera(this.cameras.main);
-    // Rounds down to nearest tile
-    const pointerTileX = this.map.worldToTileX(worldPoint.x);
-    const pointerTileY = this.map.worldToTileY(worldPoint.y);
-    Session.set('pointerX', worldPoint.x | 0);
-    Session.set('pointerY', worldPoint.y | 0);
-
-    if (Session.get('editorSelectedMenu') === 2) {
-      if (this.input.manager.activePointer.isDown && this.input.manager.activePointer.downElement.nodeName === 'CANVAS') this.isMouseDown = true;
-
-      if (this.isMouseDown && !this.input.manager.activePointer.isDown) {
-        this.isMouseDown = false;
-        const zoneId = Session.get('selectedZoneId');
-        if (zoneId) {
-          const point = Session.get('selectedZonePoint');
-          Zones.update(zoneId, { $set: { [`x${point}`]: worldPoint.x | 0, [`y${point}`]: worldPoint.y | 0 } });
-
-          const zone = Zones.findOne(zoneId);
-          if (!zone?.x2) {
-            Session.set('selectedZonePoint', 2);
-          } else {
-            Session.set('selectedZoneId', undefined);
-            Session.set('selectedZonePoint', undefined);
-          }
-        }
-      }
-    } else if (Session.get('editorSelectedMenu') === 1) {
-      // Snap to tile coordinates, but in world space
-      this.marker.visible = true;
-      this.marker.x = this.map.tileToWorldX(pointerTileX);
-      this.marker.y = this.map.tileToWorldY(pointerTileY);
-
-      let selectedTiles = Session.get('selectedTiles');
-
-      if (this.keyShift.isDown && this.input.manager.activePointer.isDown && this.input.manager.activePointer.downElement.nodeName === 'CANVAS') {
-        let selectedTileGlobalIndex;
-        for (let l = this.layers.length; l >= 0; l--) {
-          selectedTileGlobalIndex = this.map.getTileAt(pointerTileX, pointerTileY, false, l)?.index;
-          if (selectedTileGlobalIndex >= 0) break;
-        }
-
-        if (selectedTileGlobalIndex >= 0) {
-          if (!selectedTiles) selectedTiles = {};
-
-          const tileset = Tilesets.findOne({ gid: { $lte: selectedTileGlobalIndex } }, { sort: { gid: -1 } });
-          const tileIndex = selectedTileGlobalIndex - tileset.gid;
-
-          selectedTiles.tilesetId = tileset._id;
-          selectedTiles.index = tileIndex;
-          selectedTiles.x = (tileIndex % (tileset.width / 16));
-          selectedTiles.y = (tileIndex / (tileset.width / 16) | 0);
-          selectedTiles.w = 1;
-          selectedTiles.h = 1;
-
-          Session.set('selectedTiles', selectedTiles);
-        }
-      } else if (this.input.manager.activePointer.isDown && this.input.manager.activePointer.downElement.nodeName === 'CANVAS') {
-        if (selectedTiles?.index === -99) {
-          Tiles.find({ x: pointerTileX, y: pointerTileY }).forEach(tile => {
-            this.undoTiles.push(tile);
-            Tiles.remove(tile._id);
-          });
-        } else if (selectedTiles?.index < 0) {
-          const layer = -selectedTiles.index - 1;
-          Tiles.find({ x: pointerTileX, y: pointerTileY }).forEach(tile => {
-            if (tileLayer(tile) === layer) {
-              this.undoTiles.push(tile);
-              Tiles.remove(tile._id);
-            }
-          });
-        } else if (selectedTiles) {
-          const selectedTileset = Tilesets.findOne(selectedTiles.tilesetId);
-          for (let x = 0; x < selectedTiles.w; x++) {
-            for (let y = 0; y < selectedTiles.h; y++) {
-              const selectedTileIndex = (selectedTiles.y + y) * selectedTileset.width / 16 + (selectedTiles.x + x);
-              const layer = tileLayer({ tilesetId: selectedTiles.tilesetId, index: selectedTileIndex });
-
-              // eslint-disable-next-line no-loop-func
-              const tile = _.find(Tiles.find({ x: pointerTileX + x, y: pointerTileY + y }).fetch(), t => tileLayer({ tilesetId: t.tilesetId, index: t.index }) === layer);
-
-              if (tile && (tile.index !== selectedTileIndex || tile.tilesetId !== selectedTileset._id)) {
-                this.undoTiles.push(tile);
-                Tiles.update(tile._id, { $set: { createdAt: new Date(), createdBy: user._id, index: selectedTileIndex, tilesetId: selectedTileset._id } });
-              } else if (!tile) {
-                const { levelId } = user.profile;
-                const tileId = Tiles.insert({ _id: Tiles.id(), createdAt: new Date(), createdBy: user._id, x: pointerTileX + x, y: pointerTileY + y, index: selectedTileIndex, tilesetId: selectedTileset._id, levelId });
-                this.undoTiles.push({ _id: tileId, index: -1 });
-              }
-            }
-          }
-        }
-      }
-    }
   },
 
   interpolatePlayerPositions() {
@@ -781,14 +672,6 @@ WorldScene = new Phaser.Class({
       graphic.setDepth(20000);
       this.teleporterGraphics.push(graphic);
     });
-  },
-
-  updateEditionMarker(selectedTiles) {
-    this.marker.clear();
-    this.marker.lineStyle(2, 0x00FF00, 1);
-    this.marker.strokeRect(0, 0, game.scene.keys.WorldScene.map.tileWidth * (selectedTiles?.w || 1), game.scene.keys.WorldScene.map.tileHeight * (selectedTiles?.h || 1));
-    this.marker.setDepth(10002);
-    this.marker.visible = false;
   },
 
   enableKeyboard(value, globalCapture) {

@@ -26,8 +26,13 @@ BootScene = new Phaser.Class({
     this.loadAnimations();
     this.scene.add('LoadingScene', LoadingScene, true);
     this.scene.add('WorldScene', WorldScene);
+    this.scene.add('EditorScene', EditorScene);
     this.scene.launch('WorldScene');
+    this.scene.launch('EditorScene');
     this.scene.bringToTop('LoadingScene');
+
+    // put editor in sleep mode on load (no rendering, no update)
+    game.scene.keys.EditorScene.scene.sleep();
   },
 
   loadAnimations() {

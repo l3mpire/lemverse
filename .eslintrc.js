@@ -119,6 +119,7 @@ module.exports = {
     tileLayer: 'writable',
 
     BootScene: 'writable',
+    EditorScene: 'writable',
     LoadingScene: 'writable',
     WorldScene: 'writable',
   },

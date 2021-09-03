@@ -14,9 +14,13 @@ hotkeys('shift+3', { scope: 'editor-menu' }, () => Session.set('editorSelectedMe
 Template.editToolbox.onCreated(() => {
   if (!Session.get('editorSelectedMenu')) Session.set('editorSelectedMenu', 1);
   hotkeys.setScope('editor-menu');
+  game.scene.keys.EditorScene.scene.wake();
 });
 
-Template.editToolbox.onDestroyed(() => hotkeys.setScope('player'));
+Template.editToolbox.onDestroyed(() => {
+  hotkeys.setScope('player');
+  game.scene.keys.EditorScene.scene.sleep();
+});
 
 Template.editToolbox.events({
   'click .js-menus-select'(e) {

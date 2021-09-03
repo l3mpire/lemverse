@@ -24,39 +24,11 @@ Template.tileImg.helpers({
 const bindKeyboardShortcuts = () => {
   hotkeys('command+z', { scope: 'editor-menu' }, event => {
     event.preventDefault();
-    const { redoTiles, undoTiles } = game.scene.keys.WorldScene;
-    if (undoTiles.length === 0) return;
-    const tile = undoTiles.pop();
-
-    const currentTile = Tiles.findOne(tile._id);
-    if (tile.index === -1) {
-      redoTiles.push(currentTile);
-      Tiles.remove(tile._id);
-    } else if (currentTile) {
-      redoTiles.push(currentTile);
-      Tiles.update(tile._id, { $set: tile });
-    } else {
-      redoTiles.push({ _id: tile._id, index: -1 });
-      Tiles.insert(tile);
-    }
+    game.scene.keys.EditorScene.undo();
   });
   hotkeys('shift+command+z', { scope: 'editor-menu' }, event => {
     event.preventDefault();
-    const { redoTiles, undoTiles } = game.scene.keys.WorldScene;
-    if (redoTiles.length === 0) return;
-    const tile = redoTiles.pop();
-
-    const currentTile = Tiles.findOne(tile._id);
-    if (tile.index === -1) {
-      undoTiles.push(currentTile);
-      Tiles.remove(tile._id);
-    } else if (currentTile) {
-      undoTiles.push(currentTile);
-      Tiles.update(tile._id, { $set: tile });
-    } else {
-      Tiles.insert(tile);
-      undoTiles.push({ _id: tile._id, index: -1 });
-    }
+    game.scene.keys.EditorScene.redo();
   });
   hotkeys('0', () => Session.set('selectedTiles', { index: -1, scope: 'editor-menu' }));
   hotkeys('1', () => Session.set('selectedTiles', { index: -2, scope: 'editor-menu' }));
@@ -78,8 +50,6 @@ const unbindKeyboardShortcuts = () => {
 };
 
 Template.tilesetToolbox.onCreated(() => {
-  game.scene.keys.WorldScene.render.disableAutoPause(true);
-  game.scene.keys.WorldScene.render.resume();
   bindKeyboardShortcuts();
 
   if (!Session.get('selectedTilesetId')) {
@@ -90,7 +60,6 @@ Template.tilesetToolbox.onCreated(() => {
 
 Template.tilesetToolbox.onDestroyed(() => {
   unbindKeyboardShortcuts();
-  game.scene.keys.WorldScene.render.disableAutoPause(false);
 });
 
 Template.tilesetToolbox.helpers({
