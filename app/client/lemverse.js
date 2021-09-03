@@ -131,7 +131,7 @@ Template.lemverse.onCreated(function () {
     if (!this.handleObserveTilesets) {
       this.handleObserveTilesets = Tilesets.find().observe({
         added(tileset) {
-          game.scene.keys.WorldScene.loadTilesets([tileset]);
+          game.scene.keys.BootScene.loadTilesetsAtRuntime([tileset], game.scene.keys.WorldScene.addTilesetsToLayers);
         },
         changed(o, n) {
           const oTileKeys = _.map(_.keys(o.tiles || {}), k => +k);
@@ -162,7 +162,7 @@ Template.lemverse.onCreated(function () {
     if (!this.handleObserveCharacters) {
       this.handleObserveCharacters = Characters.find().observe({
         added(character) {
-          game.scene.keys.WorldScene.loadCharacters([character]);
+          game.scene.keys.BootScene.loadCharactersAtRuntime([character]);
         },
         changed(character, previous) {
           if (!character.category) return;

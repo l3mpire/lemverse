@@ -391,7 +391,7 @@ WorldScene = new Phaser.Class({
     this.initLayers();
 
     // Tilesets
-    this.loadTilesets(Tilesets.find().fetch());
+    this.addTilesetsToLayers(Tilesets.find().fetch());
 
     // physics
     this.physics.world.bounds.width = this.map.widthInPixels;
@@ -472,96 +472,24 @@ WorldScene = new Phaser.Class({
     };
   },
 
-  loadCharacters(characters) {
-    let imageLoadedCount = 0;
-    _.each(characters, character => {
-      if (this.textures.exists(character._id)) return;
-
-      imageLoadedCount++;
-      this.load.spritesheet(character._id, `/api/files/${character.fileId}`, { frameWidth: 16, frameHeight: 32 });
-    });
-
-    const addCharacters = () => {
-      _.each(characters, character => {
-        if (!character.category) return;
-        const animExist = orientation => game.scene.keys.WorldScene.anims[`${character._id}${character.category}${orientation}`];
-
-        if (!animExist('right')) {
-          this.anims.create({
-            key: `${character._id}right`,
-            frames: this.anims.generateFrameNumbers(character._id, { frames: [48, 49, 50, 51, 52, 53] }),
-            frameRate: 10,
-            repeat: -1,
-          });
-        }
-        if (!animExist('up')) {
-          this.anims.create({
-            key: `${character._id}up`,
-            frames: this.anims.generateFrameNumbers(character._id, { frames: [54, 55, 56, 57, 58, 59] }),
-            frameRate: 10,
-            repeat: -1,
-          });
-        }
-        if (!animExist('left')) {
-          this.anims.create({
-            key: `${character._id}left`,
-            frames: this.anims.generateFrameNumbers(character._id, { frames: [60, 61, 62, 63, 64, 65] }),
-            frameRate: 10,
-            repeat: -1,
-          });
-        }
-        if (!animExist('down')) {
-          this.anims.create({
-            key: `${character._id}down`,
-            frames: this.anims.generateFrameNumbers(character._id, { frames: [66, 67, 68, 69, 70, 71] }),
-            frameRate: 10,
-            repeat: -1,
-          });
-        }
-      });
-    };
-
-    if (!imageLoadedCount) addCharacters();
-    else {
-      this.load.on(`complete`, () => addCharacters());
-      this.load.start();
-    }
-  },
-
-  loadTilesets(tilesets) {
-    let imageLoadedCount = 0;
+  addTilesetsToLayers(tilesets) {
+    const newTilesets = [];
     _.each(tilesets, tileset => {
-      if (this.textures.exists(tileset._id)) return;
+      if (findTileset(tileset._id)) return;
+      const tilesetImage = this.map.addTilesetImage(tileset._id, tileset._id, 16, 16, 0, 0, tileset.gid);
+      if (!tilesetImage) {
+        log('unable to load tileset', tileset._id);
+        return;
+      }
 
-      imageLoadedCount++;
-      this.load.image(tileset._id, `/api/files/${tileset.fileId}`);
+      tilesetImage.tileData = tileset.tiles;
+      newTilesets.push(tilesetImage);
+
+      const collisionTileIndexes = _.map(tileset.collisionTileIndexes, i => i + tileset.gid);
+      _.each(this.layers, layer => layer.setCollision(collisionTileIndexes));
     });
 
-    const addTilesetsToLayers = () => {
-      const newTilesets = [];
-      _.each(tilesets, tileset => {
-        if (findTileset(tileset._id)) return;
-        const tilesetImage = this.map.addTilesetImage(tileset._id, tileset._id, 16, 16, 0, 0, tileset.gid);
-        if (!tilesetImage) {
-          log('unable to load tileset', tileset._id);
-          return;
-        }
-
-        tilesetImage.tileData = tileset.tiles;
-        newTilesets.push(tilesetImage);
-
-        const collisionTileIndexes = _.map(tileset.collisionTileIndexes, i => i + tileset.gid);
-        _.each(this.layers, layer => layer.setCollision(collisionTileIndexes));
-      });
-
-      if (newTilesets.length) _.each(this.layers, layer => layer.setTilesets([...layer.tileset, ...newTilesets]));
-    };
-
-    if (!imageLoadedCount) addTilesetsToLayers();
-    else {
-      this.load.on(`complete`, () => addTilesetsToLayers());
-      this.load.start();
-    }
+    if (newTilesets.length) _.each(this.layers, layer => layer.setTilesets([...layer.tileset, ...newTilesets]));
   },
 
   initLayers() {
