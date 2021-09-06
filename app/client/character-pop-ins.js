@@ -40,12 +40,13 @@ characterPopIns = {
     let characterPopIn = this.popIns[userId][popInIdentifier];
     if (!characterPopIn) {
       characterPopIn = this.container.add.dom(this.dimensions.width, this.dimensions.height).createFromHTML(content);
+      characterPopIn.visible = false;
       characterPopIn.addListener('click');
       characterPopIn.on('click', event => {
         if (!event.target.classList.contains('toggle-full-screen')) return;
         characterPopIn.node.classList.toggle('full-screen');
       });
-    } else characterPopIn.setHTML(content);
+    } else if (content !== characterPopIn.node.innerHTML) characterPopIn.setHTML(content);
 
     const { style } = characterPopIn.node;
     const height = config.height || this.dimensions.height;
@@ -55,7 +56,6 @@ characterPopIns = {
 
     const className = config.className ? [this.className, config.className].join(' ') : this.className;
     characterPopIn.setClassName(className);
-    characterPopIn.visible = false;
     characterPopIn.static = config.position || false;
     characterPopIn.x = config.x || 0;
     characterPopIn.y = (config.y || 0) - height / 2 - characterPopIns.arrowHeight;
