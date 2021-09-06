@@ -601,7 +601,7 @@ WorldScene = new Phaser.Class({
     }
     this.wasMoving = moving;
 
-    if (!this.player.guest || !this.checkProximity || meet.api) return;
+    if (this.player.guest || !this.checkProximity || meet.api) return;
 
     const currentUser = Meteor.user();
     const otherUsers = Meteor.users.find({ _id: { $ne: currentUser._id } }).fetch();
