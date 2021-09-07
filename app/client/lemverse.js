@@ -305,7 +305,9 @@ Template.lemverse.onCreated(function () {
     if (event.type === 'keydown' && !userVoiceRecorderAbility.isRecording()) {
       peer.audio(false);
       userVoiceRecorderAbility.start();
+      game.scene.keys.WorldScene.render.disableAutoPause(true);
     } else if (event.type === 'keyup') {
+      game.scene.keys.WorldScene.render.disableAutoPause(false);
       peer.audio(Meteor.user()?.profile.shareAudio);
       userVoiceRecorderAbility.stop();
     }

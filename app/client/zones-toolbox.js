@@ -67,7 +67,6 @@ Template.zonesToolboxProperties.events({
 
 Template.zonesToolbox.onCreated(() => {
   game.scene.keys.WorldScene.render.disableAutoPause(true);
-  game.scene.keys.WorldScene.render.resume();
 });
 
 Template.zonesToolbox.onRendered(function () {

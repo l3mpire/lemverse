@@ -58,10 +58,8 @@ export default class PauseRenderPlugin extends Phaser.Plugins.BasePlugin {
   resume() {
     this.game.renderingPaused = false;
 
-    if (!this.autoPauseDisabled && this.autoPauseDelay > 0) {
-      clearTimeout(timeOut);
-      timeOut = setTimeout(this.pause.bind(this), this.autoPauseDelay);
-    }
+    clearTimeout(timeOut);
+    if (!this.autoPauseDisabled && this.autoPauseDelay > 0) timeOut = setTimeout(this.pause.bind(this), this.autoPauseDelay);
   }
 
   isPaused() {
@@ -69,8 +67,8 @@ export default class PauseRenderPlugin extends Phaser.Plugins.BasePlugin {
   }
 
   disableAutoPause(value) {
-    if (!value) clearTimeout(timeOut);
     this.autoPauseDisabled = value;
+    this.resume();
   }
 
   autoPauseAfterDelay(delay) {
