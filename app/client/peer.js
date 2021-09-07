@@ -420,7 +420,7 @@ peer = {
 
       myPeer.on('error', peerErr => {
         log(`peer error ${peerErr.type}`, peerErr);
-        lp.notif.error(peerErr);
+        lp.notif.error(`${peerErr} (${peerErr.type})`);
       });
 
       myPeer.on('call', remoteCall => {
