@@ -49,7 +49,9 @@ Template.screenshare.onRendered(function () {
 
 Template.remoteStream.helpers({
   mediaState() { return Meteor.users.findOne({ _id: this.remoteUser._id })?.profile; },
-  hasWebcamOrMicro(webcam, micro) { return webcam || micro; },
+  hasUserStream() { return this.remoteUser.user?.srcObject; },
+  hasScreenStream() { return this.remoteUser.screen?.srcObject; },
+  isWaitingAnswer() { return this.remoteUser.waitingCallAnswer; },
 });
 
 Template.remoteStream.events({

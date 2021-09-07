@@ -20,11 +20,11 @@ peer = {
     if (enabled && notifyNearUsers) userProximitySensor.callProximityStartedForAllNearUsers();
   },
   video(enabled, notifyNearUsers = false) {
-    videoElement?.toggle(myStream && enabled);
+    this.getVideoElement()?.toggle(myStream && enabled);
     if (!myStream) return;
     _.each(myStream.getVideoTracks(), track => { track.enabled = enabled; });
     if (enabled && notifyNearUsers) userProximitySensor.callProximityStartedForAllNearUsers();
-    if (myStream.id !== videoElement[0].srcObject?.id) videoElement[0].srcObject = myStream;
+    if (myStream.id !== this.getVideoElement()[0].srcObject?.id) this.getVideoElement()[0].srcObject = myStream;
   },
   stopTracks(stream) {
     if (!stream) return;
@@ -128,12 +128,10 @@ peer = {
     if (!stream) { error(`stream is undefined`, { user, stream, myPeer }); return; }
 
     const call = myPeer.call(user._id, stream, { metadata: { userId: Meteor.userId(), type } });
+    this.createOrUpdateRemoteStream(user, type);
     if (!call) { error(`me -> you ${type} ***** new call is null`, { user, stream, myPeer }); return; }
 
-    if (Meteor.user().options?.debug) {
-      call.on('stream', () => { log(`me -> you ${type} DEPRECATED ****** call stream`, user._id); });
-      call.on('close', () => { log(`me -> you ${type} ****** call closed`, user._id); });
-    }
+    if (Meteor.user().options?.debug) call.on('close', () => { log(`me -> you ${type} ****** call closed`, user._id); });
     calls[`${user._id}-${type}`] = call;
   },
 
@@ -195,7 +193,7 @@ peer = {
         if (!stream) return undefined;
 
         // sync video element with the stream
-        if (stream.id !== videoElement[0].srcObject?.id) videoElement[0].srcObject = stream;
+        if (stream.id !== this.getVideoElement()[0].srcObject?.id) this.getVideoElement()[0].srcObject = stream;
 
         // ensures tracks are up-to-date
         const { shareVideo, shareAudio } = Meteor.user().profile;
@@ -329,6 +327,35 @@ peer = {
     }
   },
 
+  createOrUpdateRemoteStream(user, streamType, remoteStream = null) {
+    const streamsByUsers = remoteStreamsByUsers.get();
+
+    if (!streamsByUsers.find(usr => usr._id === user._id)) {
+      streamsByUsers.push({
+        _id: user._id,
+        name: user.profile.name,
+        avatar: user.profile.avatar || Random.choice(Meteor.settings.public.peer.avatars),
+        user: {},
+        screen: {},
+        waitingCallAnswer: true,
+      });
+    }
+
+    if (remoteStream) {
+      streamsByUsers.map(usr => {
+        if (usr._id === user._id) {
+          delete usr.waitingCallAnswer;
+          usr[streamType] = {};
+          usr[streamType].srcObject = remoteStream;
+        }
+
+        return usr;
+      });
+    }
+
+    remoteStreamsByUsers.set(streamsByUsers);
+  },
+
   answerStreamCall(remoteCall, remoteStream) {
     const remoteUserId = remoteCall.metadata?.userId;
     if (!remoteUserId) { log(`answer stream: incomplete metadata for the remote call`); return false; }
@@ -344,35 +371,15 @@ peer = {
 
     const debug = Meteor.user()?.options?.debug;
     if (debug) log('you -> me ****** answer stream', { userId: remoteUserId, type: remoteCall.metadata.type });
-
-    // Get the updated stream table of the reactiveVar remoteStreamsByUsers
-    const streamsByUsers = remoteStreamsByUsers.get();
-
-    // If the remote user isn't in stream array, we create an object for him to prepare the addition of his stream.
-    if (!streamsByUsers.find(usr => usr._id === remoteUser._id)) {
-      streamsByUsers.push({
-        _id: remoteUser._id,
-        name: remoteUser.profile.name,
-        avatar: remoteUser.profile.avatar || Random.choice(Meteor.settings.public.peer.avatars),
-        user: {},
-        screen: {},
-      });
-    }
-
-    // We iterate on all streams table to find the remote user concerned by the addition of the new media and update it
-    streamsByUsers.map(usr => {
-      if (usr._id === remoteUser._id) {
-        usr[remoteCall.metadata.type] = {};
-        usr[remoteCall.metadata.type].srcObject = remoteStream;
-      }
-      return usr;
-    });
-
-    // Update the reactiveVar remoteStreamsByUsers
-    remoteStreamsByUsers.set(streamsByUsers);
+    this.createOrUpdateRemoteStream(remoteUser, remoteCall.metadata.type, remoteStream);
     remoteCall.on('close', () => this.close(remoteUserId));
 
     return true;
+  },
+
+  getVideoElement() {
+    if (!videoElement) videoElement = $(`.js-video-me video`);
+    return videoElement;
   },
 
   createMyPeer(skipConfig = false) {
@@ -380,7 +387,6 @@ peer = {
     if (Meteor.user().profile?.guest) return;
 
     // init
-    if (!videoElement) videoElement = $(`.js-video-me video`);
     userProximitySensor.onProximityStarted = userProximitySensor.onProximityStarted ?? this.onProximityStarted.bind(this);
     userProximitySensor.onProximityEnded = userProximitySensor.onProximityEnded ?? this.onProximityEnded.bind(this);
 

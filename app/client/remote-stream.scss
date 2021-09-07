@@ -1,6 +1,6 @@
 .stream {
   z-index: 5;
-  background-color: #ECEFF4;
+  background-color: hsl(0, 0.0, 8.6);
   border-radius: 10px;
   border: 2px solid white;
   margin: 5px;
@@ -8,6 +8,16 @@
   overflow: hidden;
   width: 320px;
   height: 240px;
+
+  &.waiting-answer:before {
+    content: 'Calling…';
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+  }
 
   &:hover {
     border: 2px solid black;
