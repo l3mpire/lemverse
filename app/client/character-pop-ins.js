@@ -74,7 +74,7 @@ characterPopIns = {
     if (!popIn) return;
 
     popIn.destroy();
-    delete this.popIns[userId];
+    delete this.popIns[userId][popInIdentifier];
   },
 
   destroyAll() {
