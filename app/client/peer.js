@@ -81,12 +81,13 @@ peer = {
       if (usr._id === userId) {
         delete usr.user.srcObject;
         delete usr.screen.srcObject;
+        delete usr.waitingCallAnswer;
       }
 
       return usr;
     });
     // We clean up remoteStreamsByUsers table by deleting all the users who have neither webcam or screen sharing active
-    streamsByUsers = streamsByUsers.filter(usr => usr.user.srcObject !== undefined || usr.screen.srcObject !== undefined);
+    streamsByUsers = streamsByUsers.filter(usr => usr.user.srcObject !== undefined || usr.screen.srcObject !== undefined || usr.waitingCallAnswer);
     remoteStreamsByUsers.set(streamsByUsers);
 
     $(`.js-video-${userId}-user`).remove();
