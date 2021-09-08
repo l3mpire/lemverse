@@ -30,7 +30,7 @@ EditorScene = new Phaser.Class({
 
     const { WorldScene } = game.scene.keys;
     const { map } = WorldScene;
-    const worldPoint = this.input.activePointer.positionToCamera(this.cameras.main);
+    const worldPoint = this.input.activePointer.positionToCamera(WorldScene.cameras.main);
     // Rounds down to nearest tile
     const pointerTileX = map.worldToTileX(worldPoint.x);
     const pointerTileY = map.worldToTileY(worldPoint.y);
