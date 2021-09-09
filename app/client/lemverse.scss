@@ -127,7 +127,7 @@ button:focus {
   overflow-y: scroll;
 
   video:not(.fullscreen) {
-    object-fit: scale-down;
+    object-fit: cover;
   }
 }
 
