@@ -366,23 +366,27 @@ WorldScene = new Phaser.Class({
 
   create() {
     // map
+    hotkeys.setScope('guest');
     this.map = this.make.tilemap({ tileWidth: 48, tileHeight: 48, width: 100, height: 100 });
 
     // controls
+    this.enableKeyboard(true, true);
     this.cursors = this.input.keyboard.createCursorKeys();
+    this.keys = this.input.keyboard.addKeys({
+      s: Phaser.Input.Keyboard.KeyCodes.S,
+      d: Phaser.Input.Keyboard.KeyCodes.D,
+      a: Phaser.Input.Keyboard.KeyCodes.A,
+      q: Phaser.Input.Keyboard.KeyCodes.Q,
+      z: Phaser.Input.Keyboard.KeyCodes.Z,
+      w: Phaser.Input.Keyboard.KeyCodes.W,
+      shift: Phaser.Input.Keyboard.KeyCodes.SHIFT }, false, false);
 
-    this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S, false);
-    this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D, false);
-    this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A, false);
-    this.keyQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q, false);
-    this.keyZ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z, false);
-    this.keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W, false);
-    this.keyShift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
-    this.keyAlt = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ALT);
-
-    // default scope
-    hotkeys.setScope('guest');
-    userChatCircle.init(this);
+    // set focus to the canvas and blur focused element on scene clicked
+    this.input.on('pointerdown', () => {
+      if (isModalOpen()) return;
+      this.enableKeyboard(true, true);
+      document.activeElement.blur();
+    });
 
     // layers
     this.initLayers();
@@ -398,12 +402,8 @@ WorldScene = new Phaser.Class({
     this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
     this.cameras.main.roundPixels = true;
 
-    // set focus to the canvas and blur focused element on scene clicked
-    this.input.on('pointerdown', () => {
-      if (isModalOpen()) return;
-      this.enableKeyboard(true, true);
-      document.activeElement.blur();
-    });
+    // plugins
+    userChatCircle.init(this);
 
     Session.set('gameCreated', true);
 
@@ -431,7 +431,6 @@ WorldScene = new Phaser.Class({
 
     // events
     this.events.on('postupdate', this.postUpdate.bind(this));
-    this.enableKeyboard(true, true);
 
     zones.onZoneChanged = (zone, previousZone) => {
       if (previousZone && !previousZone.popInConfiguration?.autoOpen) characterPopIns.destroy(Meteor.userId(), previousZone._id);
@@ -531,20 +530,20 @@ WorldScene = new Phaser.Class({
       direction = this.player.nippleData?.direction?.angle;
     } else {
       // Horizontal movement
-      if (this.cursors.left.isDown || this.keyQ.isDown || this.keyA.isDown) this.player.body.setVelocityX(-velocity);
-      else if (this.cursors.right.isDown || this.keyD.isDown) this.player.body.setVelocityX(velocity);
+      if (this.cursors.left.isDown || this.keys.q.isDown || this.keys.a.isDown) this.player.body.setVelocityX(-velocity);
+      else if (this.cursors.right.isDown || this.keys.d.isDown) this.player.body.setVelocityX(velocity);
 
       // Vertical movement
-      if (this.cursors.up.isDown || this.keyZ.isDown || this.keyW.isDown) this.player.body.setVelocityY(-velocity);
-      else if (this.cursors.down.isDown || this.keyS.isDown) this.player.body.setVelocityY(velocity);
+      if (this.cursors.up.isDown || this.keys.z.isDown || this.keys.w.isDown) this.player.body.setVelocityY(-velocity);
+      else if (this.cursors.down.isDown || this.keys.s.isDown) this.player.body.setVelocityY(velocity);
     }
 
     this.player.body.velocity.normalize().scale(velocity);
 
-    if (this.cursors.left.isDown || this.keyQ.isDown || this.keyA.isDown) direction = 'left';
-    else if (this.cursors.right.isDown || this.keyD.isDown) direction = 'right';
-    else if (this.cursors.up.isDown || this.keyZ.isDown || this.keyW.isDown) direction = 'up';
-    else if (this.cursors.down.isDown || this.keyS.isDown) direction = 'down';
+    if (this.cursors.left.isDown || this.keys.q.isDown || this.keys.a.isDown) direction = 'left';
+    else if (this.cursors.right.isDown || this.keys.d.isDown) direction = 'right';
+    else if (this.cursors.up.isDown || this.keys.z.isDown || this.keys.w.isDown) direction = 'up';
+    else if (this.cursors.down.isDown || this.keys.s.isDown) direction = 'down';
     if (direction) this.player.direction = direction;
 
     if (direction) {

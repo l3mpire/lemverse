@@ -63,7 +63,7 @@ EditorScene = new Phaser.Class({
 
       let selectedTiles = Session.get('selectedTiles');
 
-      if (WorldScene.keyShift.isDown && this.input.manager.activePointer.isDown && this.input.manager.activePointer.downElement.nodeName === 'CANVAS') {
+      if (WorldScene.keys.shift.isDown && this.input.manager.activePointer.isDown && this.input.manager.activePointer.downElement.nodeName === 'CANVAS') {
         let selectedTileGlobalIndex;
         for (let l = map.layers.length; l >= 0; l--) {
           selectedTileGlobalIndex = map.getTileAt(pointerTileX, pointerTileY, false, l)?.index;
