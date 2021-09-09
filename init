@@ -13,7 +13,7 @@ elif command -v brew; then
     . $BREW_PREFIX/nvm.sh
   fi
 fi
-nvm use 12
+nvm use 14
 
 rm -rf ./node_modules
 rm package-lock.json
@@ -31,6 +31,6 @@ cd mup
 cd ..
 
 # Restore latest used node version
-nvm use 12
+nvm use 14
 
 echo init end!

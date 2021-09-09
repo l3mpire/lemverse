@@ -19,7 +19,7 @@ elif command -v brew; then
     . $BREW_PREFIX/nvm.sh
   fi
 fi
-nvm use 12
+nvm use 14
 ../mup/bin/mup deploy
 
 command -v slack >/dev/null 2>&1 && slack chat send " ---------------------:mario_luigi_dance::mario_luigi_dance: *lemverse* deployed by _ $WHO _ :mario_luigi_dance::mario_luigi_dance:-------------------" "$LEMVERSE_CHANNEL" > /dev/null
