@@ -276,7 +276,7 @@ Please note, that as stated in section `Deploy in production`, there is an addit
 
 Before install the server, you must have:
 - nodejs installed (https://nodejs.org/en/download/package-manager/)
-- nvm installed (`npm i -g nvm`)
+- nvm installed (https://github.com/nvm-sh/nvm#installing-and-updating)
 - meteor installed (`npm i -g meteor`)
 - MongoDB installed (https://docs.mongodb.com/manual/installation )
 
