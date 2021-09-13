@@ -318,7 +318,7 @@ Now enjoy the possibility to edit by simply pressing `E` on you keyboard (see mo
 
 To enable the usage of conference room, you will need to install [JITSI](https://jitsi.org/downloads/) on the server.
 
-lemverse is using `MUP` to deploy application.  
+lemverse is using `MUP` to deploy application **that requires the root access**.  
 Prior to the setup, still on the server, please create the following folder using `mkdir -p /opt/lemverse/tmp`.
 
 For manipulating images, we are using [gm](https://www.npmjs.com/package/gm); please follow the setup in the package documentation.  
@@ -327,6 +327,12 @@ It should looks like `sudo apt-get install graphicsmagick`.
 Now we need to configure the deployment. Please have a look to `mup.json` in the app folder and do the changes.  
 You can set `setupMongo` or `setupNode` to `true` if you want `MUP` to setup mongo or add the right nodejs version on server.  
 ℹ️ Please note, that `mup` can only be used with `root` access.
+
+It's necessary to have a replica set active on your Mongo instance (see the mup.json file), add the following lines to the `/etc/mongod.conf` file to activate it:
+```
+replication:
+  replSetName: rs0
+```
 
 If you do have some sensitive information, you can copy the file `settings.json` and paste it on the server at `/usr/local/etc/lemverse.json` (Server side only).  
 At the startup of the application, those settings will be merged with the current ones.
