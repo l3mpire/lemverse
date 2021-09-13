@@ -6,10 +6,23 @@ rm -rf ./node_modules
 
 meteor npm install
 
-# Add mongoimport,...
-brew tap mongodb/brew
-brew install mongodb/brew/mongodb-database-tools
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        cd ../mup
+        ./install-mongodb.sh
+        cd -
+        sudo apt-get install imagemagick
+        sudo apt-get install graphicsmagick
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+        # Mac OSX
+        # Add mongoimport,...
+        brew tap mongodb/brew
+        brew install mongodb/brew/mongodb-database-tools
 
-# Install dependencies for images processor
-brew install imagemagick
-brew install graphicsmagick
+        # Install dependencies for images processor
+        brew install imagemagick
+        brew install graphicsmagick
+else
+        # Unknown.
+        print "Not supported for now"
+fi
+

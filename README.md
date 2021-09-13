@@ -274,6 +274,12 @@ Please note, that as stated in section `Deploy in production`, there is an addit
 
 # Getting started!
 
+Before install the server, you must have:
+- nodejs installed (https://nodejs.org/en/download/package-manager/)
+- nvm installed (`npm i -g nvm`)
+- meteor installed (`npm i -g meteor`)
+- MongoDB installed (https://docs.mongodb.com/manual/installation )
+
 Once you have cloned the repo, launch `./init` and wait, that's all!
 
 Due to image manipulation, please read [GraphicsMagick & ImageMagick](https://www.npmjs.com/package/gm) to install any additional library.
