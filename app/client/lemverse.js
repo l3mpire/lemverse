@@ -1,5 +1,3 @@
-import PhaserPauseRenderPlugin from './pause-render-plugin';
-
 const Phaser = require('phaser');
 
 hotkeys.filter = function (event) {
@@ -31,11 +29,6 @@ const config = {
   },
   dom: {
     createContainer: true,
-  },
-  plugins: {
-    global: [
-      { key: 'PhaserPauseRenderPlugin', plugin: PhaserPauseRenderPlugin, mapping: 'render' },
-    ],
   },
 };
 
@@ -248,17 +241,14 @@ Template.lemverse.onCreated(function () {
           const layer = tileLayer(tile);
           game.scene.keys.WorldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
           game.scene.keys.WorldScene.drawTeleporters(false);
-          game.scene.keys.WorldScene.render.resume();
         },
         changed(tile) {
           const layer = tileLayer(tile);
           game.scene.keys.WorldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
-          game.scene.keys.WorldScene.render.resume();
         },
         removed(tile) {
           const layer = tileLayer(tile);
           game.scene.keys.WorldScene.map.removeTileAt(tile.x, tile.y, false, false, layer);
-          game.scene.keys.WorldScene.render.resume();
         },
       });
 
@@ -305,9 +295,7 @@ Template.lemverse.onCreated(function () {
     if (event.type === 'keydown' && !userVoiceRecorderAbility.isRecording()) {
       peer.audio(false);
       userVoiceRecorderAbility.start();
-      game.scene.keys.WorldScene.render.disableAutoPause(true);
     } else if (event.type === 'keyup') {
-      game.scene.keys.WorldScene.render.disableAutoPause(false);
       peer.audio(Meteor.user()?.profile.shareAudio);
       userVoiceRecorderAbility.stop();
     }
@@ -397,18 +385,12 @@ Template.lemverse.onRendered(function () {
   this.autorun(() => {
     if (!Session.get('gameCreated')) return;
 
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') game.scene.keys.WorldScene?.render.resume();
-      else game.scene.keys.WorldScene?.render.pause();
-    });
-
     if (!this.resizeObserver) {
       const resizeObserver = new ResizeObserver(entries => {
         entries.forEach(entry => {
           config.width = entry.contentRect.width / Meteor.settings.public.zoom;
           config.height = entry.contentRect.height / Meteor.settings.public.zoom;
           game.scale.resize(config.width, config.height);
-          game.scene.keys.WorldScene.render.resume();
         });
       });
       const simulation = document.querySelector('.simulation');

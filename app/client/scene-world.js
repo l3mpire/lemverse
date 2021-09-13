@@ -174,8 +174,6 @@ WorldScene = new Phaser.Class({
   },
 
   playerUpdate(user, oldUser) {
-    this.render.resume();
-
     const isMe = user._id === Meteor.userId();
     const player = this.players[user._id];
     if (!player) return;
@@ -273,7 +271,6 @@ WorldScene = new Phaser.Class({
     this.destroyUserName(user._id);
 
     delete this.players[user._id];
-    this.render.resume();
   },
 
   playerPauseAnimation(player, value, forceUpdate = false) {
@@ -547,7 +544,6 @@ WorldScene = new Phaser.Class({
     if (direction) this.player.direction = direction;
 
     if (direction) {
-      this.render.resume();
       this.playerPauseAnimation(this.player, false);
       this.playerUpdateAnimation(this.player, direction);
     } else this.playerPauseAnimation(this.player, true);

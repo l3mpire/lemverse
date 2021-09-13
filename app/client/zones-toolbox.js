@@ -65,10 +65,6 @@ Template.zonesToolboxProperties.events({
 // zonesToolbox
 //
 
-Template.zonesToolbox.onCreated(() => {
-  game.scene.keys.WorldScene.render.disableAutoPause(true);
-});
-
 Template.zonesToolbox.onRendered(function () {
   this.autorun(() => {
     if (!Session.get('gameCreated')) return;
@@ -89,7 +85,6 @@ Template.zonesToolbox.onRendered(function () {
 
 Template.zonesToolbox.onDestroyed(() => {
   clearZoneRectangles();
-  game.scene.keys.WorldScene.render.disableAutoPause(false);
 });
 
 const getZoneCenter = zone => [(zone.x1 + zone.x2) * 0.5, (zone.y1 + zone.y2) * 0.5];

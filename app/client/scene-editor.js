@@ -12,15 +12,6 @@ EditorScene = new Phaser.Class({
     this.undoTiles = [];
     this.redoTiles = [];
 
-    this.events.on('wake', () => {
-      game.scene.keys.WorldScene.render.disableAutoPause(true);
-      game.scene.keys.WorldScene.render.resume();
-    });
-
-    this.events.on('sleep', () => {
-      game.scene.keys.WorldScene.render.disableAutoPause(false);
-    });
-
     // put editor in sleep mode on load (no rendering, no update)
     game.scene.keys.EditorScene.scene.sleep();
   },
