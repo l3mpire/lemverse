@@ -20,6 +20,9 @@ const config = {
   height: window.innerHeight / Meteor.settings.public.zoom,
   zoom: Meteor.settings.public.zoom,
   pixelArt: true,
+  scale: {
+    mode: Phaser.Scale.RESIZE,
+  },
   physics: {
     default: 'arcade',
     arcade: {
@@ -378,27 +381,6 @@ Template.lemverse.onCreated(function () {
 
   hotkeys('shift+0', { scope: 'player' }, () => {
     game.scene.keys.WorldScene.drawTeleporters(!game?.scene.keys.WorldScene.teleporterGraphics.length);
-  });
-});
-
-Template.lemverse.onRendered(function () {
-  this.autorun(() => {
-    if (!Session.get('gameCreated')) return;
-
-    if (!this.resizeObserver) {
-      const resizeObserver = new ResizeObserver(entries => {
-        entries.forEach(entry => {
-          config.width = entry.contentRect.width / Meteor.settings.public.zoom;
-          config.height = entry.contentRect.height / Meteor.settings.public.zoom;
-          game.scale.resize(config.width, config.height);
-        });
-      });
-      const simulation = document.querySelector('.simulation');
-      if (simulation) {
-        this.resizeObserver = true;
-        resizeObserver.observe(simulation);
-      }
-    }
   });
 });
 
