@@ -334,6 +334,8 @@ replication:
   replSetName: rs0
 ```
 
+Restart the Mongo service using `systemctl restart mongod` and initiate the replica set using `rs.initiate()` from the mongo shell.
+
 If you do have some sensitive information, you can copy the file `settings.json` and paste it on the server at `/usr/local/etc/lemverse.json` (Server side only).  
 At the startup of the application, those settings will be merged with the current ones.
 
