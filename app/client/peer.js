@@ -384,60 +384,65 @@ peer = {
   },
 
   createMyPeer(skipConfig = false) {
-    if (myPeer || !Meteor.user()) return;
-    if (Meteor.user().profile?.guest) return;
+    if (myPeer) return Promise.reject(new Error(`peer already created`));
+    if (!Meteor.user()) return Promise.reject(new Error(`an user is required to create a peer`));
+    if (Meteor.user().profile?.guest) return Promise.reject(new Error(`peer is forbidden for guest account`));
 
     // init
     userProximitySensor.onProximityStarted = userProximitySensor.onProximityStarted ?? this.onProximityStarted.bind(this);
     userProximitySensor.onProximityEnded = userProximitySensor.onProximityEnded ?? this.onProximityEnded.bind(this);
 
-    Meteor.call('getPeerConfig', (err, result) => {
-      if (err) { lp.notif.error(err); return; }
+    return new Promise((resolve, reject) => {
+      Meteor.call('getPeerConfig', (err, result) => {
+        if (err) { lp.notif.error(err); return reject(new Error(`unable to get peer config`)); }
 
-      const debug = Meteor.user()?.options?.debug;
-      const { port, url: host, path, config } = result;
+        const debug = Meteor.user()?.options?.debug;
+        const { port, url: host, path, config } = result;
 
-      const peerConfig = {
-        debug: debug ? 3 : 0,
-        host,
-        port,
-        path,
-        config,
-      };
+        const peerConfig = {
+          debug: debug ? 3 : 0,
+          host,
+          port,
+          path,
+          config,
+        };
 
-      if (skipConfig) delete peerConfig.config;
-      myPeer = new Peer(Meteor.userId(), peerConfig);
+        if (skipConfig) delete peerConfig.config;
+        myPeer = new Peer(Meteor.userId(), peerConfig);
 
-      if (debug) log('createMyBetaPeer : myPeerCreated', { myPeer });
+        if (debug) log('createMyBetaPeer : myPeerCreated', { myPeer });
 
-      myPeer.on('connection', connection => {
-        connection.on('data', dataReceived => {
-          if (dataReceived.type === 'audio') userVoiceRecorderAbility.playSound(dataReceived.data);
+        myPeer.on('connection', connection => {
+          connection.on('data', dataReceived => {
+            if (dataReceived.type === 'audio') userVoiceRecorderAbility.playSound(dataReceived.data);
+          });
         });
-      });
 
-      myPeer.on('close', () => { log('peer closed and destroyed'); myPeer = undefined; });
+        myPeer.on('close', () => { log('peer closed and destroyed'); myPeer = undefined; });
 
-      myPeer.on('error', peerErr => {
-        log(`peer error ${peerErr.type}`, peerErr);
-        lp.notif.error(`${peerErr} (${peerErr.type})`);
-      });
-
-      myPeer.on('call', remoteCall => {
-        if (debug) log('you -> me ***** new answer with near', { userId: remoteCall.metadata.userId, type: remoteCall.metadata.type });
-        remoteCall.answer();
-        remoteCall.on('stream', remoteStream => {
-          let attemptCounter = 0;
-
-          const answerAndRetry = () => {
-            if (!this.answerStreamCall(remoteCall, remoteStream) && attemptCounter < Meteor.settings.public.peer.answerMaxAttempt) {
-              if (debug) log(`you -> me ****** new attempt to answer a call from "${remoteCall.metadata?.userId}"`);
-              attemptCounter++;
-              setTimeout(answerAndRetry, Meteor.settings.public.peer.answerDelayBetweenAttempt);
-            }
-          };
-          answerAndRetry();
+        myPeer.on('error', peerErr => {
+          log(`peer error ${peerErr.type}`, peerErr);
+          lp.notif.error(`${peerErr} (${peerErr.type})`);
         });
+
+        myPeer.on('call', remoteCall => {
+          if (debug) log('you -> me ***** new answer with near', { userId: remoteCall.metadata.userId, type: remoteCall.metadata.type });
+          remoteCall.answer();
+          remoteCall.on('stream', remoteStream => {
+            let attemptCounter = 0;
+
+            const answerAndRetry = () => {
+              if (!this.answerStreamCall(remoteCall, remoteStream) && attemptCounter < Meteor.settings.public.peer.answerMaxAttempt) {
+                if (debug) log(`you -> me ****** new attempt to answer a call from "${remoteCall.metadata?.userId}"`);
+                attemptCounter++;
+                setTimeout(answerAndRetry, Meteor.settings.public.peer.answerDelayBetweenAttempt);
+              }
+            };
+            answerAndRetry();
+          });
+        });
+
+        return resolve(myPeer);
       });
     });
   },
