@@ -300,17 +300,14 @@ Access to your local instance at: `https://lemverse-USER-DOMAIN`.
 Simply create your account and voila!  
 You now have a nice player with everything is black!
 
-Since you are not admin, you can not change anything 😭.  
-Let's change that!
-
-Execute this command and you should become admin:
-```js
-remote(`Meteor.users.update(Meteor.userId(), { $set: { roles: { admin: true } }})`)
-```
+The first user who connect to new instance will be admin.
 
 Now enjoy the possibility to edit by simply pressing `E` on you keyboard (see more detail below).
 
-ℹ️ In production, to execute the `remote` command you need to add yourself (`Meteor.userId()`) in the admin array in `settings.json` (something like `usr_XXXXXX`) or hide it in the `/usr/local/etc/lemverse.json` (Server side only!).
+To make User admin you can Execute this command and he will become admin:
+```js
+remote(`Meteor.users.update(Meteor.userId("HIS_USER_ID"), { $set: { roles: { admin: true } }})`)
+```
 
 # Deploy in production!
 
