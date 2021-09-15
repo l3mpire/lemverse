@@ -635,6 +635,9 @@ WorldScene = new Phaser.Class({
     this.update(0, 0);
 
     setTimeout(() => game.scene.keys.LoadingScene.hide(() => {
+      if (!isEditionAllowed(Meteor.userId())) {
+        Session.set('editor', false);
+      }
       this.input.keyboard.enabled = true;
       if (this.player) this.player.visible = true;
       this.scene.resume();

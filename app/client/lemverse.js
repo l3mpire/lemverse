@@ -235,9 +235,6 @@ Template.lemverse.onCreated(function () {
     this.handleZonesSubscribe = this.subscribe('zones', levelId, () => zones.checkDistances());
 
     log(`Loading tiles for the level ${levelId || 'unknown'}…`);
-    if (!isEditionAllowed(Meteor.userId())) {
-      Session.set('editor', false);
-    }
     this.handleTilesSubscribe = this.subscribe('tiles', levelId, () => {
       this.handleObserveTiles = Tiles.find().observe({
         added(tile) {
