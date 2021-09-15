@@ -31,7 +31,7 @@ const filesAfterUploadEditorTileset = (user, fileRef) => {
     // Create
     log('filesAfterUploadEditorTileset: create a new tileset', { userId: user._id, fileId: fileRef._id });
     const maxTileset = Tilesets.findOne({}, { sort: { gid: -1 }, limit: 1 });
-    let maxTilesetGid = 0;
+    let maxTilesetGid = 1;
     if (maxTileset?.gid) maxTilesetGid = maxTileset.gid + 10000;
 
     const newId = Tilesets.id();
