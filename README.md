@@ -168,6 +168,17 @@ The user will then receive a notification.
 You can also open your notification list and listen to old messages using `cmd/ctrl + 5`.
 
 
+## How to create levels teleporter
+
+To create a levels teleporter, you have to use the following command:
+
+`e` to launch the edit mode
+Click on the zone editor
+Draw a new zone
+Edit the zone json
+Add the `inlineURL` property to the json with value `https://YOUR_LEMVERSE_URL/levels`
+Then anyone who hit the zone will be able to teleport to the levels listed or create his own level
+
 ## How to create a new universe?
 
 To create a new universe you need to add a document in the `levels` collection.
@@ -300,15 +311,17 @@ Access to your local instance at: `https://lemverse-USER-DOMAIN`.
 Simply create your account and voila!  
 You now have a nice player with everything is black!
 
-Since you are not admin, you can not change anything 😭.  
+The first user who connect to new instance will be editor.
+
+To edit by simply pressing `E` on you keyboard (see more detail below).
+
+Since you are not admin, you cannot run remote command 😭.  
 Let's change that!
 
-Execute this command and you should become admin:
+Execute this command and you should become editor:
 ```js
 remote(`Meteor.users.update(Meteor.userId(), { $set: { roles: { admin: true } }})`)
 ```
-
-Now enjoy the possibility to edit by simply pressing `E` on you keyboard (see more detail below).
 
 ℹ️ In production, to execute the `remote` command you need to add yourself (`Meteor.userId()`) in the admin array in `settings.json` (something like `usr_XXXXXX`) or hide it in the `/usr/local/etc/lemverse.json` (Server side only!).
 
@@ -413,6 +426,16 @@ To build the latest version of lemverse, simply run the following command:
 To build from you source without having to install anything, you can run the following command:
 
 `docker build -f Dockerfile.dev . -t l3mpire/lemverse:dev`
+
+## Build docker with Github Actions
+
+In your github repo setting
+add secrets:
+- PERSONAL_ACCESS_TOKEN (need to push to github tag and commit changelog following https://www.conventionalcommits.org/en/v1.0.0/ get it here : https://github.com/settings/tokens and allow repo )
+- DOCKERHUB_USERNAME (need to push to dockerhub)
+- DOCKERHUB_TOKEN (need to push to dockerhub)
+
+All commit into `next` branch will be automatically create as tag and then build as docker image.
 
 ## Slack Notification upon deployment
 

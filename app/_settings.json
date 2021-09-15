@@ -51,6 +51,7 @@
   "defaultLevelId": "lvl_iLOVEaLOTlemverse",
 
   "peer": {
+    "startServer": true,
     "server": {
       "url": "peer.example.com",
       "port": 443,
