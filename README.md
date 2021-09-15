@@ -403,6 +403,17 @@ To build the latest version of lemverse, simply run the following command:
 To build from you source without having to install anything, you can run the following command:
 
 `docker build -f Dockerfile.dev . -t l3mpire/lemverse:dev`
+
+## Build docker with Github Actions
+
+In your github repo setting
+add secrets:
+- PERSONAL_ACCESS_TOKEN (need to push to github tag and commit changelog following https://www.conventionalcommits.org/en/v1.0.0/ get it here : https://github.com/settings/tokens and allow repo )
+- DOCKERHUB_USERNAME (need to push to dockerhub)
+- DOCKERHUB_TOKEN (need to push to dockerhub)
+
+All commit into `next` branch will be automatically create as tag and then build as docker image.
+
 ## Slack Notification upon deployment
 
 To have a slack notification, you need to install the [slack cli](https://github.com/rockymadden/slack-cli) on the workstation from which you will deploy.
