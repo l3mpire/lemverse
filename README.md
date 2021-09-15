@@ -168,6 +168,17 @@ The user will then receive a notification.
 You can also open your notification list and listen to old messages using `cmd/ctrl + 5`.
 
 
+## How to create levels teleporter
+
+To create a levels teleporter, you have to use the following command:
+
+`e` to launch the edit mode
+Click on the zone editor
+Draw a new zone
+Edit the zone json
+Add the `inlineURL` property to the json with value `https://YOUR_LEMVERSE_URL/levels`
+Then anyone who hit the zone will be able to teleport to the levels listed or create his own level
+
 ## How to create a new universe?
 
 To create a new universe you need to add a document in the `levels` collection.
