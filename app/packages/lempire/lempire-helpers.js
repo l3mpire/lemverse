@@ -61,7 +61,7 @@ Template.registerHelper('s', (method, text) => s[method](text));
 Template.registerHelper('pluralize', (text, n) => text && lp.pluralize(text, n));
 
 // admin
-Template.registerHelper('isAdmin', lp.isAdmin);
+Template.registerHelper('isGod', lp.isGod);
 Template.registerHelper('isReallyProduction', () => lp.isProduction() && !lp.isStaging());
 Template.registerHelper('isProduction', () => lp.isProduction());
 Template.registerHelper('isStaging', () => lp.isStaging());

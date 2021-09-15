@@ -122,7 +122,7 @@ To help you setting up the spawn position, you simply have to walk where your wa
 remote(`setSpawnLevelXY()`)
 ```
 
-This command is reserved for admin only, and will update the spawn position of the current level you are in.
+This command is reserved for `god` only, and will update the spawn position of the current level you are in.
 
 ## Shortcuts in lemverse
 
@@ -229,7 +229,7 @@ Please note, that as stated in section `Deploy in production`, there is an addit
     "lp": {
       "product": "lemverse",
       "process": "main",
-      "admins": [], // List of admin (can use remote command) like "usr_11111111111111111"
+      "gods": [], // List of gods (can use remote command) like "usr_11111111111111111"
       "production": true,
       "staging": false,
       "enableLogClient": false
@@ -325,10 +325,14 @@ remote(`Meteor.users.update(Meteor.userId(), { $set: { roles: { admin: true } }}
 
 ℹ️ In production, to execute the `remote` command you need to add yourself (`Meteor.userId()`) in the admin array in `settings.json` (something like `usr_XXXXXX`) or hide it in the `/usr/local/etc/lemverse.json` (Server side only!).
 
-To make other User admin you can Execute this command and he will become admin:
-```js
-remote(`Meteor.users.update(Meteor.userId("HIS_USER_ID"), { $set: { roles: { admin: true } }})`)
-```
+## Roles
+
+In lemverse you have different roles:
+- `Guest`: Can move everywhere but can not talk, share screen nor listen
+- `User`: Can move everywhere except admin zone (`adminOnly=true`), talk, listen, share screen
+- `Editor`: Same as `User` but can also edit the level
+- `Admin`: Same as `Editor` (for all levels) but can go to every zones and give people `Editor` roles (Through UI)
+- `God`: Same as `Admin` but can also run `remote` command from the console
 
 # Deploy in production!
 
@@ -416,6 +420,7 @@ Once you have done it, the subsequent deployments will be done using the command
 
 To build the latest version of lemverse, simply run the following command:  
 `docker build . -t l3mpire/lemverse:latest`
+
 ### Development
 
 To build from you source without having to install anything, you can run the following command:
@@ -469,7 +474,7 @@ The command will replace the current `tilesets` collection with the data inside 
 
 ## `remote` command
 
-Within your browser, you can safely (admin only) execute command in your backend.
+Within your browser, you can safely (`god` only) execute command in your backend.
 
 We provide a command named `remote` that will pass the content to the backend to be executed with `eval`.
 

@@ -57,7 +57,7 @@ Meteor.publish('selfUser', function () {
 Meteor.methods({
   remote(str) {
     check(str, String);
-    if (!lp.isAdmin()) return '🤬';
+    if (!lp.isGod()) return '🤬';
 
     log('eval from method', { userId: Meteor.userId(), str });
     let res;
