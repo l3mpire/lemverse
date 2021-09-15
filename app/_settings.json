@@ -3,7 +3,7 @@
     "lp": {
       "product": "lemverse",
       "process": "main",
-      "admins": [],
+      "gods": [],
       "production": true,
       "staging": false,
       "enableLogClient": false
