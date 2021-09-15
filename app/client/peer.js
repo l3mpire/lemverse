@@ -376,18 +376,19 @@ peer = {
   getPeer() {
     return new Promise(resolve => {
       if (myPeer && myPeer.id && !myPeer.disconnected) return resolve(myPeer);
+      const debug = Meteor.user()?.options?.debug;
 
       if (myPeer && myPeer.disconnected) {
         let reconnected = true;
         try {
-          lp.notif.error(`Peer disconnected, reconnecting…`);
+          if (debug) log('Peer disconnected, reconnecting…');
           myPeer.reconnect();
         } catch (err) { reconnected = false; }
 
         if (reconnected) return resolve(myPeer);
       }
 
-      if (Meteor.user()?.options?.debug) log('Peer invalid, creating new peer…');
+      if (debug) log('Peer invalid, creating new peer…');
       myPeer = undefined;
 
       return this.createMyPeer().then(resolve);
