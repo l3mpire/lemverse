@@ -398,6 +398,8 @@ To build the latest version of lemverse, simply run the following command:
 `docker build . -t l3mpire/lemverse:latest`
 ### Development
 
+To build from you source without having to install anything, you can run the following command:
+
 `docker build -f Dockerfile.dev . -t l3mpire/lemverse:dev`
 ## Slack Notification upon deployment
 
