@@ -403,6 +403,7 @@ WorldScene = new Phaser.Class({
     userChatCircle.init(this);
 
     Session.set('gameCreated', true);
+    Session.set('editor', 0);
 
     if (window.matchMedia('(pointer: coarse)').matches) {
       this.nippleManager = nipplejs.create({
