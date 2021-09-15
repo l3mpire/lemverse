@@ -1,7 +1,9 @@
 import { PeerServer } from 'peer';
 
-// eslint-disable-next-line new-cap
-PeerServer({ port: 7010, path: '/peer' });
+if (Meteor.settings.peer.startServer) {
+  // eslint-disable-next-line new-cap
+  PeerServer({ port: 7010, path: '/peer' });
+}
 
 AccountsGuest.enabled = true;
 AccountsGuest.forced = true;
