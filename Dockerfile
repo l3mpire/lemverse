@@ -1,4 +1,4 @@
-FROM geoffreybooth/meteor-base:2.3.6
+FROM geoffreybooth/meteor-base:2.3.6 AS builder
 
 # Copy app package.json and package-lock.json into container
 COPY ./app/package*.json $APP_SOURCE_FOLDER/
@@ -24,10 +24,10 @@ RUN apk --no-cache add \
         graphicsmagick
 
 # Copy in entrypoint
-COPY --from=0 $SCRIPTS_FOLDER $SCRIPTS_FOLDER/
+COPY --from=builder $SCRIPTS_FOLDER $SCRIPTS_FOLDER/
 
 # Copy in app bundle
-COPY --from=0 $APP_BUNDLE_FOLDER/bundle $APP_BUNDLE_FOLDER/bundle/
+COPY --from=builder $APP_BUNDLE_FOLDER/bundle $APP_BUNDLE_FOLDER/bundle/
 
 RUN bash $SCRIPTS_FOLDER/build-meteor-npm-dependencies.sh
 
