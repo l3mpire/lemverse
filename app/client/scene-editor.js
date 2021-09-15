@@ -8,12 +8,20 @@ EditorScene = new Phaser.Class({
   },
 
   init() {
-    this.marker = this.add.graphics();
+    this.marker = game.scene.keys.WorldScene.add.graphics();
     this.undoTiles = [];
     this.redoTiles = [];
 
     // put editor in sleep mode on load (no rendering, no update)
     game.scene.keys.EditorScene.scene.sleep();
+
+    this.events.on('wake', () => {
+      this.marker.visible = true;
+    });
+
+    this.events.on('sleep', () => {
+      this.marker.visible = false;
+    });
   },
 
   update() {

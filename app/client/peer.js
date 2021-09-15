@@ -107,33 +107,21 @@ peer = {
   },
 
   createPeerCall(user, type) {
-    if (!myPeer) return;
     if (calls[`${user._id}-${type}`]) return;
     if (!userProximitySensor.nearUsers[user._id]) { log(`peer call: creation cancelled (user is too far)`, user._id); return; }
-
     if (Meteor.user().options?.debug) log(`me -> you ${type} ***** new call with near`, user._id);
-    if (myPeer.disconnected) {
-      try {
-        lp.notif.error(`Peer disconnected, reconnecting…`);
-        myPeer.reconnect();
-      } catch (err) {
-        if (myPeer.destroyed) this.createMyPeer();
-      }
 
-      setTimeout(() => this.createPeerCall(user, type), 1000);
+    this.getPeer().then(peer => {
+      const stream = type === 'user' ? myStream : myScreenStream;
+      if (!stream) { error(`stream is undefined`, { user, stream, myPeer }); return; }
 
-      return;
-    }
+      const call = peer.call(user._id, stream, { metadata: { userId: Meteor.userId(), type } });
+      this.createOrUpdateRemoteStream(user, type);
+      if (!call) { error(`me -> you ${type} ***** new call is null`, { user, stream, myPeer }); return; }
 
-    const stream = type === 'user' ? myStream : myScreenStream;
-    if (!stream) { error(`stream is undefined`, { user, stream, myPeer }); return; }
-
-    const call = myPeer.call(user._id, stream, { metadata: { userId: Meteor.userId(), type } });
-    this.createOrUpdateRemoteStream(user, type);
-    if (!call) { error(`me -> you ${type} ***** new call is null`, { user, stream, myPeer }); return; }
-
-    if (Meteor.user().options?.debug) call.on('close', () => { log(`me -> you ${type} ****** call closed`, user._id); });
-    calls[`${user._id}-${type}`] = call;
+      if (Meteor.user().options?.debug) call.on('close', () => { log(`me -> you ${type} ****** call closed`, user._id); });
+      calls[`${user._id}-${type}`] = call;
+    });
   },
 
   createPeerCalls(user) {
@@ -301,19 +289,21 @@ peer = {
   },
 
   sendData(users, data) {
-    users.forEach(user => {
-      try {
-        const connection = myPeer.connect(user._id);
+    this.getPeer().then(peer => {
+      users.forEach(user => {
+        try {
+          const connection = peer.connect(user._id);
 
-        connection.on('open', () => {
-          connection.send(data);
+          connection.on('open', () => {
+            connection.send(data);
 
-          // Not sure if we must close the connection for now
-          setTimeout(() => connection.close(), 500);
-        });
+            // Not sure if we must close the connection for now
+            setTimeout(() => connection.close(), 500);
+          });
 
-        connection.on('error', () => lp.notif.warning(`${user.profile.name || user._id} was unavailable`));
-      } catch (err) { lp.notif.error(`an error has occured during connection with ${user.profile.name || user._id}`); }
+          connection.on('error', () => lp.notif.warning(`${user.profile.name || user._id} was unavailable`));
+        } catch (err) { lp.notif.error(`an error has occured during connection with ${user.profile.name || user._id}`); }
+      });
     });
   },
 
@@ -383,61 +373,87 @@ peer = {
     return videoElement;
   },
 
+  getPeer() {
+    return new Promise(resolve => {
+      if (myPeer && myPeer.id && !myPeer.disconnected) return resolve(myPeer);
+
+      if (myPeer && myPeer.disconnected) {
+        let reconnected = true;
+        try {
+          lp.notif.error(`Peer disconnected, reconnecting…`);
+          myPeer.reconnect();
+        } catch (err) { reconnected = false; }
+
+        if (reconnected) return resolve(myPeer);
+      }
+
+      if (Meteor.user()?.options?.debug) log('Peer invalid, creating new peer…');
+      myPeer = undefined;
+
+      return this.createMyPeer().then(resolve);
+    });
+  },
+
   createMyPeer(skipConfig = false) {
-    if (myPeer || !Meteor.user()) return;
-    if (Meteor.user().profile?.guest) return;
+    if (myPeer) return Promise.reject(new Error(`peer already created`));
+    if (!Meteor.user()) return Promise.reject(new Error(`an user is required to create a peer`));
+    if (Meteor.user().profile?.guest) return Promise.reject(new Error(`peer is forbidden for guest account`));
 
     // init
     userProximitySensor.onProximityStarted = userProximitySensor.onProximityStarted ?? this.onProximityStarted.bind(this);
     userProximitySensor.onProximityEnded = userProximitySensor.onProximityEnded ?? this.onProximityEnded.bind(this);
 
-    Meteor.call('getPeerConfig', (err, result) => {
-      if (err) { lp.notif.error(err); return; }
+    return new Promise((resolve, reject) => {
+      Meteor.call('getPeerConfig', (err, result) => {
+        if (err) { lp.notif.error(err); return reject(new Error(`unable to get peer config`)); }
 
-      const debug = Meteor.user()?.options?.debug;
-      const { port, url: host, path, config } = result;
+        const debug = Meteor.user()?.options?.debug;
+        const { port, url: host, path, config } = result;
 
-      const peerConfig = {
-        debug: debug ? 3 : 0,
-        host,
-        port,
-        path,
-        config,
-      };
+        const peerConfig = {
+          debug: debug ? 3 : 0,
+          host,
+          port,
+          path,
+          config,
+        };
 
-      if (skipConfig) delete peerConfig.config;
-      myPeer = new Peer(Meteor.userId(), peerConfig);
+        if (skipConfig) delete peerConfig.config;
+        myPeer = new Peer(Meteor.userId(), peerConfig);
 
-      if (debug) log('createMyBetaPeer : myPeerCreated', { myPeer });
+        if (debug) log('createMyBetaPeer : myPeerCreated', { myPeer });
 
-      myPeer.on('connection', connection => {
-        connection.on('data', dataReceived => {
-          if (dataReceived.type === 'audio') userVoiceRecorderAbility.playSound(dataReceived.data);
+        myPeer.on('connection', connection => {
+          connection.on('data', dataReceived => {
+            if (dataReceived.type === 'audio') userVoiceRecorderAbility.playSound(dataReceived.data);
+          });
         });
-      });
 
-      myPeer.on('close', () => { log('peer closed and destroyed'); myPeer = undefined; });
+        myPeer.on('close', () => { log('peer closed and destroyed'); myPeer = undefined; });
 
-      myPeer.on('error', peerErr => {
-        log(`peer error ${peerErr.type}`, peerErr);
-        lp.notif.error(`${peerErr} (${peerErr.type})`);
-      });
-
-      myPeer.on('call', remoteCall => {
-        if (debug) log('you -> me ***** new answer with near', { userId: remoteCall.metadata.userId, type: remoteCall.metadata.type });
-        remoteCall.answer();
-        remoteCall.on('stream', remoteStream => {
-          let attemptCounter = 0;
-
-          const answerAndRetry = () => {
-            if (!this.answerStreamCall(remoteCall, remoteStream) && attemptCounter < Meteor.settings.public.peer.answerMaxAttempt) {
-              if (debug) log(`you -> me ****** new attempt to answer a call from "${remoteCall.metadata?.userId}"`);
-              attemptCounter++;
-              setTimeout(answerAndRetry, Meteor.settings.public.peer.answerDelayBetweenAttempt);
-            }
-          };
-          answerAndRetry();
+        myPeer.on('error', peerErr => {
+          log(`peer error ${peerErr.type}`, peerErr);
+          lp.notif.error(`${peerErr} (${peerErr.type})`);
         });
+
+        myPeer.on('call', remoteCall => {
+          if (debug) log('you -> me ***** new answer with near', { userId: remoteCall.metadata.userId, type: remoteCall.metadata.type });
+          remoteCall.answer();
+          remoteCall.on('stream', remoteStream => {
+            let attemptCounter = 0;
+
+            const answerAndRetry = () => {
+              if (!this.answerStreamCall(remoteCall, remoteStream) && attemptCounter < Meteor.settings.public.peer.answerMaxAttempt) {
+                if (debug) log(`you -> me ****** new attempt to answer a call from "${remoteCall.metadata?.userId}"`);
+                attemptCounter++;
+                setTimeout(answerAndRetry, Meteor.settings.public.peer.answerDelayBetweenAttempt);
+              }
+            };
+            answerAndRetry();
+          });
+        });
+
+        return resolve(myPeer);
       });
     });
   },

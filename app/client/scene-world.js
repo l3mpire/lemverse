@@ -368,15 +368,15 @@ WorldScene = new Phaser.Class({
 
     // controls
     this.enableKeyboard(true, true);
-    this.cursors = this.input.keyboard.createCursorKeys();
     this.keys = this.input.keyboard.addKeys({
+      ...this.input.keyboard.createCursorKeys(),
       s: Phaser.Input.Keyboard.KeyCodes.S,
       d: Phaser.Input.Keyboard.KeyCodes.D,
       a: Phaser.Input.Keyboard.KeyCodes.A,
       q: Phaser.Input.Keyboard.KeyCodes.Q,
       z: Phaser.Input.Keyboard.KeyCodes.Z,
       w: Phaser.Input.Keyboard.KeyCodes.W,
-      shift: Phaser.Input.Keyboard.KeyCodes.SHIFT }, false, false);
+    }, false, false);
 
     // set focus to the canvas and blur focused element on scene clicked
     this.input.on('pointerdown', () => {
@@ -515,7 +515,7 @@ WorldScene = new Phaser.Class({
     if (!this.player.nippleMoving) this.player.body.setVelocity(0);
     if (isModalOpen()) return;
 
-    let velocity = this.cursors.shift.isDown ? Meteor.settings.public.character.runSpeed : Meteor.settings.public.character.walkSpeed;
+    let velocity = this.keys.shift.isDown ? Meteor.settings.public.character.runSpeed : Meteor.settings.public.character.walkSpeed;
     let direction;
 
     if (this.player.nippleMoving) {
@@ -527,20 +527,20 @@ WorldScene = new Phaser.Class({
       direction = this.player.nippleData?.direction?.angle;
     } else {
       // Horizontal movement
-      if (this.cursors.left.isDown || this.keys.q.isDown || this.keys.a.isDown) this.player.body.setVelocityX(-velocity);
-      else if (this.cursors.right.isDown || this.keys.d.isDown) this.player.body.setVelocityX(velocity);
+      if (this.keys.left.isDown || this.keys.q.isDown || this.keys.a.isDown) this.player.body.setVelocityX(-velocity);
+      else if (this.keys.right.isDown || this.keys.d.isDown) this.player.body.setVelocityX(velocity);
 
       // Vertical movement
-      if (this.cursors.up.isDown || this.keys.z.isDown || this.keys.w.isDown) this.player.body.setVelocityY(-velocity);
-      else if (this.cursors.down.isDown || this.keys.s.isDown) this.player.body.setVelocityY(velocity);
+      if (this.keys.up.isDown || this.keys.z.isDown || this.keys.w.isDown) this.player.body.setVelocityY(-velocity);
+      else if (this.keys.down.isDown || this.keys.s.isDown) this.player.body.setVelocityY(velocity);
     }
 
     this.player.body.velocity.normalize().scale(velocity);
 
-    if (this.cursors.left.isDown || this.keys.q.isDown || this.keys.a.isDown) direction = 'left';
-    else if (this.cursors.right.isDown || this.keys.d.isDown) direction = 'right';
-    else if (this.cursors.up.isDown || this.keys.z.isDown || this.keys.w.isDown) direction = 'up';
-    else if (this.cursors.down.isDown || this.keys.s.isDown) direction = 'down';
+    if (this.keys.left.isDown || this.keys.q.isDown || this.keys.a.isDown) direction = 'left';
+    else if (this.keys.right.isDown || this.keys.d.isDown) direction = 'right';
+    else if (this.keys.up.isDown || this.keys.z.isDown || this.keys.w.isDown) direction = 'up';
+    else if (this.keys.down.isDown || this.keys.s.isDown) direction = 'down';
     if (direction) this.player.direction = direction;
 
     if (direction) {
