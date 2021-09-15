@@ -392,6 +392,17 @@ server {
 
 Once you have done it, the subsequent deployments will be done using the command `./deploy`.
 
+## Build docker images
+
+### Production
+
+To build the latest version of lemverse, simply run the following command:  
+`docker build . -t l3mpire/lemverse:latest`
+### Development
+
+To build from you source without having to install anything, you can run the following command:
+
+`docker build -f Dockerfile.dev . -t l3mpire/lemverse:dev`
 ## Slack Notification upon deployment
 
 To have a slack notification, you need to install the [slack cli](https://github.com/rockymadden/slack-cli) on the workstation from which you will deploy.

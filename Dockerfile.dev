@@ -1,0 +1,22 @@
+FROM geoffreybooth/meteor-base:2.3.6
+# Disney Meteor base image
+
+# Copy app package.json and package-lock.json into container
+COPY ./app/package*.json $APP_SOURCE_FOLDER/
+
+RUN bash $SCRIPTS_FOLDER/build-app-npm-dependencies.sh
+
+# Copy app source into container
+COPY ./app $APP_SOURCE_FOLDER/
+RUN apt update && apt install -y \
+		bash \
+		ca-certificates \
+        imagemagick \
+        graphicsmagick
+
+
+WORKDIR /opt/src
+
+RUN chown -Rh root .meteor/local
+
+CMD ["meteor", "--settings", "settings-dev.json", "--port", "9000"]
