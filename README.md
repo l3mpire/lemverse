@@ -307,7 +307,7 @@ To edit by simply pressing `E` on you keyboard (see more detail below).
 Since you are not admin, you cannot run remote command 😭.  
 Let's change that!
 
-Execute this command and you should become admin:
+Execute this command and you should become editor:
 ```js
 remote(`Meteor.users.update(Meteor.userId(), { $set: { roles: { admin: true } }})`)
 ```
