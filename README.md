@@ -23,7 +23,7 @@ You can either launch it locally, on a server or join us at [lemverse.com](https
 In order to be able to create your own universe, you will need some tilesets.  
 We recommend using tileset of 16x16 pixels.
 
-To upload a new tileset, visit the url `http://localhost:9000/editor` or `http://lemverse.example.com/editor`.  
+To upload a new tileset, visit the url `http://localhost:9000/editor` or `http://lemverse.example.com/editor`.
 ℹ️  Only people with `admin` role can access this page.
 
 Here are the description of all parts:  
@@ -212,66 +212,84 @@ You can use the level id everywhere it's useful, like in the `defaultLevelId` pr
 This file regroup all information about the settings.  
 Please note, that as stated in section `Deploy in production`, there is an additional file with sensitive information that will me merge with the one in the repository.
 
-```jsonc
-{
-  "public": {
-    "lp": {
-      "product": "lemverse",
-      "process": "main",
-      "gods": [], // List of gods (can use remote command) like "usr_11111111111111111"
-      "production": true,
-      "staging": false,
-      "enableLogClient": false
+ℹ️  It's better to copy the file `_settings.json` available in the app folder instead of copying the excerpt below
+<details>
+  <summary>Click to toggle contents of _settings.json</summary>
+  <p>
+
+  ```jsonc
+  {
+    "public": {
+      "lp": {
+        "product": "lemverse",
+        "process": "main",
+        "gods": [], // List of gods (can use remote command) like "usr_11111111111111111"
+        "production": true,
+        "staging": false,
+        "enableLogClient": false
+      },
+
+      "debug": false,
+
+      "defaultReaction" : "❤️",
+
+      "zoom": 1,
+
+      "peer": { // Settings about webrtc connection
+        "answerMaxAttempt": 5,
+        "answerDelayBetweenAttempt": 750,
+        "avatars": [ // Avatar when users do not share their camera
+          "https://www.monchat.ca/wp-content/uploads/2020/01/Fond-ecran-mignon-chaton-en-position-de-priere-1024x640.jpg",
+          "https://animalaxy.fr/wp-content/uploads/2019/02/iStock5.jpg",
+          "https://cdn.radiofrance.fr/s3/cruiser-production/2018/12/9f19b228-269f-4995-ba7f-eda054945811/1136_gettyimages-155607257.jpg",
+          "https://chatfaitdubien.fr/wp-content/uploads/2016/09/chaton.jpg",
+          "https://i.pinimg.com/564x/8b/f7/c6/8bf7c6e26f7250944e963f23f364b68f.jpg"
+        ],
+        "callDelay": 250 // Delay before a call is started, useful to avoid a call when you pass by someone
+      },
+
+      "meet": { // Jitsi settings
+        "serverURL": "meet.jit.si",
+        "roomDefaultName": "lemverse"
+      },
+
+      "character": { // Settings to handle velocity of the character
+        "walkSpeed": 180,
+        "runSpeed": 720
+      },
+
+      "characterNames": ["Basic", "Ghost"], // List of in repository characters (should not change since you can upload new ones)
+
+      "skins": {  // Default skins (can be defined at level)
+        "guest": "Ghost", // Simple format
+        "guest": { // Layered format
+          "body": "chr_H2ARGyiKd8wQ4hQcr"
+        },
+        "default": "Basic"
+      }
     },
 
-    "debug": false,
+    "defaultLevelId": "lvl_iLOVEaLOTlemverse", // Default level Id created at first run.
 
-    "defaultReaction" : "❤️",
-
-    "zoom": 1,
-
-    "peer": { // Settings about webrtc connection
+    "peer": {
       "server": {
         "url": "peer.example.com",
         "port": 443,
-        "path": "/peer"
-      },
-      "answerMaxAttempt": 5,
-      "answerDelayBetweenAttempt": 750,
-      "avatars": [ // Avatar when users do not share their camera
-        "https://www.monchat.ca/wp-content/uploads/2020/01/Fond-ecran-mignon-chaton-en-position-de-priere-1024x640.jpg",
-        "https://animalaxy.fr/wp-content/uploads/2019/02/iStock5.jpg",
-        "https://cdn.radiofrance.fr/s3/cruiser-production/2018/12/9f19b228-269f-4995-ba7f-eda054945811/1136_gettyimages-155607257.jpg",
-        "https://chatfaitdubien.fr/wp-content/uploads/2016/09/chaton.jpg",
-        "https://i.pinimg.com/564x/8b/f7/c6/8bf7c6e26f7250944e963f23f364b68f.jpg"
-      ],
-      "callDelay": 250
-    },
-
-    "meet": { // Jitsi settings
-      "serverURL": "meet.jit.si",
-      "roomDefaultName": "lemverse"
-    },
-
-    "character": { // Settings to handle velocity of the character
-      "walkSpeed": 180,
-      "runSpeed": 720
-    },
-
-    "characterNames": ["Basic", "Ghost"], // List of in repository characters (should not change since you can upload new ones)
-
-    "skins": {  // Default skins (can be defined at level)
-      "guest": "Ghost", // Simple format
-      "guest": { // Layered format
-        "body": "chr_H2ARGyiKd8wQ4hQcr"
-      },
-      "default": "Basic"
+        "path": "/peer",
+        "secret": "******", // Required for turn server support
+        "credentialDuration": 86400,
+        "config": {
+          "iceServers": [{
+            "urls": "stun:stun.l.google.com:19302"
+          }],
+          "iceTransportPolicy" : "all"
+        }
+      }
     }
-  },
-
-  "defaultLevelId": "lvl_iLOVEaLOTlemverse" // Default level Id created at first run.
-}
+  }
 ```
+</p>
+</details>
 
 # Getting started!
 
