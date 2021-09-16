@@ -83,7 +83,12 @@ Template.remoteStream.helpers({
   mediaState() { return Meteor.users.findOne({ _id: this.remoteUser._id })?.profile; },
   hasUserStream() { return this.remoteUser.user?.srcObject; },
   hasScreenStream() { return this.remoteUser.screen?.srcObject; },
-  isWaitingAnswer() { return this.remoteUser.waitingCallAnswer; },
+  state() {
+    const { profile } = Meteor.users.findOne({ _id: this.remoteUser._id });
+    if (profile.userMediaError) return 'media-error';
+
+    return this.remoteUser.waitingCallAnswer ? 'calling' : 'connected';
+  },
   isTalking() { return Template.instance().talking.get(); },
   talkingVar() { return Template.instance().talking; },
 });
