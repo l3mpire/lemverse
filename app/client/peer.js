@@ -92,7 +92,11 @@ peer = {
 
     $(`.js-video-${userId}-user`).remove();
 
-    if (userProximitySensor.nearUsersCount() === 0) this.destroyStream(myStream);
+    if (userProximitySensor.nearUsersCount() === 0) {
+      if (lp.isLemverseBeta('peerDestroy')) this.destroy();
+      else this.destroyStream(myStream);
+    }
+
     if (!activeCallsCount) return;
 
     if (debug) log('close call: call closed successfully', userId);
@@ -130,6 +134,12 @@ peer = {
     if (!calls[`${user._id}-user`] && !calls[`${user._id}-screen`]) sounds.play('webrtc-in');
     if (shareAudio || shareVideo) this.createStream().then(() => this.createPeerCall(user, 'user'));
     if (shareScreen) this.createScreenStream().then(() => this.createPeerCall(user, 'screen'));
+  },
+
+  destroy() {
+    this.closeAll();
+    if (myStream) this.destroyStream(myStream);
+    myPeer?.destroy();
   },
 
   applyConstraints(stream, type, constraints) {
@@ -422,7 +432,7 @@ peer = {
         if (skipConfig) delete peerConfig.config;
         myPeer = new Peer(Meteor.userId(), peerConfig);
 
-        if (debug) log('createMyBetaPeer : myPeerCreated', { myPeer });
+        if (debug) log('create peer: myPeer created', { myPeer });
 
         myPeer.on('connection', connection => {
           connection.on('data', dataReceived => {
@@ -453,6 +463,9 @@ peer = {
             answerAndRetry();
           });
         });
+
+        window.removeEventListener('beforeunload', this.destroy.bind(this));
+        window.addEventListener('beforeunload', this.destroy.bind(this));
 
         return resolve(myPeer);
       });
