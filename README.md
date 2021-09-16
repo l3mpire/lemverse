@@ -23,7 +23,7 @@ You can either launch it locally, on a server or join us at [lemverse.com](https
 In order to be able to create your own universe, you will need some tilesets.  
 We recommend using tileset of 16x16 pixels.
 
-To upload a new tileset, visit the url `http://localhost:9000/editor` or `http://lemverse.example.com/editor`.
+To upload a new tileset, visit the url `http://localhost:9000/editor` or `http://lemverse.example.com/editor`.  
 ℹ️  Only people with `admin` role can access this page.
 
 Here are the description of all parts:  
