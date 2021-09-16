@@ -170,6 +170,8 @@ peer = {
       .catch(err => {
         error('requestUserMedia failed', err);
         Meteor.users.update(Meteor.userId(), { $set: { 'profile.userMediaError': true } });
+        if (err.message === 'Permission denied') lp.notif.warning('Camera and microphone are required 😢');
+        return Promise.reject(err);
       });
   },
 
@@ -183,13 +185,14 @@ peer = {
       .catch(err => {
         error('requestDisplayMedia failed', err);
         Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } });
+        return Promise.reject(err);
       });
   },
 
   createStream() {
     return this.requestUserMedia()
       .then(stream => {
-        if (!stream) return undefined;
+        if (!stream) return Promise.reject(new Error(`unable to get a valid stream`));
 
         // sync video element with the stream
         if (stream.id !== this.getVideoElement()[0].srcObject?.id) this.getVideoElement()[0].srcObject = stream;
