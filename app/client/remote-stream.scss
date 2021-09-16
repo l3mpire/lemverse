@@ -14,14 +14,21 @@
     border: 2px solid #008001;
   }
 
-  &.waiting-answer:before {
-    content: 'Calling…';
+  &:before {
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     color: white;
+  }
+
+  &[data-state="calling"]:before {
+    content: 'Calling…';
+  }
+
+  &[data-state="media-error"]:before {
+    content: 'Media error 😢';
   }
 
   &:hover {

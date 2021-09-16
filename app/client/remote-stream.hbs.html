@@ -1,5 +1,5 @@
 <template name="remoteStream">
-  <div class="stream js-video-{{remoteUser._id}} {{#if isWaitingAnswer}}waiting-answer{{/if}} {{#if isTalking}}talking{{/if}}">
+  <div class="stream js-video-{{remoteUser._id}} {{#if isTalking}}talking{{/if}}" data-state="{{state}}">
     <div class="stream-name">
         {{remoteUser.name}}
     </div>
