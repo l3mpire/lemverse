@@ -17,46 +17,48 @@ You can either launch it locally, on a server or join us at [lemverse.com](https
 ℹ️ Can't wait to install lemverse? You can go directly to the [Getting started](#getting-started) section
 
 # What can I do in lemverse?
+## Shortcuts in lemverse
 
-## Tileset Editor
+In lemverse you have only few but useful shortcuts!  
 
-In order to be able to create your own universe, you will need some tilesets.  
-We recommend using tileset of 16x16 pixels.
+### Who's here and where?
 
-To upload a new tileset, visit the url `http://localhost:9000/editor` or `http://lemverse.example.com/editor`.
-ℹ️  Only people with `admin` role can access this page.
+What to know more about the `explorers` in the same universe?  
+Hit `Tab` and you will see them! And maybe ghosts...
 
-Here are the description of all parts:  
-<img alt="login" src="./app/public/tileset-editor.png">
+<img alt="login" src="./app/public/tab.png">
 
-1) As stated, you drag and drop your image file(s) to upload them.
-2) This part is just a reminder about the index of the layers for all tiles.
-   - Player are between layer `5` and `6`.
-   - Default index is `2` and not displayed.
-3) This is the list of all tilesets.
-   - You can either remove the tileset with hitting the cross
-   - Rename it, by double clicking on it
-4) The view of the tileset
-   - When you are over a tile, simply hit a number from `0` to `8` to change the layer
-   - Layer `2` is the default and thus is not displayed
-   - Hit `c` to change the tile to be a collision tile (will be displayed in red)
+Only `admin` can see others admin (with the 👑).  
+You can allow other users to edit your universe by clicking on the hammer and spanner 🛠.
+### Reactions
 
+If you want to use pre-defined reactions, you can hit from `1` to `5` and it will display an emoji on top of your character.  
+If you want to use a custom one, go to the settings to add one, and use `l` to activate it!
 
-Once you have imported the tileset and do some tweak about collision and layering, you can begin to create your universe!
+### Share what you want!
 
-## Character Editor
+Activating camera, sharing screen can be annoying with the mouse itself, so simply use `shift`+`1` (to `4`) to switch the state of the options.
 
-This editor takes place at the same place as the tilesets editor.
+### Editing the level
 
-To add a new resource, simply drag & drop over the page.
+Like describe in a previous part, we must use `e` to launch the edit mode.
 
-Here are the description of all parts:  
-<img alt="login" src="./app/public/character-editor.png">
+### Shout to your surrounding!
 
-1) Different type of filter to change the dropdown
-2) Here are the list of all resources available in the current category
-3) Display of the character part to help you figure out how to categorize it.
-4) The five possible categories to change the part.
+Like in real life, you can shout around you.  
+We restricted this to the zone you are currently in.
+
+To do so, simply hit `r` and speak!  
+Once you finished, just release the touch and your message will be send to everybody and play instantly.
+
+### Leave a message!
+
+It may happen that a user isn't available to chat. Fortunately, it's possible to leave a message for the user.
+
+The use is very simple, you just have to go near the person to whom you want to leave a message and then press the `p` key, speak and release the key.
+
+The user will then receive a notification.
+You can also open your notification list and listen to old messages using `cmd/ctrl + 5`.
 
 ## Edit your universe!
 
@@ -124,49 +126,6 @@ remote(`setSpawnLevelXY()`)
 
 This command is reserved for `god` only, and will update the spawn position of the current level you are in.
 
-## Shortcuts in lemverse
-
-In lemverse you have only few but useful shortcuts!  
-
-### Who's here and where?
-
-What to know more about the `explorers` in the same universe?  
-Hit `Tab` and you will see them! And maybe ghosts...
-
-<img alt="login" src="./app/public/tab.png">
-
-Only `admin` can see others admin (with the 👑).  
-You can allow other users to edit your universe by clicking on the hammer and spanner 🛠.
-### Reactions
-
-If you want to use pre-defined reactions, you can hit from `1` to `5` and it will display an emoji on top of your character.  
-If you want to use a custom one, go to the settings to add one, and use `l` to activate it!
-
-### Share what you want!
-
-Activating camera, sharing screen can be annoying with the mouse itself, so simply use `shift`+`1` (to `4`) to switch the state of the options.
-
-### Editing the level
-
-Like describe in a previous part, we must use `e` to launch the edit mode.
-
-### Shout to your surrounding!
-
-Like in real life, you can shout around you.  
-We restricted this to the zone you are currently in.
-
-To do so, simply hit `r` and speak!  
-Once you finished, just release the touch and your message will be send to everybody and play instantly.
-
-### Leave a message!
-
-It may happen that a user isn't available to chat. Fortunately, it's possible to leave a message for the user.
-
-The use is very simple, you just have to go near the person to whom you want to leave a message and then press the `p` key, speak and release the key.
-
-The user will then receive a notification.
-You can also open your notification list and listen to old messages using `cmd/ctrl + 5`.
-
 
 ## How to create levels teleporter
 
@@ -217,6 +176,46 @@ For the `level` structure, here are an explanation of all fields:
 ```
 
 You can use the level id everywhere it's useful, like in the `defaultLevelId` property in `settings.json` (More information bellow).
+
+## Tileset Editor
+
+In order to be able to create your own universe, you will need some tilesets.  
+We recommend using tileset of 16x16 pixels.
+
+To upload a new tileset, visit the url `http://localhost:9000/editor` or `http://lemverse.example.com/editor`.
+ℹ️  Only people with `admin` role can access this page.
+
+Here are the description of all parts:  
+<img alt="login" src="./app/public/tileset-editor.png">
+
+1) As stated, you drag and drop your image file(s) to upload them.
+2) This part is just a reminder about the index of the layers for all tiles.
+   - Player are between layer `5` and `6`.
+   - Default index is `2` and not displayed.
+3) This is the list of all tilesets.
+   - You can either remove the tileset with hitting the cross
+   - Rename it, by double clicking on it
+4) The view of the tileset
+   - When you are over a tile, simply hit a number from `0` to `8` to change the layer
+   - Layer `2` is the default and thus is not displayed
+   - Hit `c` to change the tile to be a collision tile (will be displayed in red)
+
+
+Once you have imported the tileset and do some tweak about collision and layering, you can begin to create your universe!
+
+## Character Editor
+
+This editor takes place at the same place as the tilesets editor.
+
+To add a new resource, simply drag & drop over the page.
+
+Here are the description of all parts:  
+<img alt="login" src="./app/public/character-editor.png">
+
+1) Different type of filter to change the dropdown
+2) Here are the list of all resources available in the current category
+3) Display of the character part to help you figure out how to categorize it.
+4) The five possible categories to change the part.
 
 ## Tell me more about `settings.json`!
 
