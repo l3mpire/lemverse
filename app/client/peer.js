@@ -92,10 +92,7 @@ peer = {
 
     $(`.js-video-${userId}-user`).remove();
 
-    if (userProximitySensor.nearUsersCount() === 0) {
-      if (lp.isLemverseBeta('peerDestroy')) this.destroy();
-      else this.destroyStream(myStream);
-    }
+    if (userProximitySensor.nearUsersCount() === 0) this.destroyStream(myStream);
 
     if (!activeCallsCount) return;
 
@@ -409,7 +406,7 @@ peer = {
   },
 
   createMyPeer(skipConfig = false) {
-    if (myPeer) return Promise.reject(new Error(`peer already created`));
+    if (myPeer && myPeer.id && !myPeer.disconnected) return Promise.resolve(myPeer);
     if (!Meteor.user()) return Promise.reject(new Error(`an user is required to create a peer`));
     if (Meteor.user().profile?.guest) return Promise.reject(new Error(`peer is forbidden for guest account`));
 
@@ -433,6 +430,7 @@ peer = {
         };
 
         if (skipConfig) delete peerConfig.config;
+        if (myPeer) this.destroy();
         myPeer = new Peer(Meteor.userId(), peerConfig);
 
         if (debug) log('create peer: myPeer created', { myPeer });
@@ -446,8 +444,9 @@ peer = {
         myPeer.on('close', () => { log('peer closed and destroyed'); myPeer = undefined; });
 
         myPeer.on('error', peerErr => {
+          if (['server-error', 'network'].includes(peerErr.type)) myPeer.reconnect();
           log(`peer error ${peerErr.type}`, peerErr);
-          lp.notif.error(`${peerErr} (${peerErr.type})`);
+          lp.notif.error(`Peer ${peerErr} (${peerErr.type})`);
         });
 
         myPeer.on('call', remoteCall => {

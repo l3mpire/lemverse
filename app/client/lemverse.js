@@ -1,5 +1,10 @@
 const Phaser = require('phaser');
 
+scopes = {
+  player: 'player',
+  editor: 'editor',
+};
+
 hotkeys.filter = function (event) {
   const { tagName } = event.target || event.srcElement;
   return !/^(INPUT|TEXTAREA)$/.test(tagName);
@@ -230,7 +235,7 @@ Template.lemverse.onCreated(function () {
     if (this.handleObserveTiles) this.handleObserveTiles.stop();
     if (this.handleTilesSubscribe) this.handleTilesSubscribe.stop();
     this.handleUsersSubscribe = this.subscribe('users', levelId, () => {
-      if (Meteor.user()) peer.createMyPeer();
+      if (!Meteor.user()?.profile.guest) peer.createMyPeer();
     });
     this.handleZonesSubscribe = this.subscribe('zones', levelId, () => zones.checkDistances());
 
@@ -262,7 +267,7 @@ Template.lemverse.onCreated(function () {
     Session.set('editor', !Session.get('editor'));
   });
 
-  hotkeys('l', { keyup: true, scope: 'player' }, event => {
+  hotkeys('l', { keyup: true, scope: scopes.player }, event => {
     if (event.repeat) return;
 
     const user = Meteor.user();
@@ -271,7 +276,7 @@ Template.lemverse.onCreated(function () {
     Meteor.users.update(Meteor.userId(), { [event.type === 'keydown' ? '$set' : '$unset']: { 'profile.reaction': user.profile.defaultReaction || Meteor.settings.public.defaultReaction } });
   });
 
-  hotkeys('f', { scope: 'player' }, event => {
+  hotkeys('f', { scope: scopes.player }, event => {
     if (event.repeat || !meet.api) return;
     event.preventDefault();
 
@@ -282,7 +287,7 @@ Template.lemverse.onCreated(function () {
     if (currentZone) zones.setFullscreen(currentZone, !currentZone.fullscreen);
   });
 
-  hotkeys('j', { scope: 'player' }, event => {
+  hotkeys('j', { scope: scopes.player }, event => {
     event.preventDefault();
     if (event.repeat) return;
 
@@ -301,7 +306,7 @@ Template.lemverse.onCreated(function () {
     }
   };
 
-  hotkeys('r', { keyup: true, scope: 'player' }, event => {
+  hotkeys('r', { keyup: true, scope: scopes.player }, event => {
     if (event.repeat) return;
 
     const user = Meteor.user();
@@ -316,7 +321,7 @@ Template.lemverse.onCreated(function () {
     });
   });
 
-  hotkeys('p', { keyup: true, scope: 'player' }, event => {
+  hotkeys('p', { keyup: true, scope: scopes.player }, event => {
     if (event.repeat) return;
 
     const user = Meteor.user();
@@ -355,28 +360,28 @@ Template.lemverse.onCreated(function () {
     Session.set('displayUserList', !Session.get('displayUserList'));
   });
 
-  hotkeys('shift+1', { scope: 'player' }, () => {
+  hotkeys('shift+1', { scope: scopes.player }, () => {
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareAudio': !Meteor.user().profile.shareAudio } });
   });
 
-  hotkeys('shift+2', { scope: 'player' }, () => {
+  hotkeys('shift+2', { scope: scopes.player }, () => {
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareVideo': !Meteor.user().profile.shareVideo } });
   });
 
-  hotkeys('shift+3', { scope: 'player' }, () => {
+  hotkeys('shift+3', { scope: scopes.player }, () => {
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': !Meteor.user().profile.shareScreen } });
   });
 
-  hotkeys('shift+4', { scope: 'player' }, () => {
+  hotkeys('shift+4', { scope: scopes.player }, () => {
     if (!Session.get('displaySettings')) settings.enumerateDevices();
     Session.set('displaySettings', !Session.get('displaySettings'));
   });
 
-  hotkeys('shift+5', { scope: 'player' }, () => {
+  hotkeys('shift+5', { scope: scopes.player }, () => {
     Session.set('displayNotificationsPanel', !Session.get('displayNotificationsPanel'));
   });
 
-  hotkeys('shift+0', { scope: 'player' }, () => {
+  hotkeys('shift+0', { scope: scopes.player }, () => {
     game.scene.keys.WorldScene.drawTeleporters(!game?.scene.keys.WorldScene.teleporterGraphics.length);
   });
 });
@@ -412,16 +417,16 @@ Template.lemverse.onDestroyed(function () {
   if (this.handleZonesSubscribe) this.handleZonesSubscribe.stop();
   if (this.resizeObserver) this.resizeObserver.disconnect();
 
-  hotkeys.unbind('e');
-  hotkeys.unbind('f');
-  hotkeys.unbind('j');
-  hotkeys.unbind('l');
-  hotkeys.unbind('r');
-  hotkeys.unbind('tab');
-  hotkeys.unbind('shift+1');
-  hotkeys.unbind('shift+2');
-  hotkeys.unbind('shift+3');
-  hotkeys.unbind('shift+4');
+  hotkeys.unbind('e', scopes.player);
+  hotkeys.unbind('f', scopes.player);
+  hotkeys.unbind('j', scopes.player);
+  hotkeys.unbind('l', scopes.player);
+  hotkeys.unbind('r', scopes.player);
+  hotkeys.unbind('tab', scopes.player);
+  hotkeys.unbind('shift+1', scopes.player);
+  hotkeys.unbind('shift+2', scopes.player);
+  hotkeys.unbind('shift+3', scopes.player);
+  hotkeys.unbind('shift+4', scopes.player);
 });
 
 Template.lemverse.helpers({
