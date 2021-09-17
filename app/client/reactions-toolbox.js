@@ -2,7 +2,7 @@ const reactions = ['❤️', '😲', '😢', '🤣', '😡'];
 
 Template.reactionsToolbox.onCreated(() => {
   reactions.forEach((key, idx) => {
-    hotkeys((idx + 1).toString(), { keyup: true, scope: 'player' }, event => {
+    hotkeys((idx + 1).toString(), { keyup: true, scope: scopes.player }, event => {
       const user = Meteor.user();
       if (!user) return;
 
@@ -12,9 +12,7 @@ Template.reactionsToolbox.onCreated(() => {
 });
 
 Template.lemverse.onDestroyed(() => {
-  reactions.forEach((key, idx) => {
-    hotkeys.unbind((idx + 1).toString());
-  });
+  reactions.forEach((key, idx) => hotkeys.unbind((idx + 1).toString(), scopes.player));
 });
 
 Template.reactionsToolbox.helpers({

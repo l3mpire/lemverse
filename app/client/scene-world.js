@@ -103,7 +103,7 @@ WorldScene = new Phaser.Class({
     this.cameras.main.roundPixels = true;
 
     if (Meteor.user().guest) hotkeys.setScope('guest');
-    else hotkeys.setScope('player');
+    else hotkeys.setScope(scopes.player);
 
     this.player = player;
   },
