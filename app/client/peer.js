@@ -446,8 +446,9 @@ peer = {
         myPeer.on('close', () => { log('peer closed and destroyed'); myPeer = undefined; });
 
         myPeer.on('error', peerErr => {
+          if (['server-error', 'network'].includes(peerErr.type)) myPeer.reconnect();
           log(`peer error ${peerErr.type}`, peerErr);
-          lp.notif.error(`${peerErr} (${peerErr.type})`);
+          lp.notif.error(`Peer ${peerErr} (${peerErr.type})`);
         });
 
         myPeer.on('call', remoteCall => {
