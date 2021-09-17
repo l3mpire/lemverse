@@ -627,6 +627,7 @@ WorldScene = new Phaser.Class({
     if (!levelToLoad) { error(`Level with the id "${levelId}" not found`); return; }
 
     game.scene.keys.LoadingScene.setText(levelToLoad.name);
+    document.title = levelToLoad.name;
     game.scene.keys.LoadingScene.show();
     setTimeout(() => this.scene.restart({ levelId }), 0);
   },
