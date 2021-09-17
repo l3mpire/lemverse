@@ -1,7 +1,7 @@
 <template name="zonesToolboxProperties">
   <div class="modal zones-toolbox-properties">
     <div>
-      {{#if name}}{{name}}{{else}}{{_id}}{{/if}}
+      <h3>{{#if name}}{{name}}{{else}}{{_id}}{{/if}}</h3>
       <br><br>
       <textarea>{{properties}}</textarea>
     </div>
