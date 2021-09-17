@@ -110,15 +110,18 @@ peer = {
   createPeerCall(user, type) {
     if (calls[`${user._id}-${type}`]) return;
     if (!userProximitySensor.nearUsers[user._id]) { log(`peer call: creation cancelled (user is too far)`, user._id); return; }
-    if (Meteor.user().options?.debug) log(`me -> you ${type} ***** new call with near`, user._id);
+
+    const debug = Meteor.user()?.options?.debug;
+    if (debug) log(`me -> you ${type} ***** new call with near`, user._id);
 
     this.getPeer().then(peer => {
       const stream = type === 'user' ? myStream : myScreenStream;
       if (!stream) { error(`stream is undefined`, { user, stream, myPeer }); return; }
 
+      if (debug) log(`me -> you ${type} ****** create call with ${user._id} (stream: ${stream.id})`, { user: user._id, stream });
       const call = peer.call(user._id, stream, { metadata: { userId: Meteor.userId(), type } });
       this.createOrUpdateRemoteStream(user, type);
-      if (!call) { error(`me -> you ${type} ***** new call is null`, { user, stream, myPeer }); return; }
+      if (!call) { error(`me -> you ${type} ****** new call is null`, { user, stream, myPeer }); return; }
 
       if (Meteor.user().options?.debug) call.on('close', () => { log(`me -> you ${type} ****** call closed`, user._id); });
       calls[`${user._id}-${type}`] = call;
@@ -233,7 +236,7 @@ peer = {
   destroyStream(stream) {
     stream = stream ?? myStream;
 
-    if (stream && Meteor.user()?.options?.debug) log('kill stream', stream);
+    if (stream && Meteor.user()?.options?.debug) log('kill stream', stream.id);
     this.stopTracks(stream);
     if (videoElement) videoElement.hide();
 
@@ -242,12 +245,17 @@ peer = {
   },
 
   updatePeersStream() {
+    const debug = Meteor.user()?.options?.debug;
+    if (debug) log('update peers stream: start');
+
     if (myStream) {
+      if (debug) log(`update peers stream: main stream ${myStream.id}`, myStream);
       const audioTrack = myStream.getAudioTracks()[0];
       const videoTrack = myStream.getVideoTracks()[0];
 
       _.each(calls, (call, key) => {
         if (key.indexOf('-screen') !== -1) return;
+        if (debug) log(`update peers stream: sending stream to user ${key}`);
         const senders = call.peerConnection.getSenders();
 
         _.each(senders, sender => {
@@ -259,6 +267,7 @@ peer = {
     }
 
     if (myScreenStream) {
+      if (debug) log(`update peers stream: screen share stream ${myScreenStream.id}`, myScreenStream);
       const screenTrack = myScreenStream.getVideoTracks()[0];
 
       _.each(calls, (call, key) => {
@@ -371,7 +380,7 @@ peer = {
     remoteCalls[callIdentifier] = remoteCall;
 
     const debug = Meteor.user()?.options?.debug;
-    if (debug) log('you -> me ****** answer stream', { userId: remoteUserId, type: remoteCall.metadata.type });
+    if (debug) log(`you -> me ****** answer stream with ${remoteUserId} (stream: ${remoteStream.id})`, { userId: remoteUserId, type: remoteCall.metadata.type, stream: remoteStream.id });
     this.createOrUpdateRemoteStream(remoteUser, remoteCall.metadata.type, remoteStream);
     remoteCall.on('close', () => this.close(remoteUserId));
 
@@ -450,7 +459,7 @@ peer = {
         });
 
         myPeer.on('call', remoteCall => {
-          if (debug) log('you -> me ***** new answer with near', { userId: remoteCall.metadata.userId, type: remoteCall.metadata.type });
+          if (debug) log(`you -> me ***** new answer call with ${remoteCall.metadata.userId}`, { userId: remoteCall.metadata.userId, type: remoteCall.metadata.type });
           remoteCall.answer();
           remoteCall.on('stream', remoteStream => {
             let attemptCounter = 0;
