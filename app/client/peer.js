@@ -50,7 +50,7 @@ peer = {
 
   closeAll() {
     if (Meteor.user().options?.debug) log('peer.closeAll: start');
-    _.each(userProximitySensor.nearUsers, user => this.close(user, 100));
+    _.each(userProximitySensor.nearUsers, user => this.close(user._id, 100));
   },
 
   closeCall(userId) {
@@ -90,9 +90,9 @@ peer = {
     streamsByUsers = streamsByUsers.filter(usr => usr.user.srcObject !== undefined || usr.screen.srcObject !== undefined || usr.waitingCallAnswer);
     remoteStreamsByUsers.set(streamsByUsers);
 
-    $(`.js-video-${userId}-user`).remove();
-
     if (userProximitySensor.nearUsersCount() === 0) this.destroyStream(myStream);
+
+    $(`.js-video-${userId}-user`).remove();
 
     if (!activeCallsCount) return;
 
