@@ -230,7 +230,7 @@ Template.lemverse.onCreated(function () {
     if (this.handleObserveTiles) this.handleObserveTiles.stop();
     if (this.handleTilesSubscribe) this.handleTilesSubscribe.stop();
     this.handleUsersSubscribe = this.subscribe('users', levelId, () => {
-      if (Meteor.user()) peer.createMyPeer();
+      if (!Meteor.user()?.profile.guest) peer.createMyPeer();
     });
     this.handleZonesSubscribe = this.subscribe('zones', levelId, () => zones.checkDistances());
 
