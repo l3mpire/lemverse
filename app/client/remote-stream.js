@@ -70,6 +70,14 @@ Template.webcam.onRendered(function () {
   }
 });
 
+Template.webcam.onDestroyed(function () {
+  const video = this.find('video');
+  if (!video) return;
+  video.pause();
+  video.src = '';
+  video.load();
+});
+
 Template.screenshare.onRendered(function () {
   this.attempt = 1;
   checkMediaAvailable(this, 'screen');
