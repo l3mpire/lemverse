@@ -192,6 +192,10 @@ button:focus {
       display: none;
       object-fit: scale-down;
       transform: scale(-1, 1);
+
+      &.active {
+        display: block;
+      }
     }
 
     .buttons {
