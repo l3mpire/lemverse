@@ -111,7 +111,7 @@ peer = {
   },
 
   createPeerCall(user, type) {
-    if (calls[`${user._id}-${type}`]) return;
+    if (calls[`${user._id}-${type}`]) { log(`peer call: creation cancelled (call already started)`, user._id); return; }
     if (!userProximitySensor.nearUsers[user._id]) { log(`peer call: creation cancelled (user is too far)`, user._id); return; }
 
     const debug = Meteor.user()?.options?.debug;
@@ -398,6 +398,9 @@ peer = {
       if (debug) log(`call with ${remoteUserId} closed`, { userId: remoteUserId, type: remoteCall.metadata.type });
       this.close(remoteUserId);
     });
+
+    // ensures a call to the other user exists on an answer to avoid one-way calls, do nothing if a call is already started
+    this.createPeerCalls(remoteUser);
 
     return true;
   },
