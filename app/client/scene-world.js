@@ -589,7 +589,7 @@ WorldScene = new Phaser.Class({
     userVoiceRecorderAbility.update(this.player.x, this.player.y, delta);
 
     const moving = Math.abs(this.player.body.velocity.x) > Number.EPSILON || Math.abs(this.player.body.velocity.y) > Number.EPSILON;
-    if (this.moving || this.wasMoving) {
+    if (moving || this.wasMoving) {
       this.physics.world.update(time, delta);
       this.checkProximity = true;
       zones.checkDistances();
