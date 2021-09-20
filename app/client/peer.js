@@ -44,7 +44,10 @@ peer = {
       const divElm = document.querySelector('.js-video-screen-me');
       divElm.srcObject = undefined;
       divElm.style.display = 'none';
-      document.querySelectorAll('.js-video-screen-me video').forEach(v => v.remove());
+      document.querySelectorAll('.js-video-screen-me video').forEach(v => {
+        destroyVideoSource(v);
+        v.remove();
+      });
     } else if (enabled) userProximitySensor.callProximityStartedForAllNearUsers();
   },
 
@@ -240,12 +243,7 @@ peer = {
     this.stopTracks(stream);
 
     const userVideo = this.getVideoElement();
-    if (userVideo) {
-      userVideo.pause();
-      userVideo.src = '';
-      userVideo.load();
-      userVideo.classList.toggle('active', false);
-    }
+    destroyVideoSource(userVideo);
 
     if (stream === myStream) myStream = undefined;
     else if (stream === myScreenStream) myScreenStream = undefined;
