@@ -231,6 +231,13 @@ WorldScene = new Phaser.Class({
 
     if (!guest && name !== oldUser?.profile?.name) this.updateUserName(user._id, name);
 
+    let hasMoved = false;
+    if (oldUser) {
+      const { x: oldX, y: oldY } = oldUser.profile;
+      hasMoved = x !== oldX || y !== oldY;
+    }
+    if (hasMoved && !guest) this.checkProximity = true;
+
     if (isMe) {
       // Check distance between players
       const dist = Math.sqrt(((player.x - x) ** 2) + ((player.y - y) ** 2));
@@ -241,9 +248,7 @@ WorldScene = new Phaser.Class({
 
       // ensures this.player is assigned to the logged user
       if (this.player?.userId !== Meteor.userId() || !this.player.body) this.setAsMainPlayer(Meteor.userId());
-    } else if (oldUser) {
-      const { x: oldX, y: oldY } = oldUser.profile;
-      const hasMoved = x !== oldX || y !== oldY;
+    } else {
       if (hasMoved) {
         player.lwOriginX = player.x;
         player.lwOriginY = player.y;
@@ -251,10 +256,9 @@ WorldScene = new Phaser.Class({
         player.lwTargetX = user.profile.x;
         player.lwTargetY = user.profile.y;
         player.lwTargetDate = moment().add(100, 'milliseconds');
-        if (!guest) userProximitySensor.checkDistances(Meteor.user(), [user]);
       }
 
-      if (!guest && user.profile.shareScreen !== oldUser.profile.shareScreen) peer.onStreamSettingsChanged(user);
+      if (!guest && user.profile.shareScreen !== oldUser?.profile.shareScreen) peer.onStreamSettingsChanged(user);
     }
 
     player.getByName('stateIndicator').visible = !guest && !shareAudio;
