@@ -112,7 +112,6 @@ peer = {
 
   createPeerCall(user, type) {
     if (calls[`${user._id}-${type}`]) { log(`peer call: creation cancelled (call already started)`, user._id); return; }
-    if (!userProximitySensor.nearUsers[user._id]) { log(`peer call: creation cancelled (user is too far)`, user._id); return; }
 
     const debug = Meteor.user()?.options?.debug;
     if (debug) log(`me -> you ${type} ***** new call with near`, user._id);
@@ -376,10 +375,6 @@ peer = {
     if (!remoteUserId) { log(`answer call: incomplete metadata for the remote call`); return false; }
     const remoteUser = Meteor.users.findOne({ _id: remoteUserId });
     if (!remoteUser) { log(`answer call: user not found "${remoteUserId}"`); return false; }
-
-    // ensures the user is near to answer and this check will trigger a peer creation if it didn't exist with the other user
-    userProximitySensor.checkDistance(Meteor.user(), remoteUser);
-    if (!userProximitySensor.nearUsers[remoteUserId]) { log(`answer call: user is too far`, remoteUserId); return true; }
 
     const callIdentifier = `${remoteUserId}-${remoteCall.metadata.type}`;
     remoteCalls[callIdentifier] = remoteCall;
