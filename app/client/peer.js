@@ -126,7 +126,7 @@ peer = {
       this.createOrUpdateRemoteStream(user, type);
       if (!call) { error(`me -> you ${type} ****** new call is null`, { user, stream, myPeer }); return; }
 
-      if (Meteor.user().options?.debug) call.on('close', () => { log(`me -> you ${type} ****** call closed`, user._id); });
+      if (debug) call.on('close', () => { log(`me -> you ${type} ****** call closed`, user._id); });
       calls[`${user._id}-${type}`] = call;
     });
   },
@@ -388,14 +388,16 @@ peer = {
     this.createOrUpdateRemoteStream(remoteUser, remoteCall.metadata.type, null);
 
     // update call's with stream received
+    const debug = Meteor.user()?.options?.debug;
     remoteCall.on('stream', stream => {
-      const debug = Meteor.user()?.options?.debug;
       if (debug) log(`answer stream : from ${remoteUserId} (stream: ${stream.id})`, { userId: remoteUserId, type: remoteCall.metadata.type, stream: stream.id });
-
       this.createOrUpdateRemoteStream(remoteUser, remoteCall.metadata.type, stream);
     });
 
-    remoteCall.on('close', () => this.close(remoteUserId));
+    remoteCall.on('close', () => {
+      if (debug) log(`call with ${remoteUserId} closed`, { userId: remoteUserId, type: remoteCall.metadata.type });
+      this.close(remoteUserId);
+    });
 
     return true;
   },
