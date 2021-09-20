@@ -601,9 +601,9 @@ WorldScene = new Phaser.Class({
     }
     this.wasMoving = moving;
 
-    if (this.player.guest || !this.checkProximity || meet.api) return;
-
     const currentUser = Meteor.user();
+    if (currentUser.profile.guest || !this.checkProximity || meet.api) return;
+
     const otherUsers = Meteor.users.find({ _id: { $ne: currentUser._id } }).fetch();
     userProximitySensor.checkDistances(currentUser, otherUsers);
     this.checkProximity = false;
