@@ -62,7 +62,6 @@ WorldScene = new Phaser.Class({
     this.players = {};
     this.wasMoving = false;
     this.input.keyboard.enabled = false;
-    this.checkProximity = true;
     this.scene.pause();
     this.teleporterGraphics = [];
     userChatCircle.destroy();
@@ -168,7 +167,6 @@ WorldScene = new Phaser.Class({
     this.players[user._id].setDepth(y);
 
     this.playerUpdate(user);
-    this.checkProximity = true;
 
     return this.players[user._id];
   },
@@ -231,6 +229,14 @@ WorldScene = new Phaser.Class({
 
     if (!guest && name !== oldUser?.profile?.name) this.updateUserName(user._id, name);
 
+    let hasMoved = false;
+    if (oldUser) {
+      const { x: oldX, y: oldY } = oldUser.profile;
+      hasMoved = x !== oldX || y !== oldY;
+    }
+    const mainUser = Meteor.user();
+    const shouldCheckDistance = hasMoved && !guest && !meet.api;
+
     if (isMe) {
       // Check distance between players
       const dist = Math.sqrt(((player.x - x) ** 2) + ((player.y - y) ** 2));
@@ -241,9 +247,15 @@ WorldScene = new Phaser.Class({
 
       // ensures this.player is assigned to the logged user
       if (this.player?.userId !== Meteor.userId() || !this.player.body) this.setAsMainPlayer(Meteor.userId());
-    } else if (oldUser) {
-      const { x: oldX, y: oldY } = oldUser.profile;
-      const hasMoved = x !== oldX || y !== oldY;
+
+      // check zone and near users on move
+      if (hasMoved) zones.checkDistances();
+
+      if (shouldCheckDistance) {
+        const otherUsers = Meteor.users.find({ _id: { $ne: mainUser._id } }).fetch();
+        userProximitySensor.checkDistances(mainUser, otherUsers);
+      }
+    } else {
       if (hasMoved) {
         player.lwOriginX = player.x;
         player.lwOriginY = player.y;
@@ -251,10 +263,10 @@ WorldScene = new Phaser.Class({
         player.lwTargetX = user.profile.x;
         player.lwTargetY = user.profile.y;
         player.lwTargetDate = moment().add(100, 'milliseconds');
-        if (!guest) userProximitySensor.checkDistances(Meteor.user(), [user]);
+        if (shouldCheckDistance) userProximitySensor.checkDistance(mainUser, user);
       }
 
-      if (!guest && user.profile.shareScreen !== oldUser.profile.shareScreen) peer.onStreamSettingsChanged(user);
+      if (!guest && user.profile.shareScreen !== oldUser?.profile.shareScreen) peer.onStreamSettingsChanged(user);
     }
 
     player.getByName('stateIndicator').visible = !guest && !shareAudio;
@@ -589,20 +601,11 @@ WorldScene = new Phaser.Class({
     userVoiceRecorderAbility.update(this.player.x, this.player.y, delta);
 
     const moving = Math.abs(this.player.body.velocity.x) > Number.EPSILON || Math.abs(this.player.body.velocity.y) > Number.EPSILON;
-    if (this.moving || this.wasMoving) {
+    if (moving || this.wasMoving) {
       this.physics.world.update(time, delta);
-      this.checkProximity = true;
-      zones.checkDistances();
       throttledSavePlayer(this.player);
     }
     this.wasMoving = moving;
-
-    if (this.player.guest || !this.checkProximity || meet.api) return;
-
-    const currentUser = Meteor.user();
-    const otherUsers = Meteor.users.find({ _id: { $ne: currentUser._id } }).fetch();
-    userProximitySensor.checkDistances(currentUser, otherUsers);
-    this.checkProximity = false;
   },
 
   updateCharacterNamesPositions() {

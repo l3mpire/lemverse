@@ -115,6 +115,7 @@ module.exports = {
     generateTURNCredentials: 'writable',
     isModalOpen: 'writable',
     scopes: 'writable',
+    destroyVideoSource: 'writable',
 
     tileGlobalIndex: 'writable',
     tileLayer: 'writable',

@@ -1,5 +1,12 @@
 const crypto = require('crypto');
 
+destroyVideoSource = video => {
+  if (!video) return;
+  video.pause();
+  video.src = '';
+  video.load();
+};
+
 nearestDuration = duration => {
   const message = [];
   message.push(lp.s.lpad(moment.duration(duration).asHours() | 0, 2, '0'));

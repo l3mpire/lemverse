@@ -44,13 +44,16 @@ peer = {
       const divElm = document.querySelector('.js-video-screen-me');
       divElm.srcObject = undefined;
       divElm.style.display = 'none';
-      document.querySelectorAll('.js-video-screen-me video').forEach(v => v.remove());
+      document.querySelectorAll('.js-video-screen-me video').forEach(v => {
+        destroyVideoSource(v);
+        v.remove();
+      });
     } else if (enabled) userProximitySensor.callProximityStartedForAllNearUsers();
   },
 
   closeAll() {
     if (Meteor.user().options?.debug) log('peer.closeAll: start');
-    _.each(userProximitySensor.nearUsers, user => this.close(user._id, 100));
+    _.each(calls, call => this.close(call.peer, 100));
   },
 
   closeCall(userId) {
@@ -103,13 +106,12 @@ peer = {
   close(userId, timeout = 0) {
     this.cancelCallOpening(userId);
     if (callsToClose[userId] && timeout !== 0) return;
-    Meteor.clearTimeout(callsToClose[userId]);
-    callsToClose[userId] = Meteor.setTimeout(() => this.closeCall(userId), timeout);
+    clearTimeout(callsToClose[userId]);
+    callsToClose[userId] = setTimeout(() => this.closeCall(userId), timeout);
   },
 
   createPeerCall(user, type) {
-    if (calls[`${user._id}-${type}`]) return;
-    if (!userProximitySensor.nearUsers[user._id]) { log(`peer call: creation cancelled (user is too far)`, user._id); return; }
+    if (calls[`${user._id}-${type}`]) { log(`peer call: creation cancelled (call already started)`, user._id); return; }
 
     const debug = Meteor.user()?.options?.debug;
     if (debug) log(`me -> you ${type} ***** new call with near`, user._id);
@@ -123,7 +125,7 @@ peer = {
       this.createOrUpdateRemoteStream(user, type);
       if (!call) { error(`me -> you ${type} ****** new call is null`, { user, stream, myPeer }); return; }
 
-      if (Meteor.user().options?.debug) call.on('close', () => { log(`me -> you ${type} ****** call closed`, user._id); });
+      if (debug) call.on('close', () => { log(`me -> you ${type} ****** call closed`, user._id); });
       calls[`${user._id}-${type}`] = call;
     });
   },
@@ -149,7 +151,7 @@ peer = {
   },
 
   requestUserMedia(forceNew = false) {
-    if (forceNew) this.destroyStream();
+    if (forceNew) this.destroyStream(myStream);
     if (myStream) return new Promise(resolve => resolve(myStream));
     const { shareVideo, shareAudio, videoRecorder, audioRecorder } = Meteor.user().profile;
 
@@ -159,6 +161,10 @@ peer = {
         audio: { deviceId: shareAudio && audioRecorder || false },
       })
       .then(stream => {
+        // remove old stream
+        this.destroyStream(myStream);
+
+        if (Meteor.user()?.options?.debug) log('create stream', stream.id);
         myStream = stream;
         Meteor.users.update(Meteor.userId(), { $set: { 'profile.userMediaError': false } });
 
@@ -240,12 +246,7 @@ peer = {
     this.stopTracks(stream);
 
     const userVideo = this.getVideoElement();
-    if (userVideo) {
-      userVideo.pause();
-      userVideo.src = '';
-      userVideo.load();
-      userVideo.classList.toggle('active', false);
-    }
+    destroyVideoSource(userVideo);
 
     if (stream === myStream) myStream = undefined;
     else if (stream === myScreenStream) myScreenStream = undefined;
@@ -292,8 +293,8 @@ peer = {
   onProximityStarted(user) {
     if (meet.api) return;
     this.cancelCallClose(user._id);
-    Meteor.clearTimeout(callsOpening[user._id]);
-    callsOpening[user._id] = Meteor.setTimeout(() => this.createPeerCalls(user), Meteor.settings.public.peer.callDelay);
+    clearTimeout(callsOpening[user._id]);
+    callsOpening[user._id] = setTimeout(() => this.createPeerCalls(user), Meteor.settings.public.peer.callDelay);
   },
 
   onProximityEnded(user) {
@@ -303,14 +304,14 @@ peer = {
   cancelCallClose(userId) {
     if (!callsToClose[userId]) return;
 
-    Meteor.clearTimeout(callsToClose[userId]);
+    clearTimeout(callsToClose[userId]);
     delete callsToClose[userId];
   },
 
   cancelCallOpening(userId) {
     if (!callsOpening[userId]) return;
 
-    Meteor.clearTimeout(callsOpening[userId]);
+    clearTimeout(callsOpening[userId]);
     delete callsOpening[userId];
   },
 
@@ -379,10 +380,6 @@ peer = {
     const remoteUser = Meteor.users.findOne({ _id: remoteUserId });
     if (!remoteUser) { log(`answer call: user not found "${remoteUserId}"`); return false; }
 
-    // ensures the user is near to answer and this check will trigger a peer creation if it didn't exist with the other user
-    userProximitySensor.checkDistance(Meteor.user(), remoteUser);
-    if (!userProximitySensor.nearUsers[remoteUserId]) { log(`answer call: user is too far`, remoteUserId); return true; }
-
     const callIdentifier = `${remoteUserId}-${remoteCall.metadata.type}`;
     remoteCalls[callIdentifier] = remoteCall;
 
@@ -390,14 +387,19 @@ peer = {
     this.createOrUpdateRemoteStream(remoteUser, remoteCall.metadata.type, null);
 
     // update call's with stream received
+    const debug = Meteor.user()?.options?.debug;
     remoteCall.on('stream', stream => {
-      const debug = Meteor.user()?.options?.debug;
       if (debug) log(`answer stream : from ${remoteUserId} (stream: ${stream.id})`, { userId: remoteUserId, type: remoteCall.metadata.type, stream: stream.id });
-
       this.createOrUpdateRemoteStream(remoteUser, remoteCall.metadata.type, stream);
     });
 
-    remoteCall.on('close', () => this.close(remoteUserId));
+    remoteCall.on('close', () => {
+      if (debug) log(`call with ${remoteUserId} closed`, { userId: remoteUserId, type: remoteCall.metadata.type });
+      this.close(remoteUserId);
+    });
+
+    // ensures a call to the other user exists on an answer to avoid one-way calls, do nothing if a call is already started
+    this.createPeerCalls(remoteUser);
 
     return true;
   },
@@ -475,6 +477,11 @@ peer = {
 
         myPeer.on('call', remoteCall => {
           if (debug) log(`you -> me ***** new answer call with ${remoteCall.metadata.userId}`, { userId: remoteCall.metadata.userId, type: remoteCall.metadata.type });
+          if (meet.api) {
+            log(`you -> me ***** call ignored with ${remoteCall.metadata.userId} (meet is open)`, { userId: remoteCall.metadata.userId, type: remoteCall.metadata.type });
+            return;
+          }
+
           remoteCall.answer();
 
           let attemptCounter = 0;
