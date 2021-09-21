@@ -19,7 +19,7 @@ userChatCircle = {
 
   update(x, y) {
     const wasVisible = this.chatCircle.visible;
-    this.chatCircle.visible = userProximitySensor.nearUsersCount() > 0;
+    this.chatCircle.visible = userProximitySensor.nearUsersCount() > 0 && !meet.api;
 
     if (this.chatCircle.visible) {
       if (wasVisible) {
