@@ -53,7 +53,7 @@ peer = {
 
   closeAll() {
     if (Meteor.user().options?.debug) log('peer.closeAll: start');
-    _.each(userProximitySensor.nearUsers, user => this.close(user._id, 100));
+    _.each(calls, call => this.close(call.peer, 100));
   },
 
   closeCall(userId) {
