@@ -101,6 +101,9 @@ peer = {
 
     if (debug) log('close call: call closed successfully', userId);
     sounds.play('webrtc-out');
+
+    // hack: peerjs (https://github.com/peers/peerjs/issues/780) notify manually the oher user due to a PeerJS bug not sending the close event
+    this.sendData([Meteor.users.findOne(userId)], { type: 'call-close-done', user: Meteor.userId() });
   },
 
   close(userId, timeout = 0) {
@@ -111,13 +114,18 @@ peer = {
   },
 
   createPeerCall(user, type) {
-    if (calls[`${user._id}-${type}`]) { log(`peer call: creation cancelled (call already started)`, user._id); return; }
+    const stream = type === 'user' ? myStream : myScreenStream;
+    if (calls[`${user._id}-${type}`]) {
+      log(`peer call: creation cancelled (call already started)`, user._id);
+      this.createOrUpdateRemoteStream(user, type);
+      this.sendData([user._id], { type: 'call-already-open', emitter: Meteor.userId(), streamType: type, data: stream });
+      return;
+    }
 
     const debug = Meteor.user()?.options?.debug;
     if (debug) log(`me -> you ${type} ***** new call with near`, user._id);
 
     this.getPeer().then(peer => {
-      const stream = type === 'user' ? myStream : myScreenStream;
       if (!stream) { error(`stream is undefined`, { user, stream, myPeer }); return; }
 
       if (debug) log(`me -> you ${type} ****** create call with ${user._id} (stream: ${stream.id})`, { user: user._id, stream });
@@ -464,6 +472,7 @@ peer = {
         myPeer.on('connection', connection => {
           connection.on('data', dataReceived => {
             if (dataReceived.type === 'audio') userVoiceRecorderAbility.playSound(dataReceived.data);
+            if (dataReceived.type === 'call-close-done') this.closeCall(dataReceived.user);
           });
         });
 
