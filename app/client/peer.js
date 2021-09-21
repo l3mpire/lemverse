@@ -106,8 +106,8 @@ peer = {
   close(userId, timeout = 0) {
     this.cancelCallOpening(userId);
     if (callsToClose[userId] && timeout !== 0) return;
-    Meteor.clearTimeout(callsToClose[userId]);
-    callsToClose[userId] = Meteor.setTimeout(() => this.closeCall(userId), timeout);
+    clearTimeout(callsToClose[userId]);
+    callsToClose[userId] = setTimeout(() => this.closeCall(userId), timeout);
   },
 
   createPeerCall(user, type) {
@@ -289,8 +289,8 @@ peer = {
   onProximityStarted(user) {
     if (meet.api) return;
     this.cancelCallClose(user._id);
-    Meteor.clearTimeout(callsOpening[user._id]);
-    callsOpening[user._id] = Meteor.setTimeout(() => this.createPeerCalls(user), Meteor.settings.public.peer.callDelay);
+    clearTimeout(callsOpening[user._id]);
+    callsOpening[user._id] = setTimeout(() => this.createPeerCalls(user), Meteor.settings.public.peer.callDelay);
   },
 
   onProximityEnded(user) {
@@ -300,14 +300,14 @@ peer = {
   cancelCallClose(userId) {
     if (!callsToClose[userId]) return;
 
-    Meteor.clearTimeout(callsToClose[userId]);
+    clearTimeout(callsToClose[userId]);
     delete callsToClose[userId];
   },
 
   cancelCallOpening(userId) {
     if (!callsOpening[userId]) return;
 
-    Meteor.clearTimeout(callsOpening[userId]);
+    clearTimeout(callsOpening[userId]);
     delete callsOpening[userId];
   },
 
@@ -473,6 +473,11 @@ peer = {
 
         myPeer.on('call', remoteCall => {
           if (debug) log(`you -> me ***** new answer call with ${remoteCall.metadata.userId}`, { userId: remoteCall.metadata.userId, type: remoteCall.metadata.type });
+          if (meet.api) {
+            log(`you -> me ***** call ignored with ${remoteCall.metadata.userId} (meet is open)`, { userId: remoteCall.metadata.userId, type: remoteCall.metadata.type });
+            return;
+          }
+
           remoteCall.answer();
 
           let attemptCounter = 0;
