@@ -151,7 +151,7 @@ peer = {
   },
 
   requestUserMedia(forceNew = false) {
-    if (forceNew) this.destroyStream();
+    if (forceNew) this.destroyStream(myStream);
     if (myStream) return new Promise(resolve => resolve(myStream));
     const { shareVideo, shareAudio, videoRecorder, audioRecorder } = Meteor.user().profile;
 
@@ -161,6 +161,10 @@ peer = {
         audio: { deviceId: shareAudio && audioRecorder || false },
       })
       .then(stream => {
+        // remove old stream
+        this.destroyStream(myStream);
+
+        if (Meteor.user()?.options?.debug) log('create stream', stream.id);
         myStream = stream;
         Meteor.users.update(Meteor.userId(), { $set: { 'profile.userMediaError': false } });
 
