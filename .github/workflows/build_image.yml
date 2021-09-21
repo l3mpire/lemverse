@@ -28,14 +28,14 @@ jobs:
       - run: echo ${{ steps.prepare.outputs.tag }}
       - name: Build and push master
         if: ${{ github.ref == 'refs/heads/master' }}
-        id: docker_build
+        id: docker_build_master
         uses: docker/build-push-action@v2
         with:
           push: true
           tags: latest
       - name: Build and push master
         if: ${{ github.ref == 'refs/heads/next' }}
-        id: docker_build
+        id: docker_build_next
         uses: docker/build-push-action@v2
         with:
           push: true
