@@ -41,7 +41,6 @@ const checkMediaAvailable = (template, type) => {
   const user = Meteor.users.findOne({ _id: remoteUser._id }).profile;
   if (!isRemoteUserSharingMedia(user, type)) {
     log(`Remote user has nothing to share`);
-    return;
   }
 
   const source = type === 'screen' ? remoteUser.screen?.srcObject : remoteUser.user?.srcObject;
@@ -92,7 +91,10 @@ Template.remoteStream.helpers({
   hasUserStream() { return this.remoteUser.user?.srcObject; },
   hasScreenStream() { return this.remoteUser.screen?.srcObject; },
   state() {
-    const { profile } = Meteor.users.findOne({ _id: this.remoteUser._id });
+    const user = Meteor.users.findOne({ _id: this.remoteUser._id });
+    if (!user) return 'user-error';
+
+    const { profile } = user;
     if (profile.userMediaError) return 'media-error';
 
     return this.remoteUser.waitingCallAnswer ? 'calling' : 'connected';
