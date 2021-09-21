@@ -325,7 +325,7 @@ Template.lemverse.onCreated(function () {
     if (event.repeat) return;
 
     const user = Meteor.user();
-    if (!user.roles?.admin) return;
+    // if (!user.roles?.admin) return;
     if (!userProximitySensor.nearUsersCount() && event.type === 'keydown') { lp.notif.error(`You need someone near you to whisper`); return; }
 
     recordVoice(event, chunks => {
