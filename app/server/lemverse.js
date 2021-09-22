@@ -1,7 +1,7 @@
 import { PeerServer } from 'peer';
 
 // eslint-disable-next-line new-cap
-PeerServer({ port: 7010, path: '/peer' });
+PeerServer({ ...Meteor.settings.peer.server });
 
 AccountsGuest.enabled = true;
 AccountsGuest.forced = true;
@@ -140,7 +140,7 @@ Meteor.methods({
   },
   getPeerConfig() {
     if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
-    const { url, path, config, port, secret } = Meteor.settings.peer.server;
+    const { url, path, config, port, secret } = Meteor.settings.peer.client;
     const { username, password: credential } = generateTURNCredentials(this.userId, secret);
 
     const iceServers = config.iceServers.map(({ urls, auth }) => {

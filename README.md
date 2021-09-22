@@ -272,7 +272,7 @@ Please note, that as stated in section `Deploy in production`, there is an addit
     "defaultLevelId": "lvl_iLOVEaLOTlemverse", // Default level Id created at first run.
 
     "peer": {
-      "server": {
+      "client": {
         "url": "peer.example.com",
         "port": 443,
         "path": "/peer",
@@ -282,8 +282,17 @@ Please note, that as stated in section `Deploy in production`, there is an addit
           "iceServers": [{
             "urls": "stun:stun.l.google.com:19302"
           }],
-          "iceTransportPolicy" : "all"
+          "iceTransportPolicy" : "all",
+          "sdpSemantics": "unified-plan"
         }
+      },
+      "server": {
+        "port": 7010,
+        "path": "/peer",
+        "key": "peerjs",
+        "alive_timeout": 60000,
+        "expire_timeout": 5000,
+        "allow_discovery": false,
       }
     }
   }

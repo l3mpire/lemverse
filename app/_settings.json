@@ -51,7 +51,7 @@
   "defaultLevelId": "lvl_iLOVEaLOTlemverse",
 
   "peer": {
-    "server": {
+    "client": {
       "url": "peer.example.com",
       "port": 443,
       "path": "/peer",
@@ -61,8 +61,17 @@
         "iceServers": [{ 
           "urls": "stun:stun.l.google.com:19302"
         }],
+        "iceTransportPolicy" : "all",
         "sdpSemantics": "unified-plan"
       }
+    },
+    "server": {
+      "port": 7010,
+      "path": "/peer",
+      "key": "peerjs",
+      "alive_timeout": 60000,
+      "expire_timeout": 5000,
+      "allow_discovery": false
     }
   }
 }

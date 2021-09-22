@@ -53,7 +53,7 @@ updateSkin = (user, levelId) => {
 };
 
 generateTURNCredentials = (name, secret) => {
-  const unixTimeStamp = parseInt(Date.now() / 1000, 10) + Meteor.settings.peer.server.credentialDuration;
+  const unixTimeStamp = parseInt(Date.now() / 1000, 10) + Meteor.settings.peer.client.credentialDuration;
   const username = [unixTimeStamp, name].join(':');
   const hmac = crypto.createHmac('sha1', secret);
   hmac.setEncoding('base64');
