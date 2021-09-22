@@ -1,5 +1,6 @@
-<img alt="lemverse" src="./app/public/lemverse-light.png" style="max-width: 70%; display: block; margin: 30px auto;">  
-
+<p align="center">
+  <img alt="lemverse" src="./app/public/lemverse.png" width="128" height="128">  
+</p>
 
 # Table of contents
 - [What is `lemverse`?](#what-is--lemverse--)
@@ -11,7 +12,6 @@
 - [License](#license)
 - [Credits](#credits)
 - [Screenshots](#screenshots)
-<br/><br/>
 
 # What is `lemverse`?
 
@@ -25,8 +25,8 @@
 If you have answer `yes` to one of those questions, then `lemverse` is for you!  
 You can either launch it locally, on a server or join us at [lemverse.com](https://lemverse.com).
 
-ℹ️ Can't wait to install lemverse? You can go directly to the [Getting started](#getting-started) section
-<br/><br/>
+> ℹ️ Can't wait to install lemverse? You can go directly to the [Getting started](#getting-started) section  
+> :warning: For the moment we only focus on compatibility with the Chrome browser  
 
 # What can I do in lemverse?
 
