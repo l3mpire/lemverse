@@ -323,6 +323,8 @@ Modify `createMyPeer` in `peer.js` to change the host to `lemverse-peer-USER-DOM
 
 Access to your local instance at: `https://lemverse-USER-DOMAIN`.
 
+> :warning: Don't forget to change the port to 443 for peers when using local tunnel
+
 ## First login
 
 Simply create your account and voila!  
