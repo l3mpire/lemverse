@@ -47,8 +47,18 @@ button:focus {
   left: 0;
   right: 0;
 
+  &.loading {
+
+    /* Hide pop-ins during loading */
+    >div {
+      opacity: 0 !important;
+    }
+  }
+
   >div {
     z-index: 3;
+    opacity: 1;
+    transition: opacity 0.25s;
   }
 
   >canvas {

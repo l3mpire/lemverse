@@ -62,7 +62,7 @@ WorldScene = new Phaser.Class({
     this.players = {};
     this.wasMoving = false;
     this.input.keyboard.enabled = false;
-    this.scene.pause();
+    this.scene.sleep();
     this.teleporterGraphics = [];
     userChatCircle.destroy();
     userVoiceRecorderAbility.init(this);
@@ -635,13 +635,14 @@ WorldScene = new Phaser.Class({
   },
 
   onLevelLoaded() {
+    this.scene.wake();
+
     // simulate a first frame update to avoid weirds visual effects with characters animation and direction
     this.update(0, 0);
 
     setTimeout(() => game.scene.keys.LoadingScene.hide(() => {
       this.input.keyboard.enabled = true;
       if (this.player) this.player.visible = true;
-      this.scene.resume();
     }), 0);
 
     if (Meteor.settings.public.debug) {
