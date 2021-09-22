@@ -327,9 +327,9 @@ peer = {
 
   sendData(users, data) {
     users = users.filter(Boolean); // remove falsy values
-    if (!users.length) return;
+    if (!users.length) return Promise.reject(new Error(`no users targeted`));
 
-    this.getPeer().then(peer => {
+    return this.getPeer().then(peer => {
       users.forEach(user => {
         try {
           const connection = peer.connect(user._id);
@@ -344,6 +344,8 @@ peer = {
           connection.on('error', () => lp.notif.warning(`${user.profile.name || user._id} was unavailable`));
         } catch (err) { lp.notif.error(`an error has occured during connection with ${user.profile.name || user._id}`); }
       });
+
+      return users.length;
     });
   },
 

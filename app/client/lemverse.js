@@ -309,15 +309,12 @@ Template.lemverse.onCreated(function () {
   hotkeys('r', { keyup: true, scope: scopes.player }, event => {
     if (event.repeat) return;
 
-    const user = Meteor.user();
-    if (!user.roles?.admin) return;
-
     recordVoice(event, chunks => {
+      const user = Meteor.user();
       const usersInZone = zones.usersInZone(zones.currentZone(user));
-      if (usersInZone.length) peer.sendData(usersInZone, { type: 'audio', emitter: user._id, data: chunks });
-
-      // Play the sound to the user to get a feedback
-      lp.notif.success('📣 Everyone has heard your powerful voice');
+      peer.sendData(usersInZone, { type: 'audio', emitter: user._id, data: chunks }).then(() => {
+        lp.notif.success(`📣 Everyone has heard your powerful voice`);
+      }).catch(() => lp.notif.warning('❌ No one is there to hear you'));
     });
   });
 
