@@ -1,6 +1,17 @@
-<img alt="lemverse" src="./app/public/lemverse-light.png">
+<img alt="lemverse" src="./app/public/lemverse-light.png" style="max-width: 70%; display: block; margin: 30px auto;">  
 
----
+
+# Table of contents
+- [What is `lemverse`?](#what-is--lemverse--)
+- [What can I do in lemverse?](#what-can-i-do-in-lemverse-)
+- [Getting started!](#getting-started-)
+- [Deploy in production!](#deploy-in-production-)
+- [Useful commands/tricks](#useful-commands-tricks)
+- [Assets](#assets)
+- [License](#license)
+- [Credits](#credits)
+- [Screenshots](#screenshots)
+<br/><br/>
 
 # What is `lemverse`?
 
@@ -15,6 +26,7 @@ If you have answer `yes` to one of those questions, then `lemverse` is for you!
 You can either launch it locally, on a server or join us at [lemverse.com](https://lemverse.com).
 
 ℹ️ Can't wait to install lemverse? You can go directly to the [Getting started](#getting-started) section
+<br/><br/>
 
 # What can I do in lemverse?
 
@@ -489,6 +501,11 @@ For example, to add a beta flag to yourself execute this command in your browser
 ```js
 remote("Meteor.users.update({ _id: Meteor.userId() }, { $addToSet: { 'beta': { $each: ['myAwesomeFeature'] } } });")
 ```
+
+
+# Assets
+
+We use paid assets from [limezu](https://limezu.itch.io/) on [itch.io](https://limezu.itch.io/moderninteriors) in the *version 35*. Please keep in mind than lemverse doesn't support the new character format for the moment.
 
 # License
 
