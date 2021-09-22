@@ -1,5 +1,6 @@
 import Peer from 'peerjs';
 
+const reconnectWaitingTime = 1000;
 const screenSharingDefaultFrameRate = 22;
 const callsToClose = {};
 const callsOpening = {};
@@ -429,7 +430,8 @@ peer = {
           myPeer.reconnect();
         } catch (err) { reconnected = false; }
 
-        if (reconnected) return resolve(myPeer);
+        // peerjs reconnect doesn't offer a promise or callback so we have to wait a certain time until the reconnection is done
+        if (reconnected) return new Promise(r => setTimeout(() => r(), reconnectWaitingTime)).then(() => resolve(myPeer));
       }
 
       if (debug) log('Peer invalid, creating new peer…');
