@@ -103,8 +103,9 @@ peer = {
     if (debug) log('close call: call closed successfully', userId);
     sounds.play('webrtc-out');
 
-    // hack: peerjs (https://github.com/peers/peerjs/issues/780) notify manually the oher user due to a PeerJS bug not sending the close event
-    this.sendData([Meteor.users.findOne(userId)], { type: 'call-close-done', user: Meteor.userId() });
+    // hack: peerjs (https://github.com/peers/peerjs/issues/780) notify manually the other user due to a PeerJS bug not sending the close event
+    const otherUser = Meteor.users.findOne(userId);
+    if (otherUser) this.sendData([otherUser], { type: 'call-close-done', user: Meteor.userId() });
   },
 
   close(userId, timeout = 0) {
@@ -325,6 +326,9 @@ peer = {
   },
 
   sendData(users, data) {
+    users = users.filter(Boolean); // remove falsy values
+    if (!users.length) return;
+
     this.getPeer().then(peer => {
       users.forEach(user => {
         try {
