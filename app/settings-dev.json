@@ -51,10 +51,10 @@
   "defaultLevelId": "lvl_iLOVEaLOTlemverse",
 
   "peer": {
+    "path": "/peer",
     "client": {
       "url": "localhost",
       "port": 7010,
-      "path": "/peer",
       "credentialDuration": 86400,
       "secret": "",
       "config": {
@@ -67,7 +67,6 @@
     },
     "server": {
       "port": 7010,
-      "path": "/peer",
       "key": "peerjs",
       "alive_timeout": 60000,
       "expire_timeout": 5000,

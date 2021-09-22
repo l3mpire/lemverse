@@ -272,10 +272,10 @@ Please note, that as stated in section `Deploy in production`, there is an addit
     "defaultLevelId": "lvl_iLOVEaLOTlemverse", // Default level Id created at first run.
 
     "peer": {
+      "path": "/peer",
       "client": {
         "url": "peer.example.com",
         "port": 443,
-        "path": "/peer",
         "secret": "******", // Required for turn server support
         "credentialDuration": 86400,
         "config": {
@@ -286,9 +286,9 @@ Please note, that as stated in section `Deploy in production`, there is an addit
           "sdpSemantics": "unified-plan"
         }
       },
+      // Details about the configuration bellow is available here: https://github.com/peers/peerjs-server#config--cli-options
       "server": {
         "port": 7010,
-        "path": "/peer",
         "key": "peerjs",
         "alive_timeout": 60000,
         "expire_timeout": 5000,
