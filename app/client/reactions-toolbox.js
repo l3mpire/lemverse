@@ -21,7 +21,7 @@ Template.reactionsToolbox.helpers({
 });
 
 Template.reactionsToolbox.events({
-  'mousedown .js-reaction'(e) {
+  'touchstart .js-reaction, mousedown .js-reaction'(e) {
     e.preventDefault();
     e.stopPropagation();
     const { value } = event.target.dataset;
@@ -29,7 +29,7 @@ Template.reactionsToolbox.events({
 
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.reaction': value } });
   },
-  'mouseup .js-reaction'(e) {
+  'touchend .js-reaction, mouseup .js-reaction'(e) {
     e.preventDefault();
     e.stopPropagation();
     Meteor.users.update(Meteor.userId(), { $unset: { 'profile.reaction': 1 } });
