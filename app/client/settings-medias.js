@@ -32,7 +32,7 @@ Template.settingsMedias.onRendered(() => {
 });
 
 Template.settingsMedias.onDestroyed(() => {
-  if (userProximitySensor.nearUsersCount() === 0) peer.destroyStream();
+  if (userProximitySensor.nearUsersCount() === 0) peer.destroyStream(myStream);
 });
 
 Template.settingsMedias.events({

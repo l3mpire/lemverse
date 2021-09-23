@@ -28,7 +28,7 @@
         {{> reactionsToolbox}}
       {{/if}}
       {{> zonesName}}
-      <div id="game" class="{{#if neq (Session 'editor') 0}}edit{{/if}}"></div>
+      <div id="game" class="{{#if neq (Session 'editor') 0}}edit{{/if}} {{#if isLoading}}loading{{/if}}"></div>
     </div>
     <div id="meet"></div>
     <div id="webpage">

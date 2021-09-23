@@ -58,7 +58,7 @@ meet = {
     meet.api = new window.JitsiMeetExternalAPI(Meteor.settings.public.meet.serverURL, options);
     $('#meet').addClass('show');
 
-    peer.closeAll();
+    peer.destroy();
     userProximitySensor.callProximityEndedForAllNearUsers();
   },
 

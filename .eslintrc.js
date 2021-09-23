@@ -116,6 +116,7 @@ module.exports = {
     isModalOpen: 'writable',
     scopes: 'writable',
     destroyVideoSource: 'writable',
+    waitFor: 'writable',
 
     tileGlobalIndex: 'writable',
     tileLayer: 'writable',
