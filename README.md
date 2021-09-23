@@ -257,7 +257,8 @@ Please note, that as stated in section `Deploy in production`, there is an addit
           "https://chatfaitdubien.fr/wp-content/uploads/2016/09/chaton.jpg",
           "https://i.pinimg.com/564x/8b/f7/c6/8bf7c6e26f7250944e963f23f364b68f.jpg"
         ],
-        "callDelay": 250 // Delay before a call is started, useful to avoid a call when you pass by someone
+        "callDelay": 250, // Delay before a call is started, useful to avoid a call when you pass by someone
+        "delayBeforeClosingCall": 1000
       },
 
       "meet": { // Jitsi settings

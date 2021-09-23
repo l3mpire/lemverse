@@ -25,7 +25,8 @@
         "https://chatfaitdubien.fr/wp-content/uploads/2016/09/chaton.jpg",
         "https://i.pinimg.com/564x/8b/f7/c6/8bf7c6e26f7250944e963f23f364b68f.jpg"
       ],
-      "callDelay": 250
+      "callDelay": 250,
+      "delayBeforeClosingCall": 1000
     },
 
     "meet": {

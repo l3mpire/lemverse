@@ -65,3 +65,15 @@ generateTURNCredentials = (name, secret) => {
     password: hmac.read(),
   };
 };
+
+waitFor = (condition, attempt, delay = 250) => new Promise((resolve, reject) => {
+  let currentAttempt = 0;
+  const waitFunc = () => {
+    currentAttempt++;
+    if (condition()) { resolve(); return; }
+    if (currentAttempt >= attempt) reject(new Error('too many attempt'));
+    else setTimeout(waitFunc, delay);
+  };
+
+  waitFunc();
+});
