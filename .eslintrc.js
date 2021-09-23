@@ -114,6 +114,9 @@ module.exports = {
     peerConfig: 'writable',
     generateTURNCredentials: 'writable',
     isModalOpen: 'writable',
+    scopes: 'writable',
+    destroyVideoSource: 'writable',
+    waitFor: 'writable',
 
     tileGlobalIndex: 'writable',
     tileLayer: 'writable',

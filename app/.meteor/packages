@@ -21,7 +21,7 @@ session@1.2.0
 random@1.2.0
 momentjs:moment
 accounts-base@2.0.1
-accounts-password@2.0.0
+accounts-password@2.0.1
 accounts-ui@1.4.0
 kadira:flow-router
 http@1.4.2

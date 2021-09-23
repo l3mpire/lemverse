@@ -22,31 +22,31 @@ Template.tileImg.helpers({
 // tilesetToolbox
 //
 const bindKeyboardShortcuts = () => {
-  hotkeys('command+z', { scope: 'editor-menu' }, event => {
+  hotkeys('command+z', { scope: scopes.editor }, event => {
     event.preventDefault();
     game.scene.keys.EditorScene.undo();
   });
-  hotkeys('shift+command+z', { scope: 'editor-menu' }, event => {
+  hotkeys('shift+command+z', { scope: scopes.editor }, event => {
     event.preventDefault();
     game.scene.keys.EditorScene.redo();
   });
-  hotkeys('0', () => Session.set('selectedTiles', { index: -1, scope: 'editor-menu' }));
-  hotkeys('1', () => Session.set('selectedTiles', { index: -2, scope: 'editor-menu' }));
-  hotkeys('2', () => Session.set('selectedTiles', { index: -3, scope: 'editor-menu' }));
-  hotkeys('3', () => Session.set('selectedTiles', { index: -4, scope: 'editor-menu' }));
-  hotkeys('4', () => Session.set('selectedTiles', { index: -5, scope: 'editor-menu' }));
-  hotkeys('5', () => Session.set('selectedTiles', { index: -6, scope: 'editor-menu' }));
-  hotkeys('6', () => Session.set('selectedTiles', { index: -7, scope: 'editor-menu' }));
-  hotkeys('7', () => Session.set('selectedTiles', { index: -8, scope: 'editor-menu' }));
-  hotkeys('8', () => Session.set('selectedTiles', { index: -9, scope: 'editor-menu' }));
-  hotkeys('c', () => Session.set('selectedTiles', { index: -99, scope: 'editor-menu' }));
+  hotkeys('0', () => Session.set('selectedTiles', { index: -1, scope: scopes.editor }));
+  hotkeys('1', () => Session.set('selectedTiles', { index: -2, scope: scopes.editor }));
+  hotkeys('2', () => Session.set('selectedTiles', { index: -3, scope: scopes.editor }));
+  hotkeys('3', () => Session.set('selectedTiles', { index: -4, scope: scopes.editor }));
+  hotkeys('4', () => Session.set('selectedTiles', { index: -5, scope: scopes.editor }));
+  hotkeys('5', () => Session.set('selectedTiles', { index: -6, scope: scopes.editor }));
+  hotkeys('6', () => Session.set('selectedTiles', { index: -7, scope: scopes.editor }));
+  hotkeys('7', () => Session.set('selectedTiles', { index: -8, scope: scopes.editor }));
+  hotkeys('8', () => Session.set('selectedTiles', { index: -9, scope: scopes.editor }));
+  hotkeys('c', () => Session.set('selectedTiles', { index: -99, scope: scopes.editor }));
 };
 
 const unbindKeyboardShortcuts = () => {
-  hotkeys.unbind('command+z');
-  hotkeys.unbind('shift+command+z');
-  for (let i = 0; i < 8; i++) hotkeys.unbind(i.toString());
-  hotkeys.unbind('c');
+  hotkeys.unbind('command+z', scopes.editor);
+  hotkeys.unbind('shift+command+z', scopes.editor);
+  for (let i = 0; i < 8; i++) hotkeys.unbind(i.toString(), scopes.editor);
+  hotkeys.unbind('c', scopes.editor);
 };
 
 Template.tilesetToolbox.onCreated(() => {

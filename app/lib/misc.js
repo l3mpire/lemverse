@@ -1,5 +1,12 @@
 const crypto = require('crypto');
 
+destroyVideoSource = video => {
+  if (!video) return;
+  video.pause();
+  video.src = '';
+  video.load();
+};
+
 nearestDuration = duration => {
   const message = [];
   message.push(lp.s.lpad(moment.duration(duration).asHours() | 0, 2, '0'));
@@ -46,7 +53,7 @@ updateSkin = (user, levelId) => {
 };
 
 generateTURNCredentials = (name, secret) => {
-  const unixTimeStamp = parseInt(Date.now() / 1000, 10) + Meteor.settings.peer.server.credentialDuration;
+  const unixTimeStamp = parseInt(Date.now() / 1000, 10) + Meteor.settings.peer.client.credentialDuration;
   const username = [unixTimeStamp, name].join(':');
   const hmac = crypto.createHmac('sha1', secret);
   hmac.setEncoding('base64');
@@ -58,3 +65,15 @@ generateTURNCredentials = (name, secret) => {
     password: hmac.read(),
   };
 };
+
+waitFor = (condition, attempt, delay = 250) => new Promise((resolve, reject) => {
+  let currentAttempt = 0;
+  const waitFunc = () => {
+    currentAttempt++;
+    if (condition()) { resolve(); return; }
+    if (currentAttempt >= attempt) reject(new Error('too many attempt'));
+    else setTimeout(waitFunc, delay);
+  };
+
+  waitFunc();
+});

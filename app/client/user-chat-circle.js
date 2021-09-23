@@ -11,16 +11,15 @@ userChatCircle = {
 
   init(container) {
     if (this.chatCircle) return;
-    this.chatCircle = container.add.graphics();
-    this.chatCircle.lineStyle(1.5, 0xFFFFFF, 1);
-    this.chatCircle.strokeCircle(0, 0, userProximitySensor.nearDistance);
+    this.chatCircle = container.add.circle(0, 0, userProximitySensor.nearDistance);
+    this.chatCircle.setStrokeStyle(1.5, 0xFFFFFF);
     this.chatCircle.setDepth(99998);
     this.chatCircle.visible = false;
   },
 
   update(x, y) {
     const wasVisible = this.chatCircle.visible;
-    this.chatCircle.visible = userProximitySensor.nearUsersCount() > 0 && _.keys(calls).length > 0;
+    this.chatCircle.visible = userProximitySensor.nearUsersCount() > 0 && !meet.api;
 
     if (this.chatCircle.visible) {
       if (wasVisible) {

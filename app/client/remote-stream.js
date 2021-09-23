@@ -41,7 +41,6 @@ const checkMediaAvailable = (template, type) => {
   const user = Meteor.users.findOne({ _id: remoteUser._id }).profile;
   if (!isRemoteUserSharingMedia(user, type)) {
     log(`Remote user has nothing to share`);
-    return;
   }
 
   const source = type === 'screen' ? remoteUser.screen?.srcObject : remoteUser.user?.srcObject;
@@ -70,9 +69,17 @@ Template.webcam.onRendered(function () {
   }
 });
 
+Template.webcam.onDestroyed(function () {
+  destroyVideoSource(this.find('video'));
+});
+
 Template.screenshare.onRendered(function () {
   this.attempt = 1;
   checkMediaAvailable(this, 'screen');
+});
+
+Template.screenshare.onDestroyed(function () {
+  destroyVideoSource(this.find('video'));
 });
 
 Template.remoteStream.onCreated(function () {
@@ -83,7 +90,15 @@ Template.remoteStream.helpers({
   mediaState() { return Meteor.users.findOne({ _id: this.remoteUser._id })?.profile; },
   hasUserStream() { return this.remoteUser.user?.srcObject; },
   hasScreenStream() { return this.remoteUser.screen?.srcObject; },
-  isWaitingAnswer() { return this.remoteUser.waitingCallAnswer; },
+  state() {
+    const user = Meteor.users.findOne({ _id: this.remoteUser._id });
+    if (!user) return 'user-error';
+
+    const { profile } = user;
+    if (profile.userMediaError) return 'media-error';
+
+    return this.remoteUser.waitingCallAnswer ? 'calling' : 'connected';
+  },
   isTalking() { return Template.instance().talking.get(); },
   talkingVar() { return Template.instance().talking; },
 });
