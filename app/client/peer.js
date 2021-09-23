@@ -24,7 +24,7 @@ peer = {
     if (!myStream) return;
     _.each(myStream.getVideoTracks(), track => { track.enabled = enabled; });
     if (enabled && notifyNearUsers) userProximitySensor.callProximityStartedForAllNearUsers();
-    if (!enabled) document.querySelector('.js-video-me')?.style.backgroundImage = `url(https://robohash.org/${encodeURI(Meteor.user().profile.name)}?set=set4&bgset=bg2&size=164x124)`;
+    if (!enabled) document.querySelector('.js-video-me').style.backgroundImage = `url(https://robohash.org/${encodeURI(Meteor.user().profile.name)}?set=set4&bgset=bg2&size=164x124)`;
     if (myStream.id !== this.getVideoElement().srcObject?.id) this.getVideoElement().srcObject = myStream;
   },
   stopTracks(stream) {
