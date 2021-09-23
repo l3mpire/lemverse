@@ -28,14 +28,14 @@ LoadingScene = new Phaser.Class({
         alpha: 1,
       },
     });
-    this.background.fillRect(-window.innerWidth / 2, -window.innerHeight / 2, window.innerWidth, window.innerHeight);
+    this.background.fillRect(-screen.width / 2, -screen.height / 2, screen.width, screen.height);
 
-    this.background_characters = this.add.tileSprite(-window.innerWidth / 2, -window.innerHeight / 2, window.innerWidth * 2, window.innerHeight * 2, 'scene-loader-background');
+    this.background_characters = this.add.tileSprite(-screen.width / 2, -screen.height / 2, screen.width * 2, screen.height * 2, 'scene-loader-background');
     this.background_characters.setAlpha(0.1);
 
     this.logo = this.add.sprite(0, -60, 'logo');
     this.text = this.add.text(0, 45, 'Loading lemverse…', { font: '20px Verdana' }).setDepth(99997).setOrigin(0.5, 1);
-    this.container = this.add.container(window.innerWidth / 2, window.innerHeight / 2);
+    this.container = this.add.container(screen.width / 2, screen.height / 2);
     this.container.add([this.background, this.background_characters, this.logo, this.text]);
     this.container.visible = visible;
   },
@@ -69,7 +69,7 @@ LoadingScene = new Phaser.Class({
   },
 
   update(time, delta) {
-    this.container.setPosition(window.innerWidth / 2, window.innerHeight / 2);
+    this.container.setPosition(screen.width / 2, screen.height / 2);
     this.background_characters.tilePositionX += this.backgroundSpeed * delta;
     this.background_characters.tilePositionY += this.backgroundSpeed * delta;
   },

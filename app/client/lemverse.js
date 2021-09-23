@@ -21,8 +21,8 @@ isModalOpen = () => Session.get('displaySettings') || Session.get('displayZoneId
 const config = {
   type: Phaser.AUTO,
   parent: 'game',
-  width: window.innerWidth / Meteor.settings.public.zoom,
-  height: window.innerHeight / Meteor.settings.public.zoom,
+  width: screen.width / Meteor.settings.public.zoom,
+  height: screen.height / Meteor.settings.public.zoom,
   zoom: Meteor.settings.public.zoom,
   inputWindowEvents: false,
   pixelArt: true,
