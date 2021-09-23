@@ -2,6 +2,10 @@ const isUrl = string => {
   try { return Boolean(new URL(string)); } catch (e) { return false; }
 };
 
+const dispatchPopInEvent = event => {
+  if (characterPopIns.onPopInEvent) characterPopIns.onPopInEvent(event);
+};
+
 characterPopIns = {
   className: 'character-pop-in',
   container: undefined,
@@ -12,9 +16,15 @@ characterPopIns = {
   popIns: [],
 
   init(container) {
-    if (this.container) this.destroyAll();
+    if (this.container) this.destroy();
     this.container = container;
-    window.document.addEventListener('pop-in-event', e => this.onPopInEvent && this.onPopInEvent(e), false);
+
+    window.document.removeEventListener('pop-in-event', dispatchPopInEvent);
+    window.document.addEventListener('pop-in-event', dispatchPopInEvent, false);
+  },
+
+  dispatchPopInEvent(event) {
+    if (this.onPopInEvent) this.onPopInEvent(event);
   },
 
   initFromZone(zone) {
@@ -66,7 +76,7 @@ characterPopIns = {
     return `<div class="toggle-full-screen"></div><iframe frameborder="0" src="${url}"></iframe>`;
   },
 
-  destroy(userId, popInIdentifier) {
+  destroyPopIn(userId, popInIdentifier) {
     const characterPopIns = this.popIns[userId];
     if (!characterPopIns) return;
 
@@ -77,8 +87,8 @@ characterPopIns = {
     delete this.popIns[userId][popInIdentifier];
   },
 
-  destroyAll() {
-    Object.keys(this.popIns).forEach(userId => this.destroy(userId));
+  destroy() {
+    Object.keys(this.popIns).forEach(userId => this.destroyPopIn(userId));
     this.popIns = [];
   },
 
