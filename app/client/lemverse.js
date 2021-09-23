@@ -24,6 +24,7 @@ const config = {
   width: window.innerWidth / Meteor.settings.public.zoom,
   height: window.innerHeight / Meteor.settings.public.zoom,
   zoom: Meteor.settings.public.zoom,
+  inputWindowEvents: false,
   pixelArt: true,
   physics: {
     default: 'arcade',
@@ -435,20 +436,30 @@ Template.lemverse.helpers({
 });
 
 Template.lemverse.events({
-  'click .button.audio'() {
+  'click .button.audio'(e) {
+    e.preventDefault();
+    e.stopPropagation();
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareAudio': !Meteor.user().profile.shareAudio } });
   },
-  'click .button.video'() {
+  'click .button.video'(e) {
+    e.preventDefault();
+    e.stopPropagation();
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareVideo': !Meteor.user().profile.shareVideo } });
   },
-  'click .button.screen'() {
+  'click .button.screen'(e) {
+    e.preventDefault();
+    e.stopPropagation();
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': !Meteor.user().profile.shareScreen } });
   },
-  'click .button.settings'() {
+  'click .button.settings'(e) {
+    e.preventDefault();
+    e.stopPropagation();
     if (!Session.get('displaySettings')) settings.enumerateDevices();
     Session.set('displaySettings', !Session.get('displaySettings'));
   },
-  'click .button.js-notifications'() {
+  'click .button.js-notifications'(e) {
+    e.preventDefault();
+    e.stopPropagation();
     Session.set('displayNotificationsPanel', !Session.get('displayNotificationsPanel'));
   },
 });
