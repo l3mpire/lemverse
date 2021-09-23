@@ -59,12 +59,12 @@ WorldScene = new Phaser.Class({
     this.characterNamesObjects = {};
     this.isMouseDown = false;
     this.layers = [];
+    this.map = undefined;
     this.players = {};
     this.wasMoving = false;
     this.input.keyboard.enabled = false;
     this.scene.sleep();
     this.teleporterGraphics = [];
-    userChatCircle.destroy();
     userVoiceRecorderAbility.init(this);
     characterPopIns.init(this);
     Session.set('gameCreated', false);
@@ -398,7 +398,7 @@ WorldScene = new Phaser.Class({
     });
 
     // layers
-    this.initLayers();
+    this.initMapLayers();
 
     // Tilesets
     this.addTilesetsToLayers(Tilesets.find().fetch());
@@ -440,10 +440,11 @@ WorldScene = new Phaser.Class({
     }
 
     // events
-    this.events.on('postupdate', this.postUpdate.bind(this));
+    this.events.on('postupdate', this.postUpdate.bind(this), this);
+    this.events.once('shutdown', this.shutdown.bind(this), this);
 
     zones.onZoneChanged = (zone, previousZone) => {
-      if (previousZone && !previousZone.popInConfiguration?.autoOpen) characterPopIns.destroy(Meteor.userId(), previousZone._id);
+      if (previousZone && !previousZone.popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(Meteor.userId(), previousZone._id);
       if (!zone) return;
 
       const { targetedLevelId: levelId, userLevelTeleporter, inlineURL } = zone;
@@ -491,13 +492,16 @@ WorldScene = new Phaser.Class({
     if (newTilesets.length) _.each(this.layers, layer => layer.setTilesets([...layer.tileset, ...newTilesets]));
   },
 
-  initLayers() {
-    // clean
+  destroyMapLayers() {
     _.each(this.layers, layer => {
-      if (layer.playerCollider) this.physics.world.removeCollider(layer.playerCollider);
+      if (layer.playerCollider) this.physics.world?.removeCollider(layer.playerCollider);
       layer.destroy();
     });
     this.map.removeAllLayers();
+  },
+
+  initMapLayers() {
+    this.destroyMapLayers();
 
     // create
     this.layers = [];
@@ -632,6 +636,16 @@ WorldScene = new Phaser.Class({
     game.scene.keys.LoadingScene.setText(levelToLoad.name);
     game.scene.keys.LoadingScene.show();
     setTimeout(() => this.scene.restart({ levelId }), 0);
+  },
+
+  shutdown() {
+    this.events.removeListener('postupdate');
+    this.events.off('postupdate', this.postUpdate.bind(this), this);
+    this.destroyMapLayers();
+    this.map?.destroy();
+    characterPopIns.destroy();
+    userChatCircle.destroy();
+    userVoiceRecorderAbility.destroy();
   },
 
   onLevelLoaded() {
