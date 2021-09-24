@@ -41,6 +41,7 @@ userStreams = {
     _.each(mainStream.getVideoTracks(), track => { track.enabled = enabled; });
     if (enabled && notifyNearUsers) userProximitySensor.callProximityStartedForAllNearUsers();
     if (mainStream.id !== this.getVideoElement().srcObject?.id) this.getVideoElement().srcObject = mainStream;
+    if (!enabled) document.querySelector('.js-video-me').style.backgroundImage = `url(https://robohash.org/${encodeURI(Meteor.user().profile.name)}?set=set4&bgset=bg2&size=164x124)`;
   },
 
   screen(enabled) {
@@ -80,7 +81,7 @@ userStreams = {
       this.streams.main.instance = undefined;
       this.getVideoElement()?.classList.toggle('active', false);
     } else if (stream === this.streams.screen.instance) this.streams.screen.instance = undefined;
-
+    document.querySelector('.js-video-me').style.backgroundImage = '';
     if (debug) log('destroy stream: done');
   },
 
