@@ -1,18 +1,17 @@
 import Peer from 'peerjs';
 
-calls = {};
-remoteCalls = {};
-
 peer = {
-  peerInstance: undefined,
+  calls: {},
   callsToClose: {},
   callsOpening: {},
+  remoteCalls: {},
+  peerInstance: undefined,
   peerLoading: false,
   remoteStreamsByUsers: new ReactiveVar([]),
 
   closeAll() {
     if (Meteor.user().options?.debug) log('peer.closeAll: start');
-    _.each(calls, call => this.close(call.peer, 100));
+    _.each(this.calls, call => this.close(call.peer, 100));
   },
 
   closeCall(userId) {
@@ -21,7 +20,7 @@ peer = {
 
     let activeCallsCount = 0;
     const close = (remote, user, type) => {
-      const callsSource = remote ? remoteCalls : calls;
+      const callsSource = remote ? this.remoteCalls : this.calls;
       const call = callsSource[`${user}-${type}`];
       if (call) {
         activeCallsCount++;
@@ -83,7 +82,7 @@ peer = {
     if (debug) log(`peer call: create new peer call with ${user._id}`, { user: user._id, type });
     if (!stream) { error(`stream is undefined`, { user, stream }); return; }
 
-    if (calls[`${user._id}-${type}`]) {
+    if (this.calls[`${user._id}-${type}`]) {
       if (debug) log(`peer call: creation cancelled (call already started)`);
       return;
     }
@@ -102,7 +101,7 @@ peer = {
     }
 
     // update html element with the last stream instance
-    calls[`${user._id}-${type}`] = call;
+    this.calls[`${user._id}-${type}`] = call;
     this.createOrUpdateRemoteStream(user, type);
 
     // ensures peers are using last stream & tracks available
@@ -115,7 +114,7 @@ peer = {
   createPeerCalls(user) {
     const { shareAudio, shareScreen, shareVideo } = Meteor.user().profile;
 
-    if (!calls[`${user._id}-${streamTypes.main}`] && !calls[`${user._id}-${streamTypes.screen}`]) sounds.play('webrtc-in');
+    if (!this.calls[`${user._id}-${streamTypes.main}`] && !this.calls[`${user._id}-${streamTypes.screen}`]) sounds.play('webrtc-in');
 
     this.getPeer().then(peer => {
       if (shareAudio || shareVideo) userStreams.createStream().then(stream => this.createPeerCall(peer, stream, user));
@@ -139,7 +138,7 @@ peer = {
       const audioTrack = stream.getAudioTracks()[0];
       const videoTrack = stream.getVideoTracks()[0];
 
-      _.each(calls, (call, key) => {
+      _.each(this.calls, (call, key) => {
         if (key.indexOf('-screen') !== -1) return;
         if (debug) log(`update peers stream: sending stream to user ${key}`);
         const senders = call.peerConnection.getSenders();
@@ -154,7 +153,7 @@ peer = {
       if (debug) log(`update peers stream: screen share stream ${stream.id}`, stream);
       const screenTrack = stream.getVideoTracks()[0];
 
-      _.each(calls, (call, key) => {
+      _.each(this.calls, (call, key) => {
         if (key.indexOf('-screen') === -1) return;
         const senders = call.peerConnection.getSenders();
 
@@ -277,7 +276,7 @@ peer = {
     remoteCall.answer();
 
     const callIdentifier = `${remoteUserId}-${remoteCall.metadata.type}`;
-    remoteCalls[callIdentifier] = remoteCall;
+    this.remoteCalls[callIdentifier] = remoteCall;
 
     // show the remote call with an empty stream
     this.createOrUpdateRemoteStream(remoteUser, remoteCall.metadata.type);

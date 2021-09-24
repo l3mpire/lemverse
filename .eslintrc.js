@@ -86,8 +86,6 @@ module.exports = {
     selectedTileset: 'writable',
     selectedCharactersPart: 'writable',
     findFirstCharacters: 'writable',
-    calls: 'writable',
-    remoteCalls: 'writable',
     tilesets: 'writable',
     layers: 'writable',
     undoTiles: 'writable',

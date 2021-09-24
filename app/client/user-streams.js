@@ -48,11 +48,11 @@ userStreams = {
     if (screenStream && !enabled) {
       this.stopTracks(screenStream);
       this.streams.screen.instance = undefined;
-      _.each(calls, (call, key) => {
+      _.each(peer.calls, (call, key) => {
         if (key.indexOf('-screen') === -1) return;
         if (Meteor.user().options?.debug) log('me -> you screen ****** I stop sharing screen, call closing', key);
         call.close();
-        delete calls[key];
+        delete peer.calls[key];
       });
 
       const divElm = document.querySelector('.js-video-screen-me');
