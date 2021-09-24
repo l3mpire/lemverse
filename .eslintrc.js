@@ -88,7 +88,6 @@ module.exports = {
     findFirstCharacters: 'writable',
     calls: 'writable',
     remoteCalls: 'writable',
-    myPeer: 'writable',
     tilesets: 'writable',
     layers: 'writable',
     undoTiles: 'writable',
