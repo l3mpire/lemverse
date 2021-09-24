@@ -19,7 +19,7 @@ settings = {
 };
 
 const initStream = () => {
-  peer.requestUserMedia(true).then(settings.enumerateDevices).then(stream => {
+  userStreams.requestUserMedia().then(settings.enumerateDevices).then(stream => {
     const video = document.querySelector('#js-video-preview');
     video.srcObject = stream;
     video.onloadedmetadata = () => video.play();
@@ -28,11 +28,11 @@ const initStream = () => {
 
 Template.settingsMedias.onRendered(() => {
   initStream();
-  navigator.mediaDevices.ondevicechange = () => peer.requestUserMedia(true).then(settings.enumerateDevices);
+  navigator.mediaDevices.ondevicechange = () => userStreams.requestUserMedia(true).then(settings.enumerateDevices);
 });
 
 Template.settingsMedias.onDestroyed(() => {
-  if (userProximitySensor.nearUsersCount() === 0) peer.destroyStream(myStream);
+  if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(myStream);
 });
 
 Template.settingsMedias.events({
@@ -40,17 +40,17 @@ Template.settingsMedias.events({
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.audioRecorder': event.target.value } });
     initStream();
     if (!myStream) return;
-    peer.applyConstraints(myStream, 'audio', { deviceId: event.target.value });
+    userStreams.applyConstraints(myStream, 'audio', { deviceId: event.target.value });
   },
   'change .js-cam-select'(event) {
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.videoRecorder': event.target.value } });
     initStream();
     if (!myStream) return;
-    peer.applyConstraints(myStream, 'video', { deviceId: event.target.value });
+    userStreams.applyConstraints(myStream, 'video', { deviceId: event.target.value });
   },
   'change .js-screen-framerate'(event) {
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.screenShareFrameRate': event.target.value } });
-    if (myScreenStream) peer.applyConstraints(myScreenStream, 'video', { frameRate: event.target.value });
+    if (myScreenStream) userStreams.applyConstraints(myScreenStream, 'video', { frameRate: event.target.value });
   },
 });
 

@@ -117,6 +117,7 @@ module.exports = {
     scopes: 'writable',
     destroyVideoSource: 'writable',
     waitFor: 'writable',
+    userStreams: 'writable',
 
     tileGlobalIndex: 'writable',
     tileLayer: 'writable',
