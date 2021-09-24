@@ -235,7 +235,7 @@ peer = {
       streamsByUsers.push({
         _id: user._id,
         name: user.profile.name,
-        avatar: user.profile.avatar || `https://robohash.org/${encodeURI(user.profile.name)}?set=set4&bgset=bg2&size=320x240`,
+        avatar: getRandomAvatarForUser(user),
         main: {},
         screen: {},
         waitingCallAnswer: true,
