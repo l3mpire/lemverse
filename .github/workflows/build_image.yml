@@ -3,7 +3,6 @@ name: Build Docker Image
 on:
   push:
     branches:
-      - next
       - master
       
 jobs:
@@ -14,8 +13,6 @@ jobs:
       - name: Check out
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0
-          token: '${{ secrets.PERSONAL_ACCESS_TOKEN }}'
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -25,20 +22,10 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run: echo ${{ steps.prepare.outputs.tag }}
       - name: Build and push master
         if: ${{ github.ref == 'refs/heads/master' }}
         id: docker_build_master
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: l3mpire/lemverse:latest
-      - name: Build and push master
-        if: ${{ github.ref == 'refs/heads/next' }}
-        id: docker_build_next
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          tags: l3mpire/lemverse:next
-      - name: Image digest
-        run: echo ${{ steps.prepare.outputs.tag }}
+          tags: lempire/lemverse:latest
