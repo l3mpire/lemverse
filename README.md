@@ -497,6 +497,15 @@ For example, to add a beta flag to yourself execute this command in your browser
 remote("Meteor.users.update({ _id: Meteor.userId() }, { $addToSet: { 'beta': { $each: ['myAwesomeFeature'] } } });")
 ```
 
+## Custom avatars
+
+It's possible to modify the avatars displayed during a discussion using an image API. To do so, you just have to modify the `settings.json` file.
+
+You can add dynamic parameters to your URL using `[user_id]` or `[user_name]` to access id and name of the user who requests an avatar.
+
+Website with images API :
+- [Unsplash](https://source.unsplash.com)
+- [Robohash](https://robohash.org)
 
 # Assets
 
