@@ -28,8 +28,8 @@ Accounts.onLogin(param => {
 
   if (user.profile.guest) return;
 
-  const isBodyValid = user.profile.body.includes('chr_') || Meteor.settings.public.characterNames.includes(user.profile.body);
-  if (!user.profile.body || !isBodyValid) {
+  const isBodyValid = user.profile?.body.includes('chr_') || Meteor.settings.public.includes(user.profile.body);
+  if (!isBodyValid) {
     log('onLogin: setting default skin', { userId: user._id, ip: param.connection?.httpHeaders?.['x-forwarded-for'], userAgent: param.connection?.httpHeaders?.['user-agent'], languages: param.connection?.httpHeaders?.['accept-language'] });
     updateSkin(user, Meteor.settings.defaultLevelId);
   }
@@ -57,7 +57,7 @@ Meteor.publish('selfUser', function () {
 Meteor.methods({
   remote(str) {
     check(str, String);
-    if (!lp.isAdmin()) return '🤬';
+    if (!lp.isGod()) return '🤬';
 
     log('eval from method', { userId: Meteor.userId(), str });
     let res;

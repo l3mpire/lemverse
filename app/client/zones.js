@@ -122,8 +122,7 @@ zones = {
         game.scene.keys.WorldScene.player.x = +x;
         game.scene.keys.WorldScene.player.y = +y;
         savePlayer(game.scene.keys.WorldScene.player);
-        notificationMessage = 'This zone is reserved for admin';
-        Session.set('displayNotification', true);
+        lp.notif.error('This zone is reserved for admin');
       }
 
       if (meet.api && !zone?.roomName) {

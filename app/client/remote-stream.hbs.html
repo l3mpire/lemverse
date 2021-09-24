@@ -1,5 +1,5 @@
 <template name="remoteStream">
-  <div class="stream js-video-{{remoteUser._id}} {{#if isWaitingAnswer}}waiting-answer{{/if}} {{#if isTalking}}talking{{/if}}">
+  <div class="stream js-video-{{remoteUser._id}} {{#if isTalking}}talking{{/if}}" data-state="{{state}}">
     <div class="stream-name">
         {{remoteUser.name}}
     </div>
@@ -13,7 +13,7 @@
       {{#unless mediaState.shareVideo}}
         <img src={{remoteUser.avatar}} alt="avatar">
       {{/unless}}
-      {{#if hasUserStream}}
+      {{#if hasMainStream}}
         {{> webcam triggerVar=talkingVar remoteUser=remoteUser}}
       {{/if}}
     </div>

@@ -39,7 +39,7 @@ const onSubmit = template => {
       });
     }
 
-    hotkeys.setScope('player');
+    hotkeys.setScope(scopes.player);
     game.scene.keys.WorldScene.playerUpdate(Meteor.user());
     peer.createMyPeer();
   });
@@ -54,7 +54,7 @@ Template.formLogIn.onCreated(function () {
 Template.formLogIn.events({
   'click .js-next-step'() { onSubmit(Template.instance()); },
   'focus input'() { hotkeys.setScope('form'); game?.scene?.keys?.WorldScene?.enableKeyboard(false, false); },
-  'blur input'() { hotkeys.setScope('player'); game?.scene?.keys?.WorldScene?.enableKeyboard(true, false); },
+  'blur input'() { hotkeys.setScope(scopes.player); game?.scene?.keys?.WorldScene?.enableKeyboard(true, false); },
   'change .js-email'(e) { Template.instance().email = e.target.value; },
   'change .js-password'(e) { Template.instance().password = e.target.value; },
   'click .js-cancel-login-mode'() { Template.instance().loginMode.set(true); },

@@ -3,7 +3,7 @@
     "lp": {
       "product": "lemverse",
       "process": "main",
-      "admins": [],
+      "gods": [],
       "production": true,
       "staging": false,
       "enableLogClient": false
@@ -25,7 +25,8 @@
         "https://chatfaitdubien.fr/wp-content/uploads/2016/09/chaton.jpg",
         "https://i.pinimg.com/564x/8b/f7/c6/8bf7c6e26f7250944e963f23f364b68f.jpg"
       ],
-      "callDelay": 250
+      "callDelay": 250,
+      "delayBeforeClosingCall": 1000
     },
 
     "meet": {
@@ -51,18 +52,26 @@
   "defaultLevelId": "lvl_iLOVEaLOTlemverse",
 
   "peer": {
-    "server": {
+    "path": "/peer",
+    "client": {
       "url": "peer.example.com",
       "port": 443,
-      "path": "/peer",
       "credentialDuration": 86400,
       "secret": "",
       "config": { 
         "iceServers": [{ 
           "urls": "stun:stun.l.google.com:19302"
         }],
+        "iceTransportPolicy" : "all",
         "sdpSemantics": "unified-plan"
       }
+    },
+    "server": {
+      "port": 7010,
+      "key": "peerjs",
+      "alive_timeout": 60000,
+      "expire_timeout": 5000,
+      "allow_discovery": false
     }
   }
 }
