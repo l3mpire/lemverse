@@ -20,7 +20,6 @@ settings = {
 
 const setVideoPreviewElementStream = (stream, updatePeer = false) => {
   const video = document.querySelector('#js-video-preview');
-  console.log('setVideoPreviewElementStream', stream);
   video.srcObject = stream;
   video.onloadedmetadata = () => video.play();
   if (updatePeer) peer.updatePeersStream(stream, streamTypes.main);
