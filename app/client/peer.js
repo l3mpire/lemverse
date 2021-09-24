@@ -3,13 +3,12 @@ import Peer from 'peerjs';
 myPeer = undefined;
 calls = {};
 remoteCalls = {};
-remoteStreamsByUsers = new ReactiveVar();
-remoteStreamsByUsers.set([]);
 
 peer = {
   callsToClose: {},
   callsOpening: {},
   peerLoading: false,
+  remoteStreamsByUsers: new ReactiveVar([]),
 
   closeAll() {
     if (Meteor.user().options?.debug) log('peer.closeAll: start');
@@ -42,7 +41,7 @@ peer = {
     if (!activeCallsCount) return;
     if (debug) log('close call: call was active');
 
-    let streamsByUsers = remoteStreamsByUsers.get();
+    let streamsByUsers = this.remoteStreamsByUsers.get();
     streamsByUsers.map(usr => {
       if (usr._id === userId) {
         delete usr.main.srcObject;
@@ -54,7 +53,7 @@ peer = {
     });
     // We clean up remoteStreamsByUsers table by deleting all the users who have neither webcam or screen sharing active
     streamsByUsers = streamsByUsers.filter(usr => usr.main.srcObject !== undefined || usr.screen.srcObject !== undefined || usr.waitingCallAnswer);
-    remoteStreamsByUsers.set(streamsByUsers);
+    this.remoteStreamsByUsers.set(streamsByUsers);
 
     if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
 
@@ -128,7 +127,7 @@ peer = {
     this.closeAll();
     userStreams.destroyStream(streamTypes.main);
     myPeer?.destroy();
-    remoteStreamsByUsers.set([]);
+    this.remoteStreamsByUsers.set([]);
   },
 
   updatePeersStream(stream, type) {
@@ -218,18 +217,18 @@ peer = {
   },
 
   onStreamSettingsChanged(changedUser) {
-    const streamsByUsers = remoteStreamsByUsers.get();
+    const streamsByUsers = this.remoteStreamsByUsers.get();
     const streamsCurrentUser = streamsByUsers.find(user => user._id === changedUser._id);
     if (!streamsCurrentUser || !streamsCurrentUser.screen.srcObject) return;
 
     if (!changedUser.profile.shareScreen) {
       delete streamsCurrentUser.screen.srcObject;
-      remoteStreamsByUsers.set(streamsByUsers);
+      this.remoteStreamsByUsers.set(streamsByUsers);
     }
   },
 
   createOrUpdateRemoteStream(user, streamType, remoteStream = null) {
-    const streamsByUsers = remoteStreamsByUsers.get();
+    const streamsByUsers = this.remoteStreamsByUsers.get();
 
     if (!streamsByUsers.find(usr => usr._id === user._id)) {
       streamsByUsers.push({
@@ -254,7 +253,7 @@ peer = {
       });
     }
 
-    remoteStreamsByUsers.set(streamsByUsers);
+    this.remoteStreamsByUsers.set(streamsByUsers);
   },
 
   answerCall(remoteCall) {

@@ -32,7 +32,7 @@ const checkMediaAvailable = (template, type) => {
     return;
   }
 
-  const remoteUserIsNear = remoteStreamsByUsers.get().find(usr => usr._id === remoteUser._id);
+  const remoteUserIsNear = peer.remoteStreamsByUsers.get().find(usr => usr._id === remoteUser._id);
   if (!remoteUserIsNear) {
     log(`Stop retry to get ${remoteUser.name}'s ${type}, ${remoteUser.name} is too far`);
     return;

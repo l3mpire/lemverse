@@ -89,7 +89,6 @@ module.exports = {
     calls: 'writable',
     remoteCalls: 'writable',
     myPeer: 'writable',
-    remoteStreamsByUsers: 'writable',
     tilesets: 'writable',
     layers: 'writable',
     undoTiles: 'writable',

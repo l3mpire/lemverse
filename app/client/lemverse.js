@@ -427,7 +427,7 @@ Template.lemverse.onDestroyed(function () {
 });
 
 Template.lemverse.helpers({
-  allRemoteStreamsByUsers: () => remoteStreamsByUsers.get(),
+  allRemoteStreamsByUsers: () => peer.remoteStreamsByUsers.get(),
   isLoading: () => Session.get('loading'),
   isGuest: () => Meteor.user()?.profile.guest,
   hasNotifications: () => Notifications.find().count(),
