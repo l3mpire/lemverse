@@ -1,35 +1,53 @@
-myStream = undefined;
-myScreenStream = undefined;
+const screenShareDefaultConfig = {
+  defaultFrameRate: 22,
+  maxFrameRate: 30,
+};
+
+const videoDefaultConfig = {
+  width: { ideal: 320 },
+  height: { ideal: 240 },
+  frameRate: { max: 30 },
+};
+
+streamTypes = Object.freeze({
+  main: 'main',
+  screen: 'screen',
+});
 
 userStreams = {
-  streamLoading: false,
-  screenStreamLoading: false,
-  screenSharingDefaultFrameRate: 22,
-  videoElement: undefined,
+  streams: {
+    main: {
+      instance: undefined,
+      loading: false,
+      domElement: undefined,
+    },
+    screen: {
+      instance: undefined,
+      loading: false,
+      domElement: undefined,
+    },
+  },
 
   audio(enabled, notifyNearUsers = false) {
-    if (!myStream) return;
-    _.each(myStream.getAudioTracks(), track => { track.enabled = enabled; });
+    if (!this.streams.main.instance) return;
+    _.each(this.streams.main.instance.getAudioTracks(), track => { track.enabled = enabled; });
     if (enabled && notifyNearUsers) userProximitySensor.callProximityStartedForAllNearUsers();
   },
 
   video(enabled, notifyNearUsers = false) {
-    this.getVideoElement()?.classList.toggle('active', myStream && enabled);
-    if (!myStream) return;
-    _.each(myStream.getVideoTracks(), track => { track.enabled = enabled; });
+    const { instance: mainStream } = this.streams.main;
+    this.getVideoElement()?.classList.toggle('active', mainStream && enabled);
+    if (!mainStream) return;
+    _.each(mainStream.getVideoTracks(), track => { track.enabled = enabled; });
     if (enabled && notifyNearUsers) userProximitySensor.callProximityStartedForAllNearUsers();
-    if (myStream.id !== this.getVideoElement().srcObject?.id) this.getVideoElement().srcObject = myStream;
-  },
-
-  stopTracks(stream) {
-    if (!stream) return;
-    _.each(stream.getTracks(), track => track.stop());
+    if (mainStream.id !== this.getVideoElement().srcObject?.id) this.getVideoElement().srcObject = mainStream;
   },
 
   screen(enabled) {
-    if (myScreenStream && !enabled) {
-      this.stopTracks(myScreenStream);
-      myScreenStream = undefined;
+    const { instance: screenStream } = this.streams.screen;
+    if (screenStream && !enabled) {
+      this.stopTracks(screenStream);
+      this.streams.screen.instance = undefined;
       _.each(calls, (call, key) => {
         if (key.indexOf('-screen') === -1) return;
         if (Meteor.user().options?.debug) log('me -> you screen ****** I stop sharing screen, call closing', key);
@@ -47,7 +65,8 @@ userStreams = {
     } else if (enabled) userProximitySensor.callProximityStartedForAllNearUsers();
   },
 
-  destroyStream(stream) {
+  destroyStream(type) {
+    const { instance: stream } = type === streamTypes.main ? this.streams.main : this.streams.screen;
     if (!stream) return;
 
     const debug = Meteor.user()?.options?.debug;
@@ -56,34 +75,35 @@ userStreams = {
 
     const userVideo = this.getVideoElement();
     destroyVideoSource(userVideo);
-    this.getVideoElement()?.classList.toggle('active', false);
 
-    if (stream === myStream) myStream = undefined;
-    else if (stream === myScreenStream) myScreenStream = undefined;
+    if (stream === this.streams.main.instance) {
+      this.streams.main.instance = undefined;
+      this.getVideoElement()?.classList.toggle('active', false);
+    } else if (stream === this.streams.screen.instance) this.streams.screen.instance = undefined;
 
     if (debug) log('destroy stream: done');
   },
 
   requestUserMedia(forceNew = false) {
-    if (forceNew) this.destroyStream(myStream);
-    if (myStream) return new Promise(resolve => resolve(myStream));
-    if (!myStream && this.streamLoading) return waitFor(() => myStream !== undefined, 10, 500).then(() => myStream);
+    if (forceNew) this.destroyStream(streamTypes.main);
+    const { instance: currentStream, loading } = this.streams.main;
+    if (currentStream) return new Promise(resolve => resolve(currentStream));
+    if (!currentStream && loading) return waitFor(() => currentStream !== undefined, 10, 500).then(() => currentStream);
 
     const { shareVideo, shareAudio, videoRecorder, audioRecorder } = Meteor.user().profile;
-    this.streamLoading = true;
-
     const options = {
-      video: { deviceId: shareVideo && videoRecorder || false, width: { ideal: 320 }, height: { ideal: 240 }, frameRate: { max: 30 } },
+      video: { deviceId: shareVideo && videoRecorder || false, ...videoDefaultConfig },
       audio: { deviceId: shareAudio && audioRecorder || false },
     };
 
+    this.streams.main.loading = true;
     return navigator.mediaDevices
       .getUserMedia(options)
       .then(stream => {
-        this.destroyStream(myStream);
+        this.destroyStream(streamTypes.main);
 
         if (Meteor.user()?.options?.debug) log('create stream', stream.id);
-        myStream = stream;
+        this.streams.main.instance = stream;
         Meteor.users.update(Meteor.userId(), { $set: { 'profile.userMediaError': false } });
 
         return stream;
@@ -94,25 +114,28 @@ userStreams = {
         if (err.message === 'Permission denied') lp.notif.warning('Camera and microphone are required 😢');
         return Promise.reject(err);
       })
-      .finally(() => { this.streamLoading = false; });
+      .finally(() => { this.streams.main.loading = false; });
   },
 
   requestDisplayMedia() {
-    if (myScreenStream) return new Promise(resolve => resolve(myScreenStream));
-    if (!myScreenStream && this.screenStreamLoading) return waitFor(() => myScreenStream !== undefined, 20, 1000).then(() => myScreenStream);
+    const { instance: currentStream, loading } = this.streams.screen;
+    if (currentStream) return new Promise(resolve => resolve(currentStream));
+    if (!currentStream && loading) return waitFor(() => currentStream !== undefined, 20, 1000).then(() => currentStream);
 
     const { screenShareFrameRate } = Meteor.user().profile;
-    this.screenStreamLoading = true;
-
+    this.streams.screen.loading = true;
     return navigator.mediaDevices
-      .getDisplayMedia({ frameRate: { ideal: screenShareFrameRate || this.screenSharingDefaultFrameRate, max: 30 } })
-      .then(stream => { myScreenStream = stream; return stream; })
+      .getDisplayMedia({ frameRate: {
+        ideal: screenShareFrameRate || screenShareDefaultConfig.defaultFrameRate,
+        max: screenShareDefaultConfig.maxFrameRate },
+      })
+      .then(stream => { this.streams.screen.instance = stream; return stream; })
       .catch(err => {
         error('requestDisplayMedia failed', err);
         Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } });
         return Promise.reject(err);
       })
-      .finally(() => { this.screenStreamLoading = false; });
+      .finally(() => { this.streams.screen.loading = false; });
   },
 
   createStream(forceNew = false) {
@@ -154,14 +177,20 @@ userStreams = {
       });
   },
 
-  applyConstraints(stream, type, constraints) {
+  applyConstraints(streamType, trackType, constraints) {
+    const { instance: stream } = streamType === this.streams.main ? this.streams.main : this.streams.screen;
     if (!stream) return;
-    const tracks = type === 'video' ? stream.getVideoTracks() : stream.getAudioTracks();
+    const tracks = trackType === 'video' ? stream.getVideoTracks() : stream.getAudioTracks();
     tracks.forEach(track => track.applyConstraints(constraints));
   },
 
+  stopTracks(stream) {
+    if (!stream) return;
+    _.each(stream.getTracks(), track => track.stop());
+  },
+
   getVideoElement() {
-    if (!this.videoElement) this.videoElement = document.querySelector('.js-video-me video');
-    return this.videoElement;
+    if (!this.streams.main.domElement) this.streams.main.domElement = document.querySelector('.js-video-me video');
+    return this.streams.main.domElement;
   },
 };

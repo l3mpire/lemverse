@@ -89,8 +89,6 @@ module.exports = {
     calls: 'writable',
     remoteCalls: 'writable',
     myPeer: 'writable',
-    myStream: 'writable',
-    myScreenStream: 'writable',
     remoteStreamsByUsers: 'writable',
     tilesets: 'writable',
     layers: 'writable',
@@ -118,6 +116,7 @@ module.exports = {
     destroyVideoSource: 'writable',
     waitFor: 'writable',
     userStreams: 'writable',
+    streamTypes: 'writable',
 
     tileGlobalIndex: 'writable',
     tileLayer: 'writable',

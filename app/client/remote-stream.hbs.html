@@ -13,7 +13,7 @@
       {{#unless mediaState.shareVideo}}
         <img src={{remoteUser.avatar}} alt="avatar">
       {{/unless}}
-      {{#if hasUserStream}}
+      {{#if hasMainStream}}
         {{> webcam triggerVar=talkingVar remoteUser=remoteUser}}
       {{/if}}
     </div>

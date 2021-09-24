@@ -20,9 +20,10 @@ settings = {
 
 const setVideoPreviewElementStream = (stream, updatePeer = false) => {
   const video = document.querySelector('#js-video-preview');
+  console.log('setVideoPreviewElementStream', stream);
   video.srcObject = stream;
   video.onloadedmetadata = () => video.play();
-  if (updatePeer) peer.updatePeersStream(stream, 'user');
+  if (updatePeer) peer.updatePeersStream(stream, streamTypes.main);
 };
 
 const initStream = () => {
@@ -35,7 +36,7 @@ Template.settingsMedias.onRendered(() => {
 });
 
 Template.settingsMedias.onDestroyed(() => {
-  if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(myStream);
+  if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
 });
 
 Template.settingsMedias.events({
@@ -49,7 +50,7 @@ Template.settingsMedias.events({
   },
   'change .js-screen-framerate'(event) {
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.screenShareFrameRate': event.target.value } });
-    if (myScreenStream) userStreams.applyConstraints(myScreenStream, 'video', { frameRate: event.target.value });
+    if (userStreams.streams.screen.instance) userStreams.applyConstraints(streamTypes.screen, 'video', { frameRate: event.target.value });
   },
 });
 

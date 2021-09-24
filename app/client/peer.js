@@ -32,10 +32,10 @@ peer = {
       delete callsSource[`${user}-${type}`];
     };
 
-    close(false, userId, 'user');
-    close(false, userId, 'screen');
-    close(true, userId, 'user');
-    close(true, userId, 'screen');
+    close(false, userId, streamTypes.main);
+    close(false, userId, streamTypes.screen);
+    close(true, userId, streamTypes.main);
+    close(true, userId, streamTypes.screen);
     this.cancelCallClose(userId);
     this.cancelCallOpening(userId);
 
@@ -45,7 +45,7 @@ peer = {
     let streamsByUsers = remoteStreamsByUsers.get();
     streamsByUsers.map(usr => {
       if (usr._id === userId) {
-        delete usr.user.srcObject;
+        delete usr.main.srcObject;
         delete usr.screen.srcObject;
         delete usr.waitingCallAnswer;
       }
@@ -53,10 +53,10 @@ peer = {
       return usr;
     });
     // We clean up remoteStreamsByUsers table by deleting all the users who have neither webcam or screen sharing active
-    streamsByUsers = streamsByUsers.filter(usr => usr.user.srcObject !== undefined || usr.screen.srcObject !== undefined || usr.waitingCallAnswer);
+    streamsByUsers = streamsByUsers.filter(usr => usr.main.srcObject !== undefined || usr.screen.srcObject !== undefined || usr.waitingCallAnswer);
     remoteStreamsByUsers.set(streamsByUsers);
 
-    if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(myStream);
+    if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
 
     $(`.js-video-${userId}-user`).remove();
 
@@ -79,7 +79,7 @@ peer = {
 
   createPeerCall(peer, stream, user) {
     const debug = Meteor.user()?.options?.debug;
-    const type = stream === myStream ? 'user' : 'screen';
+    const type = stream === userStreams.streams.main.instance ? 'main' : 'screen';
 
     if (debug) log(`peer call: create new peer call with ${user._id}`, { user: user._id, type });
     if (!stream) { error(`stream is undefined`, { user, stream, myPeer }); return; }
@@ -116,7 +116,7 @@ peer = {
   createPeerCalls(user) {
     const { shareAudio, shareScreen, shareVideo } = Meteor.user().profile;
 
-    if (!calls[`${user._id}-user`] && !calls[`${user._id}-screen`]) sounds.play('webrtc-in');
+    if (!calls[`${user._id}-${streamTypes.main}`] && !calls[`${user._id}-${streamTypes.screen}`]) sounds.play('webrtc-in');
 
     this.getPeer().then(peer => {
       if (shareAudio || shareVideo) userStreams.createStream().then(stream => this.createPeerCall(peer, stream, user));
@@ -126,7 +126,7 @@ peer = {
 
   destroy() {
     this.closeAll();
-    if (myStream) userStreams.destroyStream(myStream);
+    userStreams.destroyStream(streamTypes.main);
     myPeer?.destroy();
     remoteStreamsByUsers.set([]);
   },
@@ -135,7 +135,7 @@ peer = {
     const debug = Meteor.user()?.options?.debug;
     if (debug) log('update peers stream: start');
 
-    if (type === 'user') {
+    if (type === streamTypes.main) {
       if (debug) log(`update peers stream: main stream ${stream.id}`, stream);
       const audioTrack = stream.getAudioTracks()[0];
       const videoTrack = stream.getVideoTracks()[0];
@@ -151,9 +151,7 @@ peer = {
           else if (sender.track.kind === 'video') sender.replaceTrack(videoTrack);
         });
       });
-    }
-
-    if (type === 'screen') {
+    } else if (type === streamTypes.screen) {
       if (debug) log(`update peers stream: screen share stream ${stream.id}`, stream);
       const screenTrack = stream.getVideoTracks()[0];
 
@@ -238,7 +236,7 @@ peer = {
         _id: user._id,
         name: user.profile.name,
         avatar: user.profile.avatar || Random.choice(Meteor.settings.public.peer.avatars),
-        user: {},
+        main: {},
         screen: {},
         waitingCallAnswer: true,
       });

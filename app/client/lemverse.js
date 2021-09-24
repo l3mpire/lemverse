@@ -84,14 +84,14 @@ Template.lemverse.onCreated(function () {
   this.autorun(() => {
     const user = Meteor.user({ fields: { 'profile.shareAudio': 1 } });
     if (!user) return;
-    if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(myStream);
+    if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
     else userStreams.createStream().then(() => userStreams.audio(user.profile.shareAudio, true));
   });
 
   this.autorun(() => {
     const user = Meteor.user({ fields: { 'profile.shareVideo': 1 } });
     if (!user) return;
-    if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(myStream);
+    if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
     else userStreams.createStream().then(() => userStreams.video(user.profile.shareVideo, true));
   });
 
