@@ -302,7 +302,7 @@ peer = {
 
   getPeer() {
     return new Promise(resolve => {
-      if (this.peerInstance?.id && !this.peerInstance.disconnected) return resolve(this.peerInstance);
+      if (this.isPeerValid(this.peerInstance)) return resolve(this.peerInstance);
       const debug = Meteor.user()?.options?.debug;
 
       if (this.peerInstance?.disconnected) {
@@ -313,7 +313,7 @@ peer = {
         } catch (err) { reconnected = false; }
 
         // peerjs reconnect doesn't offer a promise or callback so we have to wait a certain time until the reconnection is done
-        if (reconnected) return waitFor(() => this.peerInstance?.id && !this.peerInstance.disconnected, 5, 250).then(() => resolve(this.peerInstance));
+        if (reconnected) return waitFor(() => this.isPeerValid(this.peerInstance), 5, 250).then(() => resolve(this.peerInstance));
       }
 
       if (!this.peerInstance && this.peerLoading) return waitFor(() => this.peerInstance !== undefined, 5, 250).then(() => resolve(this.peerInstance));
@@ -327,7 +327,7 @@ peer = {
   },
 
   createMyPeer(skipConfig = false) {
-    if (this.peerInstance?.id && !this.peerInstance.disconnected) return Promise.resolve(this.peerInstance);
+    if (this.isPeerValid(this.peerInstance)) return Promise.resolve(this.peerInstance);
     if (!Meteor.user()) return Promise.reject(new Error(`an user is required to create a peer`));
     if (Meteor.user().profile?.guest) return Promise.reject(new Error(`peer is forbidden for guest account`));
 
@@ -392,5 +392,9 @@ peer = {
         return resolve(this.peerInstance);
       });
     });
+  },
+
+  isPeerValid(peer) {
+    return peer?.id && !peer.disconnected;
   },
 };
