@@ -85,22 +85,22 @@ Template.lemverse.onCreated(function () {
   this.autorun(() => {
     const user = Meteor.user({ fields: { 'profile.shareAudio': 1 } });
     if (!user) return;
-    if (userProximitySensor.nearUsersCount() === 0) peer.destroyStream(myStream);
-    else peer.createStream().then(() => peer.audio(user.profile.shareAudio, true));
+    if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
+    else userStreams.createStream().then(() => userStreams.audio(user.profile.shareAudio, true));
   });
 
   this.autorun(() => {
     const user = Meteor.user({ fields: { 'profile.shareVideo': 1 } });
     if (!user) return;
-    if (userProximitySensor.nearUsersCount() === 0) peer.destroyStream(myStream);
-    else peer.createStream().then(() => peer.video(user.profile.shareVideo, true));
+    if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
+    else userStreams.createStream().then(() => userStreams.video(user.profile.shareVideo, true));
   });
 
   this.autorun(() => {
     const user = Meteor.user({ fields: { 'profile.shareScreen': 1 } });
     if (!user) return;
-    if (user.profile.shareScreen) peer.createScreenStream().then(() => peer.screen(true, true));
-    else peer.screen(false);
+    if (user.profile.shareScreen) userStreams.createScreenStream().then(() => userStreams.screen(true, true));
+    else userStreams.screen(false);
   });
 
   this.autorun(() => {
@@ -299,10 +299,10 @@ Template.lemverse.onCreated(function () {
     userVoiceRecorderAbility.onSoundRecorded = callback;
 
     if (event.type === 'keydown' && !userVoiceRecorderAbility.isRecording()) {
-      peer.audio(false);
+      userStreams.audio(false);
       userVoiceRecorderAbility.start();
     } else if (event.type === 'keyup') {
-      peer.audio(Meteor.user()?.profile.shareAudio);
+      userStreams.audio(Meteor.user()?.profile.shareAudio);
       userVoiceRecorderAbility.stop();
     }
   };

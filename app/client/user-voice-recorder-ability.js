@@ -29,6 +29,10 @@ userVoiceRecorderAbility = {
     ]);
   },
 
+  destroy() {
+    this.recordingIndicator.destroy();
+  },
+
   initMediaRecorder() {
     if (this.loading) return Promise.reject(new Error('already loading'));
     this.loading = true;
