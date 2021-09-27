@@ -1,15 +1,21 @@
 Meteor.methods({
   updateUsersCharacter(from, to, id) {
+    check([from, to, id], [String]);
     const user = Meteor.user();
     log('updateUsersCharacter: start', { from, to, id, userId: user._id });
 
-    const characterPart = Characters.findOne({_id: id});
-    if (!characterPart) {
-      error('updateUsersCharacter: Invalid character part', {from, to, id, userId: user._id})
-      throw new Meteor.Error('invalid-character-part', 'Trying to set an invalid part')
+    if (!lp.isGod()) {
+      error('updateUsersCharacter: user not allowed');
+      throw new Meteor.Error('not-authorized', 'only admins can do this');
     }
 
-    Characters.update(id, { $set: { category : to} });
+    const characterPart = Characters.findOne({ _id: id });
+    if (!characterPart) {
+      error('updateUsersCharacter: Invalid character part', { from, to, id, userId: user._id });
+      throw new Meteor.Error('invalid-character-part', 'Trying to set an invalid part');
+    }
+
+    Characters.update(id, { $set: { category: to } });
     Meteor.users.update(
       { [`profile.${from}`]: id },
       {
@@ -18,6 +24,7 @@ Meteor.methods({
       },
       { multi: true },
     );
+
     return true;
   },
 });
