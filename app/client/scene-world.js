@@ -63,11 +63,11 @@ WorldScene = new Phaser.Class({
     this.players = {};
     this.wasMoving = false;
     this.input.keyboard.enabled = false;
+    this.player = undefined;
     this.scene.sleep();
     this.teleporterGraphics = [];
     userVoiceRecorderAbility.init(this);
     characterPopIns.init(this);
-    Session.set('gameCreated', false);
     this.physics.disableUpdate();
 
     const { levelId } = data;
@@ -137,10 +137,10 @@ WorldScene = new Phaser.Class({
     this.players[user._id].userId = user._id;
 
     const playerParts = this.add.container(0, 0);
+    playerParts.setScale(3);
     playerParts.name = 'body';
 
     const bodyPlayer = this.add.sprite(0, 0, body || guest ? Meteor.settings.public.skins.guest : Meteor.settings.public.skins.default);
-    bodyPlayer.setScale(3);
     bodyPlayer.name = 'body';
     playerParts.add(bodyPlayer);
 
@@ -155,7 +155,6 @@ WorldScene = new Phaser.Class({
     Object.keys(charactersParts).filter(part => part !== 'body' && user.profile[part]).forEach(part => {
       const spritePart = this.add.sprite(0, 0, user.profile[part]);
       spritePart.name = part;
-      spritePart.setScale(3);
       playerParts.add(spritePart);
     });
 
@@ -296,7 +295,7 @@ WorldScene = new Phaser.Class({
   playerPauseAnimation(player, value, forceUpdate = false) {
     player = player ?? this.player;
 
-    if (value === player.paused && !forceUpdate) return;
+    if (!player || (value === player.paused && !forceUpdate)) return;
     player.paused = value;
 
     const user = Meteor.users.findOne(player.userId);
