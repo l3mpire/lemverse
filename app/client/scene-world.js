@@ -137,17 +137,16 @@ WorldScene = new Phaser.Class({
     this.players[user._id].userId = user._id;
 
     const playerParts = this.add.container(0, 0);
+    playerParts.setScale(3);
     playerParts.name = 'body';
 
     const bodyPlayer = this.add.sprite(0, 0, body || guest ? Meteor.settings.public.skins.guest : Meteor.settings.public.skins.default);
-    bodyPlayer.setScale(3);
     bodyPlayer.name = 'body';
     playerParts.add(bodyPlayer);
 
     Object.keys(charactersParts).filter(part => part !== 'body' && user.profile[part]).forEach(part => {
       const spritePart = this.add.sprite(0, 0, user.profile[part]);
       spritePart.name = part;
-      spritePart.setScale(3);
       playerParts.add(spritePart);
     });
 
