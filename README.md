@@ -515,6 +515,8 @@ Website with images API :
 - [Unsplash](https://source.unsplash.com)
 - [Robohash](https://robohash.org)
 
+> Example with Robohash: `https://robohash.org/[user_name]?set=set4&bgset=bg2&size=320x240`
+
 # Assets
 
 We use paid assets from [limezu](https://limezu.itch.io/) on [itch.io](https://limezu.itch.io/moderninteriors) in the *version 35*. Please keep in mind than lemverse doesn't support the new character format for the moment.
