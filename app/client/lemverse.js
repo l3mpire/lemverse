@@ -76,30 +76,41 @@ Template.lemverse.onCreated(function () {
   });
 
   this.autorun(() => {
+    if (!game) return;
+
     const modalOpen = isModalOpen();
-    game?.scene?.keys?.WorldScene?.enableKeyboard(!modalOpen, !modalOpen);
-    game?.scene?.keys?.WorldScene?.playerPauseAnimation(undefined, modalOpen);
+    Tracker.nonreactive(() => {
+      const worldScene = game.scene.getScene('WorldScene');
+      worldScene.enableKeyboard(!modalOpen, !modalOpen);
+      worldScene.playerPauseAnimation(undefined, modalOpen);
+    });
   });
 
   this.autorun(() => {
     const user = Meteor.user({ fields: { 'profile.shareAudio': 1 } });
     if (!user) return;
-    if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
-    else userStreams.createStream().then(() => userStreams.audio(user.profile.shareAudio, true));
+    Tracker.nonreactive(() => {
+      if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
+      else userStreams.createStream().then(() => userStreams.audio(user.profile.shareAudio, true));
+    });
   });
 
   this.autorun(() => {
     const user = Meteor.user({ fields: { 'profile.shareVideo': 1 } });
     if (!user) return;
-    if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
-    else userStreams.createStream().then(() => userStreams.video(user.profile.shareVideo, true));
+    Tracker.nonreactive(() => {
+      if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
+      else userStreams.createStream().then(() => userStreams.video(user.profile.shareVideo, true));
+    });
   });
 
   this.autorun(() => {
     const user = Meteor.user({ fields: { 'profile.shareScreen': 1 } });
     if (!user) return;
-    if (user.profile.shareScreen) userStreams.createScreenStream().then(() => userStreams.screen(true, true));
-    else userStreams.screen(false);
+    Tracker.nonreactive(() => {
+      if (user.profile.shareScreen) userStreams.createScreenStream().then(() => userStreams.screen(true, true));
+      else userStreams.screen(false);
+    });
   });
 
   this.autorun(() => {
