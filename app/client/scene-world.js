@@ -144,6 +144,14 @@ WorldScene = new Phaser.Class({
     bodyPlayer.name = 'body';
     playerParts.add(bodyPlayer);
 
+    if (!guest) {
+      playerParts.setInteractive(new Phaser.Geom.Circle(0, 0, 60), Phaser.Geom.Circle.Contains);
+      playerParts.on('pointerup', () =>  {
+        console.log("pointerup", user._id);
+        Session.set('displayProfile', user._id);
+      })
+    }
+
     Object.keys(charactersParts).filter(part => part !== 'body' && user.profile[part]).forEach(part => {
       const spritePart = this.add.sprite(0, 0, user.profile[part]);
       spritePart.name = part;

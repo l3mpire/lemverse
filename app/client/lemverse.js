@@ -16,7 +16,7 @@ Template.registerHelper('worldToTileY', y => game?.scene.keys.WorldScene.map.wor
 
 game = undefined;
 
-isModalOpen = () => Session.get('displaySettings') || Session.get('displayZoneId') || Session.get('displayNotificationsPanel');
+isModalOpen = () => Session.get('displaySettings') || Session.get('displayZoneId') || Session.get('displayNotificationsPanel') || Session.get('displayProfile');
 
 const config = {
   type: Phaser.AUTO,
