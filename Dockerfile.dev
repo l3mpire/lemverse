@@ -17,6 +17,4 @@ RUN apt update && apt install -y \
 
 WORKDIR /opt/src
 
-RUN chown -Rh root .meteor/local
-
 CMD ["meteor", "--settings", "settings-dev.json", "--port", "9000"]
