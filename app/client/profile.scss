@@ -22,14 +22,10 @@ div.profile {
     flex-wrap: wrap;
 
     >* {
-      width: calc(50% - 10px);
+      width: 90%;
       margin: 0 5px;
       box-sizing: border-box;
-
-      &:last-child {
-        margin-top: 17px;
-        width: 100%;
-      }
+      line-break: anywhere;
     }
   }
 
