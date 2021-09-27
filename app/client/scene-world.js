@@ -288,7 +288,7 @@ WorldScene = new Phaser.Class({
   playerPauseAnimation(player, value, forceUpdate = false) {
     player = player ?? this.player;
 
-    if (value === player.paused && !forceUpdate) return;
+    if (!player || (value === player.paused && !forceUpdate)) return;
     player.paused = value;
 
     const user = Meteor.users.findOne(player.userId);
