@@ -233,7 +233,7 @@ peer = {
       streamsByUsers.push({
         _id: user._id,
         name: user.profile.name,
-        avatar: user.profile.avatar || Random.choice(Meteor.settings.public.peer.avatars),
+        avatar: getRandomAvatarForUser(user),
         main: {},
         screen: {},
         waitingCallAnswer: true,

@@ -36,11 +36,12 @@ userStreams = {
 
   video(enabled, notifyNearUsers = false) {
     const { instance: mainStream } = this.streams.main;
-    this.getVideoElement()?.classList.toggle('active', mainStream && enabled);
+    const videoElement = this.getVideoElement();
+    videoElement.parentElement.classList.toggle('active', mainStream && enabled);
     if (!mainStream) return;
     _.each(mainStream.getVideoTracks(), track => { track.enabled = enabled; });
     if (enabled && notifyNearUsers) userProximitySensor.callProximityStartedForAllNearUsers();
-    if (mainStream.id !== this.getVideoElement().srcObject?.id) this.getVideoElement().srcObject = mainStream;
+    if (mainStream.id !== videoElement.srcObject?.id) videoElement.srcObject = mainStream;
   },
 
   screen(enabled) {
@@ -78,7 +79,8 @@ userStreams = {
 
     if (stream === this.streams.main.instance) {
       this.streams.main.instance = undefined;
-      this.getVideoElement()?.classList.toggle('active', false);
+      userVideo.parentElement.classList.toggle('active', false);
+      userVideo.parentElement.style.backgroundImage = '';
     } else if (stream === this.streams.screen.instance) this.streams.screen.instance = undefined;
 
     if (debug) log('destroy stream: done');
@@ -144,7 +146,9 @@ userStreams = {
         if (!stream) return Promise.reject(new Error(`unable to get a valid stream`));
 
         // sync video element with the stream
-        if (stream.id !== this.getVideoElement().srcObject?.id) this.getVideoElement().srcObject = stream;
+        const videoElement = this.getVideoElement();
+        if (stream.id !== videoElement.srcObject?.id) videoElement.srcObject = stream;
+        videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
 
         // ensures tracks are up-to-date
         const { shareVideo, shareAudio } = Meteor.user().profile;
@@ -190,7 +194,11 @@ userStreams = {
   },
 
   getVideoElement() {
-    if (!this.streams.main.domElement) this.streams.main.domElement = document.querySelector('.js-video-me video');
+    if (!this.streams.main.domElement) {
+      this.streams.main.domElement = document.querySelector('.js-video-me video');
+      this.streams.main.domElement.parentElement.dataset.avatar = getRandomAvatarForUser(Meteor.user());
+    }
+
     return this.streams.main.domElement;
   },
 };
