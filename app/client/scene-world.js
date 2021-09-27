@@ -63,11 +63,11 @@ WorldScene = new Phaser.Class({
     this.players = {};
     this.wasMoving = false;
     this.input.keyboard.enabled = false;
+    this.player = undefined;
     this.scene.sleep();
     this.teleporterGraphics = [];
     userVoiceRecorderAbility.init(this);
     characterPopIns.init(this);
-    Session.set('gameCreated', false);
     this.physics.disableUpdate();
 
     const { levelId } = data;

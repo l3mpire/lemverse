@@ -115,7 +115,7 @@ Template.lemverse.onCreated(function () {
 
   this.autorun(() => {
     if (!Session.get('gameCreated')) return;
-    game.scene.keys.EditorScene.updateEditionMarker(Session.get('selectedTiles'));
+    game.scene.getScene('EditorScene')?.updateEditionMarker(Session.get('selectedTiles'));
   });
 
   this.autorun(() => {
@@ -123,21 +123,6 @@ Template.lemverse.onCreated(function () {
 
     const worldScene = game.scene.getScene('WorldScene');
     Tracker.nonreactive(() => {
-      if (this.handleObserveUsers) this.handleObserveUsers.stop();
-      this.handleObserveUsers = Meteor.users.find({ status: { $exists: true } }).observe({
-        added(user) {
-          worldScene.playerCreate(user);
-        },
-        changed(user, oldUser) {
-          worldScene.playerUpdate(user, oldUser);
-        },
-        removed(user) {
-          worldScene.playerRemove(user);
-          userProximitySensor.removeNearUser(user);
-          lp.defer(() => peer.close(user._id));
-        },
-      });
-
       if (this.handleObserveTilesets) this.handleObserveTilesets.stop();
       if (!this.handleObserveTilesets) {
         this.handleObserveTilesets = Tilesets.find().observe({
@@ -223,19 +208,6 @@ Template.lemverse.onCreated(function () {
           },
         });
       }
-
-      if (this.handleObserveZones) this.handleObserveZones.stop();
-      this.handleObserveZones = Zones.find().observe({
-        added(zone) {
-          if (zone.popInConfiguration?.autoOpen) characterPopIns.initFromZone(zone);
-        },
-        changed(zone) {
-          const currentZone = zones.currentZone(Meteor.user());
-          if (!currentZone || currentZone._id !== zone._id) return;
-
-          if (meet.api) meet.fullscreen(zone.fullscreen);
-        },
-      });
     });
   });
 
@@ -244,17 +216,57 @@ Template.lemverse.onCreated(function () {
 
     const levelId = Meteor.user({ fields: { 'profile.levelId': 1 } }).profile?.levelId;
     Tracker.nonreactive(() => {
-      if (this.handleZonesSubscribe) this.handleZonesSubscribe.stop();
-      if (this.handleUsersSubscribe) this.handleUsersSubscribe.stop();
-      if (this.handleObserveTiles) this.handleObserveTiles.stop();
+      log(`loading level: ${levelId || 'unknown'}…`);
       if (this.handleTilesSubscribe) this.handleTilesSubscribe.stop();
+      if (this.handleUsersSubscribe) this.handleUsersSubscribe.stop();
+      if (this.handleZonesSubscribe) this.handleZonesSubscribe.stop();
+      if (this.handleObserveTiles) this.handleObserveTiles.stop();
+      if (this.handleObserveUsers) this.handleObserveUsers.stop();
+      if (this.handleObserveZones) this.handleObserveZones.stop();
+      const worldScene = game.scene.getScene('WorldScene');
+
+      // Load users
+      log(`loading level: loading users`);
       this.handleUsersSubscribe = this.subscribe('users', levelId, () => {
+        this.handleObserveUsers = Meteor.users.find({ status: { $exists: true } }).observe({
+          added(user) {
+            worldScene.playerCreate(user);
+          },
+          changed(user, oldUser) {
+            worldScene.playerUpdate(user, oldUser);
+          },
+          removed(user) {
+            worldScene.playerRemove(user);
+            userProximitySensor.removeNearUser(user);
+            lp.defer(() => peer.close(user._id));
+          },
+        });
+
+        log('loading level: all users loaded');
         if (!Meteor.user()?.profile.guest) peer.createMyPeer();
       });
-      this.handleZonesSubscribe = this.subscribe('zones', levelId, () => zones.checkDistances());
 
-      log(`Loading tiles for the level ${levelId || 'unknown'}…`);
-      const worldScene = game.scene.getScene('WorldScene');
+      // Load zones
+      log(`loading level: loading zones`);
+      this.handleZonesSubscribe = this.subscribe('zones', levelId, () => {
+        this.handleObserveZones = Zones.find().observe({
+          added(zone) {
+            if (zone.popInConfiguration?.autoOpen) characterPopIns.initFromZone(zone);
+          },
+          changed(zone) {
+            const currentZone = zones.currentZone(Meteor.user());
+            if (!currentZone || currentZone._id !== zone._id) return;
+
+            if (meet.api) meet.fullscreen(zone.fullscreen);
+          },
+        });
+
+        log('loading level: all zones loaded');
+        zones.checkDistances();
+      });
+
+      // Load tiles
+      log(`loading level: loading tiles`);
       this.handleTilesSubscribe = this.subscribe('tiles', levelId, () => {
         this.handleObserveTiles = Tiles.find().observe({
           added(tile) {
@@ -272,9 +284,11 @@ Template.lemverse.onCreated(function () {
           },
         });
 
-        log('All tiles loaded');
+        log('loading level: all tiles loaded');
         worldScene.onLevelLoaded();
       });
+
+      game.scene.getScene('EditorScene')?.init();
     });
   });
 
