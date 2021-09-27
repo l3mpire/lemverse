@@ -1,0 +1,40 @@
+<template name="profile">
+    <div class="modal">
+      <button type="button" class="js-close-button">x</button>
+      <div class="profile">
+        <h1 class="title">Profile</h1>
+        <div class="options">
+          {{#if profile.name}}
+          <div>
+            <label for="name">Name</label>
+            {{profile.name}} {{#if profile.defaultReaction}}{{profile.defaultReaction}}{{else}}❤️{{/if}}
+          </div>
+          {{/if}}
+          {{#if profile.position}}
+          <div>
+            <label for="name">Position</label>
+            {{profile.position}}
+          </div>  
+          {{/if}}
+          {{#if profile.bio}}
+          <div>
+            <label for="name">Bio</label>
+            {{profile.bio}}
+          </div>  
+          {{/if}}
+          {{#if profile.social}}
+          <div>
+            <label for="name">Social</label>
+            <a href="{{profile.social}}">{{profile.social}}</a>
+          </div>
+          {{/if}}
+          {{#if profile.website}}
+          <div>
+            <label for="name">Website</label>
+            <a href="{{profile.website}}">{{profile.website}}</a>
+          </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+</template>

@@ -29,6 +29,42 @@ Template.settings.events({
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.defaultReaction': reaction } });
     return false;
   },
+  'input .js-position'(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const position = event.target.value;
+    if (!position) return false;
+
+    Meteor.users.update(Meteor.userId(), { $set: { 'profile.position': position } });
+    return false;
+  },
+  'input .js-social'(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const social = event.target.value;
+    if (!social) return false;
+
+    Meteor.users.update(Meteor.userId(), { $set: { 'profile.social': social } });
+    return false;
+  },
+  'input .js-bio'(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const bio = event.target.value;
+    if (!bio) return false;
+
+    Meteor.users.update(Meteor.userId(), { $set: { 'profile.bio': bio } });
+    return false;
+  },
+  'input .js-website'(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const website = event.target.value;
+    if (!website) return false;
+
+    Meteor.users.update(Meteor.userId(), { $set: { 'profile.website': website } });
+    return false;
+  },
   'change .js-mic-select'(event) {
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.audioRecorder': event.target.value } });
   },

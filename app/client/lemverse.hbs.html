@@ -41,6 +41,9 @@
   {{#if Session 'displayNotificationsPanel'}}
     {{> notifications}}
   {{/if}}
+  {{#if Session 'displayProfile'}}
+    {{> profile}}
+  {{/if}}
   {{> userList}}
   {{> notification}}
   <audio class="js-audio-webrtc-in" muted>
