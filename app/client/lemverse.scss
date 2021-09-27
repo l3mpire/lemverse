@@ -195,6 +195,7 @@ button:focus {
     border: 2px solid white;
     margin: 5px;
     z-index: 30;
+    background-size: contain;
 
     video {
       width: 160px;
@@ -203,10 +204,10 @@ button:focus {
       display: none;
       object-fit: scale-down;
       transform: scale(-1, 1);
+    }
 
-      &.active {
-        display: block;
-      }
+    &.active video {
+      display: block;
     }
 
     .buttons {

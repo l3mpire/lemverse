@@ -72,17 +72,23 @@ characterPopIns = {
     this.popIns[userId][popInIdentifier] = characterPopIn;
   },
 
+  getPopIn(userId, popInIdentifier) {
+    const characterPopIns = this.popIns[userId];
+    if (!characterPopIns) return false;
+
+    const popIn = characterPopIns[popInIdentifier];
+    if (!popIn) return false;
+
+    return popIn;
+  },
+
   createIframeFromURL(url) {
     return `<div class="toggle-full-screen"></div><iframe frameborder="0" src="${url}"></iframe>`;
   },
 
   destroyPopIn(userId, popInIdentifier) {
-    const characterPopIns = this.popIns[userId];
-    if (!characterPopIns) return;
-
-    const popIn = characterPopIns[popInIdentifier];
+    const popIn = this.getPopIn(userId, popInIdentifier);
     if (!popIn) return;
-
     popIn.destroy();
     delete this.popIns[userId][popInIdentifier];
   },

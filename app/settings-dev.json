@@ -16,13 +16,13 @@
 
       "zoom": 1,
 
-      "peer": {
-          "answerMaxAttempt": 5,
-          "answerDelayBetweenAttempt": 750,
-          "avatars": [""],
-          "callDelay": 250,
-          "delayBeforeClosingCall": 1000
-      },
+    "peer": {
+      "answerMaxAttempt": 5,
+      "answerDelayBetweenAttempt": 750,
+      "avatarAPI": "https://source.unsplash.com/320x240/?cat&sig=[user_id]",
+      "callDelay": 250,
+      "delayBeforeClosingCall": 1000
+    },
 
       "meet": {
           "serverURL": "jitsi.indiemakers.space",

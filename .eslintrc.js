@@ -113,6 +113,7 @@ module.exports = {
     waitFor: 'writable',
     userStreams: 'writable',
     streamTypes: 'writable',
+    getRandomAvatarForUser: 'writable',
 
     tileGlobalIndex: 'writable',
     tileLayer: 'writable',
