@@ -7,7 +7,7 @@ Meteor.methods({
 
     if (!lp.isGod()) {
       error('removeTileset: user not allowed');
-      throw new Meteor.Error('not-authorized', 'only admins can do this');
+      throw new Meteor.Error('not-authorized', 'only gods can do this');
     }
 
     const tilesetToRemove = Tilesets.findOne(id);
