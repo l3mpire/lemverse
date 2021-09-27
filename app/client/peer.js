@@ -1,19 +1,17 @@
 import Peer from 'peerjs';
 
-myPeer = undefined;
-calls = {};
-remoteCalls = {};
-remoteStreamsByUsers = new ReactiveVar();
-remoteStreamsByUsers.set([]);
-
 peer = {
+  calls: {},
   callsToClose: {},
   callsOpening: {},
+  remoteCalls: {},
+  peerInstance: undefined,
   peerLoading: false,
+  remoteStreamsByUsers: new ReactiveVar([]),
 
   closeAll() {
     if (Meteor.user().options?.debug) log('peer.closeAll: start');
-    _.each(calls, call => this.close(call.peer, 100));
+    _.each(this.calls, call => this.close(call.peer, 100));
   },
 
   closeCall(userId) {
@@ -22,7 +20,7 @@ peer = {
 
     let activeCallsCount = 0;
     const close = (remote, user, type) => {
-      const callsSource = remote ? remoteCalls : calls;
+      const callsSource = remote ? this.remoteCalls : this.calls;
       const call = callsSource[`${user}-${type}`];
       if (call) {
         activeCallsCount++;
@@ -42,7 +40,7 @@ peer = {
     if (!activeCallsCount) return;
     if (debug) log('close call: call was active');
 
-    let streamsByUsers = remoteStreamsByUsers.get();
+    let streamsByUsers = this.remoteStreamsByUsers.get();
     streamsByUsers.map(usr => {
       if (usr._id === userId) {
         delete usr.main.srcObject;
@@ -54,7 +52,7 @@ peer = {
     });
     // We clean up remoteStreamsByUsers table by deleting all the users who have neither webcam or screen sharing active
     streamsByUsers = streamsByUsers.filter(usr => usr.main.srcObject !== undefined || usr.screen.srcObject !== undefined || usr.waitingCallAnswer);
-    remoteStreamsByUsers.set(streamsByUsers);
+    this.remoteStreamsByUsers.set(streamsByUsers);
 
     if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
 
@@ -82,9 +80,9 @@ peer = {
     const type = stream === userStreams.streams.main.instance ? 'main' : 'screen';
 
     if (debug) log(`peer call: create new peer call with ${user._id}`, { user: user._id, type });
-    if (!stream) { error(`stream is undefined`, { user, stream, myPeer }); return; }
+    if (!stream) { error(`stream is undefined`, { user, stream }); return; }
 
-    if (calls[`${user._id}-${type}`]) {
+    if (this.calls[`${user._id}-${type}`]) {
       if (debug) log(`peer call: creation cancelled (call already started)`);
       return;
     }
@@ -103,7 +101,7 @@ peer = {
     }
 
     // update html element with the last stream instance
-    calls[`${user._id}-${type}`] = call;
+    this.calls[`${user._id}-${type}`] = call;
     this.createOrUpdateRemoteStream(user, type);
 
     // ensures peers are using last stream & tracks available
@@ -116,7 +114,7 @@ peer = {
   createPeerCalls(user) {
     const { shareAudio, shareScreen, shareVideo } = Meteor.user().profile;
 
-    if (!calls[`${user._id}-${streamTypes.main}`] && !calls[`${user._id}-${streamTypes.screen}`]) sounds.play('webrtc-in');
+    if (!this.calls[`${user._id}-${streamTypes.main}`] && !this.calls[`${user._id}-${streamTypes.screen}`]) sounds.play('webrtc-in');
 
     this.getPeer().then(peer => {
       if (shareAudio || shareVideo) userStreams.createStream().then(stream => this.createPeerCall(peer, stream, user));
@@ -127,8 +125,8 @@ peer = {
   destroy() {
     this.closeAll();
     userStreams.destroyStream(streamTypes.main);
-    myPeer?.destroy();
-    remoteStreamsByUsers.set([]);
+    this.peerInstance?.destroy();
+    this.remoteStreamsByUsers.set([]);
   },
 
   updatePeersStream(stream, type) {
@@ -140,7 +138,7 @@ peer = {
       const audioTrack = stream.getAudioTracks()[0];
       const videoTrack = stream.getVideoTracks()[0];
 
-      _.each(calls, (call, key) => {
+      _.each(this.calls, (call, key) => {
         if (key.indexOf('-screen') !== -1) return;
         if (debug) log(`update peers stream: sending stream to user ${key}`);
         const senders = call.peerConnection.getSenders();
@@ -155,7 +153,7 @@ peer = {
       if (debug) log(`update peers stream: screen share stream ${stream.id}`, stream);
       const screenTrack = stream.getVideoTracks()[0];
 
-      _.each(calls, (call, key) => {
+      _.each(this.calls, (call, key) => {
         if (key.indexOf('-screen') === -1) return;
         const senders = call.peerConnection.getSenders();
 
@@ -218,18 +216,18 @@ peer = {
   },
 
   onStreamSettingsChanged(changedUser) {
-    const streamsByUsers = remoteStreamsByUsers.get();
+    const streamsByUsers = this.remoteStreamsByUsers.get();
     const streamsCurrentUser = streamsByUsers.find(user => user._id === changedUser._id);
     if (!streamsCurrentUser || !streamsCurrentUser.screen.srcObject) return;
 
     if (!changedUser.profile.shareScreen) {
       delete streamsCurrentUser.screen.srcObject;
-      remoteStreamsByUsers.set(streamsByUsers);
+      this.remoteStreamsByUsers.set(streamsByUsers);
     }
   },
 
   createOrUpdateRemoteStream(user, streamType, remoteStream = null) {
-    const streamsByUsers = remoteStreamsByUsers.get();
+    const streamsByUsers = this.remoteStreamsByUsers.get();
 
     if (!streamsByUsers.find(usr => usr._id === user._id)) {
       streamsByUsers.push({
@@ -254,7 +252,7 @@ peer = {
       });
     }
 
-    remoteStreamsByUsers.set(streamsByUsers);
+    this.remoteStreamsByUsers.set(streamsByUsers);
   },
 
   answerCall(remoteCall) {
@@ -278,7 +276,7 @@ peer = {
     remoteCall.answer();
 
     const callIdentifier = `${remoteUserId}-${remoteCall.metadata.type}`;
-    remoteCalls[callIdentifier] = remoteCall;
+    this.remoteCalls[callIdentifier] = remoteCall;
 
     // show the remote call with an empty stream
     this.createOrUpdateRemoteStream(remoteUser, remoteCall.metadata.type);
@@ -303,24 +301,24 @@ peer = {
 
   getPeer() {
     return new Promise(resolve => {
-      if (myPeer && myPeer.id && !myPeer.disconnected) return resolve(myPeer);
+      if (this.isPeerValid(this.peerInstance)) return resolve(this.peerInstance);
       const debug = Meteor.user()?.options?.debug;
 
-      if (myPeer && myPeer.disconnected) {
+      if (this.peerInstance?.disconnected) {
         let reconnected = true;
         try {
           if (debug) log('Peer disconnected, reconnecting…');
-          myPeer.reconnect();
+          this.peerInstance.reconnect();
         } catch (err) { reconnected = false; }
 
         // peerjs reconnect doesn't offer a promise or callback so we have to wait a certain time until the reconnection is done
-        if (reconnected) return waitFor(() => myPeer && myPeer.id && !myPeer.disconnected, 5, 250).then(() => resolve(myPeer));
+        if (reconnected) return waitFor(() => this.isPeerValid(this.peerInstance), 5, 250).then(() => resolve(this.peerInstance));
       }
 
-      if (!myPeer && this.peerLoading) return waitFor(() => myPeer !== undefined, 5, 250).then(() => resolve(myPeer));
+      if (!this.peerInstance && this.peerLoading) return waitFor(() => this.peerInstance !== undefined, 5, 250).then(() => resolve(this.peerInstance));
 
       if (debug) log('Peer invalid, creating new peer…');
-      myPeer = undefined;
+      this.peerInstance = undefined;
       this.peerLoading = false;
 
       return this.createMyPeer().then(resolve);
@@ -328,7 +326,7 @@ peer = {
   },
 
   createMyPeer(skipConfig = false) {
-    if (myPeer && myPeer.id && !myPeer.disconnected) return Promise.resolve(myPeer);
+    if (this.isPeerValid(this.peerInstance)) return Promise.resolve(this.peerInstance);
     if (!Meteor.user()) return Promise.reject(new Error(`an user is required to create a peer`));
     if (Meteor.user().profile?.guest) return Promise.reject(new Error(`peer is forbidden for guest account`));
 
@@ -353,30 +351,30 @@ peer = {
         };
 
         if (skipConfig) delete peerConfig.config;
-        if (myPeer) this.destroy();
-        myPeer = new Peer(Meteor.userId(), peerConfig);
+        if (this.peerInstance) this.destroy();
+        this.peerInstance = new Peer(Meteor.userId(), peerConfig);
 
-        if (debug) log('create peer: myPeer created', { myPeer });
+        if (debug) log(`create peer: created (${this.peerInstance.id})`);
 
-        myPeer.on('connection', connection => {
+        this.peerInstance.on('connection', connection => {
           connection.on('data', dataReceived => {
             if (dataReceived.type === 'audio') userVoiceRecorderAbility.playSound(dataReceived.data);
             if (dataReceived.type === 'call-close-done') {
-              if (debug) log(`remote peer closed call (${dataReceived.user})`, { myPeer });
+              if (debug) log(`remote peer closed call (${dataReceived.user})`);
               this.close(dataReceived.user);
             }
           });
         });
 
-        myPeer.on('close', () => { log('peer closed and destroyed'); myPeer = undefined; });
+        this.peerInstance.on('close', () => { log('peer closed and destroyed'); this.peerInstance = undefined; });
 
-        myPeer.on('error', peerErr => {
-          if (['server-error', 'network'].includes(peerErr.type) && myPeer.disconnected) myPeer.reconnect();
+        this.peerInstance.on('error', peerErr => {
+          if (['server-error', 'network'].includes(peerErr.type) && this.peerInstance.disconnected) this.peerInstance.reconnect();
           log(`peer error ${peerErr.type}`, peerErr);
           lp.notif.error(`Peer ${peerErr} (${peerErr.type})`);
         });
 
-        myPeer.on('call', remoteCall => {
+        this.peerInstance.on('call', remoteCall => {
           if (debug) log(`new call: from ${remoteCall.metadata.userId}`, { userId: remoteCall.metadata.userId });
           if (meet.api) {
             log(`new call: ignored (meet is open)`, { userId: remoteCall.metadata.userId, type: remoteCall.metadata.type });
@@ -390,8 +388,12 @@ peer = {
         window.addEventListener('beforeunload', this.destroy.bind(this));
         this.peerLoading = false;
 
-        return resolve(myPeer);
+        return resolve(this.peerInstance);
       });
     });
+  },
+
+  isPeerValid(peer) {
+    return peer?.id && !peer.disconnected;
   },
 };

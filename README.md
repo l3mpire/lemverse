@@ -456,18 +456,26 @@ server {
 
 Once you have done it, the subsequent deployments will be done using the command `./deploy`.
 
-## Build docker images
+## Docker images
 
-### Production
+### Official image
+
+The official lemverse image is `lempire/lemverse`.  
+If you want to pull the last version, you should do:  
+`docker pull lempire/lemverse:latest`
+
+
+### Build
+#### Production
 
 To build the latest version of lemverse, simply run the following command:  
-`docker build . -t l3mpire/lemverse:latest`
+`docker build . -t lempire/lemverse:latest`
 
-### Development
+#### Development
 
 To build from you source without having to install anything, you can run the following command:
 
-`docker build -f Dockerfile.dev . -t l3mpire/lemverse:dev`
+`docker build -f Dockerfile.dev . -t lempire/lemverse:dev`
 
 ## Build docker with Github Actions
 

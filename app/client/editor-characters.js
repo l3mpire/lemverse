@@ -44,8 +44,9 @@ Template.editorCharacters.events({
 
     Meteor.call('updateUsersCharacter', Session.get('editorCharactersFilter'), category, currentId, err => {
       if (!err) {
-        Characters.update(selectedCharactersPart()._id, { $set: { category } });
         Session.set('selectedCharacterId', findFirstCharacters()?._id || null);
+      } else {
+        lp.notif.error(`Error while changing category, ${err.reason}`)
       }
     });
   },
