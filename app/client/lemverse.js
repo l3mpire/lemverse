@@ -121,155 +121,160 @@ Template.lemverse.onCreated(function () {
   this.autorun(() => {
     if (!Session.get('gameCreated')) return;
 
-    if (this.handleObserveUsers) this.handleObserveUsers.stop();
-    this.handleObserveUsers = Meteor.users.find({ status: { $exists: true } }).observe({
-      added(user) {
-        game.scene.keys.WorldScene.playerCreate(user);
-      },
-      changed(user, oldUser) {
-        game.scene.keys.WorldScene.playerUpdate(user, oldUser);
-      },
-      removed(user) {
-        game.scene.keys.WorldScene.playerRemove(user);
-        userProximitySensor.removeNearUser(user);
-        lp.defer(() => peer.close(user._id));
-      },
-    });
-
-    if (this.handleObserveTilesets) this.handleObserveTilesets.stop();
-    if (!this.handleObserveTilesets) {
-      this.handleObserveTilesets = Tilesets.find().observe({
-        added(tileset) {
-          game.scene.keys.BootScene.loadTilesetsAtRuntime([tileset], game.scene.keys.WorldScene.addTilesetsToLayers);
+    const worldScene = game.scene.getScene('WorldScene');
+    Tracker.nonreactive(() => {
+      if (this.handleObserveUsers) this.handleObserveUsers.stop();
+      this.handleObserveUsers = Meteor.users.find({ status: { $exists: true } }).observe({
+        added(user) {
+          worldScene.playerCreate(user);
         },
-        changed(o, n) {
-          const oTileKeys = _.map(_.keys(o.tiles || {}), k => +k);
-          const nTileKeys = _.map(_.keys(n.tiles || {}), k => +k);
-          const d1 = _.difference(oTileKeys, nTileKeys);
-          const d2 = _.difference(nTileKeys, oTileKeys);
-          const d3 = _.filter(oTileKeys, index => o.tiles[index]?.layer !== n.tiles[index]?.layer);
-          const changedTileIndexes = _.union(d1, d2, d3);
-          const xys = _.map(Tiles.find({ tilesetId: n._id, index: { $in: changedTileIndexes } }).fetch(), t => ({ x: t.x, y: t.y }));
-          _.forEach(xys, xy => game.scene.keys.WorldScene.tileRefresh(xy.x, xy.y));
-
-          const enabledCollisionIndexes = _.difference(o.collisionTileIndexes, n.collisionTileIndexes);
-          const disabledCollisionIndexes = _.difference(n.collisionTileIndexes, o.collisionTileIndexes);
-
-          const enabledCollisionGlobalIndexes = _.map(enabledCollisionIndexes, i => tileGlobalIndex({ index: i, tilesetId: n._id }));
-          const disabledCollisionGlobalIndexes = _.map(disabledCollisionIndexes, i => tileGlobalIndex({ index: i, tilesetId: n._id }));
-
-          const { layers } = game.scene.keys.WorldScene.map;
-          _.each(layers, layer => {
-            game.scene.keys.WorldScene.map.setCollision(enabledCollisionGlobalIndexes, true, false, layer.tilemapLayer);
-            game.scene.keys.WorldScene.map.setCollision(disabledCollisionGlobalIndexes, false, false, layer.tilemapLayer);
-          });
+        changed(user, oldUser) {
+          worldScene.playerUpdate(user, oldUser);
+        },
+        removed(user) {
+          worldScene.playerRemove(user);
+          userProximitySensor.removeNearUser(user);
+          lp.defer(() => peer.close(user._id));
         },
       });
-    }
 
-    if (this.handleObserveCharacters) this.handleObserveCharacters.stop();
-    if (!this.handleObserveCharacters) {
-      this.handleObserveCharacters = Characters.find().observe({
-        added(character) {
-          game.scene.keys.BootScene.loadCharactersAtRuntime([character]);
-        },
-        changed(character, previous) {
-          if (!character.category) return;
+      if (this.handleObserveTilesets) this.handleObserveTilesets.stop();
+      if (!this.handleObserveTilesets) {
+        this.handleObserveTilesets = Tilesets.find().observe({
+          added(tileset) {
+            game.scene.keys.BootScene.loadTilesetsAtRuntime([tileset], worldScene.addTilesetsToLayers);
+          },
+          changed(o, n) {
+            const oTileKeys = _.map(_.keys(o.tiles || {}), k => +k);
+            const nTileKeys = _.map(_.keys(n.tiles || {}), k => +k);
+            const d1 = _.difference(oTileKeys, nTileKeys);
+            const d2 = _.difference(nTileKeys, oTileKeys);
+            const d3 = _.filter(oTileKeys, index => o.tiles[index]?.layer !== n.tiles[index]?.layer);
+            const changedTileIndexes = _.union(d1, d2, d3);
+            const xys = _.map(Tiles.find({ tilesetId: n._id, index: { $in: changedTileIndexes } }).fetch(), t => ({ x: t.x, y: t.y }));
+            _.forEach(xys, xy => worldScene.tileRefresh(xy.x, xy.y));
 
-          const { anims } = game.scene.keys.WorldScene;
-          const animExist = (sprite, orientation) => anims[`${sprite._id}${sprite.category}${orientation}`];
+            const enabledCollisionIndexes = _.difference(o.collisionTileIndexes, n.collisionTileIndexes);
+            const disabledCollisionIndexes = _.difference(n.collisionTileIndexes, o.collisionTileIndexes);
 
-          // Remove previous animation
-          ['up', 'down', 'left', 'right'].forEach(orientation => {
-            if (animExist(previous, orientation)) {
-              anims.remove(`${previous._id}${previous.category}${orientation}`);
+            const enabledCollisionGlobalIndexes = _.map(enabledCollisionIndexes, i => tileGlobalIndex({ index: i, tilesetId: n._id }));
+            const disabledCollisionGlobalIndexes = _.map(disabledCollisionIndexes, i => tileGlobalIndex({ index: i, tilesetId: n._id }));
+
+            const { layers } = worldScene.map;
+            _.each(layers, layer => {
+              worldScene.map.setCollision(enabledCollisionGlobalIndexes, true, false, layer.tilemapLayer);
+              worldScene.map.setCollision(disabledCollisionGlobalIndexes, false, false, layer.tilemapLayer);
+            });
+          },
+        });
+      }
+
+      if (this.handleObserveCharacters) this.handleObserveCharacters.stop();
+      if (!this.handleObserveCharacters) {
+        this.handleObserveCharacters = Characters.find().observe({
+          added(character) {
+            game.scene.keys.BootScene.loadCharactersAtRuntime([character]);
+          },
+          changed(character, previous) {
+            if (!character.category) return;
+
+            const { anims } = game.scene.keys.WorldScene;
+            const animExist = (sprite, orientation) => anims[`${sprite._id}${sprite.category}${orientation}`];
+
+            // Remove previous animation
+            ['up', 'down', 'left', 'right'].forEach(orientation => {
+              if (animExist(previous, orientation)) {
+                anims.remove(`${previous._id}${previous.category}${orientation}`);
+              }
+            });
+
+            if (!animExist(character, 'right')) {
+              anims.create({
+                key: `${character._id}right`,
+                frames: anims.generateFrameNumbers(character._id, { frames: [48, 49, 50, 51, 52, 53] }),
+                frameRate: 10,
+                repeat: -1,
+              });
             }
-          });
+            if (!animExist(character, 'up')) {
+              anims.create({
+                key: `${character._id}up`,
+                frames: anims.generateFrameNumbers(character._id, { frames: [54, 55, 56, 57, 58, 59] }),
+                frameRate: 10,
+                repeat: -1,
+              });
+            }
+            if (!animExist(character, 'left')) {
+              anims.create({
+                key: `${character._id}left`,
+                frames: anims.generateFrameNumbers(character._id, { frames: [60, 61, 62, 63, 64, 65] }),
+                frameRate: 10,
+                repeat: -1,
+              });
+            }
+            if (!animExist(character, 'down')) {
+              anims.create({
+                key: `${character._id}down`,
+                frames: anims.generateFrameNumbers(character._id, { frames: [66, 67, 68, 69, 70, 71] }),
+                frameRate: 10,
+                repeat: -1,
+              });
+            }
+          },
+        });
+      }
 
-          if (!animExist(character, 'right')) {
-            anims.create({
-              key: `${character._id}right`,
-              frames: anims.generateFrameNumbers(character._id, { frames: [48, 49, 50, 51, 52, 53] }),
-              frameRate: 10,
-              repeat: -1,
-            });
-          }
-          if (!animExist(character, 'up')) {
-            anims.create({
-              key: `${character._id}up`,
-              frames: anims.generateFrameNumbers(character._id, { frames: [54, 55, 56, 57, 58, 59] }),
-              frameRate: 10,
-              repeat: -1,
-            });
-          }
-          if (!animExist(character, 'left')) {
-            anims.create({
-              key: `${character._id}left`,
-              frames: anims.generateFrameNumbers(character._id, { frames: [60, 61, 62, 63, 64, 65] }),
-              frameRate: 10,
-              repeat: -1,
-            });
-          }
-          if (!animExist(character, 'down')) {
-            anims.create({
-              key: `${character._id}down`,
-              frames: anims.generateFrameNumbers(character._id, { frames: [66, 67, 68, 69, 70, 71] }),
-              frameRate: 10,
-              repeat: -1,
-            });
-          }
+      if (this.handleObserveZones) this.handleObserveZones.stop();
+      this.handleObserveZones = Zones.find().observe({
+        added(zone) {
+          if (zone.popInConfiguration?.autoOpen) characterPopIns.initFromZone(zone);
+        },
+        changed(zone) {
+          const currentZone = zones.currentZone(Meteor.user());
+          if (!currentZone || currentZone._id !== zone._id) return;
+
+          if (meet.api) meet.fullscreen(zone.fullscreen);
         },
       });
-    }
-
-    if (this.handleObserveZones) this.handleObserveZones.stop();
-    this.handleObserveZones = Zones.find().observe({
-      added(zone) {
-        if (zone.popInConfiguration?.autoOpen) characterPopIns.initFromZone(zone);
-      },
-      changed(zone) {
-        const currentZone = zones.currentZone(Meteor.user());
-        if (!currentZone || currentZone._id !== zone._id) return;
-
-        if (meet.api) meet.fullscreen(zone.fullscreen);
-      },
     });
   });
 
   this.autorun(() => {
     if (!Session.get('gameCreated')) return;
 
-    const levelId = Meteor.user({ fields: { 'profile.levelId': 1 } })?.profile?.levelId;
-
-    if (this.handleZonesSubscribe) this.handleZonesSubscribe.stop();
-    if (this.handleUsersSubscribe) this.handleUsersSubscribe.stop();
-    if (this.handleObserveTiles) this.handleObserveTiles.stop();
-    if (this.handleTilesSubscribe) this.handleTilesSubscribe.stop();
-    this.handleUsersSubscribe = this.subscribe('users', levelId, () => {
-      if (!Meteor.user()?.profile.guest) peer.createMyPeer();
-    });
-    this.handleZonesSubscribe = this.subscribe('zones', levelId, () => zones.checkDistances());
-
-    log(`Loading tiles for the level ${levelId || 'unknown'}…`);
-    this.handleTilesSubscribe = this.subscribe('tiles', levelId, () => {
-      this.handleObserveTiles = Tiles.find().observe({
-        added(tile) {
-          const layer = tileLayer(tile);
-          game.scene.keys.WorldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
-          game.scene.keys.WorldScene.drawTeleporters(false);
-        },
-        changed(tile) {
-          const layer = tileLayer(tile);
-          game.scene.keys.WorldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
-        },
-        removed(tile) {
-          const layer = tileLayer(tile);
-          game.scene.keys.WorldScene.map.removeTileAt(tile.x, tile.y, false, false, layer);
-        },
+    const levelId = Meteor.user({ fields: { 'profile.levelId': 1 } }).profile?.levelId;
+    Tracker.nonreactive(() => {
+      if (this.handleZonesSubscribe) this.handleZonesSubscribe.stop();
+      if (this.handleUsersSubscribe) this.handleUsersSubscribe.stop();
+      if (this.handleObserveTiles) this.handleObserveTiles.stop();
+      if (this.handleTilesSubscribe) this.handleTilesSubscribe.stop();
+      this.handleUsersSubscribe = this.subscribe('users', levelId, () => {
+        if (!Meteor.user()?.profile.guest) peer.createMyPeer();
       });
+      this.handleZonesSubscribe = this.subscribe('zones', levelId, () => zones.checkDistances());
 
-      log('All tiles loaded');
-      game.scene.keys.WorldScene.onLevelLoaded();
+      log(`Loading tiles for the level ${levelId || 'unknown'}…`);
+      const worldScene = game.scene.getScene('WorldScene');
+      this.handleTilesSubscribe = this.subscribe('tiles', levelId, () => {
+        this.handleObserveTiles = Tiles.find().observe({
+          added(tile) {
+            const layer = tileLayer(tile);
+            worldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
+            worldScene.drawTeleporters(false);
+          },
+          changed(tile) {
+            const layer = tileLayer(tile);
+            worldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
+          },
+          removed(tile) {
+            const layer = tileLayer(tile);
+            worldScene.map.removeTileAt(tile.x, tile.y, false, false, layer);
+          },
+        });
+
+        log('All tiles loaded');
+        worldScene.onLevelLoaded();
+      });
     });
   });
 
