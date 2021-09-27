@@ -28,4 +28,8 @@ Template.userList.events({
   'click .js-toggle-edition'() {
     Meteor.call('toggleLevelEditionPermission', this._id);
   },
+  'click .js-profile'() {
+    Session.set('displayUserList', false);
+    Session.set('displayProfile', this._id);
+  },
 });
