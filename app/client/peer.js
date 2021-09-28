@@ -11,12 +11,12 @@ peer = {
 
   closeAll() {
     if (Meteor.user().options?.debug) log('peer.closeAll: start');
-    _.each(this.calls, call => this.close(call.peer, 100));
+    _.each(this.calls, call => this.close(call.peer, Meteor.settings.public.peer.delayBeforeClosingCall, 'close-all'));
   },
 
-  closeCall(userId) {
+  closeCall(userId, origin) {
     const debug = Meteor.user()?.options?.debug;
-    if (debug) log('close call: start', userId);
+    if (debug) log(`close call: start (${origin})`, userId);
 
     let activeCallsCount = 0;
     const close = (remote, user, type) => {
@@ -68,11 +68,11 @@ peer = {
     if (otherUser) this.sendData([otherUser], { type: 'call-close-done', user: Meteor.userId() });
   },
 
-  close(userId, timeout = 0) {
+  close(userId, timeout = 0, origin = null) {
     this.cancelCallOpening(userId);
     if (this.callsToClose[userId] && timeout !== 0) return;
     clearTimeout(this.callsToClose[userId]);
-    this.callsToClose[userId] = setTimeout(() => this.closeCall(userId), timeout);
+    this.callsToClose[userId] = setTimeout(() => this.closeCall(userId, origin), timeout);
   },
 
   createPeerCall(peer, stream, user) {
@@ -89,14 +89,14 @@ peer = {
 
     if (!userProximitySensor.isUserNear(user)) {
       if (debug) log(`peer call: creation cancelled (user is too far)`);
-      this.close(user._id);
+      this.close(user._id, 0, 'far-user');
       return;
     }
 
     const call = peer.call(user._id, stream, { metadata: { userId: Meteor.userId(), type } });
     if (!call) {
       error(`peer call: an error occured during call creation`);
-      this.close(user._id);
+      this.close(user._id, 0, 'peer-error');
       return;
     }
 
@@ -174,7 +174,7 @@ peer = {
   },
 
   onProximityEnded(user) {
-    this.close(user._id, Meteor.settings.public.peer.delayBeforeClosingCall);
+    this.close(user._id, Meteor.settings.public.peer.delayBeforeClosingCall, 'proximity-ended');
   },
 
   cancelCallClose(userId) {
@@ -290,7 +290,7 @@ peer = {
 
     remoteCall.on('close', () => {
       if (debug) log(`remote call closed (with ${remoteUserId})`, { userId: remoteUserId, type: remoteCall.metadata.type });
-      this.close(remoteUserId);
+      this.close(remoteUserId, 0, 'peerjs-event');
     });
 
     // ensures a call to the other user exists on an answer to avoid one-way calls, do nothing if a call is already started
@@ -361,7 +361,7 @@ peer = {
             if (dataReceived.type === 'audio') userVoiceRecorderAbility.playSound(dataReceived.data);
             if (dataReceived.type === 'call-close-done') {
               if (debug) log(`remote peer closed call (${dataReceived.user})`);
-              this.close(dataReceived.user);
+              this.close(dataReceived.user, 0, 'remote-call-closed-peer');
             }
           });
         });
