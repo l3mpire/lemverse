@@ -16,7 +16,7 @@ Template.settings.events({
     if (!name) return false;
 
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.name': name } });
-    game.scene.keys.WorldScene.playerRename(name);
+    userManager.rename(name);
     return false;
   },
   'input .js-reaction'(event) {

@@ -40,7 +40,7 @@ const onSubmit = template => {
     }
 
     hotkeys.setScope(scopes.player);
-    game.scene.keys.WorldScene.playerUpdate(Meteor.user());
+    userManager.update(Meteor.user());
     peer.createMyPeer();
   });
 };
