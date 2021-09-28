@@ -205,7 +205,6 @@ WorldScene = new Phaser.Class({
       const characterPart = characterBodyContainer.getByName(part);
       if (!characterPart) {
         const missingPart = this.add.sprite(0, 0, user.profile[part]);
-        missingPart.setScale(3);
         missingPart.name = part;
         characterBodyContainer.add(missingPart);
       } else characterPart.setTexture(user.profile[part]);
