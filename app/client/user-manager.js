@@ -1,6 +1,7 @@
 const defaultCharacterDirection = 'down';
 const defaultUserMediaColorError = '0xd21404';
 const characterNameOffset = { x: 0, y: -40 };
+const characterInteractionDistance = { x: 16, y: 16 };
 
 charactersParts = Object.freeze({
   body: 0,
@@ -444,5 +445,44 @@ userManager = {
     this.player.x = x;
     this.player.y = y;
     savePlayer(this.player);
+  },
+
+  getTileInFrontOf(player, layerIndex = -1) {
+    if (!player) return undefined;
+
+    const positionOffset = [0, 0];
+    if (player.direction) {
+      const directionVector = this.directionToVector(player.direction);
+      positionOffset[0] = directionVector[0] * characterInteractionDistance.x;
+      positionOffset[1] = directionVector[1] * characterInteractionDistance.y;
+    }
+
+    const tileX = this.scene.map.worldToTileX(player.x + positionOffset[0]);
+    const tileY = this.scene.map.worldToTileY(player.y + positionOffset[1]);
+
+    let tile;
+    if (layerIndex < 0) {
+      for (let l = this.scene.map.layers.length; l >= 0; l--) {
+        tile = this.scene.map.getTileAt(tileX, tileY, false, l);
+        if (tile) break;
+      }
+    } else tile = this.scene.map.getTileAt(tileX, tileY, false, layerIndex);
+
+    return tile;
+  },
+
+  directionToVector(direction) {
+    switch (direction) {
+      case 'left':
+        return [-1, 0];
+      case 'right':
+        return [1, 0];
+      case 'up':
+        return [0, -1];
+      case 'down':
+        return [0, 1];
+      default:
+        return [0, 0];
+    }
   },
 };
