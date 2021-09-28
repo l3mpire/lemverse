@@ -238,7 +238,7 @@ Template.lemverse.onCreated(function () {
           removed(user) {
             userManager.remove(user);
             userProximitySensor.removeNearUser(user);
-            lp.defer(() => peer.close(user._id));
+            lp.defer(() => peer.close(user._id, 0, 'user-disconnected'));
           },
         });
 
