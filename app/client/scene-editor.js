@@ -8,6 +8,7 @@ EditorScene = new Phaser.Class({
   },
 
   init() {
+    this.isMouseDown = false;
     this.marker = game.scene.keys.WorldScene.add.graphics();
     this.undoTiles = [];
     this.redoTiles = [];
@@ -99,7 +100,7 @@ EditorScene = new Phaser.Class({
             }
           });
         } else if (selectedTiles) {
-          const user = Meteor.users.findOne(WorldScene.player.userId);
+          const user = Meteor.users.findOne(userManager.player.userId);
           const selectedTileset = Tilesets.findOne(selectedTiles.tilesetId);
           for (let x = 0; x < selectedTiles.w; x++) {
             for (let y = 0; y < selectedTiles.h; y++) {

@@ -82,7 +82,7 @@ Template.lemverse.onCreated(function () {
     Tracker.nonreactive(() => {
       const worldScene = game.scene.getScene('WorldScene');
       worldScene.enableKeyboard(!modalOpen, !modalOpen);
-      worldScene.playerPauseAnimation(undefined, modalOpen);
+      userManager.pauseAnimation(undefined, modalOpen);
     });
   });
 
@@ -230,13 +230,13 @@ Template.lemverse.onCreated(function () {
       this.handleUsersSubscribe = this.subscribe('users', levelId, () => {
         this.handleObserveUsers = Meteor.users.find({ status: { $exists: true } }).observe({
           added(user) {
-            worldScene.playerCreate(user);
+            userManager.create(user);
           },
           changed(user, oldUser) {
-            worldScene.playerUpdate(user, oldUser);
+            userManager.update(user, oldUser);
           },
           removed(user) {
-            worldScene.playerRemove(user);
+            userManager.remove(user);
             userProximitySensor.removeNearUser(user);
             lp.defer(() => peer.close(user._id));
           },
@@ -262,7 +262,7 @@ Template.lemverse.onCreated(function () {
         });
 
         log('loading level: all zones loaded');
-        zones.checkDistances();
+        zones.checkDistances(userManager.player);
       });
 
       // Load tiles
