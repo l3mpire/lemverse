@@ -3,6 +3,8 @@ zones = {
   onZoneChanged: undefined,
   toastTimerInstance: undefined,
   toastBloc: undefined,
+  webpageContainer: undefined,
+  webpageIframeContainer: undefined,
 
   currentZone(user) {
     return Zones.findOne({
@@ -149,12 +151,22 @@ zones = {
       }
 
       if (zone?.url) {
-        $('#webpageIframe').attr('src', zone.url);
-        $('#webpage').addClass('show');
+        this.getIframeElement().src = zone.url;
+        this.getWebpageElement().classList.add('show');
       } else if ((!zone || !zone.url) && !meet?.api) {
-        $('#webpageIframe').attr('src', '');
-        $('#webpage').removeClass('show');
+        this.getIframeElement().src = '';
+        this.getWebpageElement().classList.remove('show');
       }
     }
+  },
+
+  getIframeElement() {
+    if (!this.webpageIframeContainer) this.webpageIframeContainer = document.querySelector('#webpageIframe');
+    return this.webpageIframeContainer;
+  },
+
+  getWebpageElement() {
+    if (!this.webpageContainer) this.webpageContainer = document.querySelector('#webpage');
+    return this.webpageContainer;
   },
 };
