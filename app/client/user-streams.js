@@ -90,7 +90,7 @@ userStreams = {
     if (forceNew) this.destroyStream(streamTypes.main);
     const { instance: currentStream, loading } = this.streams.main;
     if (currentStream) return new Promise(resolve => resolve(currentStream));
-    if (!currentStream && loading) return waitFor(() => currentStream !== undefined, 10, 500).then(() => currentStream);
+    if (!currentStream && loading) return waitFor(() => this.streams.main.instance !== undefined, 15, 500).then(() => this.streams.main.instance);
 
     const { shareVideo, shareAudio, videoRecorder, audioRecorder } = Meteor.user().profile;
     const options = {
@@ -122,7 +122,7 @@ userStreams = {
   requestDisplayMedia() {
     const { instance: currentStream, loading } = this.streams.screen;
     if (currentStream) return new Promise(resolve => resolve(currentStream));
-    if (!currentStream && loading) return waitFor(() => currentStream !== undefined, 20, 1000).then(() => currentStream);
+    if (!currentStream && loading) return waitFor(() => this.streams.screen.instance !== undefined, 20, 1000).then(() => this.streams.screen.instance);
 
     const { screenShareFrameRate } = Meteor.user().profile;
     this.streams.screen.loading = true;
