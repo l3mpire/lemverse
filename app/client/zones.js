@@ -3,6 +3,8 @@ zones = {
   onZoneChanged: undefined,
   toastTimerInstance: undefined,
   toastBloc: undefined,
+  webpageContainer: undefined,
+  webpageIframeContainer: undefined,
 
   currentZone(user) {
     return Zones.findOne({
@@ -87,8 +89,7 @@ zones = {
     this.toastTimerInstance = setTimeout(() => this.toastBloc.removeClass('show'), 1500);
   },
 
-  checkDistances() {
-    const { player } = game?.scene?.keys?.WorldScene || {};
+  checkDistances(player) {
     if (!player) return;
 
     // check if we are in a new zone
@@ -119,9 +120,7 @@ zones = {
 
       if (zone?.adminOnly && !dataPlayer?.roles?.admin && !dataPlayer.profile?.guest) {
         const [x, y] = zone.teleportEndpoint ? zone.teleportEndpoint.split(',') : [73, 45];
-        game.scene.keys.WorldScene.player.x = +x;
-        game.scene.keys.WorldScene.player.y = +y;
-        savePlayer(game.scene.keys.WorldScene.player);
+        userManager.teleportMainUser(+x, +y);
         lp.notif.error('This zone is reserved for admin');
       }
 
@@ -152,12 +151,22 @@ zones = {
       }
 
       if (zone?.url) {
-        $('#webpageIframe').attr('src', zone.url);
-        $('#webpage').addClass('show');
+        this.getIframeElement().src = zone.url;
+        this.getWebpageElement().classList.add('show');
       } else if ((!zone || !zone.url) && !meet?.api) {
-        $('#webpageIframe').attr('src', '');
-        $('#webpage').removeClass('show');
+        this.getIframeElement().src = '';
+        this.getWebpageElement().classList.remove('show');
       }
     }
+  },
+
+  getIframeElement() {
+    if (!this.webpageIframeContainer) this.webpageIframeContainer = document.querySelector('#webpageIframe');
+    return this.webpageIframeContainer;
+  },
+
+  getWebpageElement() {
+    if (!this.webpageContainer) this.webpageContainer = document.querySelector('#webpage');
+    return this.webpageContainer;
   },
 };
