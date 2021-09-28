@@ -147,7 +147,7 @@ WorldScene = new Phaser.Class({
     if (!guest) {
       playerParts.setInteractive(new Phaser.Geom.Circle(0, 0, 10), Phaser.Geom.Circle.Contains);
       playerParts.on('pointerup', () =>  {
-        console.log("pointerup", user._id);
+        if (isModalOpen()) return;
         Session.set('displayProfile', user._id);
       })
     }
