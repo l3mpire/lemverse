@@ -448,11 +448,18 @@ userManager = {
     savePlayer(this.player);
   },
 
-  getTileUnderPlayer(player, layerIndex = -1) {
-    return this.getTileRelativeToPlayer(player, { x: 0, y: 0 }, layerIndex);
+  interact() {
+    const tiles = this.getTilesInFrontOfPlayer(this.player, [2, 3, 4, 5, 6, 7]);
+    if (tiles.length) {
+      // todo: interact using tiles properties here
+    }
   },
 
-  getTileInFrontOfPlayer(player, layerIndex = -1) {
+  getTilesUnderPlayer(player, layers = []) {
+    return this.getTilesRelativeToPlayer(player, { x: 0, y: 0 }, layers);
+  },
+
+  getTilesInFrontOfPlayer(player, layers = []) {
     if (!player) return undefined;
 
     const positionOffset = { x: 0, y: 0 };
@@ -462,24 +469,29 @@ userManager = {
       positionOffset.y = directionVector[1] * characterInteractionDistance.y;
     }
 
-    return this.getTileRelativeToPlayer(player, positionOffset, layerIndex);
+    return this.getTilesRelativeToPlayer(player, positionOffset, layers);
   },
 
-  getTileRelativeToPlayer(player, offset, layerIndex = -1) {
+  getTilesRelativeToPlayer(player, offset, layers = []) {
     if (!player) return undefined;
 
     const tileX = this.scene.map.worldToTileX(player.x + characterFootOffset.x + offset.x);
     const tileY = this.scene.map.worldToTileY(player.y + characterFootOffset.y + offset.y);
 
-    let tile;
-    if (layerIndex < 0) {
+    const tiles = [];
+    if (layers.length === 0) {
       for (let l = this.scene.map.layers.length; l >= 0; l--) {
-        tile = this.scene.map.getTileAt(tileX, tileY, false, l);
-        if (tile) break;
+        const tile = this.scene.map.getTileAt(tileX, tileY, false, l);
+        if (tile) tiles.push(tile);
       }
-    } else tile = this.scene.map.getTileAt(tileX, tileY, false, layerIndex);
+    } else {
+      layers.forEach(l => {
+        const tile = this.scene.map.getTileAt(tileX, tileY, false, l);
+        if (tile) tiles.push(tile);
+      });
+    }
 
-    return tile;
+    return tiles;
   },
 
   directionToVector(direction) {

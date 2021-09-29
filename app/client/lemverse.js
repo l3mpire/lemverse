@@ -337,6 +337,12 @@ Template.lemverse.onCreated(function () {
     if (meet.api) meet.close(); else meet.open();
   });
 
+  hotkeys('u', { scope: scopes.player }, event => {
+    event.preventDefault();
+    if (event.repeat) return;
+    userManager.interact();
+  });
+
   const recordVoice = (event, callback) => {
     userVoiceRecorderAbility.onSoundRecorded = callback;
 
