@@ -114,6 +114,7 @@ module.exports = {
 
     tileGlobalIndex: 'writable',
     tileLayer: 'writable',
+    tileProperties: 'writable',
 
     BootScene: 'writable',
     EditorScene: 'writable',

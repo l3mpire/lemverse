@@ -17,13 +17,12 @@ tileGlobalIndex = tile => {
   return (tileset.firstgid || 0) + tile.index;
 };
 
-tileLayer = tile => {
-  if (!tile.tilesetId) return defaultLayer;
-  const tileset = findTileset(tile.tilesetId);
-  const tileProperties = tileset.tileData?.[tile.index];
-
-  return tileProperties?.layer ?? defaultLayer;
+tileProperties = tile => {
+  if (!tile.tilesetId) return {};
+  return findTileset(tile.tilesetId).tileProperties?.[tile.index];
 };
+
+tileLayer = tile => tileProperties(tile)?.layer || defaultLayer;
 
 WorldScene = new Phaser.Class({
   Extends: Phaser.Scene,
@@ -145,7 +144,7 @@ WorldScene = new Phaser.Class({
         return;
       }
 
-      tilesetImage.tileData = tileset.tiles;
+      tilesetImage.tileProperties = tileset.tiles;
       newTilesets.push(tilesetImage);
 
       const collisionTileIndexes = _.map(tileset.collisionTileIndexes, i => i + tileset.gid);
