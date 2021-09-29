@@ -66,10 +66,6 @@ peer = {
 
     if (debug) log('close call: call closed successfully', userId);
     sounds.play('webrtc-out');
-
-    // hack: peerjs (https://github.com/peers/peerjs/issues/780) notify manually the other user due to a PeerJS bug not sending the close event
-    const otherUser = Meteor.users.findOne(userId);
-    if (otherUser) this.sendData([otherUser], { type: 'call-close-done', user: Meteor.userId() });
   },
 
   close(userId, timeout = 0, origin = null) {
@@ -359,10 +355,6 @@ peer = {
         this.peerInstance.on('connection', connection => {
           connection.on('data', dataReceived => {
             if (dataReceived.type === 'audio') userVoiceRecorderAbility.playSound(dataReceived.data);
-            if (dataReceived.type === 'call-close-done') {
-              if (debug) log(`remote peer closed call (${dataReceived.user})`);
-              this.close(dataReceived.user, 0, 'remote-call-closed-peer');
-            }
           });
         });
 
