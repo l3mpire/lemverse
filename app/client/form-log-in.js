@@ -41,7 +41,6 @@ const onSubmit = template => {
 
     hotkeys.setScope(scopes.player);
     userManager.update(Meteor.user());
-    peer.createMyPeer();
   });
 };
 

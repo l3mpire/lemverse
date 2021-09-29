@@ -9,6 +9,11 @@ peer = {
   peerLoading: false,
   remoteStreamsByUsers: new ReactiveVar([]),
 
+  init() {
+    userProximitySensor.onProximityStarted = this.onProximityStarted.bind(this);
+    userProximitySensor.onProximityEnded = this.onProximityEnded.bind(this);
+  },
+
   closeAll() {
     if (Meteor.user().options?.debug) log('peer.closeAll: start');
     _.each(this.calls, call => this.close(call.peer, Meteor.settings.public.peer.delayBeforeClosingCall, 'close-all'));
@@ -37,8 +42,7 @@ peer = {
     this.cancelCallClose(userId);
     this.cancelCallOpening(userId);
 
-    if (!activeCallsCount) return;
-    if (debug) log('close call: call was active');
+    if (activeCallsCount && debug) log('close call: call was active');
 
     let streamsByUsers = this.remoteStreamsByUsers.get();
     streamsByUsers.map(usr => {
@@ -169,7 +173,7 @@ peer = {
     this.cancelCallClose(user._id);
     this.cancelCallOpening(user._id);
 
-    if (meet.api) return;
+    if (meet.api || Meteor.user()?.profile.guest) return;
     this.callsOpening[user._id] = setTimeout(() => this.createPeerCalls(user), Meteor.settings.public.peer.callDelay);
   },
 
@@ -329,10 +333,6 @@ peer = {
     if (this.isPeerValid(this.peerInstance)) return Promise.resolve(this.peerInstance);
     if (!Meteor.user()) return Promise.reject(new Error(`an user is required to create a peer`));
     if (Meteor.user().profile?.guest) return Promise.reject(new Error(`peer is forbidden for guest account`));
-
-    // init
-    userProximitySensor.onProximityStarted = userProximitySensor.onProximityStarted ?? this.onProximityStarted.bind(this);
-    userProximitySensor.onProximityEnded = userProximitySensor.onProximityEnded ?? this.onProximityEnded.bind(this);
 
     this.peerLoading = true;
     return new Promise((resolve, reject) => {

@@ -256,7 +256,7 @@ Template.lemverse.onCreated(function () {
         });
 
         log('loading level: all users loaded');
-        if (!Meteor.user()?.profile.guest) peer.createMyPeer();
+        peer.init();
       });
 
       // Load zones
