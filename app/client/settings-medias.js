@@ -18,10 +18,11 @@ settings = {
   },
 };
 
-const setVideoPreviewElementStream = stream => {
+const setVideoPreviewElementStream = (stream, updatePeer = false) => {
   const video = document.querySelector('#js-video-preview');
   video.srcObject = stream;
   video.onloadedmetadata = () => video.play();
+  if (updatePeer) peer.updatePeersStream(stream, streamTypes.main);
 };
 
 const initStream = () => {
@@ -40,11 +41,11 @@ Template.settingsMedias.onDestroyed(() => {
 Template.settingsMedias.events({
   'change .js-mic-select'(event) {
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.audioRecorder': event.target.value } });
-    userStreams.createStream(true).then(stream => setVideoPreviewElementStream(stream));
+    userStreams.createStream(true).then(stream => setVideoPreviewElementStream(stream, true));
   },
   'change .js-cam-select'(event) {
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.videoRecorder': event.target.value } });
-    userStreams.createStream(true).then(stream => setVideoPreviewElementStream(stream));
+    userStreams.createStream(true).then(stream => setVideoPreviewElementStream(stream, true));
   },
   'change .js-screen-framerate'(event) {
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.screenShareFrameRate': event.target.value } });
