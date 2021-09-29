@@ -7,6 +7,19 @@
   <div class="layer" style="left:{{tile2domX tileIndex}}px; top:{{tile2domY tileIndex}}px">{{layer}}</div>
 </template>
 
+<template name="tilePropertiesModal">
+  <div class="modal tile-properties-modal">
+    <div>
+      <h3>Tile's properties</h3>
+      <textarea>{{properties}}</textarea>
+    </div>
+    <div>
+      <span class="button js-tile-properties-cancel">❌ Cancel</span>
+      <span class="button js-tile-properties-save">💾 Save</span>
+    </div>
+  </div>
+</template>
+
 <template name="editorTilesets">
   <div class="selected-tileset">
     {{#with selectedTileset}}
@@ -57,4 +70,8 @@
       </div>
     {{/each}}
   </div>
+
+  {{#if displayTilesetPropertiesModal}}
+    {{> tilePropertiesModal}}
+  {{/if}}
 </template>
