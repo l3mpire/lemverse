@@ -1,5 +1,5 @@
 const screenShareDefaultConfig = {
-  defaultFrameRate: 22,
+  defaultFrameRate: 5,
   maxFrameRate: 30,
 };
 
@@ -123,7 +123,7 @@ userStreams = {
     this.streams.screen.loading = true;
     return navigator.mediaDevices
       .getDisplayMedia({ frameRate: {
-        ideal: screenShareFrameRate || screenShareDefaultConfig.defaultFrameRate,
+        ideal: +screenShareFrameRate || screenShareDefaultConfig.defaultFrameRate,
         max: screenShareDefaultConfig.maxFrameRate },
       })
       .then(stream => { this.streams.screen.instance = stream; return stream; })
