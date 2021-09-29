@@ -222,14 +222,12 @@ userManager = {
     if (!player || (value === player.paused && !forceUpdate)) return;
     player.paused = value;
 
-    const user = Meteor.users.findOne(player.userId);
     const playerBodyParts = player.getByName('body');
-    Object.keys(charactersParts).filter(part => user.profile[part]).forEach(part => {
-      const characterPart = playerBodyParts.getByName(part);
+    playerBodyParts.list.forEach(bodyPart => {
       if (value) {
-        characterPart.anims.pause();
-        if (characterPart.anims.hasStarted) characterPart.anims.setProgress(0.5);
-      } else characterPart.anims.resume();
+        bodyPart.anims.pause();
+        if (bodyPart.anims.hasStarted) bodyPart.anims.setProgress(0.5);
+      } else bodyPart.anims.resume();
     });
   },
 
@@ -257,9 +255,10 @@ userManager = {
       }
     }
 
-    Object.keys(charactersParts).filter(part => user.profile[part]).forEach(part => {
-      const characterPart = player.getByName('body').getByName(part);
-      if (characterPart) characterPart.anims.play(`${user.profile[part]}${direction}`, true);
+    const playerBodyParts = player.getByName('body');
+    playerBodyParts.list.forEach(bodyPart => {
+      const element = user.profile[bodyPart.name];
+      bodyPart.anims.play(`${element}${direction}`, true);
     });
   },
 
