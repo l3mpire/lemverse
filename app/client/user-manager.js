@@ -258,7 +258,7 @@ userManager = {
     const playerBodyParts = player.getByName('body');
     playerBodyParts.list.forEach(bodyPart => {
       const element = user.profile[bodyPart.name];
-      bodyPart.anims.play(`${element}${direction}`, true);
+      if (element) bodyPart.anims.play(`${element}${direction}`, true);
     });
   },
 
