@@ -14,7 +14,6 @@ services:
         networks:
             - net_lemverse
     lemverse:
-        image: lempire/lemverse:dev
         build:
             context: .
             dockerfile: Dockerfile.dev
@@ -41,6 +40,7 @@ services:
             - net_lemverse
         ports:
             - 9000:9000
+        command: [ "--port", "9000", "--path", "/peer" ]
 volumes:
     lemverse:
         driver: local 
