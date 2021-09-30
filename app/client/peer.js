@@ -9,6 +9,11 @@ peer = {
   peerLoading: false,
   remoteStreamsByUsers: new ReactiveVar([]),
 
+  init() {
+    userProximitySensor.onProximityStarted = this.onProximityStarted.bind(this);
+    userProximitySensor.onProximityEnded = this.onProximityEnded.bind(this);
+  },
+
   closeAll() {
     if (Meteor.user().options?.debug) log('peer.closeAll: start');
     _.each(this.calls, call => this.close(call.peer, Meteor.settings.public.peer.delayBeforeClosingCall, 'close-all'));
@@ -37,8 +42,7 @@ peer = {
     this.cancelCallClose(userId);
     this.cancelCallOpening(userId);
 
-    if (!activeCallsCount) return;
-    if (debug) log('close call: call was active');
+    if (activeCallsCount && debug) log('close call: call was active');
 
     let streamsByUsers = this.remoteStreamsByUsers.get();
     streamsByUsers.map(usr => {
@@ -62,10 +66,6 @@ peer = {
 
     if (debug) log('close call: call closed successfully', userId);
     sounds.play('webrtc-out');
-
-    // hack: peerjs (https://github.com/peers/peerjs/issues/780) notify manually the other user due to a PeerJS bug not sending the close event
-    const otherUser = Meteor.users.findOne(userId);
-    if (otherUser) this.sendData([otherUser], { type: 'call-close-done', user: Meteor.userId() });
   },
 
   close(userId, timeout = 0, origin = null) {
@@ -169,7 +169,7 @@ peer = {
     this.cancelCallClose(user._id);
     this.cancelCallOpening(user._id);
 
-    if (meet.api) return;
+    if (meet.api || Meteor.user()?.profile.guest) return;
     this.callsOpening[user._id] = setTimeout(() => this.createPeerCalls(user), Meteor.settings.public.peer.callDelay);
   },
 
@@ -330,10 +330,6 @@ peer = {
     if (!Meteor.user()) return Promise.reject(new Error(`an user is required to create a peer`));
     if (Meteor.user().profile?.guest) return Promise.reject(new Error(`peer is forbidden for guest account`));
 
-    // init
-    userProximitySensor.onProximityStarted = userProximitySensor.onProximityStarted ?? this.onProximityStarted.bind(this);
-    userProximitySensor.onProximityEnded = userProximitySensor.onProximityEnded ?? this.onProximityEnded.bind(this);
-
     this.peerLoading = true;
     return new Promise((resolve, reject) => {
       Meteor.call('getPeerConfig', (err, result) => {
@@ -359,10 +355,6 @@ peer = {
         this.peerInstance.on('connection', connection => {
           connection.on('data', dataReceived => {
             if (dataReceived.type === 'audio') userVoiceRecorderAbility.playSound(dataReceived.data);
-            if (dataReceived.type === 'call-close-done') {
-              if (debug) log(`remote peer closed call (${dataReceived.user})`);
-              this.close(dataReceived.user, 0, 'remote-call-closed-peer');
-            }
           });
         });
 

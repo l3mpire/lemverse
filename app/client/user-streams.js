@@ -1,5 +1,5 @@
 const screenShareDefaultConfig = {
-  defaultFrameRate: 22,
+  defaultFrameRate: 5,
   maxFrameRate: 30,
 };
 
@@ -28,20 +28,15 @@ userStreams = {
     },
   },
 
-  audio(enabled, notifyNearUsers = false) {
+  audio(enabled) {
     if (!this.streams.main.instance) return;
     _.each(this.streams.main.instance.getAudioTracks(), track => { track.enabled = enabled; });
-    if (enabled && notifyNearUsers) userProximitySensor.callProximityStartedForAllNearUsers();
   },
 
-  video(enabled, notifyNearUsers = false) {
+  video(enabled) {
     const { instance: mainStream } = this.streams.main;
-    const videoElement = this.getVideoElement();
-    videoElement.parentElement.classList.toggle('active', mainStream && enabled);
-    if (!mainStream) return;
-    _.each(mainStream.getVideoTracks(), track => { track.enabled = enabled; });
-    if (enabled && notifyNearUsers) userProximitySensor.callProximityStartedForAllNearUsers();
-    if (mainStream.id !== videoElement.srcObject?.id) videoElement.srcObject = mainStream;
+    this.getVideoElement().parentElement.classList.toggle('active', mainStream && enabled);
+    if (mainStream?.getVideoTracks().length) _.each(mainStream.getVideoTracks(), track => { track.enabled = enabled; });
   },
 
   screen(enabled) {
@@ -128,7 +123,7 @@ userStreams = {
     this.streams.screen.loading = true;
     return navigator.mediaDevices
       .getDisplayMedia({ frameRate: {
-        ideal: screenShareFrameRate || screenShareDefaultConfig.defaultFrameRate,
+        ideal: +screenShareFrameRate || screenShareDefaultConfig.defaultFrameRate,
         max: screenShareDefaultConfig.maxFrameRate },
       })
       .then(stream => { this.streams.screen.instance = stream; return stream; })
@@ -182,7 +177,7 @@ userStreams = {
   },
 
   applyConstraints(streamType, trackType, constraints) {
-    const { instance: stream } = streamType === this.streams.main ? this.streams.main : this.streams.screen;
+    const { instance: stream } = streamType === streamTypes.main ? this.streams.main : this.streams.screen;
     if (!stream) return;
     const tracks = trackType === 'video' ? stream.getVideoTracks() : stream.getAudioTracks();
     tracks.forEach(track => track.applyConstraints(constraints));
@@ -191,6 +186,16 @@ userStreams = {
   stopTracks(stream) {
     if (!stream) return;
     _.each(stream.getTracks(), track => track.stop());
+  },
+
+  shouldCreateNewStream(streamType, needAudio, needVideo) {
+    const { instance: stream } = streamType === streamTypes.main ? this.streams.main : this.streams.screen;
+
+    if (!stream) return true;
+    if (needAudio && stream.getAudioTracks().length === 0) return true;
+    if (needVideo && stream.getVideoTracks().length === 0) return true;
+
+    return false;
   },
 
   getVideoElement() {

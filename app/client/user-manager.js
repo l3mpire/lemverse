@@ -1,7 +1,9 @@
 const defaultCharacterDirection = 'down';
 const defaultUserMediaColorError = '0xd21404';
 const characterNameOffset = { x: 0, y: -40 };
-const characterInteractionDistance = { x: 16, y: 16 };
+const characterInteractionDistance = { x: 32, y: 32 };
+const characterFootOffset = { x: -20, y: 32 };
+const characterColliderSize = { x: 38, y: 16 };
 
 charactersParts = Object.freeze({
   body: 0,
@@ -227,14 +229,12 @@ userManager = {
     if (!player || (value === player.paused && !forceUpdate)) return;
     player.paused = value;
 
-    const user = Meteor.users.findOne(player.userId);
     const playerBodyParts = player.getByName('body');
-    Object.keys(charactersParts).filter(part => user.profile[part]).forEach(part => {
-      const characterPart = playerBodyParts.getByName(part);
+    playerBodyParts.list.forEach(bodyPart => {
       if (value) {
-        characterPart.anims.pause();
-        if (characterPart.anims.hasStarted) characterPart.anims.setProgress(0.5);
-      } else characterPart.anims.resume();
+        bodyPart.anims.pause();
+        if (bodyPart.anims.hasStarted) bodyPart.anims.setProgress(0.5);
+      } else bodyPart.anims.resume();
     });
   },
 
@@ -262,9 +262,10 @@ userManager = {
       }
     }
 
-    Object.keys(charactersParts).filter(part => user.profile[part]).forEach(part => {
-      const characterPart = player.getByName('body').getByName(part);
-      if (characterPart) characterPart.anims.play(`${user.profile[part]}${direction}`, true);
+    const playerBodyParts = player.getByName('body');
+    playerBodyParts.list.forEach(bodyPart => {
+      const element = user.profile[bodyPart.name];
+      if (element) bodyPart.anims.play(`${element}${direction}`, true);
     });
   },
 
@@ -278,8 +279,8 @@ userManager = {
     this.scene.physics.world.enableBody(player);
     player.body.setImmovable(true);
     player.body.setCollideWorldBounds(true);
-    player.body.setSize(38, 16);
-    player.body.setOffset(-20, 32);
+    player.body.setSize(characterColliderSize.x, characterColliderSize.y);
+    player.body.setOffset(characterFootOffset.x, characterFootOffset.y);
 
     // add character's physic body to layers
     _.each(this.scene.layers, layer => {
@@ -454,28 +455,50 @@ userManager = {
     savePlayer(this.player);
   },
 
-  getTileInFrontOf(player, layerIndex = -1) {
+  interact() {
+    const tiles = this.getTilesInFrontOfPlayer(this.player, [2, 3, 4, 5, 6, 7]);
+    if (tiles.length) {
+      // todo: interact using tiles properties here
+    }
+  },
+
+  getTilesUnderPlayer(player, layers = []) {
+    return this.getTilesRelativeToPlayer(player, { x: 0, y: 0 }, layers);
+  },
+
+  getTilesInFrontOfPlayer(player, layers = []) {
     if (!player) return undefined;
 
-    const positionOffset = [0, 0];
+    const positionOffset = { x: 0, y: 0 };
     if (player.direction) {
       const directionVector = this.directionToVector(player.direction);
-      positionOffset[0] = directionVector[0] * characterInteractionDistance.x;
-      positionOffset[1] = directionVector[1] * characterInteractionDistance.y;
+      positionOffset.x = directionVector[0] * characterInteractionDistance.x;
+      positionOffset.y = directionVector[1] * characterInteractionDistance.y;
     }
 
-    const tileX = this.scene.map.worldToTileX(player.x + positionOffset[0]);
-    const tileY = this.scene.map.worldToTileY(player.y + positionOffset[1]);
+    return this.getTilesRelativeToPlayer(player, positionOffset, layers);
+  },
 
-    let tile;
-    if (layerIndex < 0) {
+  getTilesRelativeToPlayer(player, offset, layers = []) {
+    if (!player) return undefined;
+
+    const tileX = this.scene.map.worldToTileX(player.x + characterFootOffset.x + offset.x);
+    const tileY = this.scene.map.worldToTileY(player.y + characterFootOffset.y + offset.y);
+
+    const tiles = [];
+    if (layers.length === 0) {
       for (let l = this.scene.map.layers.length; l >= 0; l--) {
-        tile = this.scene.map.getTileAt(tileX, tileY, false, l);
-        if (tile) break;
+        const tile = this.scene.map.getTileAt(tileX, tileY, false, l);
+        if (tile) tiles.push(tile);
       }
-    } else tile = this.scene.map.getTileAt(tileX, tileY, false, layerIndex);
+    } else {
+      layers.forEach(l => {
+        const tile = this.scene.map.getTileAt(tileX, tileY, false, l);
+        if (tile) tiles.push(tile);
+      });
+    }
 
-    return tile;
+    return tiles;
   },
 
   directionToVector(direction) {

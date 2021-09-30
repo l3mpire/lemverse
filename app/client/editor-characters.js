@@ -46,7 +46,7 @@ Template.editorCharacters.events({
       if (!err) {
         Session.set('selectedCharacterId', findFirstCharacters()?._id || null);
       } else {
-        lp.notif.error(`Error while changing category, ${err.reason}`)
+        lp.notif.error(`Error while changing category, ${err.reason}`);
       }
     });
   },

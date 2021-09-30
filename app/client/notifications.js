@@ -29,6 +29,10 @@ Template.notificationsItem.onCreated(function () {
   this.audio.addEventListener('timeupdate', () => this._duration.set(this.audio.currentTime), false);
 });
 
+Template.notificationsItem.onDestroyed(function () {
+  this.audio.pause();
+});
+
 Template.notificationsItem.helpers({
   date() {
     return moment(this.createdAt).calendar();
