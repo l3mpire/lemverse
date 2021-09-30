@@ -114,7 +114,10 @@ peer = {
   createPeerCalls(user) {
     const { shareAudio, shareScreen, shareVideo } = Meteor.user().profile;
 
-    if (!this.calls[`${user._id}-${streamTypes.main}`] && !this.calls[`${user._id}-${streamTypes.screen}`]) sounds.play('webrtc-in');
+    if (!this.calls[`${user._id}-${streamTypes.main}`] && !this.calls[`${user._id}-${streamTypes.screen}`]) {
+      sounds.play('webrtc-in');
+      if (userProximitySensor.nearUsersCount() === 1) Meteor.call('addUserInterruption');
+    }
 
     this.getPeer().then(peer => {
       if (shareAudio || shareVideo) userStreams.createStream().then(stream => this.createPeerCall(peer, stream, user));
