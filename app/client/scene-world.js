@@ -248,5 +248,7 @@ WorldScene = new Phaser.Class({
     characterPopIns.destroy();
     userChatCircle.destroy();
     userVoiceRecorderAbility.destroy();
+    userProximitySensor.callProximityEndedForAllNearUsers();
+    peer.destroy();
   },
 });
