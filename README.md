@@ -459,6 +459,12 @@ To build from you source without having to install anything, you can run the fol
 
 `docker build -f Dockerfile.dev . -t lempire/lemverse:dev`
 
+Or run the full dev env with hot reload:
+
+`docker-compose up -d` 
+It take a while to start the server.
+Then every change in the project will be automatically reloaded.
+
 ## Slack Notification upon deployment
 
 To have a slack notification, you need to install the [slack cli](https://github.com/rockymadden/slack-cli) on the workstation from which you will deploy.
