@@ -1,0 +1,54 @@
+version: "3.8"
+services:
+    mongodb:
+        image: mongo
+        container_name: mongodb
+        environment:
+            - PUID=1000
+            - PGID=1000
+        volumes:
+            - db:/data/db
+        ports:
+            - 27017:27017
+        restart: unless-stopped
+        networks:
+            - net_lemverse
+    lemverse:
+        image: lempire/lemverse:dev
+        build:
+            context: .
+            dockerfile: Dockerfile.dev
+        container_name: lemverse
+        restart: unless-stopped
+        networks:
+            - net_lemverse
+        depends_on:
+            - mongodb
+            - peer
+        ports:
+            - '9001:9000'
+        volumes:
+            - lemverse:/var/tmp/lemverse
+            - ./app:/opt/src # mount local dir to allow hot reload
+        environment:
+            ROOT_URL: ${APP_ROOT_URL:-http://localhost}
+            MONGO_URL: mongodb://mongodb:27017/meteor
+    peer:
+        image: peerjs/peerjs-server
+        container_name: peer
+        restart: unless-stopped
+        networks:
+            - net_lemverse
+        ports:
+            - 9000:9000
+volumes:
+    lemverse:
+        driver: local 
+    db:
+        driver: local
+    
+# Custom network so all services can communicate using a FQDN
+networks:
+    net_lemverse:
+        driver: bridge
+        name: net_lemverse
