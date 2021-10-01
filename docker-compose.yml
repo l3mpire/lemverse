@@ -7,9 +7,9 @@ services:
             - PUID=1000
             - PGID=1000
         volumes:
-            - db:/data/db
+            - db:/data/db # Necessary volume to keep database data between restarts
         ports:
-            - 27017:27017
+            - 27017:27017 # Expose port to let you connect in db for debug, dont do it in prod
         restart: unless-stopped
         networks:
             - net_lemverse
@@ -25,22 +25,14 @@ services:
             - mongodb
             - peer
         ports:
-            - '9001:9000'
+            - '9001:9000' # Expose web port to see your change
+            - '7010:7010' # expose peer port
         volumes:
-            - lemverse:/var/tmp/lemverse
+            - lemverse:/var/tmp/lemverse # Necessary volume for upload tileset and keep them between restart
             - ./app:/opt/src # mount local dir to allow hot reload
         environment:
             ROOT_URL: ${APP_ROOT_URL:-http://localhost}
             MONGO_URL: mongodb://mongodb:27017/meteor
-    peer:
-        image: peerjs/peerjs-server
-        container_name: peer
-        restart: unless-stopped
-        networks:
-            - net_lemverse
-        ports:
-            - 9000:9000
-        command: [ "--port", "9000", "--path", "/peer" ]
 volumes:
     lemverse:
         driver: local 
