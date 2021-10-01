@@ -22,7 +22,7 @@ tileProperties = tile => {
   return findTileset(tile.tilesetId).tileProperties?.[tile.index];
 };
 
-tileLayer = tile => tileProperties(tile)?.layer || defaultLayer;
+tileLayer = tile => tileProperties(tile)?.layer ?? defaultLayer;
 
 WorldScene = new Phaser.Class({
   Extends: Phaser.Scene,
@@ -248,5 +248,7 @@ WorldScene = new Phaser.Class({
     characterPopIns.destroy();
     userChatCircle.destroy();
     userVoiceRecorderAbility.destroy();
+    userProximitySensor.callProximityEndedForAllNearUsers();
+    peer.destroy();
   },
 });
