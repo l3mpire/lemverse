@@ -12,7 +12,7 @@ services:
         networks:
             - net_lemverse
     lemverse:
-        image: riderx/lemverse:next
+        image: lempire/lemverse:latest
         container_name: lemverse
         restart: unless-stopped
         networks:
