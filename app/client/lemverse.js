@@ -233,7 +233,7 @@ Template.lemverse.onCreated(function () {
 
     const loggedUser = Meteor.user({ fields: { 'profile.levelId': 1 } });
     if (!loggedUser) return;
-    const { levelId } = loggedUser.profile.levelId;
+    const { levelId } = loggedUser.profile;
 
     Tracker.nonreactive(() => {
       log(`loading level: ${levelId || 'unknown'}…`);
