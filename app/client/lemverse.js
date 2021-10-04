@@ -76,6 +76,10 @@ Template.lemverse.onCreated(function () {
   });
 
   this.autorun(() => {
+    if (!Meteor.userId()) Session.set('gameCreated', false);
+  });
+
+  this.autorun(() => {
     if (!game) return;
 
     const modalOpen = isModalOpen();
@@ -227,7 +231,10 @@ Template.lemverse.onCreated(function () {
   this.autorun(() => {
     if (!Session.get('gameCreated')) return;
 
-    const levelId = Meteor.user({ fields: { 'profile.levelId': 1 } }).profile?.levelId;
+    const loggedUser = Meteor.user({ fields: { 'profile.levelId': 1 } });
+    if (!loggedUser) return;
+    const { levelId } = loggedUser.profile.levelId;
+
     Tracker.nonreactive(() => {
       log(`loading level: ${levelId || 'unknown'}…`);
       if (this.handleTilesSubscribe) this.handleTilesSubscribe.stop();

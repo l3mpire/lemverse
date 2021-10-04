@@ -204,7 +204,6 @@ userManager = {
   },
 
   remove(user) {
-    if (user._id === Meteor.userId()) return;
     if (!this.players[user._id]) return;
 
     clearInterval(this.players[user._id].reactionHandler);
@@ -212,6 +211,8 @@ userManager = {
 
     this.players[user._id].destroy();
     this.destroyUserName(user._id);
+
+    if (user._id === Meteor.userId()) this.unsetMainPlayer();
 
     delete this.players[user._id];
   },
@@ -291,6 +292,22 @@ userManager = {
     this.player = player;
   },
 
+  unsetMainPlayer(destroy = false) {
+    if (!this.player) return;
+
+    this.scene.physics.world.disableBody(this.player);
+    if (destroy) this.player.destroy();
+
+    _.each(this.scene.layers, layer => {
+      if (layer.playerCollider) this.scene.physics.world.removeCollider(layer.playerCollider);
+    });
+
+    this.scene.cameras.main.stopFollow();
+    hotkeys.setScope('guest');
+
+    this.player = undefined;
+  },
+
   createUserStateIndicator() {
     const muteIndicatorMic = this.scene.add.text(0, 0, '🎤', { font: '23px Sans Open' }).setDepth(99996).setOrigin(0.5, 1);
     const muteIndicatorCross = this.scene.add.text(0, -3, '❌', { font: '23px Sans Open' }).setDepth(99997).setOrigin(0.5, 1).setScale(0.6);
@@ -329,7 +346,7 @@ userManager = {
     const currentUser = Meteor.user();
 
     _.each(this.players, (player, userId) => {
-      if (userId === currentUser._id) return;
+      if (userId === currentUser?._id) return;
 
       if (!player.lwTargetDate) {
         this.pauseAnimation(player, true);
