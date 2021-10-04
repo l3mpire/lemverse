@@ -144,7 +144,7 @@ Template.lemverse.onCreated(function () {
       if (!this.handleObserveTilesets) {
         this.handleObserveTilesets = Tilesets.find().observe({
           added(tileset) {
-            game.scene.keys.BootScene.loadTilesetsAtRuntime([tileset], worldScene.addTilesetsToLayers);
+            game.scene.keys.BootScene.loadTilesetsAtRuntime([tileset], worldScene.addTilesetsToLayers.bind(worldScene));
           },
           changed(o, n) {
             const oTileKeys = _.map(_.keys(o.tiles || {}), k => +k);
