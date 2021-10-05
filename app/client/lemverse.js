@@ -77,6 +77,10 @@ Template.lemverse.onCreated(function () {
   });
 
   this.autorun(() => {
+    if (!Meteor.userId()) Session.set('gameCreated', false);
+  });
+
+  this.autorun(() => {
     if (!game) return;
 
     const modalOpen = isModalOpen();
@@ -141,7 +145,7 @@ Template.lemverse.onCreated(function () {
       if (!this.handleObserveTilesets) {
         this.handleObserveTilesets = Tilesets.find().observe({
           added(tileset) {
-            game.scene.keys.BootScene.loadTilesetsAtRuntime([tileset], worldScene.addTilesetsToLayers);
+            game.scene.keys.BootScene.loadTilesetsAtRuntime([tileset], worldScene.addTilesetsToLayers.bind(worldScene));
           },
           changed(o, n) {
             const oTileKeys = _.map(_.keys(o.tiles || {}), k => +k);
@@ -228,7 +232,10 @@ Template.lemverse.onCreated(function () {
   this.autorun(() => {
     if (!Session.get('gameCreated')) return;
 
-    const levelId = Meteor.user({ fields: { 'profile.levelId': 1 } }).profile?.levelId;
+    const loggedUser = Meteor.user({ fields: { 'profile.levelId': 1 } });
+    if (!loggedUser) return;
+    const { levelId } = loggedUser.profile;
+
     Tracker.nonreactive(() => {
       log(`loading level: ${levelId || 'unknown'}…`);
       if (this.handleTilesSubscribe) this.handleTilesSubscribe.stop();
