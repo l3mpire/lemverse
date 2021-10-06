@@ -49,7 +49,10 @@ Template.lemverse.onCreated(function () {
   Session.set('displayUserList', false);
   Session.set('displayNotification', false);
   Session.set('displayNotificationsPanel', false);
-  Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } });
+
+  window.addEventListener('beforeunload', () => {
+    Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } });
+  });
 
   document.addEventListener('keydown', event => {
     if (event.code !== 'Escape') return;
@@ -81,7 +84,7 @@ Template.lemverse.onCreated(function () {
   });
 
   this.autorun(() => {
-    if (!game) return;
+    if (!Session.get('gameCreated')) return;
 
     const modalOpen = isModalOpen();
     Tracker.nonreactive(() => {

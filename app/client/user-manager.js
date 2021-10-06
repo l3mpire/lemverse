@@ -80,6 +80,12 @@ userManager = {
       })
     }
 
+    const shadow = this.scene.add.circle(0, 46, 18, 0x000000);
+    shadow.alpha = 0.1;
+    shadow.scaleY = 0.4;
+    shadow.setDepth(-1);
+    this.players[user._id].add(shadow);
+
     const bodyPlayer = this.scene.add.sprite(0, 0, body || guest ? Meteor.settings.public.skins.guest : Meteor.settings.public.skins.default);
     bodyPlayer.name = 'body';
     playerParts.add(bodyPlayer);
