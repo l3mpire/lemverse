@@ -80,7 +80,7 @@ Template.lemverse.onCreated(function () {
   });
 
   this.autorun(() => {
-    if (!game) return;
+    if (!Session.get('gameCreated')) return;
 
     const modalOpen = isModalOpen();
     Tracker.nonreactive(() => {
