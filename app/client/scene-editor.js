@@ -18,6 +18,7 @@ EditorScene = new Phaser.Class({
 
     this.events.on('wake', () => {
       this.marker.visible = true;
+      this.updateEditionMarker(Session.get('selectedTiles'));
     });
 
     this.events.on('sleep', () => {
