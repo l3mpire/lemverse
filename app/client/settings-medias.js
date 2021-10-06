@@ -49,7 +49,10 @@ Template.settingsMedias.events({
   },
   'change .js-screen-framerate'(event) {
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.screenShareFrameRate': +event.target.value } });
-    if (userStreams.streams.screen.instance) userStreams.applyConstraints(streamTypes.screen, 'video', { frameRate: event.target.value });
+    if (userStreams.streams.screen.instance) {
+      const constraints = userStreams.getStreamConstraints(streamTypes.screen);
+      userStreams.applyConstraints(streamTypes.screen, 'video', constraints);
+    }
   },
 });
 

@@ -4,8 +4,8 @@ const screenShareDefaultConfig = {
 };
 
 const videoDefaultConfig = {
-  width: { ideal: 320 },
-  height: { ideal: 240 },
+  width: { ideal: 320, max: 320 },
+  height: { ideal: 240, max: 240 },
   frameRate: { max: 30 },
 };
 
@@ -87,15 +87,9 @@ userStreams = {
     if (currentStream) return new Promise(resolve => resolve(currentStream));
     if (!currentStream && loading) return waitFor(() => this.streams.main.instance !== undefined, 15, 500).then(() => this.streams.main.instance);
 
-    const { shareVideo, shareAudio, videoRecorder, audioRecorder } = Meteor.user().profile;
-    const options = {
-      video: { deviceId: shareVideo && videoRecorder || false, ...videoDefaultConfig },
-      audio: { deviceId: shareAudio && audioRecorder || false },
-    };
-
     this.streams.main.loading = true;
     return navigator.mediaDevices
-      .getUserMedia(options)
+      .getUserMedia(this.getStreamConstraints(streamTypes.main))
       .then(stream => {
         this.destroyStream(streamTypes.main);
 
@@ -114,18 +108,39 @@ userStreams = {
       .finally(() => { this.streams.main.loading = false; });
   },
 
+  getStreamConstraints(type) {
+    const { shareVideo, shareAudio, videoRecorder, audioRecorder, screenShareFrameRate } = Meteor.user().profile;
+    const options = {};
+
+    if (type === streamTypes.main) {
+      options.audio = { deviceId: shareAudio && audioRecorder || false };
+      options.video = { deviceId: shareVideo && videoRecorder || false, ...videoDefaultConfig };
+
+      // todo: allow streams without video flag to avoid camera's light on mac
+      // if (!shareVideo) delete options.video;
+    } else {
+      const { defaultFrameRate, maxFrameRate } = screenShareDefaultConfig;
+
+      options.audio = false;
+      options.video = {
+        frameRate: {
+          ideal: +screenShareFrameRate || defaultFrameRate,
+          max: maxFrameRate,
+        },
+      };
+    }
+
+    return options;
+  },
+
   requestDisplayMedia() {
     const { instance: currentStream, loading } = this.streams.screen;
     if (currentStream) return new Promise(resolve => resolve(currentStream));
     if (!currentStream && loading) return waitFor(() => this.streams.screen.instance !== undefined, 20, 1000).then(() => this.streams.screen.instance);
 
-    const { screenShareFrameRate } = Meteor.user().profile;
     this.streams.screen.loading = true;
     return navigator.mediaDevices
-      .getDisplayMedia({ frameRate: {
-        ideal: +screenShareFrameRate || screenShareDefaultConfig.defaultFrameRate,
-        max: screenShareDefaultConfig.maxFrameRate },
-      })
+      .getDisplayMedia(this.getStreamConstraints(streamTypes.screen))
       .then(stream => { this.streams.screen.instance = stream; return stream; })
       .catch(err => {
         error('requestDisplayMedia failed', err);
