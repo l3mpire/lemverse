@@ -71,20 +71,4 @@ Meteor.methods({
     log('eval from method succeed');
     return stringify(res, { cycles: true });
   },
-  addUserInterruption() {
-    const { stats } = Meteor.user();
-    const timeSinceLastInterruption = stats?.lastInterruption ? moment.duration(moment().diff(stats.lastInterruption)).asSeconds() : 0;
-
-    let averageTimeBetweenInterruption = timeSinceLastInterruption;
-    if (stats?.averageTimeBetweenInterruption) averageTimeBetweenInterruption = (timeSinceLastInterruption + stats.averageTimeBetweenInterruption) / 2.0;
-
-    Meteor.users.update(Meteor.userId(), {
-      $set: {
-        'stats.lastInterruption': moment().toDate(),
-        'stats.averageTimeBetweenInterruption': averageTimeBetweenInterruption,
-        'stats.timeSinceLastInterruption': timeSinceLastInterruption,
-      },
-      $inc: { 'stats.interruptionCounter': 1 },
-    });
-  },
 });
