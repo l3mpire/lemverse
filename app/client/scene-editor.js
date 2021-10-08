@@ -12,6 +12,12 @@ EditorScene = new Phaser.Class({
     this.marker = game.scene.keys.WorldScene.add.graphics();
     this.undoTiles = [];
     this.redoTiles = [];
+    this.areaSelector = game.scene.keys.WorldScene.add.graphics();
+    this.areaSelector.visible = false;
+    this.startPosition = { x: 0, y: 0 };
+    this.keys = this.input.keyboard.addKeys({
+      alt: Phaser.Input.Keyboard.KeyCodes.ALT,
+    }, false, false);
 
     // put editor in sleep mode on load (no rendering, no update)
     game.scene.keys.EditorScene.scene.sleep();
@@ -23,12 +29,14 @@ EditorScene = new Phaser.Class({
 
     this.events.on('sleep', () => {
       this.marker.visible = false;
+      this.areaSelector.visible = false;
     });
   },
 
   update() {
     if (!Session.get('editor')) return;
 
+    const altIsDown = this.keys.alt.isDown;
     const { WorldScene } = game.scene.keys;
     const { map } = WorldScene;
     const worldPoint = this.input.activePointer.positionToCamera(WorldScene.cameras.main);
@@ -45,17 +53,43 @@ EditorScene = new Phaser.Class({
         this.isMouseDown = false;
         const zoneId = Session.get('selectedZoneId');
         if (zoneId) {
+          let { x, y } = worldPoint;
           const point = Session.get('selectedZonePoint');
-          Zones.update(zoneId, { $set: { [`x${point}`]: worldPoint.x | 0, [`y${point}`]: worldPoint.y | 0 } });
+          if (altIsDown) {
+            const { tileHeight, tileWidth } = game.scene.keys.WorldScene.map;
+            const snappedStartPosition = this.snapToTile(x, y);
+            x = snappedStartPosition.x + ((point - 1) * tileWidth);
+            y = snappedStartPosition.y + ((point - 1) * tileHeight);
+          }
+
+          Zones.update(zoneId, { $set: { [`x${point}`]: x | 0, [`y${point}`]: y | 0 } });
 
           const zone = Zones.findOne(zoneId);
           if (!zone?.x2) {
+            this.startPosition = { x, y };
             Session.set('selectedZonePoint', 2);
           } else {
             Session.set('selectedZoneId', undefined);
             Session.set('selectedZonePoint', undefined);
+            this.areaSelector.visible = false;
           }
         }
+      }
+
+      if (Session.get('selectedZoneId') && Session.get('selectedZonePoint') === 2) {
+        const { x, y } = this.startPosition;
+        let width = worldPoint.x - x;
+        let height = worldPoint.y - y;
+
+        if (altIsDown) {
+          const { tileHeight, tileWidth } = game.scene.keys.WorldScene.map;
+          const snappedStartPosition = this.snapToTile(x, y);
+          const snappedSize = this.snapToTile(worldPoint.x - x, worldPoint.y - y);
+          width = snappedSize.x + (snappedStartPosition.x - x) + tileWidth;
+          height = snappedSize.y + (snappedStartPosition.y - y) + tileHeight;
+        }
+
+        this.showSelection(x, y, width, height);
       }
     } else if (Session.get('editorSelectedMenu') === 1) {
       // Snap to tile coordinates, but in world space
@@ -166,5 +200,21 @@ EditorScene = new Phaser.Class({
     this.marker.lineStyle(2, 0x00FF00, 1);
     this.marker.strokeRect(0, 0, game.scene.keys.WorldScene.map.tileWidth * (selectedTiles?.w || 1), game.scene.keys.WorldScene.map.tileHeight * (selectedTiles?.h || 1));
     this.marker.setDepth(10002);
+  },
+
+  showSelection(x, y, width, height) {
+    this.areaSelector.visible = true;
+    this.areaSelector.clear();
+    this.areaSelector.strokeRect(x, y, width, height);
+    this.areaSelector.fillRect(x, y, width, height);
+  },
+
+  snapToTile(x, y) {
+    const { tileHeight, tileWidth } = game.scene.keys.WorldScene.map;
+
+    return {
+      x: Math.floor(x / tileWidth) * tileWidth,
+      y: Math.floor(y / tileHeight) * tileHeight,
+    };
   },
 });

@@ -80,6 +80,7 @@ module.exports = {
     isEditionAllowed: 'writable',
     remote: 'writable',
     _: 'readable',
+    stats: 'writable',
 
     game: 'writable',
     zoom: 'writable',
