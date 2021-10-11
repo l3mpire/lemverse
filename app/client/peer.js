@@ -8,6 +8,7 @@ peer = {
   peerInstance: undefined,
   peerLoading: false,
   remoteStreamsByUsers: new ReactiveVar([]),
+  sensorEnabled: true,
 
   init() {
     userProximitySensor.onProximityStarted = this.onProximityStarted.bind(this);
@@ -169,6 +170,8 @@ peer = {
   },
 
   onProximityStarted(user) {
+    if (!this.sensorEnabled) return;
+
     this.cancelCallClose(user._id);
     this.cancelCallOpening(user._id);
 
@@ -390,5 +393,9 @@ peer = {
 
   isPeerValid(peer) {
     return peer?.id && !peer.disconnected;
+  },
+
+  isEnabled() {
+    return this.sensorEnabled;
   },
 };

@@ -38,6 +38,12 @@ userManager = {
     this.players = {};
     this.scene = scene;
     throttledSavePlayer.cancel();
+
+    scene.input.keyboard.on('keydown-SHIFT', () => { peer.sensorEnabled = false; });
+    scene.input.keyboard.on('keyup-SHIFT', () => {
+      peer.sensorEnabled = true;
+      userProximitySensor.callProximityStartedForAllNearUsers();
+    });
   },
 
   rename(name) {
