@@ -1,7 +1,24 @@
 <template name='escapeB'>
+    <div class='iframe'>
     {{#if eq iframe '1'}}
-    <h1>Iframe 1</h1>
+        <img src='/assets/lemescape/B/keyLock.png' usemap="#keyLock" />
+        
+        <map name='keyLock'>
+            <area shape="rect" coords="44, 71, 130, 149" class="js-key-code" data-code='1' data-lock='A'>
+            <area shape="rect" coords="151, 71, 235, 149" class="js-key-code" data-code='2' data-lock='A'>
+            <area shape="rect" coords="264, 71, 348, 149" class="js-key-code" data-code='3' data-lock='A'>
+            <area shape="rect" coords="44, 172, 130, 249" class="js-key-code" data-code='4' data-lock='A'>
+            <area shape="rect" coords="151, 172, 235, 249" class="js-key-code" data-code='5' data-lock='A'>
+            <area shape="rect" coords="264, 172, 348, 249" class="js-key-code" data-code='6' data-lock='A'>
+            <area shape="rect" coords="44, 272, 130, 349" class="js-key-code" data-code='7' data-lock='A'>
+            <area shape="rect" coords="151, 272, 235, 349" class="js-key-code" data-code='8' data-lock='A'>
+            <area shape="rect" coords="264, 272, 348, 349" class="js-key-code" data-code='9' data-lock='A'>
+            <area shape="rect" coords="44, 372, 130, 449" class="js-key-code" data-code='C' data-lock='A'>
+            <area shape="rect" coords="151, 372, 235, 449" class="js-key-code" data-code='0' data-lock='A'>
+            <area shape="rect" coords="264, 372, 348, 449" class="js-key-code" data-code='V' data-lock='A'>
+        </map>
     {{else}}
-    <h1>Not handled</h1>
+        <h1>Not handled</h1>
     {{/if}}
+    </div>
 </template>

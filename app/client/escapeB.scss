@@ -1,0 +1,7 @@
+.iframe {
+    position: fixed;
+
+    &>* {
+        user-select: none;
+    }
+}
