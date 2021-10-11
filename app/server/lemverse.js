@@ -26,6 +26,13 @@ Meteor.publish('levels', function () {
   return Levels.find();
 });
 
+Meteor.publish('entities', function (levelId) {
+  if (!this.userId) return undefined;
+  if (!levelId) levelId = Meteor.settings.defaultLevelId;
+
+  return Entities.find({ levelId });
+});
+
 Meteor.publish('zones', function (levelId) {
   if (!this.userId) return undefined;
   if (!levelId) levelId = Meteor.settings.defaultLevelId;
@@ -173,6 +180,16 @@ Meteor.methods({
   increaseLevelVisits(levelId) {
     check(levelId, String);
     Levels.update({ _id: levelId, createdBy: { $ne: Meteor.userId() } }, { $inc: { visit: 1 } });
+  },
+  destroyTile(levelId, x, y, index) {
+    check(levelId, String);
+    check([x, y, index], [Number]);
+    Tiles.remove({ levelId, x, y, index });
+  },
+  replaceTile(levelId, x, y, index, newIndex, newTilesetId) {
+    check([levelId, newTilesetId], [String]);
+    check([x, y, index, newIndex], [Number]);
+    Tiles.update({ levelId, x, y, index }, { $set: { tilesetId: newTilesetId, index: newIndex } });
   },
 });
 
