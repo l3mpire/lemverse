@@ -11,7 +11,8 @@ Template.escapeB.events({
         if (code === 'V') {
             if (Session.get(lockString) === '1234') {
                 // Success
-                console.log('Yeah')
+                // Meteor.call('darkenZone', 'labyrinth-part1')
+                Meteor.call('enlightenZone', 'labyrinth-part1')
             } else {
                 // Failure
                 console.log('Not good')
@@ -22,7 +23,5 @@ Template.escapeB.events({
         } else {
             Session.set(lockString, `${Session.get(lockString) || ''}${code}`)
         }
-        
-        console.log(Session.get(lockString))
     }
 })
