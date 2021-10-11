@@ -25,7 +25,7 @@ isEditionAllowed = userId => {
   const { levelId } = user.profile;
   const currentLevel = Levels.findOne(levelId);
 
-  return currentLevel?.sandbox || currentLevel?.editorUserIds?.includes(user._id) || user._id === currentLevel.createdBy;
+  return (currentLevel?.sandbox || currentLevel?.editorUserIds?.includes(user._id) || user._id === currentLevel.createdBy) && (!currentLevel.disableEdit);
 };
 
 updateSkin = (user, levelId) => {
