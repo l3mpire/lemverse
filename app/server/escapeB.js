@@ -22,7 +22,7 @@ Meteor.methods({
     log('toggleZone: updating', { nbTiles: allTiles.length });
   },
   escapeStart(zone, usersInZone, levelId) {
-    log('escapeStart: start', { zone, usersInZone, levelId });
+    log('escapeStart: start', { zone, usersInZone: usersInZone.map(user => user._id), levelId });
     // Start time
     Levels.update({ _id: levelId }, { $set: { 'metadata.start': Date.now() } });
     // Open locked door
