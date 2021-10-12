@@ -112,7 +112,7 @@ zones = {
     }, {});
 
     if (this.activeZone?._id !== zone?._id) {
-      if (this.onZoneChanged && this.activeZone?._id !== zone?._id) this.onZoneChanged(!_.isEmpty(zone) ? zone : undefined, this.activeZone);
+      if (this.onZoneChanged) this.onZoneChanged(!_.isEmpty(zone) ? zone : undefined, this.activeZone);
       this.activeZone = zone;
       if (zone.name) this.toastZoneName(zone?.name);
 

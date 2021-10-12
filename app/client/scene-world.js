@@ -129,9 +129,19 @@ WorldScene = new Phaser.Class({
         users.push(Meteor.user());
 
         if (users.length >= escape.triggerLimit) {
-          if (escape.start) { console.log('yeah'); Meteor.call('escapeStart', zones.currentZone(Meteor.user()), users, Meteor.user().profile.levelId); }
+          if (escape.start) {
+            setTimeout(() => {
+              Meteor.call('escapeStart', zones.currentZone(Meteor.user()), users, Meteor.user().profile.levelId);
+            },
+            0);
+          }
         }
-        if (escape.enlightenZone) Meteor.call('enlightenZone', escape.enlightenZone);
+        if (escape.enlightenZone) {
+          setTimeout(() => {
+            Meteor.call('enlightenZone', escape.enlightenZone);
+          },
+          0);
+        }
       }
     };
 
