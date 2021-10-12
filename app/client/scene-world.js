@@ -125,10 +125,10 @@ WorldScene = new Phaser.Class({
       if (levelId) this.loadLevel(levelId);
       else if (inlineURL) characterPopIns.initFromZone(zone);
       else if (escape) {
-        let users = zones.usersInZone(zones.currentZone(Meteor.user()));
-        users.push(Meteor.user())
-        if (users.length>=escape.triggerLimit) {
-          if (escape.start) Meteor.call('escapeStart', zones.currentZone(Meteor.user()), users, levelId)
+        const users = zones.usersInZone(zones.currentZone(Meteor.user()));
+        users.push(Meteor.user());
+        if (users.length >= escape.triggerLimit) {
+          if (escape.start) Meteor.call('escapeStart', zones.currentZone(Meteor.user()), users, levelId);
         }
       }
     };

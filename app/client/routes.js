@@ -24,4 +24,3 @@ FlowRouter.route('/editor', { name: 'editor', action: renderRouteName });
 FlowRouter.route('/levels', { name: 'levels', action: renderRouteName });
 
 FlowRouter.route('/lemescapeB', { name: 'escapeB', action: renderRouteName });
-
