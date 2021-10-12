@@ -181,6 +181,11 @@ Meteor.methods({
     check(levelId, String);
     Levels.update({ _id: levelId, createdBy: { $ne: Meteor.userId() } }, { $inc: { visit: 1 } });
   },
+  addTile(levelId, x, y, index, tilesetId) {
+    check([levelId, tilesetId], [String]);
+    check([x, y, index], [Number]);
+    Tiles.insert({ levelId, x, y, index, tilesetId, createdAt: new Date(), createdBy: Meteor.userId() });
+  },
   destroyTile(levelId, x, y, index) {
     check(levelId, String);
     check([x, y, index], [Number]);
@@ -190,6 +195,28 @@ Meteor.methods({
     check([levelId, newTilesetId], [String]);
     check([x, y, index, newIndex], [Number]);
     Tiles.update({ levelId, x, y, index }, { $set: { tilesetId: newTilesetId, index: newIndex } });
+  },
+  switchEntityState(levelId, name) {
+    const entity = findEntity(name);
+    if (!entity) return;
+
+    const entityDocument = Entities.findOne({ levelId, name });
+    const state = entityDocument.state ? entity.states[0] : entity.states[1];
+
+    state.remove?.forEach(t => {
+      Tiles.remove({ levelId, x: t.x, y: t.y, index: t.index });
+    });
+
+    state.add?.forEach(t => {
+      Tiles.insert({ levelId, x: t.x, y: t.y, index: t.index, tilesetId: t.tilesetId, createdAt: new Date(), createdBy: Meteor.userId() });
+    });
+
+    state.replace?.forEach(t => {
+      Tiles.update({ levelId, x: t.x, y: t.y }, { $set: { tilesetId: t.newTilesetId, index: t.newIndex } });
+      console.log(t.x, t.y, t.newIndex, t.newTilesetId);
+    });
+
+    Entities.update({ levelId, name }, { $set: { state: !entityDocument.state } });
   },
 });
 

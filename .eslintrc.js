@@ -71,6 +71,7 @@ module.exports = {
 
     Tilesets: 'writable',
     Characters: 'writable',
+    Entities: 'writable',
     Tiles: 'writable',
     Zones: 'writable',
     Levels: 'writable',
@@ -112,6 +113,9 @@ module.exports = {
     streamTypes: 'writable',
     getRandomAvatarForUser: 'writable',
     userManager: 'writable',
+    entityManager: 'writable',
+    levelConfiguration: 'writable',
+    findEntity: 'writable',
 
     tileGlobalIndex: 'writable',
     tileLayer: 'writable',

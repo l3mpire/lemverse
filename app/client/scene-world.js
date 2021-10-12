@@ -39,6 +39,7 @@ WorldScene = new Phaser.Class({
     this.nippleMoving = false;
     this.scene.sleep();
     this.teleporterGraphics = [];
+    entityManager.init(this);
     userManager.init(this);
     userVoiceRecorderAbility.init(this);
     characterPopIns.init(this);
@@ -121,6 +122,18 @@ WorldScene = new Phaser.Class({
       if (previousZone && !previousZone.popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(Meteor.userId(), previousZone._id);
       if (!zone) return;
 
+      const { levelId: currentLevelId } = Meteor.user().profile;
+      if (zone.name === 'Team A' || zone.name === 'Team B') {
+        const zoneA = Zones.findOne({ name: 'Team A' });
+        const zoneB = Zones.findOne({ name: 'Team B' });
+        const usersCountZoneA = zones.usersInZone(zoneA).length;
+        const usersCountZoneB = zones.usersInZone(zoneB).length;
+
+        // if (usersCountZoneA > 0 && usersCountZoneB > 0 && usersCountZoneA === usersCountZoneB) Entities.update({ levelId, name: 'door-room-2' }, { state: true });
+        // const doorState = Entities.findOne({ levelId, name: 'door-room-2' });
+        setTimeout(() => Meteor.call('switchEntityState', currentLevelId, 'door-room-2'), 0);
+      } else if (zone.name.includes('switch')) setTimeout(() => Meteor.call('switchEntityState', currentLevelId, zone.name), 0);
+
       const { targetedLevelId: levelId, inlineURL } = zone;
       if (levelId) this.loadLevel(levelId);
       else if (inlineURL) characterPopIns.initFromZone(zone);
@@ -176,6 +189,7 @@ WorldScene = new Phaser.Class({
 
   postUpdate(time, delta) {
     userManager.postUpdate(time, delta);
+    entityManager.postUpdate(time, delta);
   },
 
   loadLevel(levelId) {

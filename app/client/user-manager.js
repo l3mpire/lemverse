@@ -23,36 +23,6 @@ savePlayer = player => {
   });
 };
 
-const levelConfiguration = {
-  room_1: {
-    entities: [
-      {
-        name: 'computer',
-        coordinates: [[11, 5]],
-        states: [
-          {
-            replace: [
-              { x: 18, y: 3, layer: 0, index: 3, tilesetId: 'tis_fRzPPArNjDzoMxP4w' },
-              { x: 18, y: 4, layer: 0, index: 35, tilesetId: 'tis_fRzPPArNjDzoMxP4w' },
-              { x: 18, y: 5, layer: 0, index: 58, tilesetId: 'tis_2zQbZ4J3PeQfTM3fX' },
-              { x: 18, y: 6, layer: 0, index: 58, tilesetId: 'tis_2zQbZ4J3PeQfTM3fX' },
-              { x: 18, y: 7, layer: 0, index: 93, tilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
-            ],
-          }, {
-            replace: [
-              { x: 18, y: 3, layer: 0, index: 55, tilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
-              { x: 18, y: 4, layer: 0, index: 55, tilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
-              { x: 18, y: 5, layer: 0, index: 55, tilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
-              { x: 18, y: 6, layer: 0, index: 55, tilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
-              { x: 18, y: 7, layer: 0, index: 55, tilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-};
-
 const throttledSavePlayer = throttle(savePlayer, 100, { leading: false });
 
 userManager = {
@@ -511,35 +481,8 @@ userManager = {
     const tiles = this.getTilesInFrontOfPlayer(this.player, [4, 0]);
     if (tiles.length) {
       const tile = tiles[0];
-
-      levelConfiguration.room_1.entities.forEach(entity => {
-        const isUsed = entity.coordinates.some(coordinate => tile.x === coordinate[0] && tile.y === coordinate[1]);
-        if (isUsed) {
-          entity.states[0].replace.forEach(t => this.replaceTile({ x: t.x, y: t.y, layer: t.layer }, { index: t.index, tilesetId: t.tilesetId }));
-        }
-      });
+      entityManager.onInteraction(tile);
     }
-  },
-
-  getMapTileIndex(tileData) {
-    const currentTile = this.scene.map.getTileAt(tileData.x, tileData.y, false, tileData.layer);
-    if (!currentTile) return -1;
-
-    return currentTile.index - currentTile.tileset.firstgid;
-  },
-
-  replaceTile(oldTile, newTile) {
-    const { levelId } = Meteor.user().profile;
-    const tileIndex = this.getMapTileIndex(oldTile);
-    if (tileIndex === -1) return;
-    Meteor.call('replaceTile', levelId, oldTile.x, oldTile.y, tileIndex, newTile.index, newTile.tilesetId);
-  },
-
-  removeTile(tileData) {
-    const { levelId } = Meteor.user().profile;
-    const tileIndex = this.getMapTileIndex(tileData);
-    if (tileIndex === -1) return;
-    Meteor.call('destroyTile', levelId, tileData.x, tileData.y, tileIndex);
   },
 
   getTilesUnderPlayer(player, layers = []) {

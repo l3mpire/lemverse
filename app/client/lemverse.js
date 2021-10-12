@@ -240,9 +240,11 @@ Template.lemverse.onCreated(function () {
 
     Tracker.nonreactive(() => {
       log(`loading level: ${levelId || 'unknown'}…`);
+      if (this.handleEntitiesSubscribe) this.handleEntitiesSubscribe.stop();
       if (this.handleTilesSubscribe) this.handleTilesSubscribe.stop();
       if (this.handleUsersSubscribe) this.handleUsersSubscribe.stop();
       if (this.handleZonesSubscribe) this.handleZonesSubscribe.stop();
+      if (this.handleObserveEntities) this.handleObserveEntities.stop();
       if (this.handleObserveTiles) this.handleObserveTiles.stop();
       if (this.handleObserveUsers) this.handleObserveUsers.stop();
       if (this.handleObserveZones) this.handleObserveZones.stop();
@@ -286,6 +288,24 @@ Template.lemverse.onCreated(function () {
 
         log('loading level: all zones loaded');
         zones.checkDistances(userManager.player);
+      });
+
+      // Load entities
+      log(`loading level: loading entities`);
+      this.handleEntitiesSubscribe = this.subscribe('entities', levelId, () => {
+        this.handleObserveEntities = Entities.find().observe({
+          added(entity) {
+            entityManager.create(entity);
+          },
+          changed(entity) {
+            setTimeout(() => entityManager.update(entity), 0);
+          },
+          removed(entity) {
+            entityManager.remove(entity);
+          },
+        });
+
+        log('loading level: all entities loaded');
       });
 
       // Load tiles
@@ -465,9 +485,11 @@ Template.lemverse.onRendered(function () {
 
 Template.lemverse.onDestroyed(function () {
   if (this.handleObserveUsers) this.handleObserveUsers.stop();
+  if (this.handleObserveEntities) this.handleObserveEntities.stop();
   if (this.handleObserveTiles) this.handleObserveTiles.stop();
   if (this.handleObserveTilesets) this.handleObserveTilesets.stop();
   if (this.handleObserveZones) this.handleObserveZones.stop();
+  if (this.handleEntitiesSubscribe) this.handleEntitiesSubscribe.stop();
   if (this.handleTilesSubscribe) this.handleTilesSubscribe.stop();
   if (this.handleUsersSubscribe) this.handleUsersSubscribe.stop();
   if (this.handleZonesSubscribe) this.handleZonesSubscribe.stop();
