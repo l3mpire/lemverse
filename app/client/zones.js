@@ -152,6 +152,7 @@ zones = {
 
       if (zone?.url) {
         this.getIframeElement().src = zone.url;
+        if (zone.yt) this.getIframeElement().allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
         this.getWebpageElement().classList.add('show');
       } else if ((!zone || !zone.url) && !meet?.api) {
         this.getIframeElement().src = '';
