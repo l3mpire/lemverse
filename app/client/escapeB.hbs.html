@@ -38,6 +38,40 @@
         <img src='/assets/lemescape/B/switch.png' class='js-activate-switch' data-zone='labyrinth-part3'/>
     {{else if eq iframe '4'}}
         <img src='/assets/lemescape/B/switch.png' class='js-activate-switch' data-zone='labyrinth-part4'/>
+    {{else if eq iframe '5'}}
+        {{!-- TODO: Julien Insert --}}
+    {{else if eq iframe '6'}}
+        <img height="300px" src='/assets/lemescape/B/keyLock.png' usemap="#keyLock" />
+        <img id='redLed' height="14px" src='/assets/lemescape/B/redLed.png' class='red blink-image hide' />
+        
+        <map name='keyLock'>
+            <area shape="rect" coords="64, 95, 91, 116" class="js-key-code" data-code='A' data-lock='B'>
+            <area shape="rect" coords="100, 95, 129, 116" class="js-key-code" data-code='B' data-lock='B'>
+            <area shape="rect" coords="137, 95, 165, 116" class="js-key-code" data-code='C' data-lock='B'>
+            <area shape="rect" coords="173, 95, 202, 116" class="js-key-code" data-code='D' data-lock='B'>
+            <area shape="rect" coords="211, 95, 239, 116" class="js-key-code" data-code='E' data-lock='B'>
+
+            <area shape="rect" coords="64, 125, 91, 145" class="js-key-code" data-code='F' data-lock='B'>
+            <area shape="rect" coords="100, 125, 129, 145" class="js-key-code" data-code='G' data-lock='B'>
+            <area shape="rect" coords="137, 125, 165, 145" class="js-key-code" data-code='H' data-lock='B'>
+            <area shape="rect" coords="173, 125, 202, 145" class="js-key-code" data-code='I' data-lock='B'>
+            <area shape="rect" coords="211, 125, 239, 145" class="js-key-code" data-code='J' data-lock='B'>
+
+            <area shape="rect" coords="64, 154, 91, 175" class="js-key-code" data-code='1' data-lock='B'>
+            <area shape="rect" coords="100, 154, 129, 175" class="js-key-code" data-code='2' data-lock='B'>
+            <area shape="rect" coords="137, 154, 165, 175" class="js-key-code" data-code='3' data-lock='B'>
+            <area shape="rect" coords="173, 154, 202, 175" class="js-key-code" data-code='4' data-lock='B'>
+            <area shape="rect" coords="211, 154, 239, 175" class="js-key-code" data-code='5' data-lock='B'>
+
+            <area shape="rect" coords="80, 183, 109, 203" class="js-key-code" data-code='6' data-lock='B'>
+            <area shape="rect" coords="118, 183, 146, 203" class="js-key-code" data-code='7' data-lock='B'>
+            <area shape="rect" coords="155, 183, 183, 203" class="js-key-code" data-code='8' data-lock='B'>
+            <area shape="rect" coords="191, 183, 220, 203" class="js-key-code" data-code='9' data-lock='B'>
+
+            <area shape="rect" coords="99, 212, 127, 232" class="js-key-code" data-code='CLEAR' data-lock='B'>
+            <area shape="rect" coords="136, 212, 164, 232" class="js-key-code" data-code='0' data-lock='B'>
+            <area shape="rect" coords="173, 212, 202, 232" class="js-key-code" data-code='VALIDATE' data-lock='B'>
+        </map>
     {{else}}
         <h1>Not handled</h1>
     {{/if}}
