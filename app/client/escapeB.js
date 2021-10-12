@@ -23,5 +23,10 @@ Template.escapeB.events({
         } else {
             Session.set(lockString, `${Session.get(lockString) || ''}${code}`)
         }
+    },
+    'click .js-activate-switch'(e) {
+        const zone = e.currentTarget.dataset.zone;
+        if (!zone) return
+        Meteor.call('toggleZone', zone)
     }
 })
