@@ -16,7 +16,7 @@ Meteor.methods({
   toggleZone(name) {
     log('toggleZone: start', { name });
     const allTiles = Tiles.find({ 'metadata.zoneName': name }).fetch();
-    if (!allTiles) return;
+    if (!allTiles || !allTiles.length) return;
     const invisible = !allTiles[0].invisible;
     Tiles.update({ _id: { $in: allTiles.map(tile => tile._id) } }, { $set: { invisible } }, { multi: true });
     log('toggleZone: updating', { nbTiles: allTiles.length });
