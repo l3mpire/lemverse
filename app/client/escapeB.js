@@ -8,7 +8,7 @@ Template.escapeB.events({
     'click .js-key-code'(e) {
         const {lock, code}= e.currentTarget.dataset
         const lockString = `lock${lock}`
-        if (code === 'V') {
+        if (code === 'VALIDATE') {
             if (Session.get(lockString) === '1234') {
                 // Success
                 // Meteor.call('darkenZone', 'labyrinth-part1')
@@ -16,9 +16,13 @@ Template.escapeB.events({
             } else {
                 // Failure
                 console.log('Not good')
+                document.querySelector('#redLed').classList.remove('hide');
+                setTimeout(()=> {
+                    document.querySelector('#redLed').classList.add('hide');
+                }, 3000);
             }
             Session.set(lockString, '')
-        } else if (code ==='C') {
+        } else if (code ==='CLEAR') {
             Session.set(lockString, '')
         } else {
             Session.set(lockString, `${Session.get(lockString) || ''}${code}`)
