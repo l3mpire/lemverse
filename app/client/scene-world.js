@@ -130,6 +130,7 @@ WorldScene = new Phaser.Class({
         if (users.length >= escape.triggerLimit) {
           if (escape.start) Meteor.call('escapeStart', zones.currentZone(Meteor.user()), users, levelId);
         }
+        if (escape.enlightenZone) Meteor.call('enlightenZone', escape.enlightenZone);
       }
     };
 
