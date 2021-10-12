@@ -1,0 +1,36 @@
+.iframe {
+    position: fixed;
+
+    &>* {
+        user-select: none;
+    }
+
+    .red {
+        position: absolute;
+        top: 57px;
+        left: 144px;
+    }
+
+    @keyframes blink {
+        0% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    .blink-image {
+        animation: blink normal 1s infinite ease-in-out;
+    }
+
+
+    .hide {
+        display: none;
+    }
+}

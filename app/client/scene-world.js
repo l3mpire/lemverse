@@ -134,9 +134,16 @@ WorldScene = new Phaser.Class({
         setTimeout(() => Meteor.call('switchEntityState', currentLevelId, 'door-room-2'), 0);
       } else if (zone.name.includes('switch')) setTimeout(() => Meteor.call('switchEntityState', currentLevelId, zone.name), 0);
 
-      const { targetedLevelId: levelId, inlineURL } = zone;
+      const { targetedLevelId: levelId, inlineURL, escape } = zone;
       if (levelId) this.loadLevel(levelId);
       else if (inlineURL) characterPopIns.initFromZone(zone);
+      else if (escape) {
+        const users = zones.usersInZone(zones.currentZone(Meteor.user()));
+        users.push(Meteor.user());
+        if (users.length >= escape.triggerLimit) {
+          if (escape.start) Meteor.call('escapeStart', zones.currentZone(Meteor.user()), users, levelId);
+        }
+      }
     };
 
     characterPopIns.onPopInEvent = e => {
