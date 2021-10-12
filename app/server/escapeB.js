@@ -26,7 +26,7 @@ Meteor.methods({
     // Start time
     Levels.update({ _id: levelId }, { $set: { 'metadata.start': Date.now() } });
     // Open locked door
-    Tiles.update({ levelId, 'metadata.startDoors': true }, { $set: { invisible: true } }, { multi: true });
+    Tiles.update({ levelId, 'metadata.zoneName': 'room1' }, { $set: { invisible: true } }, { multi: true });
   },
   currentLevel() {
     log('here');
