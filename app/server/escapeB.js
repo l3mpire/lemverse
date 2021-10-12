@@ -28,4 +28,9 @@ Meteor.methods({
     // Open locked door
     Tiles.update({ levelId, 'metadata.startDoors': true }, { $set: { invisible: true } }, { multi: true });
   },
+  currentLevel() {
+    log('here');
+    log(Levels.findOne({ _id: Meteor.user().profile.levelId }));
+    return Levels.findOne({ _id: Meteor.user().profile.levelId });
+  },
 });
