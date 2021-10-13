@@ -20,7 +20,7 @@ const differMeteorCall = (...args) => {
 
 tileGlobalIndex = tile => {
   const tileset = findTileset(tile.tilesetId);
-  return (tileset.firstgid || 0) + tile.index;
+  return (tileset?.firstgid || 0) + tile.index;
 };
 
 tileProperties = tile => {
