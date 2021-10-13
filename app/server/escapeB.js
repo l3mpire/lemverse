@@ -44,6 +44,10 @@ Meteor.methods({
     // Open locked door
     Tiles.update({ levelId, 'metadata.zoneName': 'room1' }, { $set: { invisible: true } }, { multi: true });
   },
+  escapeEnd(levelId) {
+    log('escapeEnd: start', { levelId });
+    Levels.update({ _id: levelId }, { $set: { 'metadata.end': Date.now() } });
+  },
   currentLevel() {
     return Levels.findOne({ _id: Meteor.user().profile.levelId });
   },
