@@ -9,6 +9,11 @@ Template.escapeB.helpers({
   iframe() {
     return FlowRouter.current().queryParams.n;
   },
+  won() {
+    // const currentLevel = Session.get('currentLevel');
+    // console.log("ok", currentLevel);
+    return false;
+  },
 });
 
 const click = () => {
