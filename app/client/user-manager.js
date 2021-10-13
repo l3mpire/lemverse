@@ -444,6 +444,10 @@ userManager = {
     // Handle freeze
     const user = Meteor.user();
     if (user.profile.freeze) moving = false;
+    if (user.profile.changeLevel) {
+      this.scene.loadLevel(user.profile.changeLevel);
+      Meteor.users.update(Meteor.userId(), { $set: { 'profile.levelId': user.profile.changeLevel }, $unset: { 'profile.changeLevel': 1 } });
+    }
 
     if (moving || this.playerWasMoving) {
       this.scene.physics.world.update(time, delta);

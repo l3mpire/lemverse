@@ -169,6 +169,9 @@ WorldScene = new Phaser.Class({
 
         if (users.length >= escape.triggerLimit) {
           if (escape.start) differMeteorCall('escapeStart', zones.currentZone(Meteor.user()), users, Meteor.user().profile.levelId);
+          if (escape.makeLevel) {
+            differMeteorCall('escapeMakeLevel', escape.makeLevel, zones.currentZone(Meteor.user()), users);
+          }
         }
         if (escape.enlightenZone) differMeteorCall('enlightenZone', escape.enlightenZone);
         if (escape.teleportAllTo) differMeteorCall('teleportAllTo', escape.teleportAllTo.name, escape.teleportAllTo.coord);

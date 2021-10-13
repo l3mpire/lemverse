@@ -1,4 +1,20 @@
 Meteor.methods({
+  escapeMakeLevel(templateId, zone, usersInZone) {
+    log('escapeMakeLevel: start', { templateId, zoneId: zone._id, usersInZoneId: usersInZone?.map(user => user._id) });
+    const { escape } = zone;
+
+    if (!escape?.triggerLimit || !templateId || !usersInZone) return;
+
+    // Clone Level
+    log('escapeMakeLevel: cloning template', { templateId });
+    const newLevelId = createLevel(templateId, `Escape B #${Math.floor(Math.random() * 100)}`);
+
+    // Teleport user
+    const usersToTeleport = usersInZone.slice(-1).concat(usersInZone.slice(0, escape.triggerLimit - 1));
+    log('escapeMakeLevel: teleport users', { usersToTeleport: usersToTeleport.map(user => user._id), newLevelId });
+    Meteor.users.update({ _id: { $in: usersToTeleport.map(user => user._id) } }, { $set: { 'profile.changeLevel': newLevelId } }, { multi: true });
+    log('escapeMakeLevel: end');
+  },
   enlightenZone(name) {
     log('enlightenZone: start', { name });
     const allTiles = Tiles.find({ 'metadata.zoneName': name }).fetch();
