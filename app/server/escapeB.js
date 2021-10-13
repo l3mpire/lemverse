@@ -53,6 +53,7 @@ Meteor.methods({
     const currentLevel = Levels.findOne({ _id: Meteor.user().profile.levelId });
     const allOtherPlayers = Meteor.users.find({ 'profile.levelId': currentLevel._id, 'status.online': true, _id: { $ne: Meteor.userId() } }).fetch();
 
+    log('freezeOthers: freezing', { allOtherPlayers: allOtherPlayers.length, levelId: currentLevel._id });
     Meteor.users.update({ _id: { $in: allOtherPlayers.map(player => player._id) } }, { $set: { 'profile.freeze': true } }, { multi: true });
   },
 });
