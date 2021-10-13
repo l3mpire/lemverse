@@ -1,3 +1,6 @@
+import PostFX from '../public/assets/lemescape/A/PostFX';
+import HUEEffect from '../public/assets/lemescape/A/HueEffect';
+
 const Phaser = require('phaser');
 
 scopes = {
@@ -18,6 +21,27 @@ game = undefined;
 
 isModalOpen = () => Session.get('displaySettings') || Session.get('displayZoneId') || Session.get('displayNotificationsPanel');
 
+const stringToColour = str => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+
+  let colour = '#';
+  for (let i = 0; i < 3; i++) {
+    const value = (hash >> (i * 8)) & 0xFF;
+    colour += (`00${value.toString(16)}`).substr(-2);
+  }
+  return colour;
+};
+
+const paintTile = (worldScene, tile, layer) => {
+  if (tile.paint) {
+    const phaserTile = worldScene.map.getTileAt(tile.x, tile.y, false, layer);
+    const converted = stringToColour(tile.paint).replace('#', '0x');
+    const color = parseInt(converted, 16) * 100;
+    if (phaserTile) phaserTile.tint = color;
+  }
+};
+
 const config = {
   type: Phaser.AUTO,
   parent: 'game',
@@ -35,6 +59,7 @@ const config = {
   dom: {
     createContainer: true,
   },
+  pipeline: { PostFX, HUEEffect },
 };
 
 Template.lemverse.onCreated(function () {
@@ -316,10 +341,12 @@ Template.lemverse.onCreated(function () {
             const layer = tileLayer(tile);
             worldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
             worldScene.drawTeleporters(false);
+            paintTile(worldScene, tile, layer);
           },
           changed(tile) {
             const layer = tileLayer(tile);
             worldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
+            paintTile(worldScene, tile, layer);
           },
           removed(tile) {
             const layer = tileLayer(tile);

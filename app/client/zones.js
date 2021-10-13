@@ -58,10 +58,11 @@ zones = {
     return this.getCenter(zone);
   },
 
-  usersInZone(zone) {
+  usersInZone(zone, includeCurrentUser = false) {
     if (!zone) return [];
 
-    const users = Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch();
+    const queryOption = includeCurrentUser ? {} : { _id: { $ne: Meteor.userId() } };
+    const users = Meteor.users.find(queryOption).fetch();
     const usersInZone = [];
 
     _.each(users, user => {

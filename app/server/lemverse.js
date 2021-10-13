@@ -17,7 +17,7 @@ Meteor.publish('tiles', function (levelId) {
   if (!this.userId) return undefined;
   if (!levelId) levelId = Meteor.settings.defaultLevelId;
 
-  return Tiles.find({ levelId, $or: [{invisible: false}, {invisible: { $exists: false }}] }, { fields: { index: 1, x: 1, y: 1, tilesetId: 1, levelId: 1 } });
+  return Tiles.find({ levelId, $or: [{ invisible: false }, { invisible: { $exists: false } }] }, { fields: { index: 1, x: 1, y: 1, tilesetId: 1, levelId: 1, paint: 1 } });
 });
 
 Meteor.publish('levels', function () {
@@ -181,22 +181,8 @@ Meteor.methods({
     check(levelId, String);
     Levels.update({ _id: levelId, createdBy: { $ne: Meteor.userId() } }, { $inc: { visit: 1 } });
   },
-  addTile(levelId, x, y, index, tilesetId) {
-    check([levelId, tilesetId], [String]);
-    check([x, y, index], [Number]);
-    Tiles.insert({ levelId, x, y, index, tilesetId, createdAt: new Date(), createdBy: Meteor.userId() });
-  },
-  destroyTile(levelId, x, y, index) {
-    check(levelId, String);
-    check([x, y, index], [Number]);
-    Tiles.remove({ levelId, x, y, index });
-  },
-  replaceTile(levelId, x, y, index, newIndex, newTilesetId) {
-    check([levelId, newTilesetId], [String]);
-    check([x, y, index, newIndex], [Number]);
-    Tiles.update({ levelId, x, y, index }, { $set: { tilesetId: newTilesetId, index: newIndex } });
-  },
   switchEntityState(levelId, name) {
+    check([levelId, name], [String]);
     const entity = findEntity(name);
     if (!entity) return;
 
@@ -213,10 +199,12 @@ Meteor.methods({
 
     state.replace?.forEach(t => {
       Tiles.update({ levelId, x: t.x, y: t.y }, { $set: { tilesetId: t.newTilesetId, index: t.newIndex } });
-      console.log(t.x, t.y, t.newIndex, t.newTilesetId);
     });
 
     Entities.update({ levelId, name }, { $set: { state: !entityDocument.state } });
+  },
+  paintTile(levelId, x, y, index) {
+    Tiles.update({ levelId, x, y, index }, { $set: { paint: Meteor.userId() } });
   },
 });
 

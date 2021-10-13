@@ -1,4 +1,6 @@
 import nipplejs from 'nipplejs';
+import HUEEffect from '../public/assets/lemescape/A/HueEffect';
+import PostFX from '../public/assets/lemescape/A/PostFX';
 
 const Phaser = require('phaser');
 
@@ -119,20 +121,38 @@ WorldScene = new Phaser.Class({
     this.events.once('shutdown', this.shutdown.bind(this), this);
 
     zones.onZoneChanged = (zone, previousZone) => {
-      if (previousZone && !previousZone.popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(Meteor.userId(), previousZone._id);
-      if (!zone) return;
-
+      const cam = this.cameras.main;
       const { levelId: currentLevelId } = Meteor.user().profile;
-      if (zone.name === 'Team A' || zone.name === 'Team B') {
-        const zoneA = Zones.findOne({ name: 'Team A' });
-        const zoneB = Zones.findOne({ name: 'Team B' });
-        const usersCountZoneA = zones.usersInZone(zoneA).length;
-        const usersCountZoneB = zones.usersInZone(zoneB).length;
+      if (previousZone && !previousZone.popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(Meteor.userId(), previousZone._id);
+      if (!zone) {
+        cam.resetPostPipeline();
+        entityManager.enable_path_coloration = false;
+        entityManager.enable_sync_coloration = false;
+        return;
+      }
 
-        // if (usersCountZoneA > 0 && usersCountZoneB > 0 && usersCountZoneA === usersCountZoneB) Entities.update({ levelId, name: 'door-room-2' }, { state: true });
-        // const doorState = Entities.findOne({ levelId, name: 'door-room-2' });
-        setTimeout(() => Meteor.call('switchEntityState', currentLevelId, 'door-room-2'), 0);
-      } else if (zone.name.includes('switch')) setTimeout(() => Meteor.call('switchEntityState', currentLevelId, zone.name), 0);
+      if (zone.name) {
+        if (zone.name.includes('Team A') || zone.name.includes('Team B')) {
+          const zoneA = Zones.findOne({ name: 'Team A - lucid' });
+          const zoneB = Zones.findOne({ name: 'Team B - lucid' });
+          const usersCountZoneA = zones.usersInZone(zoneA, true).length;
+          const usersCountZoneB = zones.usersInZone(zoneB, true).length;
+
+          if (usersCountZoneA > 0 && usersCountZoneB > 0 && usersCountZoneA === usersCountZoneB) setTimeout(() => Meteor.call('switchEntityState', currentLevelId, 'door-room-2'), 0);
+          // const doorState = Entities.findOne({ levelId, name: 'door-room-2' });
+          // setTimeout(() => Meteor.call('switchEntityState', currentLevelId, 'door-room-2'), 0);
+        } else if (zone.name.includes('switch')) setTimeout(() => Meteor.call('switchEntityState', currentLevelId, zone.name), 0);
+        else if (zone.name.includes('Ready')) {
+          if (zones.usersInZone(zone, true).length === Meteor.users.find().count()) {
+            setTimeout(() => Meteor.call('switchEntityState', currentLevelId, 'room-4-ready'), 0);
+          }
+        } else if (zone.name.includes('paint')) entityManager.enable_sync_coloration = true;
+
+        if (zone.name.includes('drunk')) {
+          cam.setPostPipeline(PostFX);
+          entityManager.enable_path_coloration = true;
+        } else if (zone.name.includes('lucid')) cam.setPostPipeline(HUEEffect);
+      }
 
       const { targetedLevelId: levelId, inlineURL, escape } = zone;
       if (levelId) this.loadLevel(levelId);

@@ -148,6 +148,37 @@ levelConfiguration = {
       ],
     }, {
       entities: [
+        {
+          name: 'room-4-ready',
+          coordinates: [],
+          states: [
+            {
+              replace: [
+                { x: 84, y: 51, newIndex: 89, newTilesetId: 'tis_2zQbZ4J3PeQfTM3fX' },
+                { x: 84, y: 52, newIndex: 89, newTilesetId: 'tis_2zQbZ4J3PeQfTM3fX' },
+                { x: 84, y: 53, newIndex: 89, newTilesetId: 'tis_2zQbZ4J3PeQfTM3fX' },
+                { x: 84, y: 54, newIndex: 89, newTilesetId: 'tis_2zQbZ4J3PeQfTM3fX' },
+                { x: 84, y: 55, newIndex: 89, newTilesetId: 'tis_2zQbZ4J3PeQfTM3fX' },
+                { x: 84, y: 56, newIndex: 89, newTilesetId: 'tis_2zQbZ4J3PeQfTM3fX' },
+                { x: 84, y: 57, newIndex: 89, newTilesetId: 'tis_2zQbZ4J3PeQfTM3fX' },
+                { x: 84, y: 58, newIndex: 89, newTilesetId: 'tis_2zQbZ4J3PeQfTM3fX' },
+                { x: 84, y: 59, newIndex: 89, newTilesetId: 'tis_2zQbZ4J3PeQfTM3fX' },
+              ],
+            }, {
+              replace: [
+                { x: 84, y: 51, newIndex: 55, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+                { x: 84, y: 52, newIndex: 55, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+                { x: 84, y: 53, newIndex: 55, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+                { x: 84, y: 54, newIndex: 55, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+                { x: 84, y: 55, newIndex: 55, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+                { x: 84, y: 56, newIndex: 55, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+                { x: 84, y: 57, newIndex: 55, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+                { x: 84, y: 58, newIndex: 55, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+                { x: 84, y: 59, newIndex: 55, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+              ],
+            },
+          ],
+        },
       ],
     },
   ],
