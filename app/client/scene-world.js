@@ -13,6 +13,9 @@ const defaultLayerDepth = {
 };
 
 const findTileset = tilesetId => game.scene.keys.WorldScene.map.getTileset(tilesetId);
+const differMeteorCall = (...args) => {
+  setTimeout(() => { Meteor.call(...args); }, 0);
+};
 
 tileGlobalIndex = tile => {
   const tileset = findTileset(tile.tilesetId);
@@ -162,19 +165,10 @@ WorldScene = new Phaser.Class({
         users.push(Meteor.user());
 
         if (users.length >= escape.triggerLimit) {
-          if (escape.start) {
-            setTimeout(() => {
-              Meteor.call('escapeStart', zones.currentZone(Meteor.user()), users, Meteor.user().profile.levelId);
-            },
-            0);
-          }
+          if (escape.start) differMeteorCall('escapeStart', zones.currentZone(Meteor.user()), users, Meteor.user().profile.levelId);
         }
-        if (escape.enlightenZone) {
-          setTimeout(() => {
-            Meteor.call('enlightenZone', escape.enlightenZone);
-          },
-          0);
-        }
+        if (escape.enlightenZone) differMeteorCall('enlightenZone', escape.enlightenZone);
+        if (escape.teleportAllTo) differMeteorCall('teleportAllTo', escape.teleportAllTo);
       }
     };
 
