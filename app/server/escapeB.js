@@ -39,4 +39,13 @@ Meteor.methods({
     log('teleportAllTo: teleport', { level: currentLevel.name || currentLevel._id, allPlayers: allPlayers.length });
     Meteor.users.update({ _id: { $in: allPlayers.map(player => player._id) } }, { $set: { 'profile.x': position.x, 'profile.y': position.y } }, { multi: true });
   },
+  updateTiles(tiles) {
+    log('updateTiles: start', { tiles: tiles.length });
+    if (!tiles) return;
+    tiles.forEach(tile => {
+      if (!tile.id || !tile.update) return;
+      log('updateTiles: Updating tile', { tile });
+      Tiles.update({ _id: tile.id }, { $set: tile.update });
+    });
+  },
 });
