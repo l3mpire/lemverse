@@ -69,9 +69,12 @@
 }
 
 @media (prefers-color-scheme: light) {
+    .iframe {
+        background: white !important;
+    }
+    
     .dark {
         background-color: white;
-        color: white;
     }
 
     .container {
@@ -83,11 +86,11 @@
         position: absolute;
         top: -20px;
         right: -20px;
+        color: black;
     }
 
     .light {
-        background-color: white;
-        color: black;
+        background-color: black;
     }
 }
 
@@ -111,11 +114,9 @@
 
     .dark {
         background-color: black;
-        color: white;
     }
 
     .light {
         background-color: white;
-        color: white;
     }
 }
