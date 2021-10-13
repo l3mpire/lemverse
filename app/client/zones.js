@@ -113,7 +113,7 @@ zones = {
     }, {});
 
     if (this.activeZone?._id !== zone?._id) {
-      if (this.onZoneChanged && this.activeZone?._id !== zone?._id) this.onZoneChanged(!_.isEmpty(zone) ? zone : undefined, this.activeZone);
+      if (this.onZoneChanged) this.onZoneChanged(!_.isEmpty(zone) ? zone : undefined, this.activeZone);
       this.activeZone = zone;
       if (zone.name) this.toastZoneName(zone?.name);
 
@@ -153,6 +153,7 @@ zones = {
 
       if (zone?.url) {
         this.getIframeElement().src = zone.url;
+        if (zone.yt) this.getIframeElement().allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
         this.getWebpageElement().classList.add('show');
       } else if ((!zone || !zone.url) && !meet?.api) {
         this.getIframeElement().src = '';

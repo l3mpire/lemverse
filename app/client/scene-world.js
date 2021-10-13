@@ -160,8 +160,20 @@ WorldScene = new Phaser.Class({
       else if (escape) {
         const users = zones.usersInZone(zones.currentZone(Meteor.user()));
         users.push(Meteor.user());
+
         if (users.length >= escape.triggerLimit) {
-          if (escape.start) Meteor.call('escapeStart', zones.currentZone(Meteor.user()), users, levelId);
+          if (escape.start) {
+            setTimeout(() => {
+              Meteor.call('escapeStart', zones.currentZone(Meteor.user()), users, Meteor.user().profile.levelId);
+            },
+            0);
+          }
+        }
+        if (escape.enlightenZone) {
+          setTimeout(() => {
+            Meteor.call('enlightenZone', escape.enlightenZone);
+          },
+          0);
         }
       }
     };
