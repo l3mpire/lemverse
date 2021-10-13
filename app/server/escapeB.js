@@ -37,7 +37,7 @@ Meteor.methods({
     const allPlayers = Meteor.users.find({ 'profile.levelId': currentLevel._id, 'status.online': true }).fetch();
 
     log('teleportAllTo: teleport', { level: currentLevel.name || currentLevel._id, allPlayers: allPlayers.length });
-    Meteor.users.update({ _id: { $in: allPlayers.map(player => player._id) } }, { $set: { 'profile.x': position.x, 'profile.y': position.y } }, { multi: true });
+    Meteor.users.update({ _id: { $in: allPlayers.map(player => player._id) } }, { $set: { 'profile.x': position.x, 'profile.y': position.y }, $unset: { 'profile.freeze': 1 } }, { multi: true });
   },
   updateTiles(tiles) {
     log('updateTiles: start', { tiles: tiles.length });
@@ -47,5 +47,12 @@ Meteor.methods({
       log('updateTiles: Updating tile', { tile });
       Tiles.update({ _id: tile.id }, { $set: tile.update });
     });
+  },
+  freezeOthers() {
+    log('freezeOthers: start');
+    const currentLevel = Levels.findOne({ _id: Meteor.user().profile.levelId });
+    const allOtherPlayers = Meteor.users.find({ 'profile.levelId': currentLevel._id, 'status.online': true, _id: { $ne: Meteor.userId() } }).fetch();
+
+    Meteor.users.update({ _id: { $in: allOtherPlayers.map(player => player._id) } }, { $set: { 'profile.freeze': true } }, { multi: true });
   },
 });

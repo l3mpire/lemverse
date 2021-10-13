@@ -173,6 +173,7 @@ WorldScene = new Phaser.Class({
         if (escape.enlightenZone) differMeteorCall('enlightenZone', escape.enlightenZone);
         if (escape.teleportAllTo) differMeteorCall('teleportAllTo', escape.teleportAllTo);
         if (escape.updateTiles) differMeteorCall('updateTiles', escape.updateTiles);
+        if (escape.freezeOthers) differMeteorCall('freezeOthers');
       }
     };
 

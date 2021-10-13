@@ -389,6 +389,12 @@ userManager = {
     if (!this.player.nippleMoving) this.player.body.setVelocity(0);
     if (isModalOpen()) return;
 
+    const user = Meteor.user();
+    if (user.profile.freeze) {
+      this.pauseAnimation(this.player, true);
+      return;
+    }
+
     let velocity = keys.shift.isDown ? Meteor.settings.public.character.runSpeed : Meteor.settings.public.character.walkSpeed;
     let direction;
 
