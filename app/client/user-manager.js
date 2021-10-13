@@ -439,7 +439,12 @@ userManager = {
     userChatCircle.update(this.player.x, this.player.y);
     userVoiceRecorderAbility.update(this.player.x, this.player.y, delta);
 
-    const moving = Math.abs(this.player.body.velocity.x) > Number.EPSILON || Math.abs(this.player.body.velocity.y) > Number.EPSILON;
+    let moving = Math.abs(this.player.body.velocity.x) > Number.EPSILON || Math.abs(this.player.body.velocity.y) > Number.EPSILON;
+
+    // Handle freeze
+    const user = Meteor.user();
+    if (user.profile.freeze) moving = false;
+
     if (moving || this.playerWasMoving) {
       this.scene.physics.world.update(time, delta);
       throttledSavePlayer(this.player);
