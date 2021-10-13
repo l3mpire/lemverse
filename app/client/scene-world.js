@@ -5,6 +5,7 @@ import PostFX from '../public/assets/lemescape/A/PostFX';
 const Phaser = require('phaser');
 
 const defaultLayer = 2;
+const defaultTileset = { layer: defaultLayer, firstgid: 0, tileProperties: {} };
 const defaultLayerCount = 9;
 const defaultLayerDepth = {
   6: 10000,
@@ -23,9 +24,9 @@ tileGlobalIndex = tile => {
 };
 
 tileProperties = tile => {
-  if (!tile.tilesetId) return {};
+  if (!tile.tilesetId) return defaultTileset;
   const tileset = findTileset(tile.tilesetId);
-  if (!tileset) return { layer: defaultLayer };
+  if (!tileset) return defaultTileset;
   return tileset.tileProperties?.[tile.index];
 };
 
