@@ -72,9 +72,10 @@
     .iframe {
         background: white !important;
     }
-    
+
     .dark {
         background-color: white;
+        color: black;
     }
 
     .container {
@@ -86,11 +87,11 @@
         position: absolute;
         top: -20px;
         right: -20px;
-        color: black;
     }
 
     .light {
         background-color: black;
+        color: black;
     }
 }
 
@@ -107,16 +108,17 @@
     .container:after {
         content: '-1';
         position: absolute;
-        color: white;
         bottom: 0;
         right: 0;
     }
 
     .dark {
         background-color: black;
+        color: white;
     }
 
     .light {
         background-color: white;
+        color: white;
     }
 }
