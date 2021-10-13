@@ -1,4 +1,6 @@
 .iframe {
+    height: 100%;
+    width: 100%;
     position: fixed;
 
     &>* {
@@ -32,5 +34,88 @@
 
     .hide {
         display: none;
+    }
+
+    .dark-light {
+        margin: 30px;
+        height: 100%;
+        font-family: 'helvetica';
+        padding: 0;
+    }
+
+    .container {
+        height: 200px;
+        width: 400px;
+        display: flex;
+        flex-flow: column nowrap;
+        border: 2px solid black;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .dark,
+    .light {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex: 1 1 auto;
+    }
+
+    .message {
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    .dark {
+        background-color: white;
+        color: white;
+    }
+
+    .container {
+        position: relative;
+    }
+
+    .container:after {
+        content: '2';
+        position: absolute;
+        top: -20px;
+        right: -20px;
+    }
+
+    .light {
+        background-color: white;
+        color: black;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .iframe {
+        background: black !important;
+    }
+
+    .container {
+        position: unset;
+        border: 2px solid white !important;
+    }
+
+    .container:after {
+        content: '-1';
+        position: absolute;
+        color: white;
+        bottom: 0;
+        right: 0;
+    }
+
+    .dark {
+        background-color: black;
+        color: white;
+    }
+
+    .light {
+        background-color: white;
+        color: white;
     }
 }
