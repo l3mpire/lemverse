@@ -29,8 +29,14 @@ Meteor.methods({
     Tiles.update({ levelId, 'metadata.zoneName': 'room1' }, { $set: { invisible: true } }, { multi: true });
   },
   currentLevel() {
-    log('here');
-    log(Levels.findOne({ _id: Meteor.user().profile.levelId }));
     return Levels.findOne({ _id: Meteor.user().profile.levelId });
+  },
+  teleportAllTo(position) {
+    log('teleportAllTo: start', { position });
+    const currentLevel = Levels.findOne({ _id: Meteor.user().profile.levelId });
+    const allPlayers = Meteor.users.find({ 'profile.levelId': currentLevel._id, 'status.online': true }).fetch();
+
+    log('teleportAllTo: teleport', { level: currentLevel.name || currentLevel._id, allPlayers: allPlayers.length });
+    Meteor.users.update({ _id: { $in: allPlayers.map(player => player._id) } }, { $set: { 'profile.x': position.x, 'profile.y': position.y } }, { multi: true });
   },
 });
