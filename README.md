@@ -103,6 +103,8 @@ You can add a zone then select on the map the top left followed by the bottom ri
 
 If you want to edit a zone, simply click on either corner coordinate then click on the map.
 
+> ℹ️ Press "alt" or "option" during edition to snap world coordinates to tiles coordinates
+
 Each zone can be configured to make more things.  
 To edit those information, simply click on the name of the room (bold text).
 
