@@ -24,7 +24,9 @@ tileGlobalIndex = tile => {
 
 tileProperties = tile => {
   if (!tile.tilesetId) return {};
-  return findTileset(tile.tilesetId).tileProperties?.[tile.index];
+  const tileset = findTileset(tile.tilesetId);
+  if (!tileset) return { layer: defaultLayer };
+  return tileset.tileProperties?.[tile.index];
 };
 
 tileLayer = tile => tileProperties(tile)?.layer ?? defaultLayer;
