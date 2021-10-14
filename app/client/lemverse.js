@@ -362,6 +362,13 @@ Template.lemverse.onCreated(function () {
     });
   });
 
+  this.autorun(() => {
+    const currentLevel = Session.get('currentLevel');
+    if (!currentLevel) {
+      Meteor.call('currentLevel', (err, level) => { if (level) Session.set('currentLevel', level); });
+    }
+  });
+
   hotkeys('e', { scope: 'all' }, event => {
     if (event.repeat || !isEditionAllowed(Meteor.userId())) return;
     Session.set('editor', !Session.get('editor'));

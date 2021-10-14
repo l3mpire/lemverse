@@ -59,3 +59,84 @@ Template.escapeB.events({
     Meteor.call('toggleZone', zone);
   },
 });
+
+Template.registerHelper('isEscapeLevel', () => {
+  const level = Session.get('currentLevel');
+  if (!level) return false;
+  return level.metadata.escape;
+});
+
+Template.registerHelper('gameStarted', () => {
+  const level = Session.get('currentLevel');
+  if (!level) return false;
+  return level.metadata.start;
+});
+
+Template.escapeTimer.onCreated(() => {
+  const animationTime = 60 * 60;
+  const minutes = 60;
+
+  $(document).ready(() => {
+    // timer arguments:
+    //   #1 - time of animation in mileseconds,
+    //   #2 - days to deadline
+
+    $('#progress-time-fill, #death-group').css({ 'animation-duration': `${animationTime}s` });
+
+    const deadlineAnimation = function () {
+      setTimeout(() => {
+        $('#designer-arm-grop').css({ 'animation-duration': '1.5s' });
+      }, 0);
+
+      setTimeout(() => {
+        $('#designer-arm-grop').css({ 'animation-duration': '1s' });
+      }, animationTime * 0.3 * 1000);
+
+      setTimeout(() => {
+        $('#designer-arm-grop').css({ 'animation-duration': '0.7s' });
+      }, animationTime * 0.6 * 1000);
+
+      setTimeout(() => {
+        $('#designer-arm-grop').css({ 'animation-duration': '0.3s' });
+      }, animationTime * 0.7 * 1000);
+
+      setTimeout(() => {
+        $('#designer-arm-grop').css({ 'animation-duration': '0.2s' });
+      }, animationTime * 0.85 * 1000);
+    };
+
+    function timer(totalTime, deadline) {
+      const time = totalTime * 1000;
+      const dayDuration = time / deadline;
+      let actualDay = deadline;
+
+      const timer = setInterval(countTime, dayDuration);
+
+      function countTime() {
+        --actualDay;
+        $('.deadline-days .day').text(actualDay);
+
+        if (actualDay === 0) {
+          clearInterval(timer);
+          $('.deadline-days .day').text(deadline);
+        }
+      }
+    }
+
+    const deadlineText = function () {
+      const $el = $('.deadline-days');
+      const html = `<div class="mask-red"><div class="inner">${$el.html()}</div></div><div class="mask-white"><div class="inner">${$el.html()}</div></div>`;
+      $el.html(html);
+    };
+
+    deadlineText();
+
+    deadlineAnimation();
+    timer(animationTime, minutes);
+
+    setInterval(() => {
+      timer(animationTime, minutes);
+      deadlineAnimation();
+    }, animationTime * 1000);
+  });
+});
