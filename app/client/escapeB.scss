@@ -144,6 +144,8 @@
     z-index: 1;
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
+    background: #000;
+    border-radius: 10px;
 }
 
 #deadline svg {
@@ -190,6 +192,9 @@
     position: relative;
     height: 20px;
     font-family: 'Oswald', sans-serif;
+    background: #000;
+    padding: 12px;
+    border-radius: 0 10px 10px 0;
 }
 
 .deadline-days .inner {
