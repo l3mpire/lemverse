@@ -145,10 +145,10 @@ WorldScene = new Phaser.Class({
           const usersCountZoneB = zones.usersInZone(zoneB, true).length;
 
           if (usersCountZoneA > 0 && usersCountZoneB > 0 && usersCountZoneA === usersCountZoneB) setTimeout(() => Meteor.call('switchEntityState', currentLevelId, 'door-room-2'), 0);
-        } else if (zone.name.includes('switch')) setTimeout(() => Meteor.call('switchEntityState', currentLevelId, zone.name), 0);
+        } else if (zone.name.includes('switch-')) setTimeout(() => Meteor.call('switchEntityState', currentLevelId, zone.name), 0);
         else if (zone.name.includes('Ready')) {
           if (zones.usersInZone(zone, true).length === Meteor.users.find().count()) {
-            setTimeout(() => Meteor.call('switchEntityState', currentLevelId, 'room-4-ready'), 0);
+            setTimeout(() => Meteor.call('switchEntityState', currentLevelId, 'room-4-ready', zone.forceState), 0);
           }
         } else if (zone.name.includes('paint')) entityManager.enable_sync_coloration = true;
 
@@ -162,21 +162,22 @@ WorldScene = new Phaser.Class({
       if (levelId) this.loadLevel(levelId);
       else if (inlineURL) characterPopIns.initFromZone(zone);
       else if (escape) {
-        const users = zones.usersInZone(zones.currentZone(Meteor.user()));
-        users.push(Meteor.user());
+        const users = zones.usersInZone(zones.currentZone(Meteor.user()), true);
 
+        log('escapeZone:', { escape, userIds: users.map(user => user._id) });
         if (users.length >= escape.triggerLimit) {
           if (escape.start) {
-            differMeteorCall('escapeStart', zones.currentZone(Meteor.user()), users, Meteor.user().profile.levelId, () => {
-              Meteor.call('currentLevel', (err, result) => {
-                if (err) return;
-                Session.set('currentLevel', result);
-              });
-            });
+            differMeteorCall('escapeStart', zones.currentZone(Meteor.user()), users, Meteor.user().profile.levelId);
           }
           if (escape.makeLevel) {
             differMeteorCall('escapeMakeLevel', escape.makeLevel, zones.currentZone(Meteor.user()), users);
           }
+        }
+        if (escape.setCurrentLevel) {
+          Meteor.call('currentLevel', (err, result) => {
+            if (err) return;
+            Session.set('currentLevel', result);
+          });
         }
         if (escape.enlightenZone) differMeteorCall('enlightenZone', escape.enlightenZone);
         if (escape.teleportAllTo) differMeteorCall('teleportAllTo', escape.teleportAllTo.name, escape.teleportAllTo.coord);

@@ -32,7 +32,7 @@
     </div>
     <div id="meet"></div>
     <div id="webpage">
-      <iframe src="" frameBorder="0" id="webpageIframe"></iframe>
+      <iframe src="" frameBorder="0" allowfullscreen="true" id="webpageIframe"></iframe>
     </div>
   </div>
   {{#if Session 'displaySettings'}}
@@ -43,6 +43,9 @@
   {{/if}}
   {{> userList}}
   {{> notification}}
+  {{#if Session 'showPaintInterface'}}
+    {{> paintInterface}}
+  {{/if}}
   <audio class="js-audio-webrtc-in" muted>
     <source src="/assets/lemverse/webrtc-in.mp3" type="audio/mp3">
   </audio>

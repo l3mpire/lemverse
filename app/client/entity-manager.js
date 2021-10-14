@@ -39,7 +39,9 @@ entityManager = {
 
   remove() { },
 
-  update() { },
+  update(entity) {
+    if (entity.name === 'room-4-ready') Session.set('showPaintInterface', !entity.state);
+  },
 
   onInteraction(tile) {
     const { levelId } = Meteor.user().profile;

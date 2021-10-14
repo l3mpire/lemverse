@@ -19,7 +19,7 @@ Template.escapeB.helpers({
     return FlowRouter.current().queryParams.n;
   },
   duration() {
-    computeDuration();
+    return computeDuration();
   },
   isLoaded() {
     const currentLevel = Session.get('currentLevel');

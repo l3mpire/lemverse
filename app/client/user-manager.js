@@ -445,8 +445,18 @@ userManager = {
     const user = Meteor.user();
     if (user.profile.freeze) moving = false;
     if (user.profile.changeLevel) {
+      const level = Levels.findOne(user.profile.changeLevel);
       this.scene.loadLevel(user.profile.changeLevel);
-      Meteor.users.update(Meteor.userId(), { $set: { 'profile.levelId': user.profile.changeLevel }, $unset: { 'profile.changeLevel': 1 } });
+
+      let $set = { 'profile.levelId': user.profile.changeLevel };
+      if (level?.spawn) {
+        $set = {
+          ...$set,
+          'profile.x': level.spawn.x,
+          'profile.y': level.spawn.y,
+        };
+      }
+      Meteor.users.update(Meteor.userId(), { $set, $unset: { 'profile.changeLevel': 1 } });
     }
 
     if (moving || this.playerWasMoving) {
