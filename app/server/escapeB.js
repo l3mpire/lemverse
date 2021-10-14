@@ -39,14 +39,24 @@ Meteor.methods({
   },
   escapeStart(zone, usersInZone, levelId) {
     log('escapeStart: start', { zone, usersInZone: usersInZone.map(user => user._id), levelId });
-    // Start time
-    Levels.update({ _id: levelId }, { $set: { 'metadata.start': Date.now() } });
-    // Open locked door
-    Tiles.update({ levelId, 'metadata.zoneName': 'room1' }, { $set: { invisible: true } }, { multi: true });
+
+    const currLevel = Levels.findOne({ _id: levelId });
+
+    if (!currLevel.metadata.start) {
+      // Start time
+      Levels.update({ _id: levelId }, { $set: { 'metadata.start': Date.now() } });
+      // Open locked door
+      Tiles.update({ levelId, 'metadata.zoneName': 'room1' }, { $set: { invisible: true } }, { multi: true });
+    }
   },
   escapeEnd(levelId) {
     log('escapeEnd: start', { levelId });
-    Levels.update({ _id: levelId }, { $set: { 'metadata.end': Date.now() } });
+
+    const currLevel = Levels.findOne({ _id: levelId });
+
+    if (!currLevel.metadata.end) {
+      Levels.update({ _id: levelId }, { $set: { 'metadata.end': Date.now() } });
+    }
   },
   currentLevel() {
     return Levels.findOne({ _id: Meteor.user().profile.levelId });
