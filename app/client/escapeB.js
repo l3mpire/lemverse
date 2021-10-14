@@ -10,10 +10,18 @@ Template.escapeB.helpers({
   iframe() {
     return FlowRouter.current().queryParams.n;
   },
-  won() {
-    // const currentLevel = Session.get('currentLevel');
-    // console.log("ok", currentLevel);
-    return false;
+  duration() {
+    const currentLevel = Session.get('currentLevel');
+    const start = currentLevel.metadata?.start || 0;
+    const end = currentLevel.metadata?.end || 0;
+    return ((end - start) / (60 * 60)) | 0;
+  },
+  youWin() {
+    const currentLevel = Session.get('currentLevel');
+    const start = currentLevel.metadata?.start || 0;
+    const end = currentLevel.metadata?.end || 0;
+    const deadline = start + 60 * 60 * 1000; // 60 min
+    return start <= end && end <= deadline;
   },
 });
 

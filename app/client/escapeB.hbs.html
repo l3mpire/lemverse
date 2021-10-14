@@ -82,10 +82,15 @@
                 <area shape="rect" coords="173, 212, 202, 232" class="js-key-code" data-code='VALIDATE' data-lock='B'>
             </map>
         {{else if eq iframe '10'}}
-            <div>
-                {{#if won}}
+            <div >
+                {{#if youWin}}
                     <div class="message"> Good job! </div>
                     <div class="message"> You saved the world! </div>
+                    <div class="message"> </div>
+                    <div class="message"> You completed the mission in {{ duration }} minutes</div>
+                {{else}}
+                    <div class="message"> Too late! </div>
+                    <div class="message"> You Failed to the world! </div>
                 {{/if}}
             </div>
         {{else}}
@@ -94,6 +99,7 @@
     </div>
 </template>
 
+<template name='escapeTimer'>
 <div class="escape-timer">
     <div id="deadline">
         <svg preserveAspectRatio="none" id="line" viewBox="0 0 581 158" enable-background="new 0 0 581 158">
