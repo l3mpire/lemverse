@@ -76,13 +76,13 @@ Template.escapeB.events({
 Template.registerHelper('isEscapeLevel', () => {
   const level = Session.get('currentLevel');
   if (!level) return false;
-  return level.metadata.escape;
+  return level.metadata?.escape;
 });
 
 Template.registerHelper('gameStarted', () => {
   const level = Session.get('currentLevel');
   if (!level) return false;
-  return level.metadata.start;
+  return level.metadata?.start;
 });
 
 Template.escapeTimer.onCreated(() => {
