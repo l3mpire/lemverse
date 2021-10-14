@@ -64,19 +64,11 @@ Template.escapeB.events({
   },
 });
 
-Template.registerHelper('isEscapeLevel', () => {
+Template.registerHelper('displayEscapeTimer', () => {
   const level = Session.get('currentLevel');
   if (!level) return false;
-  return level.metadata?.escape;
+  return FlowRouter.current()?.path === '/' && level.metadata?.escape && level.metadata?.start && !level.metadata?.end;
 });
-
-Template.registerHelper('gameStarted', () => {
-  const level = Session.get('currentLevel');
-  if (!level) return false;
-  return level.metadata?.start;
-});
-
-Template.registerHelper('isMainRoute', () => FlowRouter.current()?.path === '/');
 
 Template.escapeTimer.onCreated(() => {
   const animationTime = 60 * 60;
