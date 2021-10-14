@@ -122,5 +122,15 @@ Meteor.methods({
 lp.deferCron('escape', () => {
   log('escape: start');
   const allEscapes = Levels.find({ 'metadata.escape': true }).fetch();
-  // l(allEscapes.length);
+
+  allEscapes.forEach(level => {
+    const { currentRoom, currentRoomTime, hints } = level.metadata;
+
+    const minSinceEntry = (Date.now() - currentRoomTime) / (1000 * 60) | 0;
+    if (hints[currentRoom][`t${minSinceEntry}`] && !hints[currentRoom][`t${minSinceEntry}`].discovered) {
+      log('escape: Discover hints');
+      // Execute hints
+      hints[currentRoom][`t${minSinceEntry}`].discovered = true;
+    }
+  });
 });
