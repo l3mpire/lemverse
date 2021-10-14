@@ -12,7 +12,7 @@
 <template name="layout">
   {{> onlineStatus}}
   {{> Template.dynamic template=main data=layoutData}}
-  {{#if and isEscapeLevel gameStarted}}
+  {{#if and (and isEscapeLevel isMainRoute) gameStarted}}
     {{> escapeTimer}}
   {{/if}}
 </template>

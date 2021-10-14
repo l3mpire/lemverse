@@ -85,6 +85,8 @@ Template.registerHelper('gameStarted', () => {
   return level.metadata?.start;
 });
 
+Template.registerHelper('isMainRoute', () => FlowRouter.current()?.path === '/');
+
 Template.escapeTimer.onCreated(() => {
   const animationTime = 60 * 60;
   const minutes = 60;
