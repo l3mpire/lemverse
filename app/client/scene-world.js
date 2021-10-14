@@ -182,7 +182,14 @@ WorldScene = new Phaser.Class({
         if (escape.teleportAllTo) differMeteorCall('teleportAllTo', escape.teleportAllTo.name, escape.teleportAllTo.coord);
         if (escape.updateTiles) differMeteorCall('updateTiles', escape.updateTiles);
         if (escape.freezeOthers) differMeteorCall('freezeOthers');
-        if (escape.end) differMeteorCall('escapeEnd', Meteor.user().profile.levelId);
+        if (escape.end) {
+          differMeteorCall('escapeEnd', Meteor.user().profile.levelId, () => {
+            Meteor.call('currentLevel', (err, result) => {
+              if (err) return;
+              Session.set('currentLevel', result);
+            });
+          });
+        }
         if (escape.setCurrentRoom) differMeteorCall('setCurrentRoom', escape.setCurrentRoom);
         if (escape.hurtPlayer) {
           userManager.flashColor(userManager.player, 0xFF0000);
