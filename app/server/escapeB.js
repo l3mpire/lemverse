@@ -91,7 +91,7 @@ Meteor.methods({
     tiles.forEach(tile => {
       if (!tile.metaName || !tile.update) return;
       log('updateTiles: Updating tile', { tile });
-      Tiles.update({ 'metadata.name': tile.metaName, levelId: Meteor.user().profile.levelId }, { $set: tile.update });
+      Tiles.update({ 'metadata.name': tile.metaName, levelId: Meteor.user().profile.levelId }, { $set: tile.update }, { multi: true });
     });
   },
   freezeOthers() {
@@ -133,7 +133,7 @@ lp.deferCron('escape', () => {
       hints[currentRoom][`t${minSinceEntry}`].updateTiles.forEach(tile => {
         if (!tile.metaName || !tile.update) return;
         log('escape: Updating tile', { tile });
-        Tiles.update({ 'metadata.name': tile.metaName, levelId: level._id }, { $set: tile.update });
+        Tiles.update({ 'metadata.name': tile.metaName, levelId: level._id }, { $set: tile.update }, { multi: true });
       });
       hints[currentRoom][`t${minSinceEntry}`].discovered = true;
     }
