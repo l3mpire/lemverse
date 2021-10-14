@@ -101,5 +101,17 @@ Meteor.methods({
 
     log('freezeOthers: freezing', { allOtherPlayers: allOtherPlayers.length, levelId: currentLevel._id });
     Meteor.users.update({ _id: { $in: allOtherPlayers.map(player => player._id) } }, { $set: { 'profile.freeze': true } }, { multi: true });
+
+    // Check to everybody froze
+    const allPlayers = Meteor.users.find({ 'profile.levelId': currentLevel._id, 'status.online': true }).fetch();
+    let allFrozen = true;
+    allPlayers.forEach(player => {
+      if (!player.profile.freeze) allFrozen = false;
+    });
+
+    if (allFrozen) {
+      // Un freeze current user
+      Meteor.users.update({ _id: Meteor.userId() }, { $unset: { 'profile.freeze': 1 } });
+    }
   },
 });
