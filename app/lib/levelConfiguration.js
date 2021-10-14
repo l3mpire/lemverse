@@ -180,6 +180,94 @@ levelConfiguration = {
           ],
         },
       ],
+    }, {
+      entities: [
+        {
+          name: 'lab-1-switch-0',
+          coordinates: [],
+          states: [
+            {
+              replace: [
+                { x: 56, y: 35, newIndex: 474, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
+              ],
+            }, {
+              replace: [
+                { x: 56, y: 35, newIndex: 7, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+              ],
+            },
+          ],
+        }, {
+          name: 'lab-1-switch-1',
+          coordinates: [],
+          states: [
+            {
+              replace: [
+                { x: 57, y: 30, newIndex: 474, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
+              ],
+            }, {
+              replace: [
+                { x: 57, y: 30, newIndex: 7, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+              ],
+            },
+          ],
+        }, {
+          name: 'lab-1-switch-2',
+          coordinates: [],
+          states: [
+            {
+              replace: [
+                { x: 64, y: 34, newIndex: 474, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
+              ],
+            }, {
+              replace: [
+                { x: 64, y: 34, newIndex: 7, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+              ],
+            },
+          ],
+        }, {
+          name: 'lab-1-switch-3',
+          coordinates: [],
+          states: [
+            {
+              replace: [
+                { x: 58, y: 39, newIndex: 474, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
+              ],
+            }, {
+              replace: [
+                { x: 58, y: 39, newIndex: 7, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+              ],
+            },
+          ],
+        }, {
+          name: 'lab-1-switch-4',
+          coordinates: [],
+          states: [
+            {
+              replace: [
+                { x: 58, y: 43, newIndex: 474, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
+              ],
+            }, {
+              replace: [
+                { x: 58, y: 43, newIndex: 7, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+              ],
+            },
+          ],
+        }, {
+          name: 'lab-1-switch-5',
+          coordinates: [],
+          states: [
+            {
+              replace: [
+                { x: 67, y: 40, newIndex: 474, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
+              ],
+            }, {
+              replace: [
+                { x: 67, y: 40, newIndex: 7, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+              ],
+            },
+          ],
+        },
+      ],
     },
   ],
 };

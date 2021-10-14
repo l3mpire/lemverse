@@ -1,4 +1,23 @@
 Meteor.methods({
+  escapeMakeLevel(templateId, zone, usersInZone) {
+    log('escapeMakeLevel: start', { templateId, zoneId: zone._id, usersInZoneId: usersInZone?.map(user => user._id) });
+    const { escape } = zone;
+
+    if (!escape?.triggerLimit || !templateId || !usersInZone) return;
+
+    // Clone Level
+    log('escapeMakeLevel: cloning template', { templateId });
+    const newLevelId = createLevel(templateId, `Escape B #${Math.floor(Math.random() * 100)}`);
+
+    // Reset metadata
+    Levels.update({ _id: newLevelId }, { $set: { 'metadata.escape': true, 'metadata.teleport': {} }, $unset: { end: 1, start: 1 } });
+
+    // Teleport user
+    const usersToTeleport = usersInZone.slice(-1).concat(usersInZone.slice(0, escape.triggerLimit - 1));
+    log('escapeMakeLevel: teleport users', { usersToTeleport: usersToTeleport.map(user => user._id), newLevelId });
+    Meteor.users.update({ _id: { $in: usersToTeleport.map(user => user._id) } }, { $set: { 'profile.changeLevel': newLevelId } }, { multi: true });
+    log('escapeMakeLevel: end');
+  },
   enlightenZone(name) {
     log('enlightenZone: start', { name });
     const allTiles = Tiles.find({ 'metadata.zoneName': name }).fetch();
@@ -23,21 +42,48 @@ Meteor.methods({
   },
   escapeStart(zone, usersInZone, levelId) {
     log('escapeStart: start', { zone, usersInZone: usersInZone.map(user => user._id), levelId });
-    // Start time
-    Levels.update({ _id: levelId }, { $set: { 'metadata.start': Date.now() } });
-    // Open locked door
-    Tiles.update({ levelId, 'metadata.zoneName': 'room1' }, { $set: { invisible: true } }, { multi: true });
+
+    const currLevel = Levels.findOne({ _id: levelId });
+
+    if (!currLevel.metadata.start) {
+      // Start time
+      Levels.update({ _id: levelId }, { $set: { 'metadata.start': Date.now() } });
+      // Open locked door
+      Tiles.update({ levelId, 'metadata.zoneName': 'room1' }, { $set: { invisible: true } }, { multi: true });
+    }
+  },
+  escapeEnd(levelId) {
+    log('escapeEnd: start', { levelId });
+
+    const currLevel = Levels.findOne({ _id: levelId });
+
+    if (!currLevel.metadata.end) {
+      Levels.update({ _id: levelId }, { $set: { 'metadata.end': Date.now() } });
+    }
+  },
+  setCurrentRoom(room) {
+    const { levelId } = Meteor.user().profile;
+    log('setCurrentRoom: start', { levelId });
+
+    const currLevel = Levels.findOne({ _id: levelId });
+    if (!currLevel.metadata.currentRoom || currLevel.metadata.currentRoom !== room) {
+      Levels.update({ _id: levelId }, { $set: { 'metadata.currentRoom': room, 'metadata.currentRoomTime': Date.now() } });
+    }
   },
   currentLevel() {
     return Levels.findOne({ _id: Meteor.user().profile.levelId });
   },
-  teleportAllTo(position) {
+  teleportAllTo(name, position) {
     log('teleportAllTo: start', { position });
     const currentLevel = Levels.findOne({ _id: Meteor.user().profile.levelId });
     const allPlayers = Meteor.users.find({ 'profile.levelId': currentLevel._id, 'status.online': true }).fetch();
 
-    log('teleportAllTo: teleport', { level: currentLevel.name || currentLevel._id, allPlayers: allPlayers.length });
-    Meteor.users.update({ _id: { $in: allPlayers.map(player => player._id) } }, { $set: { 'profile.x': position.x, 'profile.y': position.y }, $unset: { 'profile.freeze': 1 } }, { multi: true });
+    if (!currentLevel.metadata.teleport[name]) {
+      Levels.update({ _id: currentLevel._id }, { $set: { [`metadata.teleport.${name}`]: true } });
+
+      log('teleportAllTo: teleport', { level: currentLevel.name || currentLevel._id, allPlayers: allPlayers.length });
+      Meteor.users.update({ _id: { $in: allPlayers.map(player => player._id) } }, { $set: { 'profile.x': position.x, 'profile.y': position.y }, $unset: { 'profile.freeze': 1 } }, { multi: true });
+    }
   },
   updateTiles(tiles) {
     log('updateTiles: start', { tiles: tiles.length });
@@ -55,5 +101,17 @@ Meteor.methods({
 
     log('freezeOthers: freezing', { allOtherPlayers: allOtherPlayers.length, levelId: currentLevel._id });
     Meteor.users.update({ _id: { $in: allOtherPlayers.map(player => player._id) } }, { $set: { 'profile.freeze': true } }, { multi: true });
+
+    // Check to everybody froze
+    const allPlayers = Meteor.users.find({ 'profile.levelId': currentLevel._id, 'status.online': true }).fetch();
+    let allFrozen = true;
+    allPlayers.forEach(player => {
+      if (!player.profile.freeze) allFrozen = false;
+    });
+
+    if (allFrozen) {
+      // Un freeze current user
+      Meteor.users.update({ _id: Meteor.userId() }, { $unset: { 'profile.freeze': 1 } });
+    }
   },
 });

@@ -20,7 +20,7 @@ const differMeteorCall = (...args) => {
 
 tileGlobalIndex = tile => {
   const tileset = findTileset(tile.tilesetId);
-  return (tileset.firstgid || 0) + tile.index;
+  return (tileset?.firstgid || 0) + tile.index;
 };
 
 tileProperties = tile => {
@@ -145,8 +145,6 @@ WorldScene = new Phaser.Class({
           const usersCountZoneB = zones.usersInZone(zoneB, true).length;
 
           if (usersCountZoneA > 0 && usersCountZoneB > 0 && usersCountZoneA === usersCountZoneB) setTimeout(() => Meteor.call('switchEntityState', currentLevelId, 'door-room-2'), 0);
-          // const doorState = Entities.findOne({ levelId, name: 'door-room-2' });
-          // setTimeout(() => Meteor.call('switchEntityState', currentLevelId, 'door-room-2'), 0);
         } else if (zone.name.includes('switch')) setTimeout(() => Meteor.call('switchEntityState', currentLevelId, zone.name), 0);
         else if (zone.name.includes('Ready')) {
           if (zones.usersInZone(zone, true).length === Meteor.users.find().count()) {
@@ -169,11 +167,23 @@ WorldScene = new Phaser.Class({
 
         if (users.length >= escape.triggerLimit) {
           if (escape.start) differMeteorCall('escapeStart', zones.currentZone(Meteor.user()), users, Meteor.user().profile.levelId);
+          if (escape.makeLevel) {
+            differMeteorCall('escapeMakeLevel', escape.makeLevel, zones.currentZone(Meteor.user()), users);
+          }
         }
         if (escape.enlightenZone) differMeteorCall('enlightenZone', escape.enlightenZone);
-        if (escape.teleportAllTo) differMeteorCall('teleportAllTo', escape.teleportAllTo);
+        if (escape.teleportAllTo) differMeteorCall('teleportAllTo', escape.teleportAllTo.name, escape.teleportAllTo.coord);
         if (escape.updateTiles) differMeteorCall('updateTiles', escape.updateTiles);
         if (escape.freezeOthers) differMeteorCall('freezeOthers');
+        if (escape.end) differMeteorCall('escapeEnd', Meteor.user().profile.levelId);
+        if (escape.setCurrentRoom) differMeteorCall('setCurrentRoom', escape.setCurrentRoom);
+        if (escape.hurtPlayer) {
+          userManager.flashColor(userManager.player, 0xFF0000);
+          setTimeout(() => {
+            const { x, y } = escape.hurtPlayer.teleportPosition;
+            userManager.teleportMainUser(+x, +y);
+          }, 0);
+        }
       }
     };
 

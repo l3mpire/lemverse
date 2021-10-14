@@ -99,8 +99,4 @@ entityManager = {
     this.previousTile = undefined;
     this.teleport(failTeleportTile);
   },
-
-  teleport(position) {
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.x': position.x, 'profile.y': position.y } });
-  },
 };

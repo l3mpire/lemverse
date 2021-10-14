@@ -444,6 +444,10 @@ userManager = {
     // Handle freeze
     const user = Meteor.user();
     if (user.profile.freeze) moving = false;
+    if (user.profile.changeLevel) {
+      this.scene.loadLevel(user.profile.changeLevel);
+      Meteor.users.update(Meteor.userId(), { $set: { 'profile.levelId': user.profile.changeLevel }, $unset: { 'profile.changeLevel': 1 } });
+    }
 
     if (moving || this.playerWasMoving) {
       this.scene.physics.world.update(time, delta);
@@ -550,5 +554,30 @@ userManager = {
       default:
         return [0, 0];
     }
+  },
+
+  takeDamage(player) {
+    this.flashColor(player, 0xFF0000);
+  },
+
+  clearTint(player) {
+    this.setTint(player, 0xFFFFFF);
+  },
+
+  setTint(player, color) {
+    const playerBodyParts = player.getByName('body');
+    playerBodyParts.list.forEach(bodyPart => {
+      bodyPart.tint = color;
+    });
+  },
+
+  flashColor(player, color) {
+    this.setTint(player, color);
+
+    this.scene.time.addEvent({
+      delay: 200,
+      callback() { this.clearTint(player); },
+      callbackScope: this,
+    });
   },
 };
