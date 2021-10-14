@@ -51,6 +51,7 @@
         border: 2px solid black;
         justify-content: center;
         align-items: center;
+        color:white;
     }
 
     .dark,
@@ -99,7 +100,6 @@
 
     .dark {
         background-color: white;
-        color: black;
     }
 
     .container {
@@ -111,11 +111,11 @@
         position: absolute;
         top: -20px;
         right: -20px;
+        color:black;
     }
 
     .light {
         background-color: black;
-        color: black;
     }
 }
 
@@ -138,12 +138,10 @@
 
     .dark {
         background-color: black;
-        color: white;
     }
 
     .light {
         background-color: white;
-        color: white;
     }
 }
 
