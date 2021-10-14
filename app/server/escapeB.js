@@ -62,10 +62,10 @@ Meteor.methods({
       Levels.update({ _id: levelId }, { $set: { 'metadata.end': endTime } });
       if ((endTime - currLevel.metadata.start) / 60000 < 60) {
         // Win
-        Tiles.update({ levelId, 'metadata.zoneName': 'win' }, { $set: { invisible: true } }, { multi: true });
+        Tiles.update({ levelId, 'metadata.zoneName': 'win' }, { $set: { invisible: false } }, { multi: true });
       } else {
         // Loose
-        Tiles.update({ levelId, 'metadata.zoneName': 'lost' }, { $set: { invisible: true } }, { multi: true });
+        Tiles.update({ levelId, 'metadata.zoneName': 'lost' }, { $set: { invisible: false } }, { multi: true });
       }
     }
   },
