@@ -20,6 +20,10 @@ Template.escapeB.helpers({
   duration() {
     computeDuration();
   },
+  isLoaded() {
+    const currentLevel = Session.get('currentLevel');
+    return !!currentLevel?.metadata;
+  },
   youWin() {
     const currentLevel = Session.get('currentLevel');
     if (currentLevel?.metadata?.end) return false;

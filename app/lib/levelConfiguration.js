@@ -192,7 +192,7 @@ levelConfiguration = {
               ],
             }, {
               replace: [
-                { x: 56, y: 35, newIndex: 7, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+                { x: 56, y: 35, newIndex: 7, newTilesetId: 'tis_7q4neAuRB5B9zyTDy' },
               ],
             },
           ],
@@ -206,7 +206,7 @@ levelConfiguration = {
               ],
             }, {
               replace: [
-                { x: 57, y: 30, newIndex: 7, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+                { x: 57, y: 30, newIndex: 7, newTilesetId: 'tis_7q4neAuRB5B9zyTDy' },
               ],
             },
           ],
@@ -220,7 +220,7 @@ levelConfiguration = {
               ],
             }, {
               replace: [
-                { x: 64, y: 34, newIndex: 7, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+                { x: 64, y: 34, newIndex: 7, newTilesetId: 'tis_7q4neAuRB5B9zyTDy' },
               ],
             },
           ],
@@ -234,7 +234,7 @@ levelConfiguration = {
               ],
             }, {
               replace: [
-                { x: 58, y: 39, newIndex: 7, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+                { x: 58, y: 39, newIndex: 7, newTilesetId: 'tis_7q4neAuRB5B9zyTDy' },
               ],
             },
           ],
@@ -248,7 +248,7 @@ levelConfiguration = {
               ],
             }, {
               replace: [
-                { x: 56, y: 39, newIndex: 7, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+                { x: 56, y: 39, newIndex: 7, newTilesetId: 'tis_7q4neAuRB5B9zyTDy' },
               ],
             },
           ],
@@ -262,7 +262,7 @@ levelConfiguration = {
               ],
             }, {
               replace: [
-                { x: 67, y: 40, newIndex: 7, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+                { x: 67, y: 40, newIndex: 7, newTilesetId: 'tis_7q4neAuRB5B9zyTDy' },
               ],
             },
           ],
