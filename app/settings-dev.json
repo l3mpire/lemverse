@@ -67,5 +67,9 @@
       "expire_timeout": 5000,
       "allow_discovery": true
     }
+  },
+
+  "services": {
+    "escape":{ "interval": 60 }
   }
 }

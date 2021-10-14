@@ -1,4 +1,5 @@
 Template.escapeB.onCreated(() => {
+  console.log('dddd');
   Meteor.call('currentLevel', (err, result) => {
     if (err) return;
     Session.set('currentLevel', result);
