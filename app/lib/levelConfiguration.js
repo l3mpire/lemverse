@@ -244,11 +244,11 @@ levelConfiguration = {
           states: [
             {
               replace: [
-                { x: 58, y: 43, newIndex: 474, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
+                { x: 56, y: 39, newIndex: 474, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
               ],
             }, {
               replace: [
-                { x: 58, y: 43, newIndex: 7, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
+                { x: 56, y: 39, newIndex: 7, newTilesetId: 'tis_Z3Dd8DjrwCiGLThoS' },
               ],
             },
           ],
