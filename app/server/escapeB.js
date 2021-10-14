@@ -89,9 +89,9 @@ Meteor.methods({
     log('updateTiles: start', { tiles: tiles.length });
     if (!tiles) return;
     tiles.forEach(tile => {
-      if (!tile.id || !tile.update) return;
+      if (!tile.metaName || !tile.update) return;
       log('updateTiles: Updating tile', { tile });
-      Tiles.update({ _id: tile.id }, { $set: tile.update });
+      Tiles.update({ 'metadata.name': tile.metaName }, { $set: tile.update });
     });
   },
   freezeOthers() {
