@@ -126,14 +126,15 @@ Template.escapeTimer.onCreated(() => {
       const dayDuration = time / deadline;
       let actualDay = deadline;
 
-      const timer = setInterval(countTime, dayDuration);
+      // eslint-disable-next-line no-use-before-define
+      const interval = setInterval(countTime, dayDuration);
 
       function countTime() {
         --actualDay;
         $('.deadline-days .day').text(actualDay);
 
         if (actualDay === 0) {
-          clearInterval(timer);
+          clearInterval(interval);
           $('.deadline-days .day').text(deadline);
         }
       }
