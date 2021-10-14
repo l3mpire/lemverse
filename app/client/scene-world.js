@@ -162,8 +162,7 @@ WorldScene = new Phaser.Class({
       if (levelId) this.loadLevel(levelId);
       else if (inlineURL) characterPopIns.initFromZone(zone);
       else if (escape) {
-        const users = zones.usersInZone(zones.currentZone(Meteor.user()));
-        users.push(Meteor.user());
+        const users = zones.usersInZone(zones.currentZone(Meteor.user()), true);
 
         log('escapeZone:', { escape, userIds: users.map(user => user._id) });
         if (users.length >= escape.triggerLimit) {
