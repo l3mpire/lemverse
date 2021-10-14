@@ -5,22 +5,25 @@ Template.escapeB.onCreated(() => {
   });
 });
 
+const computeDuration = () => {
+  const currentLevel = Session.get('currentLevel');
+  const start = currentLevel.metadata?.start || 0;
+  const end = currentLevel.metadata?.end || 0;
+  const res = ((end - start) / (60 * 60)) | 0;
+  return res;
+};
+
 Template.escapeB.helpers({
   iframe() {
     return FlowRouter.current().queryParams.n;
   },
   duration() {
-    const currentLevel = Session.get('currentLevel');
-    const start = currentLevel.metadata?.start || 0;
-    const end = currentLevel.metadata?.end || 0;
-    return ((end - start) / (60 * 60)) | 0;
+    computeDuration();
   },
   youWin() {
     const currentLevel = Session.get('currentLevel');
-    const start = currentLevel.metadata?.start || 0;
-    const end = currentLevel.metadata?.end || 0;
-    const deadline = start + 60 * 60 * 1000; // 60 min
-    return start <= end && end <= deadline;
+    if (currentLevel.metadata?.end) return false;
+    return computeDuration() < 60; // 60 minutes
   },
 });
 
