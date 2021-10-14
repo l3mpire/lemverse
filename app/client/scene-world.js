@@ -145,8 +145,6 @@ WorldScene = new Phaser.Class({
           const usersCountZoneB = zones.usersInZone(zoneB, true).length;
 
           if (usersCountZoneA > 0 && usersCountZoneB > 0 && usersCountZoneA === usersCountZoneB) setTimeout(() => Meteor.call('switchEntityState', currentLevelId, 'door-room-2'), 0);
-          // const doorState = Entities.findOne({ levelId, name: 'door-room-2' });
-          // setTimeout(() => Meteor.call('switchEntityState', currentLevelId, 'door-room-2'), 0);
         } else if (zone.name.includes('switch')) setTimeout(() => Meteor.call('switchEntityState', currentLevelId, zone.name), 0);
         else if (zone.name.includes('Ready')) {
           if (zones.usersInZone(zone, true).length === Meteor.users.find().count()) {
@@ -174,6 +172,13 @@ WorldScene = new Phaser.Class({
         if (escape.teleportAllTo) differMeteorCall('teleportAllTo', escape.teleportAllTo);
         if (escape.updateTiles) differMeteorCall('updateTiles', escape.updateTiles);
         if (escape.freezeOthers) differMeteorCall('freezeOthers');
+        if (escape.hurtPlayer) {
+          userManager.flashColor(userManager.player, 0xFF0000);
+          setTimeout(() => {
+            const { x, y } = escape.hurtPlayer.teleportPosition;
+            userManager.teleportMainUser(+x, +y);
+          }, 0);
+        }
       }
     };
 

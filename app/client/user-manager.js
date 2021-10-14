@@ -546,4 +546,29 @@ userManager = {
         return [0, 0];
     }
   },
+
+  takeDamage(player) {
+    this.flashColor(player, 0xFF0000);
+  },
+
+  clearTint(player) {
+    this.setTint(player, 0xFFFFFF);
+  },
+
+  setTint(player, color) {
+    const playerBodyParts = player.getByName('body');
+    playerBodyParts.list.forEach(bodyPart => {
+      bodyPart.tint = color;
+    });
+  },
+
+  flashColor(player, color) {
+    this.setTint(player, color);
+
+    this.scene.time.addEvent({
+      delay: 200,
+      callback() { this.clearTint(player); },
+      callbackScope: this,
+    });
+  },
 };
