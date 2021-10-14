@@ -120,5 +120,7 @@ Meteor.methods({
 // CRON
 // -----------------------------------------------------------------------------------------
 lp.deferCron('escape', () => {
-  console.log('escape');
+  log('escape: start');
+  const allEscapes = Levels.find({ 'metadata.escape': true }).fetch();
+  // l(allEscapes.length);
 });
