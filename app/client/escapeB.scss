@@ -66,6 +66,30 @@
         justify-content: center;
         align-items: center;
     }
+
+    .the-end{
+        font-family: 'Oswald', sans-serif;
+        text-align: center;
+
+        h1{
+            text-transform: uppercase;
+            font-size: 40px;
+            margin: 0;
+            &.success{
+                color: #76c044;
+            }
+            &.fail{
+                color: #ef337f;
+            }
+        }
+        h2{
+            margin:0
+        }
+
+        .fail.end-gif{
+            margin: 30px;
+        }
+    }
 }
 
 @media (prefers-color-scheme: light) {
