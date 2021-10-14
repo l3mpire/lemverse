@@ -69,6 +69,9 @@ createLevel = (templateId = undefined, newName = undefined) => {
   });
 
   if (templateId) {
+    const templateLevel = Levels.findOne(templateId);
+    Levels.update({ _id: newLevelId }, { $set: { metadata: templateLevel.metadata } });
+
     const tiles = Tiles.find({ levelId: templateId }).fetch();
     const zones = Zones.find({ levelId: templateId }).fetch();
 
