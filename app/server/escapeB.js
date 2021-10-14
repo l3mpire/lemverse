@@ -130,6 +130,11 @@ lp.deferCron('escape', () => {
     if (hints[currentRoom][`t${minSinceEntry}`] && !hints[currentRoom][`t${minSinceEntry}`].discovered) {
       log('escape: Discover hints');
       // Execute hints
+      hints[currentRoom][`t${minSinceEntry}`].updateTiles.forEach(tile => {
+        if (!tile.id || !tile.update) return;
+        log('escape: Updating tile', { tile });
+        Tiles.update({ _id: tile.id }, { $set: tile.update });
+      });
       hints[currentRoom][`t${minSinceEntry}`].discovered = true;
     }
   });
