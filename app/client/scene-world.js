@@ -166,7 +166,14 @@ WorldScene = new Phaser.Class({
         users.push(Meteor.user());
 
         if (users.length >= escape.triggerLimit) {
-          if (escape.start) differMeteorCall('escapeStart', zones.currentZone(Meteor.user()), users, Meteor.user().profile.levelId);
+          if (escape.start) {
+            differMeteorCall('escapeStart', zones.currentZone(Meteor.user()), users, Meteor.user().profile.levelId, () => {
+              Meteor.call('currentLevel', (err, result) => {
+                if (err) return;
+                Session.set('currentLevel', result);
+              });
+            });
+          }
           if (escape.makeLevel) {
             differMeteorCall('escapeMakeLevel', escape.makeLevel, zones.currentZone(Meteor.user()), users);
           }
