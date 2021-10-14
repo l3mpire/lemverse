@@ -20,6 +20,6 @@ Template.paintInterface.helpers({
   showTimer() { return Template.instance().showTimer.get(); },
   timeLeft() { return Template.instance().timeLeft.get(); },
   users() {
-    return Meteor.users.find({ 'profile.escape.score': { $exists: true } }, { sort: { 'profile.escape.score': 1 } }).fetch();
+    return Meteor.users.find({ 'profile.escape.score': { $exists: true } }, { sort: { 'profile.escape.score': -1 } }).fetch();
   },
 });
