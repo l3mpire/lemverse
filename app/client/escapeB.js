@@ -41,6 +41,7 @@ Template.escapeB.events({
       if (Session.get(lockString) === currentLevel.metadata[lockString].code) {
         // Success
         Meteor.call('enlightenZone', currentLevel.metadata[lockString].zone);
+        unlock();
       } else {
         // Failure
         buzz();

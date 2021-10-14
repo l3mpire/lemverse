@@ -89,6 +89,7 @@ module.exports = {
     click: 'writable',
     beep: 'writable',
     buzz: 'writable',
+    unlock: 'writable',
     deleteLevel: 'writable',
     zoom: 'writable',
     selectedTileset: 'writable',
