@@ -58,7 +58,15 @@ Meteor.methods({
     const currLevel = Levels.findOne({ _id: levelId });
 
     if (!currLevel.metadata.end) {
-      Levels.update({ _id: levelId }, { $set: { 'metadata.end': Date.now() } });
+      const endTime = Date.now();
+      Levels.update({ _id: levelId }, { $set: { 'metadata.end': endTime } });
+      if ((endTime - currLevel.metadata.start) / 60000 < 60) {
+        // Win
+        Tiles.update({ levelId, 'metadata.zoneName': 'win' }, { $set: { invisible: true } }, { multi: true });
+      } else {
+        // Loose
+        Tiles.update({ levelId, 'metadata.zoneName': 'lost' }, { $set: { invisible: true } }, { multi: true });
+      }
     }
   },
   setCurrentRoom(room) {
