@@ -145,10 +145,10 @@ WorldScene = new Phaser.Class({
           const usersCountZoneB = zones.usersInZone(zoneB, true).length;
 
           if (usersCountZoneA > 0 && usersCountZoneB > 0 && usersCountZoneA === usersCountZoneB) setTimeout(() => Meteor.call('switchEntityState', currentLevelId, 'door-room-2'), 0);
-        } else if (zone.name.includes('switch')) setTimeout(() => Meteor.call('switchEntityState', currentLevelId, zone.name), 0);
+        } else if (zone.name.includes('switch-')) setTimeout(() => Meteor.call('switchEntityState', currentLevelId, zone.name), 0);
         else if (zone.name.includes('Ready')) {
           if (zones.usersInZone(zone, true).length === Meteor.users.find().count()) {
-            setTimeout(() => Meteor.call('switchEntityState', currentLevelId, 'room-4-ready'), 0);
+            setTimeout(() => Meteor.call('switchEntityState', currentLevelId, 'room-4-ready', zone.forceState), 0);
           }
         } else if (zone.name.includes('paint')) entityManager.enable_sync_coloration = true;
 

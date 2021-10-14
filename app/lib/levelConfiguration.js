@@ -268,6 +268,24 @@ levelConfiguration = {
           ],
         },
       ],
+    }, {
+      entities: [
+        {
+          name: 'last-door',
+          coordinates: [],
+          states: [
+            {
+              replace: [
+                { x: 60, y: 67, newIndex: 320, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
+              ],
+            }, {
+              replace: [
+                { x: 60, y: 67, newIndex: 52, newTilesetId: 'tis_7q4neAuRB5B9zyTDy' },
+              ],
+            },
+          ],
+        },
+      ],
     },
   ],
 };
