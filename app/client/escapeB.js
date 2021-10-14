@@ -9,7 +9,7 @@ const computeDuration = () => {
   const currentLevel = Session.get('currentLevel');
   const start = currentLevel?.metadata?.start || 0;
   const end = currentLevel?.metadata?.end || 0;
-  const res = ((end - start) / (60 * 60)) | 0;
+  const res = ((end - start) / (1000 * 60)) | 0;
   console.log('computeDuration: ', res);
   return res;
 };
