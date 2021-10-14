@@ -81,6 +81,13 @@
             <area shape="rect" coords="136, 212, 164, 232" class="js-key-code" data-code='0' data-lock='B'>
             <area shape="rect" coords="173, 212, 202, 232" class="js-key-code" data-code='VALIDATE' data-lock='B'>
         </map>
+    {{else if eq iframe '10'}}
+        <div >
+            {{#if won}}
+            <div class="message"> Good job! </div>
+            <div class="message"> You saved the world! </div>
+            {{/if}}
+        </div>
     {{else}}
         <h1>Not handled</h1>
     {{/if}}

@@ -20,7 +20,7 @@ const differMeteorCall = (...args) => {
 
 tileGlobalIndex = tile => {
   const tileset = findTileset(tile.tilesetId);
-  return (tileset.firstgid || 0) + tile.index;
+  return (tileset?.firstgid || 0) + tile.index;
 };
 
 tileProperties = tile => {
@@ -167,11 +167,16 @@ WorldScene = new Phaser.Class({
 
         if (users.length >= escape.triggerLimit) {
           if (escape.start) differMeteorCall('escapeStart', zones.currentZone(Meteor.user()), users, Meteor.user().profile.levelId);
+          if (escape.makeLevel) {
+            differMeteorCall('escapeMakeLevel', escape.makeLevel, zones.currentZone(Meteor.user()), users);
+          }
         }
         if (escape.enlightenZone) differMeteorCall('enlightenZone', escape.enlightenZone);
-        if (escape.teleportAllTo) differMeteorCall('teleportAllTo', escape.teleportAllTo);
+        if (escape.teleportAllTo) differMeteorCall('teleportAllTo', escape.teleportAllTo.name, escape.teleportAllTo.coord);
         if (escape.updateTiles) differMeteorCall('updateTiles', escape.updateTiles);
         if (escape.freezeOthers) differMeteorCall('freezeOthers');
+        if (escape.end) differMeteorCall('escapeEnd', Meteor.user().profile.levelId);
+        if (escape.setCurrentRoom) differMeteorCall('setCurrentRoom', escape.setCurrentRoom);
         if (escape.hurtPlayer) {
           userManager.flashColor(userManager.player, 0xFF0000);
           setTimeout(() => {

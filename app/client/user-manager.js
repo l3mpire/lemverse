@@ -439,7 +439,16 @@ userManager = {
     userChatCircle.update(this.player.x, this.player.y);
     userVoiceRecorderAbility.update(this.player.x, this.player.y, delta);
 
-    const moving = Math.abs(this.player.body.velocity.x) > Number.EPSILON || Math.abs(this.player.body.velocity.y) > Number.EPSILON;
+    let moving = Math.abs(this.player.body.velocity.x) > Number.EPSILON || Math.abs(this.player.body.velocity.y) > Number.EPSILON;
+
+    // Handle freeze
+    const user = Meteor.user();
+    if (user.profile.freeze) moving = false;
+    if (user.profile.changeLevel) {
+      this.scene.loadLevel(user.profile.changeLevel);
+      Meteor.users.update(Meteor.userId(), { $set: { 'profile.levelId': user.profile.changeLevel }, $unset: { 'profile.changeLevel': 1 } });
+    }
+
     if (moving || this.playerWasMoving) {
       this.scene.physics.world.update(time, delta);
       throttledSavePlayer(this.player);

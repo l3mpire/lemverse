@@ -84,6 +84,8 @@ module.exports = {
     stats: 'writable',
 
     game: 'writable',
+    createLevel: 'writable',
+    deleteLevel: 'writable',
     zoom: 'writable',
     selectedTileset: 'writable',
     selectedCharactersPart: 'writable',
