@@ -575,7 +575,7 @@ userManager = {
     this.setTint(player, color);
 
     this.scene.time.addEvent({
-      delay: 200,
+      delay: 350,
       callback() { this.clearTint(player); },
       callbackScope: this,
     });

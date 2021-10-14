@@ -204,13 +204,14 @@ Meteor.methods({
     check(levelId, String);
     Levels.update({ _id: levelId, createdBy: { $ne: Meteor.userId() } }, { $inc: { visit: 1 } });
   },
-  switchEntityState(levelId, name) {
+  switchEntityState(levelId, name, forcedState = undefined) {
     check([levelId, name], [String]);
     const entity = findEntity(name);
     if (!entity) return;
 
     const entityDocument = Entities.findOne({ levelId, name });
-    const state = entityDocument.state ? entity.states[0] : entity.states[1];
+    const newState = forcedState !== undefined ? forcedState : !entityDocument.state;
+    const state = newState ? entity.states[1] : entity.states[0];
 
     state.remove?.forEach(t => {
       Tiles.remove({ levelId, x: t.x, y: t.y, index: t.index });
@@ -224,7 +225,7 @@ Meteor.methods({
       Tiles.update({ levelId, x: t.x, y: t.y }, { $set: { tilesetId: t.newTilesetId, index: t.newIndex } });
     });
 
-    Entities.update({ levelId, name }, { $set: { state: !entityDocument.state } });
+    Entities.update({ levelId, name }, { $set: { state: newState } });
   },
   paintTile(levelId, x, y, index) {
     Tiles.update({ levelId, x, y, index }, { $set: { paint: Meteor.userId() } });

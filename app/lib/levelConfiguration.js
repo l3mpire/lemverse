@@ -188,7 +188,7 @@ levelConfiguration = {
           states: [
             {
               replace: [
-                { x: 56, y: 35, newIndex: 474, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
+                { x: 56, y: 35, newIndex: 320, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
               ],
             }, {
               replace: [
@@ -202,7 +202,7 @@ levelConfiguration = {
           states: [
             {
               replace: [
-                { x: 57, y: 30, newIndex: 474, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
+                { x: 57, y: 30, newIndex: 320, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
               ],
             }, {
               replace: [
@@ -216,7 +216,7 @@ levelConfiguration = {
           states: [
             {
               replace: [
-                { x: 64, y: 34, newIndex: 474, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
+                { x: 64, y: 34, newIndex: 320, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
               ],
             }, {
               replace: [
@@ -230,7 +230,7 @@ levelConfiguration = {
           states: [
             {
               replace: [
-                { x: 58, y: 39, newIndex: 474, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
+                { x: 58, y: 39, newIndex: 320, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
               ],
             }, {
               replace: [
@@ -244,7 +244,7 @@ levelConfiguration = {
           states: [
             {
               replace: [
-                { x: 56, y: 39, newIndex: 474, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
+                { x: 56, y: 39, newIndex: 320, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
               ],
             }, {
               replace: [
@@ -258,7 +258,7 @@ levelConfiguration = {
           states: [
             {
               replace: [
-                { x: 67, y: 40, newIndex: 474, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
+                { x: 67, y: 40, newIndex: 320, newTilesetId: 'tis_Enj7onR5qx23TgZiu' },
               ],
             }, {
               replace: [

@@ -97,6 +97,6 @@ entityManager = {
     }
 
     this.previousTile = undefined;
-    this.teleport(failTeleportTile);
+    userManager.teleportMainUser(failTeleportTile.x, failTeleportTile.y);
   },
 };
