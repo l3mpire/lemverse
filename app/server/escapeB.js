@@ -127,7 +127,7 @@ lp.deferCron('escape', () => {
     const { currentRoom, currentRoomTime, hints } = level.metadata;
 
     const minSinceEntry = (Date.now() - currentRoomTime) / (1000 * 60) | 0;
-    if (hints[currentRoom][`t${minSinceEntry}`] && !hints[currentRoom][`t${minSinceEntry}`].discovered) {
+    if (hints[currentRoom] && hints[currentRoom][`t${minSinceEntry}`] && !hints[currentRoom][`t${minSinceEntry}`].discovered) {
       log('escape: Discover hints');
       // Execute hints
       hints[currentRoom][`t${minSinceEntry}`].updateTiles.forEach(tile => {
