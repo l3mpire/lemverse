@@ -10,6 +10,7 @@ const computeDuration = () => {
   const start = currentLevel?.metadata?.start || 0;
   const end = currentLevel?.metadata?.end || 0;
   const res = ((end - start) / (60 * 60)) | 0;
+  console.log('computeDuration: ', res);
   return res;
 };
 
@@ -20,9 +21,11 @@ Template.escapeB.helpers({
   duration() {
     computeDuration();
   },
-  youWin() {
+  isLoaded() {
     const currentLevel = Session.get('currentLevel');
-    if (currentLevel?.metadata?.end) return false;
+    return !!currentLevel?.metadata;
+  },
+  youWin() {
     return computeDuration() < 60; // 60 minutes
   },
 });

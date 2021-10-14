@@ -141,7 +141,7 @@ Meteor.publish('tiles', function (levelId) {
   if (!this.userId) return undefined;
   if (!levelId) levelId = Meteor.settings.defaultLevelId;
 
-  return Tiles.find({ levelId, $or: [{ invisible: false }, { invisible: { $exists: false } }] }, { fields: { index: 1, x: 1, y: 1, tilesetId: 1, levelId: 1, paint: 1 } });
+  return Tiles.find({ levelId, $or: [{ invisible: false }, { invisible: { $exists: false } }] }, { fields: { index: 1, x: 1, y: 1, tilesetId: 1, levelId: 1, paint: 1, metadata: 1 } });
 });
 
 Meteor.publish('levels', function () {

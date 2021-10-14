@@ -10,7 +10,7 @@ Meteor.methods({
     const newLevelId = createLevel(templateId, `Escape B #${Math.floor(Math.random() * 100)}`);
 
     // Reset metadata
-    Levels.update({ _id: newLevelId }, { $set: { 'metadata.escape': true, 'metadata.teleport': {} }, $unset: { end: 1, start: 1 } });
+    Levels.update({ _id: newLevelId }, { $set: { 'metadata.escape': true, 'metadata.teleport': {}, disableEdit: true, godMode: false }, $unset: { end: 1, start: 1 } });
 
     // Teleport user
     const usersToTeleport = usersInZone.slice(-1).concat(usersInZone.slice(0, escape.triggerLimit - 1));
@@ -127,9 +127,14 @@ lp.deferCron('escape', () => {
     const { currentRoom, currentRoomTime, hints } = level.metadata;
 
     const minSinceEntry = (Date.now() - currentRoomTime) / (1000 * 60) | 0;
-    if (hints[currentRoom][`t${minSinceEntry}`] && !hints[currentRoom][`t${minSinceEntry}`].discovered) {
+    if (hints && hints[currentRoom] && hints[currentRoom][`t${minSinceEntry}`] && !hints[currentRoom][`t${minSinceEntry}`].discovered) {
       log('escape: Discover hints');
       // Execute hints
+      hints[currentRoom][`t${minSinceEntry}`].updateTiles.forEach(tile => {
+        if (!tile.id || !tile.update) return;
+        log('escape: Updating tile', { tile });
+        Tiles.update({ _id: tile.id }, { $set: tile.update });
+      });
       hints[currentRoom][`t${minSinceEntry}`].discovered = true;
     }
   });

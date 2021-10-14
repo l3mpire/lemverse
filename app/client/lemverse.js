@@ -342,6 +342,8 @@ Template.lemverse.onCreated(function () {
             worldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
             worldScene.drawTeleporters(false);
             paintTile(worldScene, tile, layer);
+
+            if (tile.metadata?.escapeHint) chest();
           },
           changed(tile) {
             const layer = tileLayer(tile);
