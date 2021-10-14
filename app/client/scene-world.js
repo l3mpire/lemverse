@@ -165,6 +165,7 @@ WorldScene = new Phaser.Class({
         const users = zones.usersInZone(zones.currentZone(Meteor.user()));
         users.push(Meteor.user());
 
+        log('escapeZone:', { escape, userIds: users.map(user => user._id) });
         if (users.length >= escape.triggerLimit) {
           if (escape.start) {
             differMeteorCall('escapeStart', zones.currentZone(Meteor.user()), users, Meteor.user().profile.levelId, () => {
