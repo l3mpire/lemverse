@@ -178,6 +178,7 @@ WorldScene = new Phaser.Class({
         if (escape.updateTiles) differMeteorCall('updateTiles', escape.updateTiles);
         if (escape.freezeOthers) differMeteorCall('freezeOthers');
         if (escape.end) differMeteorCall('escapeEnd', Meteor.user().profile.levelId);
+        if (escape.setCurrentRoom) differMeteorCall('setCurrentRoom', escape.setCurrentRoom);
       }
     };
 

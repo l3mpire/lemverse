@@ -58,6 +58,15 @@ Meteor.methods({
       Levels.update({ _id: levelId }, { $set: { 'metadata.end': Date.now() } });
     }
   },
+  setCurrentRoom(room) {
+    const { levelId } = Meteor.user().profile;
+    log('setCurrentRoom: start', { levelId });
+
+    const currLevel = Levels.findOne({ _id: levelId });
+    if (!currLevel.metadata.currentRoom || currLevel.metadata.currentRoom !== room) {
+      Levels.update({ _id: levelId }, { $set: { 'metadata.currentRoom': room, 'metadata.currentRoomTime': Date.now() } });
+    }
+  },
   currentLevel() {
     return Levels.findOne({ _id: Meteor.user().profile.levelId });
   },
