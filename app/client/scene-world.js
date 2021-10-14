@@ -267,6 +267,8 @@ WorldScene = new Phaser.Class({
   onLevelLoaded() {
     this.scene.wake();
 
+    if (Meteor.user().profile.levelId === 'lvl_g7yv5TwKBhioC9vSB') Session.set('showPaintInterface', false);
+
     // simulate a first frame update to avoid weirds visual effects with characters animation and direction
     this.update(0, 0);
     setTimeout(() => game.scene.keys.LoadingScene.hide(() => this.enableKeyboard(true)), 0);
