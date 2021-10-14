@@ -9,6 +9,9 @@ Meteor.methods({
     log('escapeMakeLevel: cloning template', { templateId });
     const newLevelId = createLevel(templateId, `Escape B #${Math.floor(Math.random() * 100)}`);
 
+    // Reset metadata
+    Levels.update({ _id: newLevelId }, { $set: { 'metadata.escape': true, 'metadata.teleport': {} }, $unset: { end: 1, start: 1 } });
+
     // Teleport user
     const usersToTeleport = usersInZone.slice(-1).concat(usersInZone.slice(0, escape.triggerLimit - 1));
     log('escapeMakeLevel: teleport users', { usersToTeleport: usersToTeleport.map(user => user._id), newLevelId });
