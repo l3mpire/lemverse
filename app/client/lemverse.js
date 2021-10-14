@@ -195,6 +195,8 @@ Template.lemverse.onCreated(function () {
               worldScene.map.setCollision(enabledCollisionGlobalIndexes, true, false, layer.tilemapLayer);
               worldScene.map.setCollision(disabledCollisionGlobalIndexes, false, false, layer.tilemapLayer);
             });
+
+            if (n.metadata?.escapeHint) chest();
           },
         });
       }
