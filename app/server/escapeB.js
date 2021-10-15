@@ -147,3 +147,14 @@ lp.deferCron('escape', () => {
     }
   });
 });
+
+lp.deferCron('escapeCleanUp', () => {
+  log('escapeCleanUp: start');
+  const allEscapes = Levels.find({ 'metadata.escape': true }).fetch();
+
+  allEscapes.forEach(level => {
+    if (level.createdAt + (24 * 60 * 60 * 1000) > Date.now()) {
+      // Need cleanup
+    }
+  });
+});

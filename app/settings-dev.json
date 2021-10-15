@@ -70,6 +70,7 @@
   },
 
   "services": {
-    "escape":{ "interval": 10 }
+    "escape":{ "interval": 10 },
+    "escapeCleanUp":{ "interval": 10 }
   }
 }
