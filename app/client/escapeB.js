@@ -9,7 +9,7 @@ const computeDuration = () => {
   const currentLevel = Session.get('currentLevel');
   const start = currentLevel?.metadata?.start || 0;
   const end = currentLevel?.metadata?.end || 0;
-  const res = ((end - start) / (60 * 60)) | 0;
+  const res = ((end - start) / (1000 * 60)) | 0;
   console.log('computeDuration: ', res);
   return res;
 };
@@ -41,6 +41,7 @@ Template.escapeB.events({
       if (Session.get(lockString) === currentLevel.metadata[lockString].code) {
         // Success
         Meteor.call('enlightenZone', currentLevel.metadata[lockString].zone);
+        unlock();
       } else {
         // Failure
         buzz();
@@ -64,6 +65,11 @@ Template.escapeB.events({
   },
 });
 
+Template.registerHelper('isEscapeLevel', () => {
+  const level = Levels.findOne(Meteor.user()?.profile?.levelId);
+  if (!level) return false;
+  return level.metadata?.escape;
+});
 Template.registerHelper('displayEscapeTimer', () => {
   const level = Session.get('currentLevel');
   if (!level) return false;

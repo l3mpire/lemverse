@@ -1,9 +1,15 @@
+escapeTransport = {};
+
 Meteor.methods({
   escapeMakeLevel(templateId, zone, usersInZone) {
     log('escapeMakeLevel: start', { templateId, zoneId: zone._id, usersInZoneId: usersInZone?.map(user => user._id) });
     const { escape } = zone;
 
     if (!escape?.triggerLimit || !templateId || !usersInZone) return;
+    // Check Transport in progress
+    if (escapeTransport[templateId]?.length) return;
+    const usersToTeleport = usersInZone.slice(-1).concat(usersInZone.slice(0, escape.triggerLimit - 1));
+    escapeTransport[templateId] = usersToTeleport;
 
     // Clone Level
     log('escapeMakeLevel: cloning template', { templateId });
@@ -13,28 +19,30 @@ Meteor.methods({
     Levels.update({ _id: newLevelId }, { $set: { 'metadata.escape': true, 'metadata.teleport': {}, disableEdit: true, godMode: false }, $unset: { 'metadata.end': 1, 'metadata.start': 1, 'metadata.currentRoom': 1, 'metadata.currentRoomTime': 1 } });
 
     // Teleport user
-    const usersToTeleport = usersInZone.slice(-1).concat(usersInZone.slice(0, escape.triggerLimit - 1));
     log('escapeMakeLevel: teleport users', { usersToTeleport: usersToTeleport.map(user => user._id), newLevelId });
     Meteor.users.update({ _id: { $in: usersToTeleport.map(user => user._id) } }, { $set: { 'profile.changeLevel': newLevelId } }, { multi: true });
+
+    // Free the transport rings!
+    escapeTransport[templateId] = [];
     log('escapeMakeLevel: end');
   },
   enlightenZone(name) {
     log('enlightenZone: start', { name });
-    const allTiles = Tiles.find({ 'metadata.zoneName': name }).fetch();
+    const allTiles = Tiles.find({ 'metadata.zoneName': name, levelId: Meteor.user().profile.levelId }).fetch();
     if (!allTiles) return;
     Tiles.update({ _id: { $in: allTiles.map(tile => tile._id) } }, { $set: { invisible: true } }, { multi: true });
     log('enlightenZone: updating', { nbTiles: allTiles.length });
   },
   darkenZone(name) {
     log('darkenZone: start', { name });
-    const allTiles = Tiles.find({ 'metadata.zoneName': name }).fetch();
+    const allTiles = Tiles.find({ 'metadata.zoneName': name, levelId: Meteor.user().profile.levelId }).fetch();
     if (!allTiles) return;
     Tiles.update({ _id: { $in: allTiles.map(tile => tile._id) } }, { $set: { invisible: false } }, { multi: true });
     log('enlightenZone: updating', { nbTiles: allTiles.length });
   },
   toggleZone(name) {
     log('toggleZone: start', { name });
-    const allTiles = Tiles.find({ 'metadata.zoneName': name }).fetch();
+    const allTiles = Tiles.find({ 'metadata.zoneName': name, levelId: Meteor.user().profile.levelId }).fetch();
     if (!allTiles || !allTiles.length) return;
     const invisible = !allTiles[0].invisible;
     Tiles.update({ _id: { $in: allTiles.map(tile => tile._id) } }, { $set: { invisible } }, { multi: true });
@@ -58,7 +66,15 @@ Meteor.methods({
     const currLevel = Levels.findOne({ _id: levelId });
 
     if (!currLevel.metadata.end) {
-      Levels.update({ _id: levelId }, { $set: { 'metadata.end': Date.now() } });
+      const endTime = Date.now();
+      Levels.update({ _id: levelId }, { $set: { 'metadata.end': endTime } });
+      if ((endTime - currLevel.metadata.start) / 60000 < 60) {
+        // Win
+        Tiles.update({ levelId, 'metadata.zoneName': 'win' }, { $set: { invisible: false } }, { multi: true });
+      } else {
+        // Loose
+        Tiles.update({ levelId, 'metadata.zoneName': 'lost' }, { $set: { invisible: false } }, { multi: true });
+      }
     }
   },
   setCurrentRoom(room) {
@@ -89,9 +105,9 @@ Meteor.methods({
     log('updateTiles: start', { tiles: tiles.length });
     if (!tiles) return;
     tiles.forEach(tile => {
-      if (!tile.id || !tile.update) return;
+      if (!tile.metaName || !tile.update) return;
       log('updateTiles: Updating tile', { tile });
-      Tiles.update({ _id: tile.id }, { $set: tile.update });
+      Tiles.update({ 'metadata.name': tile.metaName, levelId: Meteor.user().profile.levelId }, { $set: tile.update }, { multi: true });
     });
   },
   freezeOthers() {
@@ -131,11 +147,22 @@ lp.deferCron('escape', () => {
       log('escape: Discover hints');
       // Execute hints
       hints[currentRoom][`t${minSinceEntry}`].updateTiles.forEach(tile => {
-        if (!tile.id || !tile.update) return;
+        if (!tile.metaName || !tile.update) return;
         log('escape: Updating tile', { tile });
-        Tiles.update({ _id: tile.id }, { $set: tile.update });
+        Tiles.update({ 'metadata.name': tile.metaName, levelId: level._id }, { $set: tile.update }, { multi: true });
       });
       hints[currentRoom][`t${minSinceEntry}`].discovered = true;
+    }
+  });
+});
+
+lp.deferCron('escapeCleanUp', () => {
+  log('escapeCleanUp: start');
+  const allEscapes = Levels.find({ 'metadata.escape': true }).fetch();
+
+  allEscapes.forEach(level => {
+    if (level.createdAt + (24 * 60 * 60 * 1000) > Date.now()) {
+      // Need cleanup
     }
   });
 });

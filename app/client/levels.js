@@ -52,7 +52,7 @@ Template.levels.events({
 Template.levels.helpers({
   isLevelOwner(level) { return Meteor.userId() === level.createdBy; },
   levels() {
-    const levels = Levels.find({}, { sort: { visit: -1 } }).fetch();
+    const levels = Levels.find({ $or: [{ template: false }, { template: { $exists: false } }] }, { sort: { visit: -1 } }).fetch();
     const userId = Meteor.userId();
 
     return levels.sort((a, b) => {
