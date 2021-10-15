@@ -26,7 +26,8 @@ Template.escapeB.helpers({
     return !!currentLevel?.metadata;
   },
   youWin() {
-    return computeDuration() < 60; // 60 minutes
+    const currentLevel = Session.get('currentLevel');
+    return computeDuration() < currentLevel.metadata.durationMinutes;
   },
 });
 
@@ -141,7 +142,7 @@ Template.escapeTimer.onRendered(function () {
     const currentLevel = Levels.findOne(Meteor.user().profile.levelId);
     if (!currentLevel) return;
     timer.start = currentLevel.metadata.start;
-    timer.minutesDelay = 60;
+    timer.minutesDelay = currentLevel.metadata.durationMinutes;
     timer.init();
   });
 });
