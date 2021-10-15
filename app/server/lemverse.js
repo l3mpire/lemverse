@@ -10,11 +10,11 @@ AccountsGuest.name = true;
 const paintModeDuration = 30000;
 
 const stopPaintMode = levelId => {
-  const scoresPerUser = _.groupBy(Tiles.find({ paint: { $exists: true },
+  const scoresPerUser = _.groupBy(Tiles.find({ 'metadata.paint': { $exists: true },
     levelId,
     x: { $gte: 61, $lte: 83 },
     y: { $gte: 51, $lte: 67 },
-  }).fetch(), 'paint');
+  }).fetch(), 'metadata.paint');
 
   _.each(scoresPerUser, (tiles, userId) => {
     Meteor.users.update(userId, { $set: { 'profile.escape.score': tiles.length } });
@@ -144,7 +144,7 @@ Meteor.publish('tiles', function (levelId) {
   if (!this.userId) return undefined;
   if (!levelId) levelId = Meteor.settings.defaultLevelId;
 
-  return Tiles.find({ levelId, $or: [{ invisible: false }, { invisible: { $exists: false } }] }, { fields: { index: 1, x: 1, y: 1, tilesetId: 1, levelId: 1, paint: 1, metadata: 1 } });
+  return Tiles.find({ levelId, $or: [{ invisible: false }, { invisible: { $exists: false } }] }, { fields: { index: 1, x: 1, y: 1, tilesetId: 1, levelId: 1, metadata: 1 } });
 });
 
 Meteor.publish('levels', function () {
@@ -262,7 +262,7 @@ Meteor.methods({
     switchEntityStateLogic(levelId, name, forcedState);
   },
   paintTile(levelId, x, y, index) {
-    Tiles.update({ levelId, x, y, index }, { $set: { paint: Meteor.userId() } });
+    Tiles.update({ levelId, x, y, index }, { $set: { 'metadata.paint': Meteor.userId() } });
   },
 });
 

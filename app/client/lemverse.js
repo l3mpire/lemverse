@@ -34,12 +34,10 @@ const stringToColour = str => {
 };
 
 const paintTile = (worldScene, tile, layer) => {
-  if (tile.paint) {
-    const phaserTile = worldScene.map.getTileAt(tile.x, tile.y, false, layer);
-    const converted = stringToColour(tile.paint).replace('#', '0x');
-    const color = parseInt(converted, 16) * 100;
-    if (phaserTile) phaserTile.tint = color;
-  }
+  const phaserTile = worldScene.map.getTileAt(tile.x, tile.y, false, layer);
+  const converted = stringToColour(tile.metadata.paint).replace('#', '0x');
+  const color = parseInt(converted, 16) * 100;
+  if (phaserTile) phaserTile.tint = color;
 };
 
 const config = {
@@ -341,14 +339,16 @@ Template.lemverse.onCreated(function () {
             const layer = tileLayer(tile);
             worldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
             worldScene.drawTeleporters(false);
-            paintTile(worldScene, tile, layer);
 
-            if (tile.metadata?.escapeHint) chest();
+            if (tile.metadata) {
+              if (tile.metadata.escapeHint) chest();
+              else if (tile.metadata.paint) paintTile(worldScene, tile, layer);
+            }
           },
           changed(tile) {
             const layer = tileLayer(tile);
             worldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
-            paintTile(worldScene, tile, layer);
+            if (tile.metadata?.paint) paintTile(worldScene, tile, layer);
           },
           removed(tile) {
             const layer = tileLayer(tile);
