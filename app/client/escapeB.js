@@ -88,7 +88,7 @@ const timer = {
   digits: ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'],
 
   init() {
-    this.end = this.start.setMinutes(this.start.getMinutes() + this.minutesDelay);
+    this.end = this.start + this.minutesDelay * 1000 * 60;
     const $digit = $('.digit');
 
     // Ugly....
@@ -140,7 +140,7 @@ Template.escapeTimer.onRendered(function () {
     if (!Meteor.user()) return;
     const currentLevel = Levels.findOne(Meteor.user().profile.levelId);
     if (!currentLevel) return;
-    timer.start = new Date(currentLevel.metadata.start);
+    timer.start = currentLevel.metadata.start;
     timer.minutesDelay = 60;
     timer.init();
   });
