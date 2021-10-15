@@ -155,299 +155,71 @@
     line-height: 1.4;
     width: 100%;
     height:200px;
-
-#deadline {
-    width:581px;
-    max-width: 100%;
-    height:158px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    z-index: 1;
-    -webkit-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-    background: #000;
-    border-radius: 10px;
-}
-
-#deadline svg {
-    width: 100%;
-}
-
-#progress-time-fill {
-    animation-name: progress-fill; 
-    animation-timing-function: linear; 
-    animation-iteration-count: infinite;
-}
-
-/* Death */
-#death-group {
-    animation-name: walk;
-    animation-timing-function: ease; 
-    animation-iteration-count: infinite;
-    transform: translateX(0);
-}
-
-#death-arm {
-    animation: move-arm 3s ease infinite;
-    transform-origin: left center;
-}
-
-#death-tool {
-    animation: move-tool 3s ease infinite;
-    transform-origin: -48px center;
-}
-
-/* Designer */
-
-#designer-arm-grop {
-    animation: write 1.5s ease infinite;
-    transform: translate(0, 0) rotate(0deg) scale(1, 1);
-    transform-origin: left top;
-}
-
-.deadline-days {
-    color: #fff;
-    text-align: center;
-    width: 200px;
-    margin: 0 auto;
-    position: relative;
-    height: 20px;
-    font-family: 'Oswald', sans-serif;
-    background: #000;
-    padding: 12px;
-    border-radius: 0 10px 10px 0;
-}
-
-.deadline-days .inner {
-    width: 200px;
-    position: relative;
-    top: 0;
-    left: 0;
-}
-
-.mask-red,
-.mask-white {
-    position: absolute;
-    top: 0;
-    width: 100%;
-    overflow: hidden;
-    height: 100%;
-}
-
-.mask-red {
-    left: 0;
-    width: 0;
-    color: #BE002A;
-    animation: text-red 3600s ease infinite;
-    z-index: 2;
-    background: #000;
-}
-.mask-white {
-    right: 0;
-}
-
-/* Flames */
-
-#red-flame {
-    opacity: 0;
-    animation: show-flames 3600s ease infinite, red-flame 120ms ease infinite;
-    transform-origin: center bottom;
-}
-
-#yellow-flame {
-    opacity: 0;
-    animation: show-flames 3600s ease infinite, yellow-flame 120ms ease infinite;
-    transform-origin: center bottom;
-}
-
-#white-flame {
-    opacity: 0;
-    animation: show-flames 3600s ease infinite, red-flame 100ms ease infinite;
-    transform-origin: center bottom;
-}
-
-@keyframes progress-fill {
-    0% {
-        x: -100%;
+    
+    .digit, .colon{
+        position:relative;
+        display:inline-block;
+        width:10px;
+        height:110px;
+        margin:5px;
     }
-
-    100% {
-        x: -3%;
+      
+    .colon{
+        background: linear-gradient(-90deg, #333 10px, transparent 10px),
+                    linear-gradient(-90deg, #333 10px, transparent 10px);    
+        background-position: 0 40px, 0 65px;
+        background-repeat:no-repeat;
+        background-size:10px 10px, 10px 10px;
     }
-}
-
-@keyframes walk {
-    0% {
-        transform: translateX(0);
+      
+    .digit{
+        width:60px;
+        background-image: linear-gradient(90deg, transparent 10px, #333 10px, #333 50px, transparent 50px),   /*  Top  */ linear-gradient(90deg, transparent 10px, #333 10px, #333 50px, transparent 50px),   /* Middle*/ linear-gradient(90deg, transparent 10px, #333 10px, #333 50px, transparent 50px),   /* Bottom*/ linear-gradient(90deg, #333 10px, transparent 10px, transparent 50px, #333 50px),   /* Topleft */ linear-gradient(90deg, #333 10px, transparent 10px, transparent 50px, #333 50px);   /* Bottomleft */
+        background-position: 0 0, 0 50px, 0 100px, 0 10px, 0 60px;
+        background-repeat:no-repeat;
+        background-size:60px 10px, 60px 10px, 60px 10px, 60px 40px, 60px 40px;
     }
-    6% {
-        transform: translateX(0);
+    
+    .zero{
+        background-image: linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /*  Top  */ linear-gradient(90deg, transparent 10px, #333 10px, #333 50px, transparent 50px),   /* Middle*/ linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /* Bottom*/ linear-gradient(90deg, #f81331 10px, transparent 10px, transparent 50px, #f81331 50px),   /* Topleft */ linear-gradient(90deg, #f81331 10px, transparent 10px, transparent 50px, #f81331 50px);   /* Bottomleft */
     }
-    10% {
-        transform: translateX(2);
+    
+    .one{
+        background-image: linear-gradient(90deg, transparent 10px, #333 10px, #333 50px, transparent 50px),   /*  Top  */ linear-gradient(90deg, transparent 10px, #333 10px, #333 50px, transparent 50px),   /* Middle*/ linear-gradient(90deg, transparent 10px, #333 10px, #333 50px, transparent 50px),   /* Bottom*/ linear-gradient(90deg, #333 10px, transparent 10px, transparent 50px, #f81331 50px),   /* Topleft */ linear-gradient(90deg, #333 10px, transparent 10px, transparent 50px, #f81331 50px);   /* Bottomleft */
     }
-
-    15% {
-        transform: translateX(140px);
+    
+    .two{
+        background-image: linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /*  Top  */ linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /* Middle*/ linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /* Bottom*/ linear-gradient(90deg, #333 10px, transparent 10px, transparent 50px, #f81331 50px),   /* Topleft */ linear-gradient(90deg, #f81331 10px, transparent 10px, transparent 50px, #333 50px);   /* Bottomleft */
     }
-
-    25% {
-        transform: translateX(170px);
+    
+    .three{
+        background-image: linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /*  Top  */ linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /* Middle*/ linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /* Bottom*/ linear-gradient(90deg, #333 10px, transparent 10px, transparent 50px, #f81331 50px),   /* Topleft */ linear-gradient(90deg, #333 10px, transparent 10px, transparent 50px, #f81331 50px);   /* Bottomleft */
     }
-
-    35% {
-        transform: translateX(220px);
+    
+    .four{
+        background-image: linear-gradient(90deg, transparent 10px, #333 10px, #333 50px, transparent 50px),   /*  Top  */ linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /* Middle*/ linear-gradient(90deg, transparent 10px, #333 10px, #333 50px, transparent 50px),   /* Bottom*/ linear-gradient(90deg, #f81331 10px, transparent 10px, transparent 50px, #f81331 50px),   /* Topleft */ linear-gradient(90deg, #333 10px, transparent 10px, transparent 50px, #f81331 50px);   /* Bottomleft */
     }
-
-    45% {
-        transform: translateX(280px);
+    
+    .five{
+        background-image: linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /*  Top  */ linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /* Middle*/ linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /* Bottom*/ linear-gradient(90deg, #f81331 10px, transparent 10px, transparent 50px, #333 50px),   /* Topleft */ linear-gradient(90deg, #333 10px, transparent 10px, transparent 50px, #f81331 50px);   /* Bottomleft */
     }
-
-    55% {
-        transform: translateX(340px);
+    
+    
+    .six{
+        background-image: linear-gradient(90deg, transparent 10px, #333 10px, #333 50px, transparent 50px),   /*  Top  */ linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /* Middle*/ linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /* Bottom*/ linear-gradient(90deg, #f81331 10px, transparent 10px, transparent 50px, #333 50px),   /* Topleft */ linear-gradient(90deg, #f81331 10px, transparent 10px, transparent 50px, #f81331 50px);   /* Bottomleft */
     }
-
-    65% {
-        transform: translateX(370px);
+    
+    
+    .seven{
+        background-image: linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /*  Top  */ linear-gradient(90deg, transparent 10px, #333 10px, #333 50px, transparent 50px),   /* Middle*/ linear-gradient(90deg, transparent 10px, #333 10px, #333 50px, transparent 50px),   /* Bottom*/ linear-gradient(90deg, #333 10px, transparent 10px, transparent 50px, #f81331 50px),   /* Topleft */ linear-gradient(90deg, #333 10px, transparent 10px, transparent 50px, #f81331 50px);   /* Bottomleft */
     }
-
-    75% {
-        transform: translateX(430px);
+    
+    
+    .eight{
+        background-image: linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /*  Top  */ linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /* Middle*/ linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /* Bottom*/ linear-gradient(90deg, #f81331 10px, transparent 10px, transparent 50px, #f81331 50px),   /* Topleft */ linear-gradient(90deg, #f81331 10px, transparent 10px, transparent 50px, #f81331 50px);   /* Bottomleft */
     }
-
-    85% {
-        transform: translateX(460px);
-    }
-
-    100% {
-        transform: translateX(520px);
-    }
-}
-
-@keyframes move-arm {
-    0% {
-        transform: rotate(0);
-    }
-
-    5% {
-        transform: rotate(0);
-    }
-
-    9% {
-        transform: rotate(40deg);
-    }
-
-    80% {
-        transform: rotate(0);
-    }
-}
-
-@keyframes move-tool {
-    0% {
-        transform: rotate(0);
-    }
-
-    5% {
-        transform: rotate(0);
-    }
-
-    9% {
-        transform: rotate(50deg);
-    }
-
-    80% {
-        transform: rotate(0);
-    }
-}
-
-/* Design animations */
-
-@keyframes write {
-    0% {
-        transform: translate(0, 0) rotate(0deg) scale(1, 1);
-    }
-
-    16% {
-        transform: translate(0px, 0px) rotate(1deg) scale(0.95, 1);
-    }
-
-    32% {
-        transform: translate(0px, 0px) rotate(0deg) scale(1, 1);
-    }
-
-    48% {
-        transform: translate(0px, 0px) rotate(1deg) scale(0.95, 1);
-    }
-
-    65% {
-        transform: translate(0px, 0px) rotate(0deg) scale(1, 1);
-    }
-
-    83% {
-        transform: translate(0px, 0px) rotate(1deg) scale(0.95, 1);
-    }
-}
-
-@keyframes text-red {
-    0% {
-        width: 0%;
-    }
-
-    100% {
-        width: 98%;
-    }
-}
-
-/* Flames */
-
-@keyframes show-flames {
-    0% {
-        opacity: 0;
-    }
-    74% {
-        opacity: 0;
-    }
-    80% {
-        opacity: 1;
-    }
-    99% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0;
-    }
-}
-
-@keyframes red-flame {
-    0% {
-        transform: translateY(-30px) scale(1, 1);
-    }
-
-    25% {
-        transform: translateY(-30px) scale(1.1, 1.1);
-    }
-
-    75% {
-        transform: translateY(-30px) scale(0.8, 0.7); 
-    }
-
-    100% {
-        transform: translateY(-30px) scale(1, 1); 
-    }
-}
-
-@keyframes yellow-flame {
-    0% {
-        transform: translateY(-30px) scale(0.8, 0.7);
-    }
-
-    50% {
-        transform: translateY(-30px) scale(1.1, 1.2);
-    }
-
-    100% {
-        transform: translateY(-30px) scale(1, 1);
-    }
-}
+    
+    .nine{
+        background-image: linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /*  Top  */ linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /* Middle*/ linear-gradient(90deg, transparent 10px, #f81331 10px, #f81331 50px, transparent 50px),   /* Bottom*/ linear-gradient(90deg, #f81331 10px, transparent 10px, transparent 50px, #f81331 50px),   /* Topleft */ linear-gradient(90deg, #333 10px, transparent 10px, transparent 50px, #f81331 50px);   /* Bottomleft */
+    }   
 }

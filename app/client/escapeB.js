@@ -70,72 +70,72 @@ Template.registerHelper('displayEscapeTimer', () => {
   return FlowRouter.current()?.path === '/' && level.metadata?.escape && level.metadata?.start && !level.metadata?.end;
 });
 
-Template.escapeTimer.onCreated(() => {
-  const animationTime = 60 * 60;
-  const minutes = 60;
+//
+// escapeTimer
+//
 
-  $(document).ready(() => {
-    // timer arguments:
-    //   #1 - time of animation in mileseconds,
-    //   #2 - days to deadline
+const timer = {
+  start: undefined,
+  minutesDelay: undefined,
+  end: undefined,
 
-    $('#progress-time-fill, #death-group').css({ 'animation-duration': `${animationTime}s` });
+  digits: ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'],
 
-    const deadlineAnimation = function () {
-      setTimeout(() => {
-        $('#designer-arm-grop').css({ 'animation-duration': '1.5s' });
-      }, 0);
+  init() {
+    this.end = this.start.setMinutes(this.start.getMinutes() + this.minutesDelay);
+    const $digit = $('.digit');
 
-      setTimeout(() => {
-        $('#designer-arm-grop').css({ 'animation-duration': '1s' });
-      }, animationTime * 0.3 * 1000);
+    // Ugly....
+    this.hour = [$($digit[0]), $($digit[1])];
+    this.min = [$($digit[2]), $($digit[3])];
+    this.sec = [$($digit[4]), $($digit[5])];
 
-      setTimeout(() => {
-        $('#designer-arm-grop').css({ 'animation-duration': '0.7s' });
-      }, animationTime * 0.6 * 1000);
+    this.drawInterval(this.drawSecond, time => 1000 - time[3]);
 
-      setTimeout(() => {
-        $('#designer-arm-grop').css({ 'animation-duration': '0.3s' });
-      }, animationTime * 0.7 * 1000);
+    this.drawInterval(this.drawMinute, time => 60000 - time[2] * 1000 - time[3]);
 
-      setTimeout(() => {
-        $('#designer-arm-grop').css({ 'animation-duration': '0.2s' });
-      }, animationTime * 0.85 * 1000);
-    };
+    this.drawInterval(this.drawHour, time => (60 - time[1]) * 60000 - time[2] * 1000 - time[3]);
+  },
 
-    function timer(totalTime, deadline) {
-      const time = totalTime * 1000;
-      const dayDuration = time / deadline;
-      let actualDay = deadline;
+  getTimeArray() {
+    const deadline = new Date(this.end - Date.now());
+    return [deadline.getHours(), deadline.getMinutes(), deadline.getSeconds(), deadline.getMilliseconds()];
+  },
 
-      // eslint-disable-next-line no-use-before-define
-      const interval = setInterval(countTime, dayDuration);
+  drawInterval(func, timeCallback) {
+    const time = this.getTimeArray();
 
-      function countTime() {
-        --actualDay;
-        $('.deadline-days .day').text(actualDay);
+    func.call(this, time);
 
-        if (actualDay === 0) {
-          clearInterval(interval);
-          $('.deadline-days .day').text(deadline);
-        }
-      }
-    }
+    const that = this;
+    setTimeout(() => {
+      that.drawInterval(func, timeCallback);
+    }, timeCallback(time));
+  },
 
-    const deadlineText = function () {
-      const $el = $('.deadline-days');
-      const html = `<div class="mask-red"><div class="inner">${$el.html()}</div></div><div class="mask-white"><div class="inner">${$el.html()}</div></div>`;
-      $el.html(html);
-    };
+  drawHour(time) { this.drawDigits(this.hour, time[0]); },
 
-    deadlineText();
+  drawMinute(time) { this.drawDigits(this.min, time[1]); },
 
-    deadlineAnimation();
-    timer(animationTime, minutes);
+  drawSecond(time) { this.drawDigits(this.sec, time[2]); },
 
-    setInterval(() => {
-      timer(animationTime, minutes);
-      deadlineAnimation();
-    }, animationTime * 1000);
+  drawDigits(digits, digit) {
+    const ten = Math.floor(digit / 10);
+    const one = Math.floor(digit % 10);
+
+    digits[0].attr('class', `digit ${this.digits[ten]}`);
+    digits[1].attr('class', `digit ${this.digits[one]}`);
+  },
+
+};
+
+Template.escapeTimer.onRendered(function () {
+  this.autorun(() => {
+    if (!Meteor.user()) return;
+    const currentLevel = Levels.findOne(Meteor.user().profile.levelId);
+    if (!currentLevel) return;
+    timer.start = new Date(currentLevel.metadata.start);
+    timer.minutesDelay = 60;
+    timer.init();
   });
 });
