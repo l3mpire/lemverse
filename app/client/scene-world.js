@@ -267,8 +267,6 @@ WorldScene = new Phaser.Class({
   onLevelLoaded() {
     this.scene.wake();
 
-    if (Meteor.user().profile.levelId !== 'lvl_g7yv5TwKBhioC9vSB') Session.set('showScoreInterface', false);
-
     // simulate a first frame update to avoid weirds visual effects with characters animation and direction
     this.update(0, 0);
     setTimeout(() => game.scene.keys.LoadingScene.hide(() => this.enableKeyboard(true)), 0);
@@ -320,6 +318,7 @@ WorldScene = new Phaser.Class({
   },
 
   shutdown() {
+    Session.set('showScoreInterface', false);
     this.events.removeListener('postupdate');
     this.events.off('postupdate', this.postUpdate.bind(this), this);
     this.destroyMapLayers();
