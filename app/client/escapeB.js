@@ -105,7 +105,7 @@ const timer = {
 
   getTimeArray() {
     const deadline = new Date(this.end - Date.now());
-    return [deadline.getHours(), deadline.getMinutes(), deadline.getSeconds(), deadline.getMilliseconds()];
+    return [deadline.getUTCHours(), deadline.getMinutes(), deadline.getSeconds(), deadline.getMilliseconds()];
   },
 
   drawInterval(func, timeCallback) {
