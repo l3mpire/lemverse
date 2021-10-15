@@ -137,27 +137,6 @@ WorldScene = new Phaser.Class({
         return;
       }
 
-      if (zone.name) {
-        if (zone.name.includes('Team A') || zone.name.includes('Team B')) {
-          const zoneA = Zones.findOne({ name: 'Team A - lucid' });
-          const zoneB = Zones.findOne({ name: 'Team B - lucid' });
-          const usersCountZoneA = zones.usersInZone(zoneA, true).length;
-          const usersCountZoneB = zones.usersInZone(zoneB, true).length;
-
-          if (usersCountZoneA > 0 && usersCountZoneB > 0 && usersCountZoneA === usersCountZoneB) setTimeout(() => Meteor.call('switchEntityState', currentLevelId, 'door-room-2'), 0);
-        } else if (zone.name.includes('switch-')) setTimeout(() => Meteor.call('switchEntityState', currentLevelId, zone.name), 0);
-        else if (zone.name.includes('Ready')) {
-          if (zones.usersInZone(zone, true).length === Meteor.users.find().count()) {
-            setTimeout(() => Meteor.call('switchEntityState', currentLevelId, 'room-4-ready', zone.forceState), 0);
-          }
-        } else if (zone.name.includes('paint')) entityManager.enable_sync_coloration = true;
-
-        if (zone.name.includes('drunk')) {
-          cam.setPostPipeline(PostFX);
-          entityManager.enable_path_coloration = true;
-        } else if (zone.name.includes('lucid')) cam.setPostPipeline(HUEEffect);
-      }
-
       const { targetedLevelId: levelId, inlineURL, escape } = zone;
       if (levelId) this.loadLevel(levelId);
       else if (inlineURL) characterPopIns.initFromZone(zone);
@@ -199,6 +178,26 @@ WorldScene = new Phaser.Class({
             userManager.teleportMainUser(+x, +y);
           }, 0);
         }
+
+        if (escape.team) {
+          const zoneA = Zones.findOne({ 'escape.team': 'A' });
+          const zoneB = Zones.findOne({ 'escape.team': 'B' });
+          const usersCountZoneA = zones.usersInZone(zoneA, true).length;
+          const usersCountZoneB = zones.usersInZone(zoneB, true).length;
+
+          if (usersCountZoneA > 0 && usersCountZoneB > 0 && usersCountZoneA === usersCountZoneB) differMeteorCall('switchEntityState', currentLevelId, 'door-room-2');
+        } else if (escape.switchEntityState) differMeteorCall('switchEntityState', currentLevelId, escape.switchEntityState);
+        else if (escape.waitEveryoneZone) {
+          if (zones.usersInZone(zone, true).length === Meteor.users.find().count()) {
+            differMeteorCall('switchEntityState', currentLevelId, 'room-4-ready', escape.forceEntityState);
+          }
+        }
+
+        if (escape.paintTiles) entityManager.enable_sync_coloration = true;
+        else if (escape.enableDistortionEffect) {
+          cam.setPostPipeline(PostFX);
+          entityManager.enable_path_coloration = true;
+        } else if (escape.enableHUEEffect) cam.setPostPipeline(HUEEffect);
       }
     };
 
