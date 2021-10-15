@@ -1,9 +1,15 @@
+escapeTransport = {};
+
 Meteor.methods({
   escapeMakeLevel(templateId, zone, usersInZone) {
     log('escapeMakeLevel: start', { templateId, zoneId: zone._id, usersInZoneId: usersInZone?.map(user => user._id) });
     const { escape } = zone;
 
     if (!escape?.triggerLimit || !templateId || !usersInZone) return;
+    // Check Transport in progress
+    if (escapeTransport[templateId]?.length) return;
+    const usersToTeleport = usersInZone.slice(-1).concat(usersInZone.slice(0, escape.triggerLimit - 1));
+    escapeTransport[templateId] = usersToTeleport;
 
     // Clone Level
     log('escapeMakeLevel: cloning template', { templateId });
@@ -13,9 +19,11 @@ Meteor.methods({
     Levels.update({ _id: newLevelId }, { $set: { 'metadata.escape': true, 'metadata.teleport': {}, disableEdit: true, godMode: false }, $unset: { 'metadata.end': 1, 'metadata.start': 1, 'metadata.currentRoom': 1, 'metadata.currentRoomTime': 1 } });
 
     // Teleport user
-    const usersToTeleport = usersInZone.slice(-1).concat(usersInZone.slice(0, escape.triggerLimit - 1));
     log('escapeMakeLevel: teleport users', { usersToTeleport: usersToTeleport.map(user => user._id), newLevelId });
     Meteor.users.update({ _id: { $in: usersToTeleport.map(user => user._id) } }, { $set: { 'profile.changeLevel': newLevelId } }, { multi: true });
+
+    // Free the transport rings!
+    escapeTransport[templateId] = [];
     log('escapeMakeLevel: end');
   },
   enlightenZone(name) {
