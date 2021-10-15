@@ -65,6 +65,11 @@ Template.escapeB.events({
   },
 });
 
+Template.registerHelper('isEscapeLevel', () => {
+  const level = Levels.findOne(Meteor.user()?.profile?.levelId);
+  if (!level) return false;
+  return level.metadata?.escape;
+});
 Template.registerHelper('displayEscapeTimer', () => {
   const level = Session.get('currentLevel');
   if (!level) return false;
