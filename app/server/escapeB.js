@@ -161,8 +161,9 @@ lp.deferCron('escapeCleanUp', () => {
   const allEscapes = Levels.find({ 'metadata.escape': true }).fetch();
 
   allEscapes.forEach(level => {
+    // Clean up level after a day.
     if (level.createdAt + (24 * 60 * 60 * 1000) > Date.now()) {
-      // Need cleanup
+      deleteLevel(level._id);
     }
   });
 });

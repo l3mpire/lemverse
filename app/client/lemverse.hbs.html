@@ -41,11 +41,11 @@
   {{#if Session 'displayNotificationsPanel'}}
     {{> notifications}}
   {{/if}}
+  {{#if Session 'showScoreInterface'}}
+    {{> scoreInterface}}
+  {{/if}}
   {{> userList}}
   {{> notification}}
-  {{#if Session 'showPaintInterface'}}
-    {{> paintInterface}}
-  {{/if}}
   <audio class="js-audio-webrtc-in" muted>
     <source src="/assets/lemverse/webrtc-in.mp3" type="audio/mp3">
   </audio>

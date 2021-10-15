@@ -40,7 +40,7 @@ entityManager = {
   remove() { },
 
   update(entity) {
-    if (entity.name === 'room-4-ready') Session.set('showPaintInterface', !entity.state);
+    if (entity.name === 'room-4-ready') Session.set('showScoreInterface', !entity.state);
   },
 
   onInteraction(tile) {
