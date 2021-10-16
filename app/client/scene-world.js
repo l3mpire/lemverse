@@ -324,6 +324,7 @@ WorldScene = new Phaser.Class({
     this.map?.destroy();
     characterPopIns.destroy();
     userChatCircle.destroy();
+    userManager.destroy();
     userVoiceRecorderAbility.destroy();
     userProximitySensor.callProximityEndedForAllNearUsers();
     peer.destroy();

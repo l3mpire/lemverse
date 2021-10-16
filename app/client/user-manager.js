@@ -47,6 +47,17 @@ userManager = {
     });
   },
 
+  destroy() {
+    _.each(this.players, player => {
+      clearInterval(player.reactionHandler);
+      delete player.reactionHandler;
+    });
+
+    this.player = undefined;
+    this.players = {};
+    this.characterNamesObjects = {};
+  },
+
   rename(name) {
     this.updateUserName(this.player.userId, name);
     if (meet.api) meet.api.executeCommand('displayName', name);
