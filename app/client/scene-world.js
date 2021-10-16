@@ -254,6 +254,8 @@ WorldScene = new Phaser.Class({
   },
 
   shutdown() {
+    this.nippleManager?.destroy();
+
     this.events.removeListener('postupdate');
     this.events.off('postupdate', this.postUpdate.bind(this), this);
     window.removeEventListener('onZoneEntered', onZoneEntered);
