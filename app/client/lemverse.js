@@ -47,6 +47,8 @@ const config = {
   height: window.innerHeight / Meteor.settings.public.zoom,
   zoom: Meteor.settings.public.zoom,
   pixelArt: true,
+  title: 'lemverse',
+  url: 'https://lemverse.com',
   physics: {
     default: 'arcade',
     arcade: {
