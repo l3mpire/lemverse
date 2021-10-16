@@ -14,7 +14,6 @@ EditorScene = new Phaser.Class({
     this.redoTiles = [];
     this.areaSelector = game.scene.keys.WorldScene.add.graphics();
     this.areaSelector.visible = false;
-    this.startPosition = { x: 0, y: 0 };
     this.keys = this.input.keyboard.addKeys({
       alt: Phaser.Input.Keyboard.KeyCodes.ALT,
     }, false, false);
@@ -66,7 +65,6 @@ EditorScene = new Phaser.Class({
 
           const zone = Zones.findOne(zoneId);
           if (!zone?.x2) {
-            this.startPosition = { x, y };
             Session.set('selectedZonePoint', 2);
           } else {
             Session.set('selectedZoneId', undefined);
@@ -76,20 +74,29 @@ EditorScene = new Phaser.Class({
         }
       }
 
-      if (Session.get('selectedZoneId') && Session.get('selectedZonePoint') === 2) {
-        const { x, y } = this.startPosition;
-        let width = worldPoint.x - x;
-        let height = worldPoint.y - y;
+      if (Session.get('selectedZoneId')) {
+        const zoneId = Session.get('selectedZoneId');
+        const zone = Zones.findOne(zoneId);
+        let startPosition = { x: 0, y: 0 };
+        let size = { x: 0, y: 0 };
+
+        if (Session.get('selectedZonePoint') === 2) {
+          startPosition = { x: zone.x1, y: zone.y1 };
+          size = { x: worldPoint.x - startPosition.x, y: worldPoint.y - startPosition.y };
+        } else {
+          startPosition = { x: worldPoint.x, y: worldPoint.y };
+          size = { x: (zone.x2 || worldPoint.x) - startPosition.x, y: (zone.y2 || worldPoint.y) - startPosition.y };
+        }
 
         if (altIsDown) {
           const { tileHeight, tileWidth } = game.scene.keys.WorldScene.map;
-          const snappedStartPosition = this.snapToTile(x, y);
-          const snappedSize = this.snapToTile(worldPoint.x - x, worldPoint.y - y);
-          width = snappedSize.x + (snappedStartPosition.x - x) + tileWidth;
-          height = snappedSize.y + (snappedStartPosition.y - y) + tileHeight;
+          const snappedStartPosition = this.snapToTile(startPosition.x, startPosition.y);
+          const snappedSize = this.snapToTile(worldPoint.x - startPosition.x, worldPoint.y - startPosition.y);
+          size.x = snappedSize.x + (snappedStartPosition.x - startPosition.x) + tileWidth;
+          size.y = snappedSize.y + (snappedStartPosition.y - startPosition.y) + tileHeight;
         }
 
-        this.showSelection(x, y, width, height);
+        this.showSelection(startPosition.x, startPosition.y, size.x, size.y);
       }
     } else if (Session.get('editorSelectedMenu') === 1) {
       // Snap to tile coordinates, but in world space
