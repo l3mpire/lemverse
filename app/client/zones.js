@@ -113,7 +113,17 @@ zones = {
     }, {});
 
     if (this.activeZone?._id !== zone?._id) {
-      if (this.onZoneChanged) this.onZoneChanged(!_.isEmpty(zone) ? zone : undefined, this.activeZone);
+      // notify about zone change
+      if (!_.isEmpty(this.activeZone)) {
+        const zoneLeavedEvent = new CustomEvent('onZoneLeaved', { detail: { zone: this.activeZone } });
+        window.dispatchEvent(zoneLeavedEvent);
+      }
+
+      if (!_.isEmpty(zone)) {
+        const zoneEnteredEvent = new CustomEvent('onZoneEntered', { detail: { zone, previousZone: this.activeZone } });
+        window.dispatchEvent(zoneEnteredEvent);
+      }
+
       this.activeZone = zone;
       if (zone.name) this.toastZoneName(zone?.name);
 
