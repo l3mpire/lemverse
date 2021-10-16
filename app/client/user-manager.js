@@ -1,6 +1,6 @@
 const defaultCharacterDirection = 'down';
 const defaultUserMediaColorError = '0xd21404';
-const characterNameOffset = { x: 0, y: -40 };
+const characterNameOffset = { x: 0, y: -85 };
 const characterSpritesOrigin = { x: 0.5, y: 1 };
 const characterInteractionDistance = { x: 32, y: 32 };
 const characterFootOffset = { x: -20, y: -10 };
@@ -327,8 +327,8 @@ userManager = {
   },
 
   createUserStateIndicator() {
-    const muteIndicatorMic = this.scene.add.text(0, 0, '🎤', { font: '23px Sans Open' }).setDepth(99996).setOrigin(0.5, 1);
-    const muteIndicatorCross = this.scene.add.text(0, -3, '❌', { font: '23px Sans Open' }).setDepth(99997).setOrigin(0.5, 1).setScale(0.6);
+    const muteIndicatorMic = this.scene.add.text(0, -40, '🎤', { font: '23px Sans Open' }).setDepth(99996).setOrigin(0.5, 1);
+    const muteIndicatorCross = this.scene.add.text(0, -40, '🚫', { font: '23px Sans Open' }).setDepth(99995).setOrigin(0.5, 1).setScale(0.8);
 
     const userStateIndicatorContainer = this.scene.add.container(0, 0);
     userStateIndicatorContainer.add([muteIndicatorMic, muteIndicatorCross]);
