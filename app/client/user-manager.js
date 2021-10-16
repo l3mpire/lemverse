@@ -1,8 +1,9 @@
 const defaultCharacterDirection = 'down';
 const defaultUserMediaColorError = '0xd21404';
 const characterNameOffset = { x: 0, y: -40 };
+const characterSpritesOrigin = { x: 0.5, y: 1 };
 const characterInteractionDistance = { x: 32, y: 32 };
-const characterFootOffset = { x: -20, y: 32 };
+const characterFootOffset = { x: -20, y: -10 };
 const characterColliderSize = { x: 38, y: 16 };
 
 charactersParts = Object.freeze({
@@ -79,19 +80,22 @@ userManager = {
     playerParts.setScale(3);
     playerParts.name = 'body';
 
-    const shadow = this.scene.add.circle(0, 46, 18, 0x000000);
+    const shadow = this.scene.add.circle(0, 8, 18, 0x000000);
     shadow.alpha = 0.1;
     shadow.scaleY = 0.4;
     shadow.setDepth(-1);
+    shadow.setOrigin(characterSpritesOrigin.x, characterSpritesOrigin.y);
     this.players[user._id].add(shadow);
 
     const bodyPlayer = this.scene.add.sprite(0, 0, body || guest ? Meteor.settings.public.skins.guest : Meteor.settings.public.skins.default);
+    bodyPlayer.setOrigin(characterSpritesOrigin.x, characterSpritesOrigin.y);
     bodyPlayer.name = 'body';
     playerParts.add(bodyPlayer);
 
     Object.keys(charactersParts).filter(part => part !== 'body' && user.profile[part]).forEach(part => {
       const spritePart = this.scene.add.sprite(0, 0, user.profile[part]);
       spritePart.name = part;
+      spritePart.setOrigin(characterSpritesOrigin.x, characterSpritesOrigin.y);
       playerParts.add(spritePart);
     });
 
@@ -523,8 +527,8 @@ userManager = {
   getTilesRelativeToPlayer(player, offset, layers = []) {
     if (!player) return undefined;
 
-    const tileX = this.scene.map.worldToTileX(player.x + characterFootOffset.x + offset.x);
-    const tileY = this.scene.map.worldToTileY(player.y + characterFootOffset.y + offset.y);
+    const tileX = this.scene.map.worldToTileX(player.x + offset.x);
+    const tileY = this.scene.map.worldToTileY(player.y + offset.y);
 
     const tiles = [];
     if (layers.length === 0) {
