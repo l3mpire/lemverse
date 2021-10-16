@@ -2,7 +2,7 @@
   {{#if Session 'showScoreInterface'}}
     {{> scoreInterface}}
   {{/if}}
-  {{#if displayEscapeTimer}}
+  {{#if and displayEscapeTimer (not isLoading)}}
     {{> escapeTimer}}
   {{/if}}
 </template>
