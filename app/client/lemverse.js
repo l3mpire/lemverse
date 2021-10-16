@@ -21,25 +21,6 @@ game = undefined;
 
 isModalOpen = () => Session.get('displaySettings') || Session.get('displayZoneId') || Session.get('displayNotificationsPanel');
 
-const stringToColour = str => {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
-
-  let colour = '#';
-  for (let i = 0; i < 3; i++) {
-    const value = (hash >> (i * 8)) & 0xFF;
-    colour += (`00${value.toString(16)}`).substr(-2);
-  }
-  return colour;
-};
-
-const paintTile = (worldScene, tile, layer) => {
-  const phaserTile = worldScene.map.getTileAt(tile.x, tile.y, false, layer);
-  const converted = stringToColour(tile.metadata.paint).replace('#', '0x');
-  const color = parseInt(converted, 16) * 100;
-  if (phaserTile) phaserTile.tint = color;
-};
-
 const config = {
   type: Phaser.AUTO,
   parent: 'game',
@@ -341,16 +322,12 @@ Template.lemverse.onCreated(function () {
             const layer = tileLayer(tile);
             worldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
             worldScene.drawTeleporters(false);
-
-            if (tile.metadata) {
-              if (tile.metadata.escapeHint) chest();
-              else if (tile.metadata.paint) paintTile(worldScene, tile, layer);
-            }
+            window.dispatchEvent(new CustomEvent('onTileAdded', { detail: { tile, layer } }));
           },
           changed(tile) {
             const layer = tileLayer(tile);
             worldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
-            if (tile.metadata?.paint) paintTile(worldScene, tile, layer);
+            window.dispatchEvent(new CustomEvent('onTileChanged', { detail: { tile, layer } }));
           },
           removed(tile) {
             const layer = tileLayer(tile);
@@ -551,11 +528,6 @@ Template.lemverse.helpers({
   isGuest: () => Meteor.user()?.profile.guest,
   hasNotifications: () => Notifications.find().count(),
   pendingNotificationsCount: () => Notifications.find({ read: false }).count(),
-  displayEscapeTimer: () => {
-    const level = Session.get('currentLevel');
-    if (!level) return false;
-    return FlowRouter.current()?.path === '/' && level.metadata?.escape && level.metadata?.start && !level.metadata?.end;
-  },
 });
 
 Template.lemverse.events({

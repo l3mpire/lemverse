@@ -1,6 +1,4 @@
 import nipplejs from 'nipplejs';
-import HUEEffect from '../public/assets/lemescape/A/HueEffect';
-import PostFX from '../public/assets/lemescape/A/PostFX';
 
 const Phaser = require('phaser');
 
@@ -14,9 +12,6 @@ const defaultLayerDepth = {
 };
 
 const findTileset = tilesetId => game.scene.keys.WorldScene.map.getTileset(tilesetId);
-const differMeteorCall = (...args) => {
-  setTimeout(() => { Meteor.call(...args); }, 0);
-};
 
 tileGlobalIndex = tile => {
   const tileset = findTileset(tile.tilesetId);
@@ -33,79 +28,17 @@ tileProperties = tile => {
 tileLayer = tile => tileProperties(tile)?.layer ?? defaultLayer;
 
 const onZoneEntered = e => {
-  const { levelId: currentLevelId } = Meteor.user().profile;
   const { zone } = e.detail;
-  const { targetedLevelId, inlineURL, escape } = zone;
+  const { targetedLevelId, inlineURL } = zone;
   const { WorldScene } = game.scene.keys;
 
   if (targetedLevelId) WorldScene.loadLevel(targetedLevelId);
   else if (inlineURL) characterPopIns.initFromZone(zone);
-  else if (escape) {
-    if (escape.triggerLimit) {
-      const users = zones.usersInZone(zones.currentZone(Meteor.user()), true);
-      if (users.length >= escape.triggerLimit) {
-        if (escape.start) differMeteorCall('escapeStart', zones.currentZone(Meteor.user()), users, currentLevelId);
-        if (escape.makeLevel) differMeteorCall('escapeMakeLevel', escape.makeLevel, zones.currentZone(Meteor.user()), users);
-      }
-    }
-
-    if (escape.setCurrentLevel) {
-      Meteor.call('currentLevel', (err, result) => {
-        if (err) return;
-        Session.set('currentLevel', result);
-      });
-    }
-    if (escape.enlightenZone) differMeteorCall('enlightenZone', escape.enlightenZone);
-    if (escape.teleportAllTo) differMeteorCall('teleportAllTo', escape.teleportAllTo.name, escape.teleportAllTo.coord);
-    if (escape.updateTiles) differMeteorCall('updateTiles', escape.updateTiles);
-    if (escape.freezeOthers) differMeteorCall('freezeOthers');
-    if (escape.end) {
-      differMeteorCall('escapeEnd', currentLevelId, () => {
-        Meteor.call('currentLevel', (err, result) => {
-          if (err) return;
-          Session.set('currentLevel', result);
-        });
-      });
-    }
-    if (escape.setCurrentRoom) differMeteorCall('setCurrentRoom', escape.setCurrentRoom);
-    if (escape.hurtPlayer) {
-      userManager.flashColor(userManager.player, 0xFF0000);
-      setTimeout(() => {
-        const { x, y } = escape.hurtPlayer.teleportPosition;
-        userManager.teleportMainUser(+x, +y);
-      }, 0);
-    }
-
-    if (escape.team) {
-      const zoneA = Zones.findOne({ 'escape.team': 'A' });
-      const zoneB = Zones.findOne({ 'escape.team': 'B' });
-      const usersCountZoneA = zones.usersInZone(zoneA, true).length;
-      const usersCountZoneB = zones.usersInZone(zoneB, true).length;
-
-      if (usersCountZoneA > 0 && usersCountZoneB > 0 && usersCountZoneA === usersCountZoneB) differMeteorCall('switchEntityState', currentLevelId, 'door-room-2');
-    } else if (escape.switchEntityState) differMeteorCall('switchEntityState', currentLevelId, escape.switchEntityState);
-    else if (escape.waitEveryoneZone) {
-      if (zones.usersInZone(zone, true).length === Meteor.users.find().count()) {
-        differMeteorCall('switchEntityState', currentLevelId, 'room-4-ready', escape.forceEntityState);
-      }
-    }
-
-    if (escape.paintTiles) entityManager.enable_sync_coloration = true;
-    else if (escape.enableDistortionEffect) {
-      WorldScene.cameras.main.setPostPipeline(PostFX);
-      entityManager.enable_path_coloration = true;
-    } else if (escape.enableHUEEffect) WorldScene.cameras.main.setPostPipeline(HUEEffect);
-  }
 };
 
 const onZoneLeaved = e => {
   const { zone } = e.detail;
-
   if (!zone.popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(Meteor.userId(), zone._id);
-
-  game.scene.keys.WorldScene.cameras.main.resetPostPipeline();
-  entityManager.enable_path_coloration = false;
-  entityManager.enable_sync_coloration = false;
 };
 
 WorldScene = new Phaser.Class({

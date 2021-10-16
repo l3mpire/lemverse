@@ -41,12 +41,7 @@
   {{#if Session 'displayNotificationsPanel'}}
     {{> notifications}}
   {{/if}}
-  {{#if Session 'showScoreInterface'}}
-    {{> scoreInterface}}
-  {{/if}}
-  {{#if displayEscapeTimer}}
-    {{> escapeTimer}}
-  {{/if}}
+  {{> gameMod}}
   {{> userList}}
   {{> notification}}
   <audio class="js-audio-webrtc-in" muted>

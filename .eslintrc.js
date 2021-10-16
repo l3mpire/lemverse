@@ -124,6 +124,7 @@ module.exports = {
     entityManager: 'writable',
     levelConfiguration: 'writable',
     findEntity: 'writable',
+    stringToColor: 'writable',
 
     tileGlobalIndex: 'writable',
     tileLayer: 'writable',
