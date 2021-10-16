@@ -549,6 +549,11 @@ Template.lemverse.helpers({
   isGuest: () => Meteor.user()?.profile.guest,
   hasNotifications: () => Notifications.find().count(),
   pendingNotificationsCount: () => Notifications.find({ read: false }).count(),
+  displayEscapeTimer: () => {
+    const level = Session.get('currentLevel');
+    if (!level) return false;
+    return FlowRouter.current()?.path === '/' && level.metadata?.escape && level.metadata?.start && !level.metadata?.end;
+  },
 });
 
 Template.lemverse.events({

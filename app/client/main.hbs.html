@@ -13,9 +13,6 @@
 <template name="layout">
   {{> onlineStatus}}
   {{> Template.dynamic template=main data=layoutData}}
-  {{#if displayEscapeTimer}}
-    {{> escapeTimer}}
-  {{/if}}
 </template>
 
 <template name="onlineStatus">

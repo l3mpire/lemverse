@@ -71,11 +71,6 @@ Template.registerHelper('isEscapeLevel', () => {
   if (!level) return false;
   return level.metadata?.escape;
 });
-Template.registerHelper('displayEscapeTimer', () => {
-  const level = Session.get('currentLevel');
-  if (!level) return false;
-  return FlowRouter.current()?.path === '/' && level.metadata?.escape && level.metadata?.start && !level.metadata?.end;
-});
 
 //
 // escapeTimer

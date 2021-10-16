@@ -44,6 +44,9 @@
   {{#if Session 'showScoreInterface'}}
     {{> scoreInterface}}
   {{/if}}
+  {{#if displayEscapeTimer}}
+    {{> escapeTimer}}
+  {{/if}}
   {{> userList}}
   {{> notification}}
   <audio class="js-audio-webrtc-in" muted>
