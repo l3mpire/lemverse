@@ -5,6 +5,7 @@ const zoneHideProperties = [
   'y1',
   'x2',
   'y2',
+  'levelId',
   'createdAt',
   'createdBy',
 ];
