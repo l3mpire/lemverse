@@ -125,7 +125,7 @@ zones = {
       }
 
       this.activeZone = zone;
-      if (zone.name) this.toastZoneName(zone?.name);
+      if (zone.name && !zone.hideName) this.toastZoneName(zone?.name);
 
       const dataPlayer = Meteor.users.findOne({ _id: player.userId });
 

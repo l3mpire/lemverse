@@ -30,6 +30,7 @@ Template.zonesToolboxProperties.helpers({
     if (!props.fullscreen) props.fullscreen = false;
     if (!props.targetedLevelId) props.targetedLevelId = '';
     if (!props.inlineURL) props.inlineURL = '';
+    if (!props.hideName) props.hideName = false;
 
     return JSON.stringify(props, ' ', 2);
   },
