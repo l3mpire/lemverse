@@ -37,7 +37,7 @@ EditorScene = new Phaser.Class({
 
     const altIsDown = this.keys.alt.isDown;
     const { WorldScene } = game.scene.keys;
-    const { map } = WorldScene;
+    const { map } = levelManager;
     const worldPoint = this.input.activePointer.positionToCamera(WorldScene.cameras.main);
     // Rounds down to nearest tile
     const pointerTileX = map.worldToTileX(worldPoint.x);
@@ -55,7 +55,7 @@ EditorScene = new Phaser.Class({
           let { x, y } = worldPoint;
           const point = Session.get('selectedZonePoint');
           if (altIsDown) {
-            const { tileHeight, tileWidth } = game.scene.keys.WorldScene.map;
+            const { tileHeight, tileWidth } = levelManager.map;
             const snappedStartPosition = this.snapToTile(x, y);
             x = snappedStartPosition.x + ((point - 1) * tileWidth);
             y = snappedStartPosition.y + ((point - 1) * tileHeight);
@@ -89,7 +89,7 @@ EditorScene = new Phaser.Class({
         }
 
         if (altIsDown) {
-          const { tileHeight, tileWidth } = game.scene.keys.WorldScene.map;
+          const { tileHeight, tileWidth } = levelManager.map;
           const snappedStartPosition = this.snapToTile(startPosition.x, startPosition.y);
           const snappedSize = this.snapToTile(worldPoint.x - startPosition.x, worldPoint.y - startPosition.y);
           size.x = snappedSize.x + (snappedStartPosition.x - startPosition.x) + tileWidth;
@@ -136,7 +136,7 @@ EditorScene = new Phaser.Class({
         } else if (selectedTiles?.index < 0) {
           const layer = -selectedTiles.index - 1;
           Tiles.find({ x: pointerTileX, y: pointerTileY }).forEach(tile => {
-            if (tileLayer(tile) === layer) {
+            if (levelManager.tileLayer(tile) === layer) {
               this.undoTiles.push(tile);
               Tiles.remove(tile._id);
             }
@@ -147,10 +147,10 @@ EditorScene = new Phaser.Class({
           for (let x = 0; x < selectedTiles.w; x++) {
             for (let y = 0; y < selectedTiles.h; y++) {
               const selectedTileIndex = (selectedTiles.y + y) * selectedTileset.width / 16 + (selectedTiles.x + x);
-              const layer = tileLayer({ tilesetId: selectedTiles.tilesetId, index: selectedTileIndex });
+              const layer = levelManager.tileLayer({ tilesetId: selectedTiles.tilesetId, index: selectedTileIndex });
 
               // eslint-disable-next-line no-loop-func
-              const tile = _.find(Tiles.find({ x: pointerTileX + x, y: pointerTileY + y }).fetch(), t => tileLayer({ tilesetId: t.tilesetId, index: t.index }) === layer);
+              const tile = _.find(Tiles.find({ x: pointerTileX + x, y: pointerTileY + y }).fetch(), t => levelManager.tileLayer({ tilesetId: t.tilesetId, index: t.index }) === layer);
 
               if (tile && (tile.index !== selectedTileIndex || tile.tilesetId !== selectedTileset._id)) {
                 this.undoTiles.push(tile);
@@ -205,7 +205,7 @@ EditorScene = new Phaser.Class({
     if (!this.marker) return;
     this.marker.clear();
     this.marker.lineStyle(2, 0x00FF00, 1);
-    this.marker.strokeRect(0, 0, game.scene.keys.WorldScene.map.tileWidth * (selectedTiles?.w || 1), game.scene.keys.WorldScene.map.tileHeight * (selectedTiles?.h || 1));
+    this.marker.strokeRect(0, 0, levelManager.map.tileWidth * (selectedTiles?.w || 1), levelManager.map.tileHeight * (selectedTiles?.h || 1));
     this.marker.setDepth(10002);
   },
 
@@ -217,7 +217,7 @@ EditorScene = new Phaser.Class({
   },
 
   snapToTile(x, y) {
-    const { tileHeight, tileWidth } = game.scene.keys.WorldScene.map;
+    const { tileHeight, tileWidth } = levelManager.map;
 
     return {
       x: Math.floor(x / tileWidth) * tileWidth,

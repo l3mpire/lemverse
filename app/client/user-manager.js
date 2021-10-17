@@ -306,7 +306,7 @@ userManager = {
     player.body.setOffset(characterFootOffset.x, characterFootOffset.y);
 
     // add character's physic body to layers
-    _.each(this.scene.layers, layer => {
+    _.each(levelManager.layers, layer => {
       if (layer.playerCollider) this.scene.physics.world.removeCollider(layer.playerCollider);
       if (!level.godMode) layer.playerCollider = this.scene.physics.add.collider(player, layer);
     });
@@ -327,7 +327,7 @@ userManager = {
     this.scene.physics.world.disableBody(this.player);
     if (destroy) this.player.destroy();
 
-    _.each(this.scene.layers, layer => {
+    _.each(levelManager.layers, layer => {
       if (layer.playerCollider) this.scene.physics.world.removeCollider(layer.playerCollider);
     });
 
@@ -460,8 +460,7 @@ userManager = {
     const user = Meteor.user();
     if (user.profile.freeze) moving = false;
     if (user.profile.changeLevel) {
-      this.scene.loadLevel(user.profile.changeLevel);
-
+      levelManager.loadLevel(user.profile.changeLevel);
       Meteor.users.update(Meteor.userId(), { $set: { 'profile.levelId': user.profile.changeLevel }, $unset: { 'profile.changeLevel': 1 } });
     }
 
@@ -538,18 +537,19 @@ userManager = {
   getTilesRelativeToPlayer(player, offset, layers = []) {
     if (!player) return undefined;
 
-    const tileX = this.scene.map.worldToTileX(player.x + offset.x);
-    const tileY = this.scene.map.worldToTileY(player.y + offset.y);
+    const { map } = levelManager;
+    const tileX = map.worldToTileX(player.x + offset.x);
+    const tileY = map.worldToTileY(player.y + offset.y);
 
     const tiles = [];
     if (layers.length === 0) {
-      for (let l = this.scene.map.layers.length; l >= 0; l--) {
-        const tile = this.scene.map.getTileAt(tileX, tileY, false, l);
+      for (let l = map.layers.length; l >= 0; l--) {
+        const tile = map.getTileAt(tileX, tileY, false, l);
         if (tile) tiles.push(tile);
       }
     } else {
       layers.forEach(l => {
-        const tile = this.scene.map.getTileAt(tileX, tileY, false, l);
+        const tile = map.getTileAt(tileX, tileY, false, l);
         if (tile) tiles.push(tile);
       });
     }

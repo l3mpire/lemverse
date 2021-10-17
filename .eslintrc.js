@@ -120,6 +120,7 @@ module.exports = {
     userStreams: 'writable',
     streamTypes: 'writable',
     getRandomAvatarForUser: 'writable',
+    levelManager: 'writable',
     userManager: 'writable',
     entityManager: 'writable',
     levelConfiguration: 'writable',

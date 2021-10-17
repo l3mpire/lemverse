@@ -93,7 +93,7 @@ entityManager = {
   onFailed() {
     for (let i = 80; i <= 89; i++) {
       for (let j = 32; j <= 48; j++) {
-        const tile = userManager.scene.map.getTileAt(i, j, false, 0);
+        const tile = levelManager.map.getTileAt(i, j, false, 0);
         if (tile) tile.tint = 0xFFFFFF;
       }
     }

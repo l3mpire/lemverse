@@ -12,10 +12,6 @@ hotkeys.filter = function (event) {
   return !/^(INPUT|TEXTAREA)$/.test(tagName);
 };
 
-Template.registerHelper('tileLayer', function () { return tileLayer(this); });
-Template.registerHelper('worldToTileX', x => game?.scene.keys.WorldScene.map.worldToTileX(x));
-Template.registerHelper('worldToTileY', y => game?.scene.keys.WorldScene.map.worldToTileY(y));
-
 game = undefined;
 
 isModalOpen = () => Session.get('displaySettings') || Session.get('displayZoneId') || Session.get('displayNotificationsPanel');
@@ -146,35 +142,15 @@ Template.lemverse.onCreated(function () {
   this.autorun(() => {
     if (!Session.get('gameCreated')) return;
 
-    const worldScene = game.scene.getScene('WorldScene');
     Tracker.nonreactive(() => {
       if (this.handleObserveTilesets) this.handleObserveTilesets.stop();
       if (!this.handleObserveTilesets) {
         this.handleObserveTilesets = Tilesets.find().observe({
           added(tileset) {
-            game.scene.keys.BootScene.loadTilesetsAtRuntime([tileset], worldScene.addTilesetsToLayers.bind(worldScene));
+            game.scene.keys.BootScene.loadTilesetsAtRuntime([tileset], levelManager.addTilesetsToLayers.bind(levelManager));
           },
           changed(o, n) {
-            const oTileKeys = _.map(_.keys(o.tiles || {}), k => +k);
-            const nTileKeys = _.map(_.keys(n.tiles || {}), k => +k);
-            const d1 = _.difference(oTileKeys, nTileKeys);
-            const d2 = _.difference(nTileKeys, oTileKeys);
-            const d3 = _.filter(oTileKeys, index => o.tiles[index]?.layer !== n.tiles[index]?.layer);
-            const changedTileIndexes = _.union(d1, d2, d3);
-            const xys = _.map(Tiles.find({ tilesetId: n._id, index: { $in: changedTileIndexes } }).fetch(), t => ({ x: t.x, y: t.y }));
-            _.forEach(xys, xy => worldScene.tileRefresh(xy.x, xy.y));
-
-            const enabledCollisionIndexes = _.difference(o.collisionTileIndexes, n.collisionTileIndexes);
-            const disabledCollisionIndexes = _.difference(n.collisionTileIndexes, o.collisionTileIndexes);
-
-            const enabledCollisionGlobalIndexes = _.map(enabledCollisionIndexes, i => tileGlobalIndex({ index: i, tilesetId: n._id }));
-            const disabledCollisionGlobalIndexes = _.map(disabledCollisionIndexes, i => tileGlobalIndex({ index: i, tilesetId: n._id }));
-
-            const { layers } = worldScene.map;
-            _.each(layers, layer => {
-              worldScene.map.setCollision(enabledCollisionGlobalIndexes, true, false, layer.tilemapLayer);
-              worldScene.map.setCollision(disabledCollisionGlobalIndexes, false, false, layer.tilemapLayer);
-            });
+            levelManager.onTilesetUpdated(o, n);
           },
         });
       }
@@ -253,7 +229,6 @@ Template.lemverse.onCreated(function () {
       if (this.handleObserveTiles) this.handleObserveTiles.stop();
       if (this.handleObserveUsers) this.handleObserveUsers.stop();
       if (this.handleObserveZones) this.handleObserveZones.stop();
-      const worldScene = game.scene.getScene('WorldScene');
 
       // Load users
       log(`loading level: loading users`);
@@ -318,24 +293,24 @@ Template.lemverse.onCreated(function () {
       this.handleTilesSubscribe = this.subscribe('tiles', levelId, () => {
         this.handleObserveTiles = Tiles.find().observe({
           added(tile) {
-            const layer = tileLayer(tile);
-            worldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
-            worldScene.drawTeleporters(false);
+            const layer = levelManager.tileLayer(tile);
+            levelManager.map.putTileAt(levelManager.tileGlobalIndex(tile), tile.x, tile.y, false, layer);
+            levelManager.drawTeleporters(false);
             window.dispatchEvent(new CustomEvent('onTileAdded', { detail: { tile, layer } }));
           },
           changed(tile) {
-            const layer = tileLayer(tile);
-            worldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
+            const layer = levelManager.tileLayer(tile);
+            levelManager.map.putTileAt(levelManager.tileGlobalIndex(tile), tile.x, tile.y, false, layer);
             window.dispatchEvent(new CustomEvent('onTileChanged', { detail: { tile, layer } }));
           },
           removed(tile) {
-            const layer = tileLayer(tile);
-            worldScene.map.removeTileAt(tile.x, tile.y, false, false, layer);
+            const layer = levelManager.tileLayer(tile);
+            levelManager.map.removeTileAt(tile.x, tile.y, false, false, layer);
           },
         });
 
         log('loading level: all tiles loaded');
-        worldScene.onLevelLoaded();
+        levelManager.onLevelLoaded();
       });
 
       game.scene.getScene('EditorScene')?.init();
@@ -472,7 +447,7 @@ Template.lemverse.onCreated(function () {
   });
 
   hotkeys('shift+0', { scope: scopes.player }, () => {
-    game.scene.keys.WorldScene.drawTeleporters(!game?.scene.keys.WorldScene.teleporterGraphics.length);
+    levelManager.drawTeleporters(!levelManager.teleporterGraphics.length);
   });
 });
 

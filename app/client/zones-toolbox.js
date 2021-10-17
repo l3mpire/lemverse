@@ -9,9 +9,7 @@ const zoneHideProperties = [
   'createdBy',
 ];
 
-const clearZoneRectangles = () => {
-  _.each(zoneRectangles, r => r.destroy());
-};
+const clearZoneRectangles = () => _.each(zoneRectangles, r => r.destroy());
 
 //
 // zonesToolboxProperties

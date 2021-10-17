@@ -77,7 +77,7 @@ const onZoneLeaved = e => {
 };
 
 const paintTile = (worldScene, tile, layer) => {
-  const phaserTile = worldScene.map.getTileAt(tile.x, tile.y, false, layer);
+  const phaserTile = levelManager.map.getTileAt(tile.x, tile.y, false, layer);
   const converted = stringToColor(tile.metadata.paint).replace('#', '0x');
   const color = parseInt(converted, 16) * 100;
   if (phaserTile) phaserTile.tint = color;
