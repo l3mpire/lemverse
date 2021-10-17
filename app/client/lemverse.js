@@ -1,5 +1,4 @@
-import PostFX from '../public/assets/lemescape/A/PostFX';
-import HUEEffect from '../public/assets/lemescape/A/HueEffect';
+import DizzyEffect from '../public/assets/post-effects/DizzyEffect';
 
 const Phaser = require('phaser');
 
@@ -40,7 +39,7 @@ const config = {
   dom: {
     createContainer: true,
   },
-  pipeline: { PostFX, HUEEffect },
+  pipeline: { DizzyEffect },
 };
 
 Template.lemverse.onCreated(function () {

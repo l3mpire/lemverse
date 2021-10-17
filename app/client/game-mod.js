@@ -1,5 +1,4 @@
-import HUEEffect from '../public/assets/lemescape/A/HueEffect';
-import PostFX from '../public/assets/lemescape/A/PostFX';
+import DizzyEffect from '../public/assets/post-effects/DizzyEffect';
 
 const differMeteorCall = (...args) => setTimeout(() => { Meteor.call(...args); }, 0);
 
@@ -62,9 +61,9 @@ const onZoneEntered = e => {
 
   if (escape.paintTiles) entityManager.enable_sync_coloration = true;
   else if (escape.enableDistortionEffect) {
-    WorldScene.cameras.main.setPostPipeline(PostFX);
+    WorldScene.cameras.main.setPostPipeline(DizzyEffect);
     entityManager.enable_path_coloration = true;
-  } else if (escape.enableHUEEffect) WorldScene.cameras.main.setPostPipeline(HUEEffect);
+  }
 };
 
 const onZoneLeaved = e => {
