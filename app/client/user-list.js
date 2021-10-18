@@ -14,6 +14,9 @@ Template.userList.helpers({
 
       return usr;
     });
+
+    users.sort((a, b) => a.profile.name.toLowerCase().localeCompare(b.profile.name.toLowerCase()));
+
     return users;
   },
   zones() { return Zones.find({}, { sort: { name: 1 } }).fetch(); },
