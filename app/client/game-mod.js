@@ -11,10 +11,9 @@ const onZoneEntered = e => {
   if (!escape) return;
 
   if (escape.triggerLimit) {
-    const users = zones.usersInZone(zones.currentZone(Meteor.user()), true);
+    const users = zones.usersInZone(zone, true);
     if (users.length >= escape.triggerLimit) {
-      if (escape.start) differMeteorCall('escapeStart', zones.currentZone(Meteor.user()), users, currentLevelId);
-      if (escape.makeLevel) differMeteorCall('escapeMakeLevel', escape.makeLevel, zones.currentZone(Meteor.user()), users);
+      if (escape.makeLevel) differMeteorCall('escapeMakeLevel', escape.makeLevel, zone, users);
     }
   }
 
@@ -24,6 +23,7 @@ const onZoneEntered = e => {
       Session.set('currentLevel', result);
     });
   }
+  if (escape.start && zones.usersInZone(zone, true).length === Meteor.users.find().count()) differMeteorCall('escapeStart', escape.startZone, currentLevelId);
   if (escape.enlightenZone) differMeteorCall('enlightenZone', escape.enlightenZone);
   if (escape.teleportAllTo) differMeteorCall('teleportAllTo', escape.teleportAllTo.name, escape.teleportAllTo.coord);
   if (escape.updateTiles) differMeteorCall('updateTiles', escape.updateTiles);

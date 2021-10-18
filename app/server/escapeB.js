@@ -48,8 +48,8 @@ Meteor.methods({
     Tiles.update({ _id: { $in: allTiles.map(tile => tile._id) } }, { $set: { invisible } }, { multi: true });
     log('toggleZone: updating', { nbTiles: allTiles.length });
   },
-  escapeStart(zone, usersInZone, levelId) {
-    log('escapeStart: start', { zone, usersInZone: usersInZone.map(user => user._id), levelId });
+  escapeStart(zoneName, levelId) {
+    log('escapeStart: start', { zoneName, levelId });
 
     const currLevel = Levels.findOne({ _id: levelId });
 
@@ -57,7 +57,7 @@ Meteor.methods({
       // Start time
       Levels.update({ _id: levelId }, { $set: { 'metadata.start': Date.now() } });
       // Open locked door
-      Tiles.update({ levelId, 'metadata.zoneName': 'room1' }, { $set: { invisible: true } }, { multi: true });
+      Tiles.update({ levelId, 'metadata.zoneName': zoneName }, { $set: { invisible: true } }, { multi: true });
     }
   },
   escapeEnd(levelId) {
