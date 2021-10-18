@@ -162,7 +162,7 @@ lp.deferCron('escapeCleanUp', () => {
 
   allEscapes.forEach(level => {
     // Clean up level after a day.
-    if (level.createdAt.getTime() + (24 * 60 * 60 * 1000) > Date.now()) {
+    if (level.createdAt.getTime() + (24 * 60 * 60 * 1000) < Date.now()) {
       deleteLevel(level._id);
     }
   });
