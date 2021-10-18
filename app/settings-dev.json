@@ -71,6 +71,7 @@
 
   "services": {
     "escape":{ "interval": 10 },
-    "escapeCleanUp":{ "interval": 10 }
+    "escapeCleanUp":{ "interval": 10 },
+    "stats":{ "interval": 3600 }
   }
 }
