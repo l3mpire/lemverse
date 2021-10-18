@@ -98,7 +98,7 @@ userManager = {
       this.spawnReaction(this.player, `It's ${name}!`, 'fadeOut', { randomOffset: 0 });
     });
 
-    const shadow = this.scene.add.circle(0, 8, 18, 0x000000);
+    const shadow = this.scene.add.circle(0, 6, 18, 0x000000);
     shadow.alpha = 0.1;
     shadow.scaleY = 0.4;
     shadow.setDepth(-1);
