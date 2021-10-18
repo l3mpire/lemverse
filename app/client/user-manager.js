@@ -1,3 +1,5 @@
+const Phaser = require('phaser');
+
 const defaultCharacterDirection = 'down';
 const defaultUserMediaColorError = '0xd21404';
 const characterNameOffset = { x: 0, y: -85 };
@@ -90,6 +92,11 @@ userManager = {
     const playerParts = this.scene.add.container(0, 0);
     playerParts.setScale(3);
     playerParts.name = 'body';
+    playerParts.setInteractive(new Phaser.Geom.Circle(0, -16, 16), Phaser.Geom.Circle.Contains);
+    playerParts.on('pointerup', () => {
+      const name = user._id === Meteor.userId() ? 'me' : Meteor.users.findOne(user._id).profile.name;
+      this.spawnReaction(this.player, `It's ${name}!`, 'fadeOut', { randomOffset: 0 });
+    });
 
     const shadow = this.scene.add.circle(0, 8, 18, 0x000000);
     shadow.alpha = 0.1;
@@ -138,8 +145,9 @@ userManager = {
 
     // show reactions
     if (reaction && !player.reactionHandler) {
-      this.spawnReaction(player, reaction);
-      player.reactionHandler = setInterval(() => this.spawnReaction(player, reaction), 250);
+      const animation = reaction === '❤️' ? 'zigzag' : 'linearUpScaleDown';
+      this.spawnReaction(player, reaction, animation, { randomOffset: 10 });
+      player.reactionHandler = setInterval(() => this.spawnReaction(player, reaction, animation, { randomOffset: 10 }), 250);
     } else if (!reaction && player.reactionHandler) {
       clearInterval(player.reactionHandler);
       delete player.reactionHandler;
@@ -355,18 +363,15 @@ userManager = {
     this.characterNamesObjects[userId] = undefined;
   },
 
-  spawnReaction(player, emoji) {
-    const ReactionDiff = 10;
-    const positionX = player.x - ReactionDiff + _.random(-10, 10);
-    const positionY = player.y + characterNameOffset.y + _.random(-10, 10);
-    const reaction = this.scene.add.text(positionX, positionY, emoji, { font: '32px Sans Open' }).setDepth(99997).setOrigin(0.5, 1);
+  spawnReaction(player, content, animation, options) {
+    const ReactionDiff = animation === 'zigzag' ? 10 : 0;
+    const positionX = player.x - ReactionDiff + _.random(-options.randomOffset, options.randomOffset);
+    const positionY = player.y + characterNameOffset.y + _.random(-options.randomOffset, options.randomOffset);
+    const reaction = this.scene.add.text(positionX, positionY, content, { font: '32px Sans Open' }).setDepth(99997).setOrigin(0.5, 1);
 
     this.scene.tweens.add({
       targets: reaction,
-      alpha: { value: 0, duration: 250, delay: 750, ease: 'Power1' },
-      y: { value: positionY - 70, duration: 1300, ease: 'Power1' },
-      x: { value: positionX + (ReactionDiff * 2), duration: 250, ease: 'Linear', yoyo: true, repeat: -1 },
-      scale: { value: 1.2, duration: 175, ease: 'Quad.easeOut', yoyo: true, repeat: -1 },
+      ...reactionsAnimations[animation](positionX, positionY, ReactionDiff),
       onComplete: () => reaction.destroy(),
     });
   },

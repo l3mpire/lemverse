@@ -126,6 +126,7 @@ module.exports = {
     levelConfiguration: 'writable',
     findEntity: 'writable',
     stringToColor: 'writable',
+    reactionsAnimations: 'writable',
 
     tileGlobalIndex: 'writable',
     tileLayer: 'writable',
