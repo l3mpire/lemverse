@@ -320,8 +320,7 @@ userManager = {
     });
 
     // ask camera to follow the player
-    this.scene.cameras.main.startFollow(player);
-    this.scene.cameras.main.roundPixels = true;
+    this.scene.cameras.main.startFollow(player, true, 0.1, 0.1);
 
     if (Meteor.user().guest) hotkeys.setScope('guest');
     else hotkeys.setScope(scopes.player);
