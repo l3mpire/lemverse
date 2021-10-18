@@ -29,7 +29,7 @@ const onZoneEntered = e => {
   if (escape.updateTiles) differMeteorCall('updateTiles', escape.updateTiles);
   if (escape.freezeOthers) differMeteorCall('freezeOthers');
   if (escape.end) {
-    differMeteorCall('escapeEnd', currentLevelId, () => {
+    differMeteorCall('escapeEnd', currentLevelId, escape.winZoneName, escape.lostZoneName, () => {
       Meteor.call('currentLevel', (err, result) => {
         if (err) return;
         Session.set('currentLevel', result);

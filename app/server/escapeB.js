@@ -51,38 +51,38 @@ Meteor.methods({
   escapeStart(zoneName, levelId) {
     log('escapeStart: start', { zoneName, levelId });
 
-    const currLevel = Levels.findOne({ _id: levelId });
+    const currentLevel = Levels.findOne({ _id: levelId });
 
-    if (!currLevel.metadata.start) {
+    if (!currentLevel.metadata.start) {
       // Start time
       Levels.update({ _id: levelId }, { $set: { 'metadata.start': Date.now() } });
       // Open locked door
       Tiles.update({ levelId, 'metadata.zoneName': zoneName }, { $set: { invisible: true } }, { multi: true });
     }
   },
-  escapeEnd(levelId) {
-    log('escapeEnd: start', { levelId });
+  escapeEnd(levelId, winZoneName, lostZoneName) {
+    log('escapeEnd: start', { levelId, winZoneName, lostZoneName });
 
-    const currLevel = Levels.findOne({ _id: levelId });
+    const currentLevel = Levels.findOne({ _id: levelId });
 
-    if (!currLevel.metadata.end) {
+    if (!currentLevel.metadata.end) {
       const endTime = Date.now();
       Levels.update({ _id: levelId }, { $set: { 'metadata.end': endTime } });
-      if ((endTime - currLevel.metadata.start) / 60000 < 60) {
+      let zoneName = lostZoneName;
+      const escapeDurationMinutes = ((endTime - currentLevel.metadata.start) / 60000) | 0;
+      if (escapeDurationMinutes < currentLevel.metadata.durationMinutes) {
         // Win
-        Tiles.update({ levelId, 'metadata.zoneName': 'win' }, { $set: { invisible: false } }, { multi: true });
-      } else {
-        // Loose
-        Tiles.update({ levelId, 'metadata.zoneName': 'lost' }, { $set: { invisible: false } }, { multi: true });
+        zoneName = winZoneName;
       }
+      Tiles.update({ levelId, 'metadata.zoneName': zoneName }, { $set: { invisible: false } }, { multi: true });
     }
   },
   setCurrentRoom(room) {
     const { levelId } = Meteor.user().profile;
     log('setCurrentRoom: start', { levelId });
 
-    const currLevel = Levels.findOne({ _id: levelId });
-    if (!currLevel.metadata.currentRoom || currLevel.metadata.currentRoom !== room) {
+    const currentLevel = Levels.findOne({ _id: levelId });
+    if (!currentLevel.metadata.currentRoom || currentLevel.metadata.currentRoom !== room) {
       Levels.update({ _id: levelId }, { $set: { 'metadata.currentRoom': room, 'metadata.currentRoomTime': Date.now() } });
     }
   },
