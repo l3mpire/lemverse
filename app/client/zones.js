@@ -1,6 +1,5 @@
 zones = {
   activeZone: undefined,
-  onZoneChanged: undefined,
   toastTimerInstance: undefined,
   toastBloc: undefined,
   webpageContainer: undefined,
