@@ -10,7 +10,7 @@ Template.userList.helpers({
         y1: { $lte: usr.profile.y },
         y2: { $gte: usr.profile.y },
       });
-      if (zone?.name) usr.profile.zoneName = zone.name;
+      if (zone && zone.name && !zone.hideName) usr.profile.zoneName = zone.name;
 
       return usr;
     });
