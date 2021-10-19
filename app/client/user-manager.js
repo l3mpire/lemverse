@@ -217,6 +217,8 @@ userManager = {
       // check zone and near users on move
       if (hasMoved) zones.checkDistances(this.player);
 
+      if (user.profile.avatar !== oldUser?.profile.avatar) userStreams.refreshVideoElementAvatar();
+
       if (shouldCheckDistance) {
         const otherUsers = Meteor.users.find({ _id: { $ne: mainUser._id } }).fetch();
         userProximitySensor.checkDistances(mainUser, otherUsers);

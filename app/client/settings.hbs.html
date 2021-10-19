@@ -18,6 +18,11 @@
             <label for="reaction">Custom reaction</label>
             <input type="text" name="reaction" id="reaction" class="js-reaction" value={{#if currentUser.profile.defaultReaction}}{{currentUser.profile.defaultReaction}}{{else}}❤️{{/if}}>
           </div>
+          
+          <div>
+            <label for="reaction">Avatar preference</label>
+            <input type="text" name="avatar" id="avatar" class="js-avatar" value={{#if currentUser.profile.avatar}}{{currentUser.profile.avatar}}{{else}}cat{{/if}}>
+          </div>
 
           <div>
             <button class="js-character-designer" id="character-edit">Character editor</button>
