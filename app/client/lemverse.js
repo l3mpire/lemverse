@@ -14,7 +14,7 @@ hotkeys.filter = function (event) {
 
 game = undefined;
 
-isModalOpen = () => Session.get('displaySettings') || Session.get('displayZoneId') || Session.get('displayNotificationsPanel');
+isModalOpen = () => Session.get('displaySettings') || Session.get('displayZoneId') || Session.get('displayNotificationsPanel') || Session.get('displayProfile');
 
 const config = {
   type: Phaser.AUTO,
@@ -35,6 +35,8 @@ const config = {
   scale: {
     mode: Phaser.Scale.RESIZE,
     autoCenter: Phaser.Scale.CENTER_BOTH,
+    width: 800, // Default game window width
+    height: 600, // Default game window height,
   },
   dom: {
     createContainer: true,
@@ -64,6 +66,7 @@ Template.lemverse.onCreated(function () {
     Session.set('displayZoneId', false);
     Session.set('displayNotificationsPanel', false);
     Session.set('displayUserList', false);
+    Session.set('displayProfile', false);
     game.scene.keys.WorldScene.enableKeyboard(true, true);
     document.activeElement.blur();
   });

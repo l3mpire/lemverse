@@ -5,6 +5,9 @@ Template.settings.events({
   'click .js-medias-settings'() {
     Session.set('settingsMode', 'medias');
   },
+  'click .js-profile'() {
+    Session.set('displayProfile', Meteor.userId());
+  },
   'click .js-close-button'() {
     if (Session.get('settingsMode') !== 'default') Session.set('settingsMode', 'default');
     else Session.set('displaySettings', false);

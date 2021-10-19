@@ -7,6 +7,11 @@ const characterSpritesOrigin = { x: 0.5, y: 1 };
 const characterInteractionDistance = { x: 32, y: 32 };
 const characterFootOffset = { x: -20, y: -10 };
 const characterColliderSize = { x: 38, y: 16 };
+const characterInteractionConfiguration = {
+  hitArea: new Phaser.Geom.Circle(0, -13, 13),
+  hitAreaCallback: Phaser.Geom.Circle.Contains,
+  cursor: 'pointer',
+};
 
 charactersParts = Object.freeze({
   body: 0,
@@ -92,11 +97,16 @@ userManager = {
     const playerParts = this.scene.add.container(0, 0);
     playerParts.setScale(3);
     playerParts.name = 'body';
-    playerParts.setInteractive(new Phaser.Geom.Circle(0, -16, 16), Phaser.Geom.Circle.Contains);
-    playerParts.on('pointerup', () => {
-      const name = user._id === Meteor.userId() ? 'me' : Meteor.users.findOne(user._id).profile.name;
-      this.spawnReaction(this.player, `It's ${name}!`, 'fadeOut', { randomOffset: 0 });
-    });
+
+    if (!user.profile.guest) {
+      playerParts.setInteractive(characterInteractionConfiguration);
+      playerParts.on('pointerover', () => this.setTint(this.players[user._id], 0xFFAAFF));
+      playerParts.on('pointerout', () => this.clearTint(this.players[user._id]));
+      playerParts.on('pointerup', () => {
+        if (isModalOpen()) return;
+        Session.set('displayProfile', user._id);
+      });
+    }
 
     const shadow = this.scene.add.circle(0, 6, 18, 0x000000);
     shadow.alpha = 0.1;

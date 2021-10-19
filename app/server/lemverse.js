@@ -127,6 +127,13 @@ Meteor.publish('usernames', function (userIds) {
   );
 });
 
+Meteor.publish('userProfile', function (userId) {
+  if (!this.userId) return undefined;
+  check(userId, String);
+
+  return Meteor.users.find(userId, { fields: { 'profile.name': 1, 'profile.company': 1, 'profile.bio': 1, 'profile.website': 1, createdAt: 1 } });
+});
+
 Meteor.publish('characters', function () {
   if (!this.userId) return undefined;
 
