@@ -32,6 +32,10 @@ const config = {
       gravity: { y: 0 },
     },
   },
+  scale: {
+    mode: Phaser.Scale.RESIZE,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+  },
   dom: {
     createContainer: true,
   },
@@ -262,7 +266,12 @@ Template.lemverse.onCreated(function () {
             const currentZone = zones.currentZone(Meteor.user());
             if (!currentZone || currentZone._id !== zone._id) return;
 
-            if (meet.api) meet.fullscreen(zone.fullscreen);
+            if (meet.api) {
+              meet.fullscreen(zone.fullscreen);
+              const worldScene = game.scene.getScene('WorldScene');
+              const screenMode = zone.fullscreen ? 'fullscreen' : 'split-screen';
+              worldScene.resizeViewport(screenMode);
+            }
           },
         });
 
@@ -450,28 +459,6 @@ Template.lemverse.onCreated(function () {
     levelManager.drawTeleporters(!levelManager.teleporterGraphics.length);
   });
 });
-
-Template.lemverse.onRendered(function () {
-  this.autorun(() => {
-    if (!Session.get('gameCreated')) return;
-
-    if (!this.resizeObserver) {
-      const resizeObserver = new ResizeObserver(entries => {
-        entries.forEach(entry => {
-          config.width = entry.contentRect.width / Meteor.settings.public.zoom;
-          config.height = entry.contentRect.height / Meteor.settings.public.zoom;
-          game.scale.resize(config.width, config.height);
-        });
-      });
-      const simulation = document.querySelector('.simulation');
-      if (simulation) {
-        this.resizeObserver = true;
-        resizeObserver.observe(simulation);
-      }
-    }
-  });
-});
-
 Template.lemverse.onDestroyed(function () {
   if (this.handleObserveUsers) this.handleObserveUsers.stop();
   if (this.handleObserveEntities) this.handleObserveEntities.stop();
@@ -502,6 +489,7 @@ Template.lemverse.helpers({
   isGuest: () => Meteor.user()?.profile.guest,
   hasNotifications: () => Notifications.find().count(),
   pendingNotificationsCount: () => Notifications.find({ read: false }).count(),
+  screenMode: () => Template.instance().screenMode.get(),
 });
 
 Template.lemverse.events({

@@ -4,15 +4,20 @@ const Phaser = require('phaser');
 
 const onZoneEntered = e => {
   const { zone } = e.detail;
-  const { targetedLevelId, inlineURL } = zone;
+  const { targetedLevelId, inlineURL, roomName, url, fullscreen } = zone;
 
   if (targetedLevelId) levelManager.loadLevel(targetedLevelId);
   else if (inlineURL) characterPopIns.initFromZone(zone);
+
+  if (roomName || url) game.scene.keys.WorldScene.resizeViewport(fullscreen ? 'fullscreen' : 'split-screen');
 };
 
 const onZoneLeaved = e => {
   const { zone } = e.detail;
-  if (!zone.popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(Meteor.userId(), zone._id);
+  const { popInConfiguration, roomName, url } = zone;
+  if (!popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(Meteor.userId(), zone._id);
+
+  if (roomName || url) game.scene.keys.WorldScene.resizeViewport('default');
 };
 
 WorldScene = new Phaser.Class({
@@ -124,6 +129,12 @@ WorldScene = new Phaser.Class({
 
     if (globalCapture) keyboard.enableGlobalCapture();
     else keyboard.disableGlobalCapture();
+  },
+
+  resizeViewport(mode) {
+    if (mode === 'fullscreen') this.cameras.main.setViewport(0, 0, window.innerWidth / 3, window.innerHeight);
+    else if (mode === 'split-screen') this.cameras.main.setViewport(0, 0, window.innerWidth / 2, window.innerHeight);
+    else this.cameras.main.setViewport(0, 0, window.innerWidth, window.innerHeight);
   },
 
   shutdown() {
