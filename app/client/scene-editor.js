@@ -203,9 +203,14 @@ EditorScene = new Phaser.Class({
 
   updateEditionMarker(selectedTiles) {
     if (!this.marker) return;
+
+    const width = levelManager.map.tileWidth * (selectedTiles?.w || 1);
+    const height = levelManager.map.tileHeight * (selectedTiles?.h || 1);
     this.marker.clear();
-    this.marker.lineStyle(2, 0x00FF00, 1);
-    this.marker.strokeRect(0, 0, levelManager.map.tileWidth * (selectedTiles?.w || 1), levelManager.map.tileHeight * (selectedTiles?.h || 1));
+    this.marker.lineStyle(2, 0xFFFFFF, 1);
+    this.marker.strokeRect(0, 0, width, height);
+    this.marker.fillStyle(0xFFFFFF, 0.25);
+    this.marker.fillRect(0, 0, width, height);
     this.marker.setDepth(10002);
   },
 
