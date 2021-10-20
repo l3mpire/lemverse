@@ -23,4 +23,5 @@ Template.settings.helpers({
     if (menus.includes(Session.get('displaySettings'))) return Session.get('displaySettings');
     return mainSettings;
   },
+  title() { return 'Settings'; },
 });

@@ -3,7 +3,10 @@ $text-color: #4f4f4f;
 
 .modal {
   .modal-body {
+    display: flex;
+    flex-direction: column;
     height: 100%;
+    overflow: hidden;
   }
 
   .modal-background {
@@ -18,7 +21,7 @@ $text-color: #4f4f4f;
   }
 
   .modal-window {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -30,6 +33,7 @@ $text-color: #4f4f4f;
     border-radius: 10px;
     margin: 0;
     overflow: hidden;
+    padding: 0;
 
     .js-modal-close {
       position: absolute;
@@ -49,15 +53,17 @@ $text-color: #4f4f4f;
       }
     }
 
+    .modal-title {
+      color: black;
+      text-align: center;
+      margin: 0;
+      padding: 10px;
+    }
+
     .modal-content {
       color: $text-color;
+      overflow-y: auto;
       height: 100%;
-
-      .modal-title {
-        color: black;
-        text-align: center;
-        margin: 0;
-      }
     }
   }
 }
