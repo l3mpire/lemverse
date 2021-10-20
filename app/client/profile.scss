@@ -9,7 +9,8 @@
     height: 375px;
     max-height: 390px;
     margin: 35px 25px 0 25px;
-    flex-direction: column;
+    display: flex;
+    flex-flow: column nowrap;
 
     div {
       margin-bottom: 15px;
@@ -39,6 +40,8 @@
       color: #404040;
       outline: none;
       font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+      max-width: 100%;
+      min-width: 100%;
     }
 
     textarea {
@@ -61,6 +64,12 @@
       font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     }
 
+    textarea {
+      height: 165px;
+      text-overflow: ellipsis;
+      width: 100%;
+    }
+
     .js-website {
       display: none;
     }
@@ -74,12 +83,10 @@
   }
 
   .age {
-    position: absolute;
     font-weight: bold;
     font-size: 11px;
     text-align: center;
-    left: 50%;
-    bottom: 15px;
-    transform: translateX(-50%);
+    margin-top: auto;
+    margin-bottom: 0 !important;
   }
 }
