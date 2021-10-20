@@ -1,7 +1,7 @@
 $background-color: #eeeff3;
 $text-color: #4f4f4f;
 
-.new-modal {
+.modal {
   .modal-background {
     position: absolute;
     top: 0;
@@ -24,6 +24,8 @@ $text-color: #4f4f4f;
     background-color: $background-color;
     border: 2px solid white;
     border-radius: 10px;
+    margin: 0;
+    overflow: hidden;
 
     .js-modal-close {
       position: absolute;
