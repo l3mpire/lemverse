@@ -14,15 +14,15 @@
           </div>
           <div>
             <label for="website">Website</label>
-            {{#if hasWebsite}}<a href="{{profile.website}}" class="website">{{profile.website}}</a>{{/if}}
+            {{#if hasWebsite}}<a href="{{profile.website}}" class="website" target="_blank">{{profile.website}}</a>{{/if}}
             <input type="text" name="website" class="js-website" value={{profile.website}} placeholder="-" />
           </div>
           <div>
             <label for="bio">Bio/Hobbies</label>
             <textarea name="bio" placeholder="-" class="js-bio" >{{profile.bio}}</textarea>
           </div>
+          <div class="age">{{age}} days old in lemverse</div>
         </div>
-        <div class="age">{{age}} days old in lemverse</div>
     </div>
   </div>
 </template>
