@@ -19,7 +19,7 @@
     "peer": {
       "answerMaxAttempt": 5,
       "answerDelayBetweenAttempt": 750,
-      "avatarAPI": "https://source.unsplash.com/320x240/?cat&sig=[user_id]",
+      "avatarAPI": "https://source.unsplash.com/320x240/?[user_avatar]&sig=[user_id]",
       "callDelay": 250,
       "delayBeforeClosingCall": 1000
     },
@@ -69,5 +69,10 @@
           "expire_timeout": 5000,
           "allow_discovery": true
       }
+    },
+  "services": {
+    "escape":{ "interval": 10 },
+    "escapeCleanUp":{ "interval": 10 },
+    "stats":{ "interval": 3600 }
   }
 }

@@ -62,13 +62,15 @@
 		"html.format.endWithNewline": true,
 		"javascript.suggest.autoImports": false,
 		"cSpell.words": [
-			"Roki",
 			"autorun",
 			"eqeqeq",
+			"giphy",
 			"lempire",
 			"peerjs",
+			"Roki",
 			"spritesheet",
-			"tilemap"
+			"tilemap",
+			"usemap"
 		],
 	}
 }

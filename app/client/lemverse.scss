@@ -63,7 +63,6 @@ button:focus {
 
   >canvas {
     z-index: 1;
-    pointer-events: none;
   }
 
   &.edit {
@@ -99,29 +98,43 @@ button:focus {
 }
 
 #meet {
-  width: 100vw;
+  position: absolute;
+  right: 0;
+  left: 50%;
   height: 100vh;
-  display: none;
-  flex-basis: 100%;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.25s;
+  z-index: 100;
+  pointer-events: none;
   background-color: #474747;
 
   &.show {
-    display: block;
+    visibility: visible;
+    pointer-events: all;
+    opacity: 1;
   }
 
   &.fullscreen {
-    flex-basis: 400%;
+    left: 25%;
   }
 }
 
 #webpage {
-  width: 100vw;
+  position: absolute;
+  right: 0;
+  left: 50%;
   height: 100vh;
-  display: none;
-  flex-basis: 100%;
+  z-index: 100;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.25s;
+  background-color: white;
 
   &.show {
-    display: block;
+    visibility: visible;
+    pointer-events: all;
+    opacity: 1;
   }
 
   iframe {
@@ -278,31 +291,5 @@ button:focus {
 
   &.active {
     background-color: #D8DEE9;
-  }
-}
-
-.modal {
-  z-index: 50;
-  border-radius: 10px;
-  background-color: #ECEFF4;
-  width: 400px;
-  height: 400px;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  overflow: auto;
-  padding: 5px;
-  transform: translate(-50%, -50%);
-
-  .js-close-button {
-    position: absolute;
-    display: block;
-    top: 5px;
-    right: 15px;
-    font-size: 17pt;
-    transform: translate(3px, 0);
-    appearance: none;
-    border: none;
-    cursor: pointer;
   }
 }

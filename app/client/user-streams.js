@@ -216,9 +216,15 @@ userStreams = {
   getVideoElement() {
     if (!this.streams.main.domElement) {
       this.streams.main.domElement = document.querySelector('.js-video-me video');
-      this.streams.main.domElement.parentElement.dataset.avatar = getRandomAvatarForUser(Meteor.user());
+      this.refreshVideoElementAvatar();
     }
 
     return this.streams.main.domElement;
+  },
+
+  refreshVideoElementAvatar() {
+    const videoElement = this.getVideoElement();
+    videoElement.parentElement.dataset.avatar = getRandomAvatarForUser(Meteor.user());
+    if (this.streams.main.instance) videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
   },
 };

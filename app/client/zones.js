@@ -1,6 +1,5 @@
 zones = {
   activeZone: undefined,
-  onZoneChanged: undefined,
   toastTimerInstance: undefined,
   toastBloc: undefined,
   webpageContainer: undefined,
@@ -58,10 +57,11 @@ zones = {
     return this.getCenter(zone);
   },
 
-  usersInZone(zone) {
+  usersInZone(zone, includeCurrentUser = false) {
     if (!zone) return [];
 
-    const users = Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch();
+    const queryOption = includeCurrentUser ? {} : { _id: { $ne: Meteor.userId() } };
+    const users = Meteor.users.find(queryOption).fetch();
     const usersInZone = [];
 
     _.each(users, user => {
@@ -111,10 +111,20 @@ zones = {
       return mz;
     }, {});
 
-    if (this.activeZone?.name !== zone?.name) {
-      if (this.onZoneChanged && this.activeZone?._id !== zone?._id) this.onZoneChanged(!_.isEmpty(zone) ? zone : undefined, this.activeZone);
+    if (this.activeZone?._id !== zone?._id) {
+      // notify about zone change
+      if (!_.isEmpty(this.activeZone)) {
+        const zoneLeavedEvent = new CustomEvent('onZoneLeaved', { detail: { zone: this.activeZone } });
+        window.dispatchEvent(zoneLeavedEvent);
+      }
+
+      if (!_.isEmpty(zone)) {
+        const zoneEnteredEvent = new CustomEvent('onZoneEntered', { detail: { zone, previousZone: this.activeZone } });
+        window.dispatchEvent(zoneEnteredEvent);
+      }
+
       this.activeZone = zone;
-      this.toastZoneName(zone?.name);
+      if (zone.name && !zone.hideName) this.toastZoneName(zone?.name);
 
       const dataPlayer = Meteor.users.findOne({ _id: player.userId });
 
@@ -152,6 +162,7 @@ zones = {
 
       if (zone?.url) {
         this.getIframeElement().src = zone.url;
+        if (zone.yt) this.getIframeElement().allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
         this.getWebpageElement().classList.add('show');
       } else if ((!zone || !zone.url) && !meet?.api) {
         this.getIframeElement().src = '';

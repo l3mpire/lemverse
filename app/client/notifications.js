@@ -82,10 +82,3 @@ Template.notifications.helpers({
     return Notifications.find().fetch().sort((a, b) => b.createdAt - a.createdAt);
   },
 });
-
-Template.notifications.events({
-  'click .js-close'(event) {
-    event.preventDefault();
-    Session.set('displayNotificationsPanel', false);
-  },
-});
