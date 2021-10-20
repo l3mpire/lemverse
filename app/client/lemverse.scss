@@ -292,29 +292,3 @@ button:focus {
     background-color: #D8DEE9;
   }
 }
-
-.modal {
-  z-index: 5;
-  border-radius: 10px;
-  background-color: #ECEFF4;
-  width: 500px;
-  height: 500px;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  overflow: auto;
-  padding: 5px;
-  transform: translate(-50%, -50%);
-
-  .js-close-button {
-    position: absolute;
-    display: block;
-    top: 5px;
-    right: 15px;
-    font-size: 17pt;
-    transform: translate(3px, 0);
-    appearance: none;
-    border: none;
-    cursor: pointer;
-  }
-}

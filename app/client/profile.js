@@ -5,6 +5,7 @@ Template.profile.onCreated(function () {
 });
 
 Template.profile.helpers({
+  title() { return Meteor.users.findOne(Session.get('displayProfile'))?.profile.name; },
   profile() {
     const user = Meteor.users.findOne(Session.get('displayProfile'));
     if (!user) {
@@ -23,13 +24,10 @@ Template.profile.helpers({
 
     return moment().diff(user.createdAt, 'days');
   },
-  editionAllowed() {
-    return isEditionAllowed();
-  },
-  hasWebsite() {
-    return !!Meteor.users.findOne(Session.get('displayProfile')).profile.website;
-  },
+  editionAllowed() { return isEditionAllowed(); },
+  hasWebsite() { return !!Meteor.users.findOne(Session.get('displayProfile')).profile.website; },
 });
+
 Template.profile.events({
   'click .js-close-button'() {
     Session.set('displayProfile', false);
