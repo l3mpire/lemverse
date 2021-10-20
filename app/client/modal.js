@@ -3,3 +3,7 @@ Template.modal.events({
     Session.set(Template.instance().data.id, null);
   },
 });
+
+Template.modal.helpers({
+  isOpen() { return Session.get(Template.instance().data.id); },
+});

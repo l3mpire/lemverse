@@ -2,6 +2,10 @@ $background-color: #eeeff3;
 $text-color: #4f4f4f;
 
 .modal {
+  .modal-body {
+    height: 100%;
+  }
+
   .modal-background {
     position: absolute;
     top: 0;
@@ -47,6 +51,7 @@ $text-color: #4f4f4f;
 
     .modal-content {
       color: $text-color;
+      height: 100%;
 
       .modal-title {
         color: black;

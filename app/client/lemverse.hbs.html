@@ -35,15 +35,9 @@
       <iframe src="" frameBorder="0" allowfullscreen="true" id="webpageIframe"></iframe>
     </div>
   </div>
-  {{#if Session 'displaySettings'}}
-    {{> settings}}
-  {{/if}}
-  {{#if Session 'displayNotificationsPanel'}}
-    {{> notifications}}
-  {{/if}}
-  {{#if Session 'displayProfile'}}
-    {{> profile}}
-  {{/if}}
+  {{> settings}}
+  {{> notifications}}
+  {{> profile}}
   {{> gameMod}}
   {{> userList}}
   {{> notification}}
