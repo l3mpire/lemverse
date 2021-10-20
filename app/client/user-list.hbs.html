@@ -1,40 +1,36 @@
 <template name="userList">
-  {{#if Session 'displayUserList'}}
-    <div class="modal">
-      <button type="button" class="js-close-button">x</button>
-      <div class="user-list">
-        <h2 class="list-title">Users ({{ usersCount }}) {{#if guestsCount}}(and {{guestsCount}} 👻){{/if}}</h2>
-        {{#each users}}
-          <div class="user">
-            <div class="infos">
-              {{profile.name}}
-              {{#if profile.zoneName}}
-                ({{profile.zoneName}})
-              {{/if}}
-              {{#if profile.shareAudio}}
-                🎤
-              {{/if}}
-              {{#if profile.shareVideo}}
-                🎥
-              {{/if}}
-              {{#if profile.shareScreen}}
-                📺
-              {{/if}}
-              {{#if currentUser.roles.admin}}
-                {{#if roles.admin}}
-                  <span title="Is admin">👑</span>
+  {{#modal id="displayUserList" title=title}}
+    <div class="user-list">
+      {{#each users}}
+        <div class="user">
+          <div class="infos">
+            {{profile.name}}
+            {{#if profile.zoneName}}
+              ({{profile.zoneName}})
+            {{/if}}
+            {{#if profile.shareAudio}}
+              🎤
+            {{/if}}
+            {{#if profile.shareVideo}}
+              🎥
+            {{/if}}
+            {{#if profile.shareScreen}}
+              📺
+            {{/if}}
+            {{#if currentUser.roles.admin}}
+              {{#if roles.admin}}
+                <span title="Is admin">👑</span>
+              {{else}}
+                {{#if canEditLevel}}
+                  <span class="js-toggle-edition" title="Edition allowed">🔨</span>
                 {{else}}
-                  {{#if canEditLevel}}
-                    <span class="js-toggle-edition" title="Edition allowed">🔨</span>
-                  {{else}}
-                    <span class="js-toggle-edition denied" title="Click to allow edition">🔨</span>
-                  {{/if}}
+                  <span class="js-toggle-edition denied" title="Click to allow edition">🔨</span>
                 {{/if}}
               {{/if}}
-            </div>
+            {{/if}}
           </div>
-        {{/each}}
-      </div>
+        </div>
+      {{/each}}
     </div>
-  {{/if}}
+  {{/modal}}
 </template>
