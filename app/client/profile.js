@@ -16,7 +16,10 @@ const formatURL = url => {
 };
 
 Template.profile.onCreated(function () {
-  this.subscribe('userProfile', Session.get('displayProfile'));
+  Tracker.autorun(() => {
+    const userId = Session.get('displayProfile');
+    if (userId) this.subscribe('userProfile', userId);
+  });
 });
 
 Template.profile.helpers({

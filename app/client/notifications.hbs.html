@@ -11,13 +11,13 @@
 
 
 <template name="notifications">
-  <div class="notifications">
   {{#modal id="displayNotificationsPanel" title="Notifications"}}
-    <ul>
-      {{#each notification in notifications}}
-        {{> notificationsItem notification}}
-      {{/each}}
-    </ul>
+    <div class="notifications">
+      <ul>
+        {{#each notification in notifications}}
+          {{> notificationsItem notification}}
+        {{/each}}
+      </ul>
+    </div>
   {{/modal}}
-  </div>
 </template>
