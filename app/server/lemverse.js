@@ -65,23 +65,19 @@ createLevel = (templateId = undefined, newName = undefined) => {
   return newLevelId;
 };
 
-deleteLevel = id => {
-  log('deleteLevel: start', { id });
+deleteLevel = levelId => {
+  log('deleteLevel: start', { levelId });
 
-  if (!lp.isGod()) {
-    error('deleteLevel: user not allowed');
-    throw new Meteor.Error('not-authorized', 'only gods can do this');
-  }
   const numLevels = Levels.find().count();
   if (numLevels === 1) {
     error('deleteLevel: can not delete last level');
     throw new Meteor.Error('not-allowed', 'Can not delete last level');
   }
 
-  Zones.remove({ levelId: id });
-  Tiles.remove({ levelId: id });
-  Levels.remove({ _id: id });
-  Meteor.users.update({ 'profile.levelId': id }, { $set: { 'profile.levelId': Meteor.settings.defaultLevelId } }, { multi: true });
+  Zones.remove({ levelId });
+  Tiles.remove({ levelId });
+  Levels.remove({ _id: levelId });
+  Meteor.users.update({ 'profile.levelId': levelId }, { $set: { 'profile.levelId': Meteor.settings.defaultLevelId } }, { multi: true });
 };
 
 Meteor.publish('notifications', function () {

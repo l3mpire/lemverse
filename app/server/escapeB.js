@@ -157,13 +157,11 @@ lp.deferCron('escape', () => {
 });
 
 lp.deferCron('escapeCleanUp', () => {
-  log('escapeCleanUp: start');
-  const allEscapes = Levels.find({ 'metadata.escape': true }).fetch();
+  const allEscapes = Levels.find({ 'metadata.escape': true, createdAt: { $lt: new Date(Date.now() - (24 * 60 * 60 * 1000)) } }).fetch();
+  log('escapeCleanUp: start', { allEscapes: allEscapes.length });
 
   allEscapes.forEach(level => {
     // Clean up level after a day.
-    if (level.createdAt.getTime() + (24 * 60 * 60 * 1000) < Date.now()) {
-      deleteLevel(level._id);
-    }
+    deleteLevel(level._id);
   });
 });
