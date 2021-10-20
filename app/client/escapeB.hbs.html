@@ -1,0 +1,124 @@
+<template name='escapeB'>
+    <div class='iframe'>
+        {{#if eq iframe '1'}}
+            <img height="300px" src='/assets/lemescape/B/keyLock.png' usemap="#keyLock" />
+            <img id='redLed' height="14px" src='/assets/lemescape/B/redLed.png' class='red blink-image hide' />
+
+            <map name='keyLock'>
+                <area shape="rect" coords="64, 95, 91, 116" class="js-key-code" data-code='A' data-lock='A'>
+                <area shape="rect" coords="100, 95, 129, 116" class="js-key-code" data-code='B' data-lock='A'>
+                <area shape="rect" coords="137, 95, 165, 116" class="js-key-code" data-code='C' data-lock='A'>
+                <area shape="rect" coords="173, 95, 202, 116" class="js-key-code" data-code='D' data-lock='A'>
+                <area shape="rect" coords="211, 95, 239, 116" class="js-key-code" data-code='E' data-lock='A'>
+
+                <area shape="rect" coords="64, 125, 91, 145" class="js-key-code" data-code='F' data-lock='A'>
+                <area shape="rect" coords="100, 125, 129, 145" class="js-key-code" data-code='G' data-lock='A'>
+                <area shape="rect" coords="137, 125, 165, 145" class="js-key-code" data-code='H' data-lock='A'>
+                <area shape="rect" coords="173, 125, 202, 145" class="js-key-code" data-code='I' data-lock='A'>
+                <area shape="rect" coords="211, 125, 239, 145" class="js-key-code" data-code='J' data-lock='A'>
+
+                <area shape="rect" coords="64, 154, 91, 175" class="js-key-code" data-code='1' data-lock='A'>
+                <area shape="rect" coords="100, 154, 129, 175" class="js-key-code" data-code='2' data-lock='A'>
+                <area shape="rect" coords="137, 154, 165, 175" class="js-key-code" data-code='3' data-lock='A'>
+                <area shape="rect" coords="173, 154, 202, 175" class="js-key-code" data-code='4' data-lock='A'>
+                <area shape="rect" coords="211, 154, 239, 175" class="js-key-code" data-code='5' data-lock='A'>
+
+                <area shape="rect" coords="80, 183, 109, 203" class="js-key-code" data-code='6' data-lock='A'>
+                <area shape="rect" coords="118, 183, 146, 203" class="js-key-code" data-code='7' data-lock='A'>
+                <area shape="rect" coords="155, 183, 183, 203" class="js-key-code" data-code='8' data-lock='A'>
+                <area shape="rect" coords="191, 183, 220, 203" class="js-key-code" data-code='9' data-lock='A'>
+
+                <area shape="rect" coords="99, 212, 127, 232" class="js-key-code" data-code='CLEAR' data-lock='A'>
+                <area shape="rect" coords="136, 212, 164, 232" class="js-key-code" data-code='0' data-lock='A'>
+                <area shape="rect" coords="173, 212, 202, 232" class="js-key-code" data-code='VALIDATE' data-lock='A'>
+            </map>
+        {{else if eq iframe '2'}}
+            <img src='/assets/lemescape/B/switch.png' class='js-activate-switch' data-zone='labyrinth-part2' />
+        {{else if eq iframe '3'}}
+            <img src='/assets/lemescape/B/switch.png' class='js-activate-switch' data-zone='labyrinth-part3' />
+        {{else if eq iframe '4'}}
+            <img src='/assets/lemescape/B/switch.png' class='js-activate-switch' data-zone='labyrinth-part4' />
+        {{else if eq iframe '5'}}
+            <div class="dark-light">
+                <div class="container">
+                    <div class="light">
+                        <div class="message"> wHAt is The answer</div>
+                    </div>
+                    <div class="dark">
+                        <div class="message"> to LIfe, the uNiverse and evErything? - 1</div>
+                    </div>
+                </div>
+            </div>
+        {{else if eq iframe '6'}}
+            <img height="300px" src='/assets/lemescape/B/keyLock.png' usemap="#keyLock" />
+            <img id='redLed' height="14px" src='/assets/lemescape/B/redLed.png' class='red blink-image hide' />
+
+            <map name='keyLock'>
+                <area shape="rect" coords="64, 95, 91, 116" class="js-key-code" data-code='A' data-lock='B'>
+                <area shape="rect" coords="100, 95, 129, 116" class="js-key-code" data-code='B' data-lock='B'>
+                <area shape="rect" coords="137, 95, 165, 116" class="js-key-code" data-code='C' data-lock='B'>
+                <area shape="rect" coords="173, 95, 202, 116" class="js-key-code" data-code='D' data-lock='B'>
+                <area shape="rect" coords="211, 95, 239, 116" class="js-key-code" data-code='E' data-lock='B'>
+
+                <area shape="rect" coords="64, 125, 91, 145" class="js-key-code" data-code='F' data-lock='B'>
+                <area shape="rect" coords="100, 125, 129, 145" class="js-key-code" data-code='G' data-lock='B'>
+                <area shape="rect" coords="137, 125, 165, 145" class="js-key-code" data-code='H' data-lock='B'>
+                <area shape="rect" coords="173, 125, 202, 145" class="js-key-code" data-code='I' data-lock='B'>
+                <area shape="rect" coords="211, 125, 239, 145" class="js-key-code" data-code='J' data-lock='B'>
+
+                <area shape="rect" coords="64, 154, 91, 175" class="js-key-code" data-code='1' data-lock='B'>
+                <area shape="rect" coords="100, 154, 129, 175" class="js-key-code" data-code='2' data-lock='B'>
+                <area shape="rect" coords="137, 154, 165, 175" class="js-key-code" data-code='3' data-lock='B'>
+                <area shape="rect" coords="173, 154, 202, 175" class="js-key-code" data-code='4' data-lock='B'>
+                <area shape="rect" coords="211, 154, 239, 175" class="js-key-code" data-code='5' data-lock='B'>
+
+                <area shape="rect" coords="80, 183, 109, 203" class="js-key-code" data-code='6' data-lock='B'>
+                <area shape="rect" coords="118, 183, 146, 203" class="js-key-code" data-code='7' data-lock='B'>
+                <area shape="rect" coords="155, 183, 183, 203" class="js-key-code" data-code='8' data-lock='B'>
+                <area shape="rect" coords="191, 183, 220, 203" class="js-key-code" data-code='9' data-lock='B'>
+
+                <area shape="rect" coords="99, 212, 127, 232" class="js-key-code" data-code='CLEAR' data-lock='B'>
+                <area shape="rect" coords="136, 212, 164, 232" class="js-key-code" data-code='0' data-lock='B'>
+                <area shape="rect" coords="173, 212, 202, 232" class="js-key-code" data-code='VALIDATE' data-lock='B'>
+            </map>
+        {{else if eq iframe '10'}}
+            <div class="the-end">
+                {{#if isLoaded }}
+                    {{#if youWin}}
+                        <h1 class="success"> Good job !</h1>
+                        <div class="end-gif">
+                            <iframe src="https://giphy.com/embed/OOVHM28Moh2N697sjB" width="100%" height="100%" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+                        </div>
+                        <h2> You saved the world! </h2>
+                        <h3> You completed the mission in {{ duration }} minutes</h3>
+                    {{else}}
+                        <h1 class="fail"> Loooooser !</h1>
+                        <div class="fail end-gif">
+                            <iframe src="https://giphy.com/embed/8gQR12M5d4kPMRYoC1" width="100%" height="100%" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+                        </div>
+                        <h2 class="message"> You failed to save the world! </h2>
+                    {{/if}}
+                {{/if}}
+            </div>
+        {{else}}
+            <h1>Not handled</h1>
+        {{/if}}
+    </div>
+</template>
+
+<template name='escapeTimer'>
+    <div class="escape-timer">
+        <span class="digit"></span>
+        <span class="digit"></span>
+
+        <span class="colon"></span>
+
+        <span class="digit"></span>
+        <span class="digit"></span>
+
+        <span class="colon"></span>
+
+        <span class="digit"></span>
+        <span class="digit"></span>
+    </div>
+</template>

@@ -32,7 +32,7 @@
     </div>
     <div id="meet"></div>
     <div id="webpage">
-      <iframe src="" frameborder="0" id="webpageIframe"></iframe>
+      <iframe src="" frameBorder="0" allowfullscreen="true" id="webpageIframe"></iframe>
     </div>
   </div>
   {{#if Session 'displaySettings'}}
@@ -41,6 +41,10 @@
   {{#if Session 'displayNotificationsPanel'}}
     {{> notifications}}
   {{/if}}
+  {{#if Session 'displayProfile'}}
+    {{> profile}}
+  {{/if}}
+  {{> gameMod}}
   {{> userList}}
   {{> notification}}
   <audio class="js-audio-webrtc-in" muted>

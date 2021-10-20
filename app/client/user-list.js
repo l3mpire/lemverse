@@ -10,10 +10,13 @@ Template.userList.helpers({
         y1: { $lte: usr.profile.y },
         y2: { $gte: usr.profile.y },
       });
-      if (zone?.name) usr.profile.zoneName = zone.name;
+      if (zone && zone.name && !zone.hideName) usr.profile.zoneName = zone.name;
 
       return usr;
     });
+
+    users.sort((a, b) => a.profile.name.toLowerCase().localeCompare(b.profile.name.toLowerCase()));
+
     return users;
   },
   zones() { return Zones.find({}, { sort: { name: 1 } }).fetch(); },
