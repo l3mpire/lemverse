@@ -176,6 +176,7 @@ userManager = {
       if (!characterPart) {
         const missingPart = this.scene.add.sprite(0, 0, user.profile[part]);
         missingPart.name = part;
+        missingPart.setOrigin(characterSpritesOrigin.x, characterSpritesOrigin.y);
         characterBodyContainer.add(missingPart);
       } else characterPart.setTexture(user.profile[part]);
     });
