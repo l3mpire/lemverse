@@ -24,7 +24,7 @@ Template.profile.helpers({
   profile() {
     const user = Meteor.users.findOne(Session.get('displayProfile'));
     if (!user) {
-      Session.set('displayProfile', false);
+      Session.set('displayProfile', null);
       return undefined;
     }
 
@@ -33,7 +33,7 @@ Template.profile.helpers({
   age() {
     const user = Meteor.users.findOne(Session.get('displayProfile'));
     if (!user) {
-      Session.set('displayProfile', false);
+      Session.set('displayProfile', null);
       return undefined;
     }
 
@@ -51,7 +51,7 @@ Template.profile.helpers({
 
 Template.profile.events({
   'click .js-close-button'() {
-    Session.set('displayProfile', false);
+    Session.set('displayProfile', null);
   },
   'input .js-company'(event) {
     event.preventDefault();

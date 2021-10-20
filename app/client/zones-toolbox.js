@@ -34,6 +34,7 @@ Template.zonesToolboxProperties.helpers({
 
     return JSON.stringify(props, ' ', 2);
   },
+  name() { return this.name || this._id; },
 });
 
 Template.zonesToolboxProperties.events({
@@ -44,7 +45,7 @@ Template.zonesToolboxProperties.events({
     const currentFields = Zones.findOne(Session.get('displayZoneId'));
     let newValues;
     try {
-      newValues = JSON.parse($('.modal.zones-toolbox-properties textarea').val());
+      newValues = JSON.parse($('.zones-toolbox-properties textarea').val());
     } catch (err) { lp.notif.error(`invalid JSON format`, err); }
 
     const $unset = _.reduce(currentFields, (root, k, i) => {
@@ -62,7 +63,6 @@ Template.zonesToolboxProperties.events({
       Session.set('displayZoneId', undefined);
     });
   },
-
 });
 
 //
@@ -89,6 +89,7 @@ Template.zonesToolbox.onRendered(function () {
 
 Template.zonesToolbox.onDestroyed(() => {
   clearZoneRectangles();
+  Session.set('displayZoneId', null);
 });
 
 const getZoneCenter = zone => [(zone.x1 + zone.x2) * 0.5, (zone.y1 + zone.y2) * 0.5];
