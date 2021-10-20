@@ -12,8 +12,8 @@
         </div>
         <div>
           <label for="website">Website</label>
-          {{#if hasWebsite}}<a href="{{profile.website}}" class="website" target="_blank">{{profile.website}}</a>{{/if}}
-          <input type="text" name="website" class="js-website" value={{profile.website}} placeholder="-" />
+          {{#if website}}<a href="{{website}}" class="website" target="_blank">{{website}}</a> {{else}}<span class="website">-</span>{{/if}}
+          <input type="text" name="website" class="js-website" value={{website}} placeholder="-" />
         </div>
         <div>
           <label for="bio">Bio/Hobbies</label>

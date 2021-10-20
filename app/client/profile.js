@@ -1,5 +1,20 @@
 const isEditionAllowed = () => Session.get('displayProfile') === Meteor.userId();
 
+const formatURL = url => {
+  let formattedURL;
+  try {
+    formattedURL = new URL(url);
+  } catch (err) {
+    try {
+      formattedURL = new URL(`https://${url}`);
+    } catch (error) {
+      lp.notif.error('invalid website URL');
+    }
+  }
+
+  return formattedURL;
+};
+
 Template.profile.onCreated(function () {
   this.subscribe('userProfile', Session.get('displayProfile'));
 });
@@ -25,7 +40,13 @@ Template.profile.helpers({
     return moment().diff(user.createdAt, 'days');
   },
   editionAllowed() { return isEditionAllowed(); },
-  hasWebsite() { return !!Meteor.users.findOne(Session.get('displayProfile')).profile.website; },
+  website() {
+    const { website } = Meteor.users.findOne(Session.get('displayProfile')).profile;
+    if (!website) return null;
+
+    const url = formatURL(website);
+    return url.href;
+  },
 });
 
 Template.profile.events({
@@ -50,13 +71,16 @@ Template.profile.events({
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.company.position': value } });
     return false;
   },
-  'input .js-website'(event) {
+  'blur .js-website'(event) {
     event.preventDefault();
     event.stopPropagation();
     const { value } = event.target;
-    if (!value) return false;
 
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.website': value } });
+    if (value) {
+      const url = formatURL(value);
+      Meteor.users.update(Meteor.userId(), { $set: { 'profile.website': url.href } });
+    } else Meteor.users.update(Meteor.userId(), { $unset: { 'profile.website': 1 } });
+
     return false;
   },
   'input .js-bio'(event) {
