@@ -29,6 +29,10 @@ Template.notificationsItem.onCreated(function () {
   this.audio.addEventListener('timeupdate', () => this._duration.set(this.audio.currentTime), false);
 });
 
+Template.notificationsItem.onDestroyed(function () {
+  this.audio.pause();
+});
+
 Template.notificationsItem.helpers({
   date() {
     return moment(this.createdAt).calendar();
@@ -76,12 +80,5 @@ Template.notifications.onCreated(function () {
 Template.notifications.helpers({
   notifications() {
     return Notifications.find().fetch().sort((a, b) => b.createdAt - a.createdAt);
-  },
-});
-
-Template.notifications.events({
-  'click .js-close'(event) {
-    event.preventDefault();
-    Session.set('displayNotificationsPanel', false);
   },
 });

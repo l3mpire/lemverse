@@ -101,6 +101,8 @@ You can add a zone then select on the map the top left followed by the bottom ri
 
 If you want to edit a zone, simply click on either corner coordinate then click on the map.
 
+> ℹ️ Press "alt" or "option" during edition to snap world coordinates to tiles coordinates
+
 Each zone can be configured to make more things.  
 To edit those information, simply click on the name of the room (bold text).
 
@@ -250,13 +252,7 @@ Please note, that as stated in section `Deploy in production`, there is an addit
       "peer": { // Settings about webrtc connection
         "answerMaxAttempt": 5,
         "answerDelayBetweenAttempt": 750,
-        "avatars": [ // Avatar when users do not share their camera
-          "https://www.monchat.ca/wp-content/uploads/2020/01/Fond-ecran-mignon-chaton-en-position-de-priere-1024x640.jpg",
-          "https://animalaxy.fr/wp-content/uploads/2019/02/iStock5.jpg",
-          "https://cdn.radiofrance.fr/s3/cruiser-production/2018/12/9f19b228-269f-4995-ba7f-eda054945811/1136_gettyimages-155607257.jpg",
-          "https://chatfaitdubien.fr/wp-content/uploads/2016/09/chaton.jpg",
-          "https://i.pinimg.com/564x/8b/f7/c6/8bf7c6e26f7250944e963f23f364b68f.jpg"
-        ],
+        "avatarAPI": "https://source.unsplash.com/320x240/?cat&sig=[user_id]", // Avatar when users do not share their camera
         "callDelay": 250, // Delay before a call is started, useful to avoid a call when you pass by someone
         "delayBeforeClosingCall": 1000
       },
@@ -444,18 +440,26 @@ server {
 
 Once you have done it, the subsequent deployments will be done using the command `./deploy`.
 
-## Build docker images
+## Docker images
 
-### Production
+### Official image
+
+The official lemverse image is `lempire/lemverse`.  
+If you want to pull the last version, you should do:  
+`docker pull lempire/lemverse:latest`
+
+
+### Build
+#### Production
 
 To build the latest version of lemverse, simply run the following command:  
-`docker build . -t l3mpire/lemverse:latest`
+`docker build . -t lempire/lemverse:latest`
 
-### Development
+#### Development
 
 To build from you source without having to install anything, you can run the following command:
 
-`docker build -f Dockerfile.dev . -t l3mpire/lemverse:dev`
+`docker build -f Dockerfile.dev . -t lempire/lemverse:dev`
 
 ## Slack Notification upon deployment
 
@@ -503,6 +507,17 @@ For example, to add a beta flag to yourself execute this command in your browser
 remote("Meteor.users.update({ _id: Meteor.userId() }, { $addToSet: { 'beta': { $each: ['myAwesomeFeature'] } } });")
 ```
 
+## Custom avatars
+
+It's possible to modify the avatars displayed during a discussion using an image API. To do so, you just have to modify the `settings.json` file.
+
+You can add dynamic parameters to your URL using `[user_id]` or `[user_name]` to access id and name of the user who requests an avatar.
+
+Website with images API :
+- [Unsplash](https://source.unsplash.com)
+- [Robohash](https://robohash.org)
+
+> Example with Robohash: `https://robohash.org/[user_name]?set=set4&bgset=bg2&size=320x240`
 
 # Assets
 

@@ -1,0 +1,8 @@
+<template name="gameMod">
+  {{#if Session 'showScoreInterface'}}
+    {{> scoreInterface}}
+  {{/if}}
+  {{#if and displayEscapeTimer (not isLoading)}}
+    {{> escapeTimer}}
+  {{/if}}
+</template>

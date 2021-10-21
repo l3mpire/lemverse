@@ -1,6 +1,6 @@
 div.settings {
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-  padding: 10px;
+  padding: 0 10px;
 
   .title {
     margin-top: 0;
@@ -115,6 +115,10 @@ div.settings {
     &:hover {
       background-color: #0078e7;
       color: #fff;
+    }
+
+    &.js-go-back {
+      margin-bottom: 20px;
     }
   }
 }

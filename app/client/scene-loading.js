@@ -20,6 +20,7 @@ LoadingScene = new Phaser.Class({
 
   create(visible = true) {
     if (this.container) return;
+    this.background?.clear();
     this.background = this.add.graphics({
       x: 0,
       y: 0,

@@ -1,7 +1,7 @@
 const renderRouteName = () => {
   Tracker.autorun(track => {
     const routeName = FlowRouter.getRouteName();
-    if (routeName === 'tilesets') {
+    if (routeName === 'editor') {
       if (!Meteor.loggingIn() && !Meteor.user()) FlowRouter.redirect('/');
       if (Meteor.loggingIn() || !Meteor.user()?.status) { BlazeLayout.render('loading'); return; }
       if (!Meteor.user().roles?.admin) FlowRouter.redirect('/');
@@ -22,3 +22,5 @@ FlowRouter.route('/', { name: 'lemverse', action: renderRouteName });
 FlowRouter.route('/editor', { name: 'editor', action: renderRouteName });
 
 FlowRouter.route('/levels', { name: 'levels', action: renderRouteName });
+
+FlowRouter.route('/lemescapeB', { name: 'escapeB', action: renderRouteName });

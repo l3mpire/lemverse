@@ -2,6 +2,10 @@ const isUrl = string => {
   try { return Boolean(new URL(string)); } catch (e) { return false; }
 };
 
+const dispatchPopInEvent = event => {
+  if (characterPopIns.onPopInEvent) characterPopIns.onPopInEvent(event);
+};
+
 characterPopIns = {
   className: 'character-pop-in',
   container: undefined,
@@ -12,9 +16,15 @@ characterPopIns = {
   popIns: [],
 
   init(container) {
-    if (this.container) this.destroyAll();
+    if (this.container) this.destroy();
     this.container = container;
-    window.document.addEventListener('pop-in-event', e => this.onPopInEvent && this.onPopInEvent(e), false);
+
+    window.document.removeEventListener('pop-in-event', dispatchPopInEvent);
+    window.document.addEventListener('pop-in-event', dispatchPopInEvent, false);
+  },
+
+  dispatchPopInEvent(event) {
+    if (this.onPopInEvent) this.onPopInEvent(event);
   },
 
   initFromZone(zone) {
@@ -62,23 +72,29 @@ characterPopIns = {
     this.popIns[userId][popInIdentifier] = characterPopIn;
   },
 
-  createIframeFromURL(url) {
-    return `<div class="toggle-full-screen"></div><iframe frameborder="0" src="${url}"></iframe>`;
-  },
-
-  destroy(userId, popInIdentifier) {
+  getPopIn(userId, popInIdentifier) {
     const characterPopIns = this.popIns[userId];
-    if (!characterPopIns) return;
+    if (!characterPopIns) return false;
 
     const popIn = characterPopIns[popInIdentifier];
-    if (!popIn) return;
+    if (!popIn) return false;
 
+    return popIn;
+  },
+
+  createIframeFromURL(url) {
+    return `<div class="toggle-full-screen"></div><iframe loading="lazy" frameBorder="0" src="${url}"></iframe>`;
+  },
+
+  destroyPopIn(userId, popInIdentifier) {
+    const popIn = this.getPopIn(userId, popInIdentifier);
+    if (!popIn) return;
     popIn.destroy();
     delete this.popIns[userId][popInIdentifier];
   },
 
-  destroyAll() {
-    Object.keys(this.popIns).forEach(userId => this.destroy(userId));
+  destroy() {
+    Object.keys(this.popIns).forEach(userId => this.destroyPopIn(userId));
     this.popIns = [];
   },
 

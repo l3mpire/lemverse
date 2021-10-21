@@ -66,8 +66,8 @@ Template.tilesetToolbox.helpers({
   pointerTile() {
     const pointerX = Session.get('pointerX');
     const pointerY = Session.get('pointerY');
-    const x = game?.scene.keys.WorldScene.map.worldToTileX(pointerX);
-    const y = game?.scene.keys.WorldScene.map.worldToTileY(pointerY);
+    const x = levelManager.map.worldToTileX(pointerX);
+    const y = levelManager.map.worldToTileY(pointerY);
     return Tiles.find({ x, y });
   },
   user(userId) { return Meteor.users.findOne(userId); },
