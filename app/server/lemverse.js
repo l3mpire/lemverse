@@ -148,7 +148,7 @@ Meteor.methods({
     else Levels.update(levelId, { $pull: { editorUserIds: userId } });
   },
   createLevel(templateId = undefined) {
-    createLevel(templateId);
+    return createLevel(templateId);
   },
   markNotificationAsRead(notificationId) {
     if (!this.userId) return;

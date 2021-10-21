@@ -2,12 +2,7 @@ $background-color: #eeeff3;
 $text-color: #4f4f4f;
 
 .modal {
-  .modal-body {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    overflow: hidden;
-  }
+  pointer-events: none;
 
   .modal-background {
     position: absolute;
@@ -17,7 +12,8 @@ $text-color: #4f4f4f;
     bottom: 0;
     z-index: 100;
     background-color: black;
-    opacity: 0.5;
+    opacity: 0;
+    transition: opacity 0.15s linear;
   }
 
   .modal-window {
@@ -34,6 +30,15 @@ $text-color: #4f4f4f;
     margin: 0;
     overflow: hidden;
     padding: 0;
+    opacity: 0;
+    transition: opacity 0.15s linear;
+
+    .modal-body {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+    }
 
     .js-modal-close {
       position: absolute;
@@ -64,6 +69,18 @@ $text-color: #4f4f4f;
       color: $text-color;
       overflow-y: auto;
       height: 100%;
+    }
+  }
+
+  &.visible {
+    pointer-events: all;
+
+    .modal-background {
+      opacity: 0.3;
+    }
+
+    .modal-window {
+      opacity: 1;
     }
   }
 }
