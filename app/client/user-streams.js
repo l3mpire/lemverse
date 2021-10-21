@@ -227,4 +227,17 @@ userStreams = {
     videoElement.parentElement.dataset.avatar = getRandomAvatarForUser(Meteor.user());
     if (this.streams.main.instance) videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
   },
+
+  enumerateDevices() {
+    return navigator.mediaDevices.enumerateDevices().then(devices => {
+      const mics = [];
+      const cams = [];
+      devices.forEach(device => {
+        if (device.kind === 'audioinput') mics.push({ deviceId: device.deviceId, kind: device.kind, label: device.label });
+        if (device.kind === 'videoinput') cams.push({ deviceId: device.deviceId, kind: device.kind, label: device.label });
+      });
+
+      return { mics, cams };
+    });
+  },
 };

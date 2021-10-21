@@ -506,7 +506,6 @@ Template.lemverse.events({
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': !Meteor.user().profile.shareScreen } });
   },
   'click .button.settings'() {
-    if (!Session.get('displaySettings')) settings.enumerateDevices();
     Session.set('displaySettings', !Session.get('displaySettings'));
   },
   'click .button.js-notifications'() {
