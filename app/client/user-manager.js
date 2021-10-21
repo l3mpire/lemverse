@@ -97,13 +97,6 @@ userManager = {
     const playerParts = this.scene.add.container(0, 0);
     playerParts.setScale(3);
     playerParts.name = 'body';
-    if (!guest) {
-      playerParts.setInteractive(new Phaser.Geom.Circle(0, 0, 10), Phaser.Geom.Circle.Contains);
-      playerParts.on('pointerup', () =>  {
-        if (isModalOpen()) return;
-        Session.set('displayProfile', user._id);
-      })
-    }
 
     if (!user.profile.guest) {
       playerParts.setInteractive(characterInteractionConfiguration);
