@@ -531,7 +531,8 @@ userManager = {
     const tiles = this.getTilesInFrontOfPlayer(this.player, [4, 0]);
     if (tiles.length) {
       const tile = tiles[0];
-      entityManager.onInteraction(tile);
+      const positionInFrontOfPlayer = this.getPositionInFrontOfPlayer(this.player);
+      entityManager.onInteraction(tile, positionInFrontOfPlayer);
     }
   },
 
@@ -550,6 +551,15 @@ userManager = {
     }
 
     return this.getTilesRelativeToPlayer(player, positionOffset, layers);
+  },
+
+  getPositionInFrontOfPlayer(player) {
+    const directionVector = this.directionToVector(player.direction);
+
+    return {
+      x: player.x + directionVector[0] * characterInteractionDistance.x,
+      y: player.y + directionVector[1] * characterInteractionDistance.y,
+    };
   },
 
   getTilesRelativeToPlayer(player, offset, layers = []) {
