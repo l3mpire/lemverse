@@ -12,6 +12,7 @@ const characterInteractionConfiguration = {
   hitAreaCallback: Phaser.Geom.Circle.Contains,
   cursor: 'pointer',
 };
+const unavailablePlayerColor = 0x888888;
 
 charactersParts = Object.freeze({
   body: 0,
@@ -101,7 +102,7 @@ userManager = {
     if (!user.profile.guest) {
       playerParts.setInteractive(characterInteractionConfiguration);
       playerParts.on('pointerover', () => this.setTint(this.players[user._id], 0xFFAAFF));
-      playerParts.on('pointerout', () => this.clearTint(this.players[user._id]));
+      playerParts.on('pointerout', () => this.setTintFromState(this.players[user._id]));
       playerParts.on('pointerup', () => {
         if (isModalOpen()) return;
         Session.set('displayProfile', user._id);
@@ -602,6 +603,13 @@ userManager = {
     playerBodyParts.list.forEach(bodyPart => {
       bodyPart.tint = color;
     });
+  },
+
+  setTintFromState(player) {
+    const user = Meteor.users.findOne(player.userId);
+    const currentZone = zones.currentZone(user);
+    if (currentZone && currentZone.disableCommunications) this.setTint(player, unavailablePlayerColor);
+    else this.setTint(player, 0xFFFFFF);
   },
 
   flashColor(player, color) {
