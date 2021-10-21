@@ -2,6 +2,8 @@ import nipplejs from 'nipplejs';
 
 const Phaser = require('phaser');
 
+const unavailablePlayerColor = 0x888888;
+
 const onZoneEntered = e => {
   const { zone } = e.detail;
   const { targetedLevelId, inlineURL, roomName, url, fullscreen, disableCommunications } = zone;
@@ -17,6 +19,7 @@ const onZoneEntered = e => {
       'profile.shareScreen': false,
     } }), 0);
     peer.disable();
+    if (userManager.player) userManager.setTint(userManager.player, unavailablePlayerColor);
   }
 };
 
@@ -26,7 +29,10 @@ const onZoneLeaved = e => {
   if (!popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(Meteor.userId(), zone._id);
 
   if (roomName || url) game.scene.keys.WorldScene.resizeViewport('default');
-  if (disableCommunications) peer.enable();
+  if (disableCommunications) {
+    peer.enable();
+    if (userManager.player) userManager.clearTint(userManager.player);
+  }
 };
 
 WorldScene = new Phaser.Class({
