@@ -1,12 +1,12 @@
 const screenShareDefaultConfig = {
-  defaultFrameRate: 22,
+  defaultFrameRate: 5,
   maxFrameRate: 30,
 };
 
 const videoDefaultConfig = {
-  width: { ideal: 320 },
-  height: { ideal: 240 },
-  frameRate: { max: 30 },
+  width: { ideal: 320, max: 320 },
+  height: { ideal: 240, max: 240 },
+  frameRate: { max: 20 },
 };
 
 streamTypes = Object.freeze({
@@ -28,20 +28,15 @@ userStreams = {
     },
   },
 
-  audio(enabled, notifyNearUsers = false) {
+  audio(enabled) {
     if (!this.streams.main.instance) return;
     _.each(this.streams.main.instance.getAudioTracks(), track => { track.enabled = enabled; });
-    if (enabled && notifyNearUsers) userProximitySensor.callProximityStartedForAllNearUsers();
   },
 
-  video(enabled, notifyNearUsers = false) {
+  video(enabled) {
     const { instance: mainStream } = this.streams.main;
-    const videoElement = this.getVideoElement();
-    videoElement.parentElement.classList.toggle('active', mainStream && enabled);
-    if (!mainStream) return;
-    _.each(mainStream.getVideoTracks(), track => { track.enabled = enabled; });
-    if (enabled && notifyNearUsers) userProximitySensor.callProximityStartedForAllNearUsers();
-    if (mainStream.id !== videoElement.srcObject?.id) videoElement.srcObject = mainStream;
+    this.getVideoElement().parentElement.classList.toggle('active', mainStream && enabled);
+    if (mainStream?.getVideoTracks().length) _.each(mainStream.getVideoTracks(), track => { track.enabled = enabled; });
   },
 
   screen(enabled) {
@@ -90,17 +85,11 @@ userStreams = {
     if (forceNew) this.destroyStream(streamTypes.main);
     const { instance: currentStream, loading } = this.streams.main;
     if (currentStream) return new Promise(resolve => resolve(currentStream));
-    if (!currentStream && loading) return waitFor(() => currentStream !== undefined, 10, 500).then(() => currentStream);
-
-    const { shareVideo, shareAudio, videoRecorder, audioRecorder } = Meteor.user().profile;
-    const options = {
-      video: { deviceId: shareVideo && videoRecorder || false, ...videoDefaultConfig },
-      audio: { deviceId: shareAudio && audioRecorder || false },
-    };
+    if (!currentStream && loading) return waitFor(() => this.streams.main.instance !== undefined, 15, 500).then(() => this.streams.main.instance);
 
     this.streams.main.loading = true;
     return navigator.mediaDevices
-      .getUserMedia(options)
+      .getUserMedia(this.getStreamConstraints(streamTypes.main))
       .then(stream => {
         this.destroyStream(streamTypes.main);
 
@@ -119,18 +108,39 @@ userStreams = {
       .finally(() => { this.streams.main.loading = false; });
   },
 
+  getStreamConstraints(type) {
+    const { shareVideo, shareAudio, videoRecorder, audioRecorder, screenShareFrameRate } = Meteor.user().profile;
+    const options = {};
+
+    if (type === streamTypes.main) {
+      options.audio = { deviceId: shareAudio && audioRecorder || false };
+      options.video = { deviceId: shareVideo && videoRecorder || false, ...videoDefaultConfig };
+
+      // todo: allow streams without video flag to avoid camera's light on mac
+      // if (!shareVideo) delete options.video;
+    } else {
+      const { defaultFrameRate, maxFrameRate } = screenShareDefaultConfig;
+
+      options.audio = false;
+      options.video = {
+        frameRate: {
+          ideal: +screenShareFrameRate || defaultFrameRate,
+          max: maxFrameRate,
+        },
+      };
+    }
+
+    return options;
+  },
+
   requestDisplayMedia() {
     const { instance: currentStream, loading } = this.streams.screen;
     if (currentStream) return new Promise(resolve => resolve(currentStream));
-    if (!currentStream && loading) return waitFor(() => currentStream !== undefined, 20, 1000).then(() => currentStream);
+    if (!currentStream && loading) return waitFor(() => this.streams.screen.instance !== undefined, 20, 1000).then(() => this.streams.screen.instance);
 
-    const { screenShareFrameRate } = Meteor.user().profile;
     this.streams.screen.loading = true;
     return navigator.mediaDevices
-      .getDisplayMedia({ frameRate: {
-        ideal: screenShareFrameRate || screenShareDefaultConfig.defaultFrameRate,
-        max: screenShareDefaultConfig.maxFrameRate },
-      })
+      .getDisplayMedia(this.getStreamConstraints(streamTypes.screen))
       .then(stream => { this.streams.screen.instance = stream; return stream; })
       .catch(err => {
         error('requestDisplayMedia failed', err);
@@ -182,7 +192,7 @@ userStreams = {
   },
 
   applyConstraints(streamType, trackType, constraints) {
-    const { instance: stream } = streamType === this.streams.main ? this.streams.main : this.streams.screen;
+    const { instance: stream } = streamType === streamTypes.main ? this.streams.main : this.streams.screen;
     if (!stream) return;
     const tracks = trackType === 'video' ? stream.getVideoTracks() : stream.getAudioTracks();
     tracks.forEach(track => track.applyConstraints(constraints));
@@ -193,12 +203,28 @@ userStreams = {
     _.each(stream.getTracks(), track => track.stop());
   },
 
+  shouldCreateNewStream(streamType, needAudio, needVideo) {
+    const { instance: stream } = streamType === streamTypes.main ? this.streams.main : this.streams.screen;
+
+    if (!stream) return true;
+    if (needAudio && stream.getAudioTracks().length === 0) return true;
+    if (needVideo && stream.getVideoTracks().length === 0) return true;
+
+    return false;
+  },
+
   getVideoElement() {
     if (!this.streams.main.domElement) {
       this.streams.main.domElement = document.querySelector('.js-video-me video');
-      this.streams.main.domElement.parentElement.dataset.avatar = getRandomAvatarForUser(Meteor.user());
+      this.refreshVideoElementAvatar();
     }
 
     return this.streams.main.domElement;
+  },
+
+  refreshVideoElementAvatar() {
+    const videoElement = this.getVideoElement();
+    videoElement.parentElement.dataset.avatar = getRandomAvatarForUser(Meteor.user());
+    if (this.streams.main.instance) videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
   },
 };

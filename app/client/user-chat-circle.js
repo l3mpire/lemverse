@@ -1,5 +1,6 @@
 const linearLerp = (start, end, amt) => (1 - amt) * start + amt * end;
 const lerpAmount = 0.5;
+const circleOffset = { x: 0, y: -35 };
 
 userChatCircle = {
   chatCircle: undefined,
@@ -17,10 +18,13 @@ userChatCircle = {
     this.chatCircle.visible = false;
   },
 
-  update(x, y) {
+  update(playerX, playerY) {
     const wasVisible = this.chatCircle.visible;
-    this.chatCircle.visible = userProximitySensor.nearUsersCount() > 0 && !meet.api;
+    this.chatCircle.visible = userProximitySensor.nearUsersCount() > 0 && !meet.api && peer.isEnabled();
+    if (!this.chatCircle.visible) return;
 
+    let x = playerX + circleOffset.x;
+    let y = playerY + circleOffset.y;
     if (this.chatCircle.visible) {
       if (wasVisible) {
         x = linearLerp(this.chatCircle.x, x, lerpAmount);

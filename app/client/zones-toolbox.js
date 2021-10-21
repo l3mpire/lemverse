@@ -5,13 +5,12 @@ const zoneHideProperties = [
   'y1',
   'x2',
   'y2',
+  'levelId',
   'createdAt',
   'createdBy',
 ];
 
-const clearZoneRectangles = () => {
-  _.each(zoneRectangles, r => r.destroy());
-};
+const clearZoneRectangles = () => _.each(zoneRectangles, r => r.destroy());
 
 //
 // zonesToolboxProperties
@@ -31,9 +30,11 @@ Template.zonesToolboxProperties.helpers({
     if (!props.fullscreen) props.fullscreen = false;
     if (!props.targetedLevelId) props.targetedLevelId = '';
     if (!props.inlineURL) props.inlineURL = '';
+    if (!props.hideName) props.hideName = false;
 
     return JSON.stringify(props, ' ', 2);
   },
+  name() { return this.name || this._id; },
 });
 
 Template.zonesToolboxProperties.events({
@@ -42,7 +43,11 @@ Template.zonesToolboxProperties.events({
   },
   'click .js-zone-save'() {
     const currentFields = Zones.findOne(Session.get('displayZoneId'));
-    const newValues = JSON.parse($('.modal.zones-toolbox-properties textarea').val());
+    let newValues;
+    try {
+      newValues = JSON.parse($('.zones-toolbox-properties textarea').val());
+    } catch (err) { lp.notif.error(`invalid JSON format`, err); }
+
     const $unset = _.reduce(currentFields, (root, k, i) => {
       const newObject = { ...root };
       if (!zoneHideProperties.includes(i) && !Object.keys(newValues).includes(i)) newObject[i] = 1;
@@ -58,7 +63,6 @@ Template.zonesToolboxProperties.events({
       Session.set('displayZoneId', undefined);
     });
   },
-
 });
 
 //
@@ -85,6 +89,7 @@ Template.zonesToolbox.onRendered(function () {
 
 Template.zonesToolbox.onDestroyed(() => {
   clearZoneRectangles();
+  Session.set('displayZoneId', null);
 });
 
 const getZoneCenter = zone => [(zone.x1 + zone.x2) * 0.5, (zone.y1 + zone.y2) * 0.5];

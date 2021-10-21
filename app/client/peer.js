@@ -8,15 +8,21 @@ peer = {
   peerInstance: undefined,
   peerLoading: false,
   remoteStreamsByUsers: new ReactiveVar([]),
+  sensorEnabled: true,
+
+  init() {
+    userProximitySensor.onProximityStarted = this.onProximityStarted.bind(this);
+    userProximitySensor.onProximityEnded = this.onProximityEnded.bind(this);
+  },
 
   closeAll() {
     if (Meteor.user().options?.debug) log('peer.closeAll: start');
-    _.each(this.calls, call => this.close(call.peer, 100));
+    _.each(this.calls, call => this.close(call.peer, Meteor.settings.public.peer.delayBeforeClosingCall, 'close-all'));
   },
 
-  closeCall(userId) {
+  closeCall(userId, origin) {
     const debug = Meteor.user()?.options?.debug;
-    if (debug) log('close call: start', userId);
+    if (debug) log(`close call: start (${origin})`, userId);
 
     let activeCallsCount = 0;
     const close = (remote, user, type) => {
@@ -37,8 +43,7 @@ peer = {
     this.cancelCallClose(userId);
     this.cancelCallOpening(userId);
 
-    if (!activeCallsCount) return;
-    if (debug) log('close call: call was active');
+    if (activeCallsCount && debug) log('close call: call was active');
 
     let streamsByUsers = this.remoteStreamsByUsers.get();
     streamsByUsers.map(usr => {
@@ -62,17 +67,13 @@ peer = {
 
     if (debug) log('close call: call closed successfully', userId);
     sounds.play('webrtc-out');
-
-    // hack: peerjs (https://github.com/peers/peerjs/issues/780) notify manually the other user due to a PeerJS bug not sending the close event
-    const otherUser = Meteor.users.findOne(userId);
-    if (otherUser) this.sendData([otherUser], { type: 'call-close-done', user: Meteor.userId() });
   },
 
-  close(userId, timeout = 0) {
+  close(userId, timeout = 0, origin = null) {
     this.cancelCallOpening(userId);
     if (this.callsToClose[userId] && timeout !== 0) return;
     clearTimeout(this.callsToClose[userId]);
-    this.callsToClose[userId] = setTimeout(() => this.closeCall(userId), timeout);
+    this.callsToClose[userId] = setTimeout(() => this.closeCall(userId, origin), timeout);
   },
 
   createPeerCall(peer, stream, user) {
@@ -89,14 +90,14 @@ peer = {
 
     if (!userProximitySensor.isUserNear(user)) {
       if (debug) log(`peer call: creation cancelled (user is too far)`);
-      this.close(user._id);
+      this.close(user._id, 0, 'far-user');
       return;
     }
 
     const call = peer.call(user._id, stream, { metadata: { userId: Meteor.userId(), type } });
     if (!call) {
       error(`peer call: an error occured during call creation`);
-      this.close(user._id);
+      this.close(user._id, 0, 'peer-error');
       return;
     }
 
@@ -114,7 +115,10 @@ peer = {
   createPeerCalls(user) {
     const { shareAudio, shareScreen, shareVideo } = Meteor.user().profile;
 
-    if (!this.calls[`${user._id}-${streamTypes.main}`] && !this.calls[`${user._id}-${streamTypes.screen}`]) sounds.play('webrtc-in');
+    if (!this.calls[`${user._id}-${streamTypes.main}`] && !this.calls[`${user._id}-${streamTypes.screen}`]) {
+      sounds.play('webrtc-in');
+      if (userProximitySensor.nearUsersCount() === 1) Meteor.call('addUserInterruption');
+    }
 
     this.getPeer().then(peer => {
       if (shareAudio || shareVideo) userStreams.createStream().then(stream => this.createPeerCall(peer, stream, user));
@@ -166,15 +170,17 @@ peer = {
   },
 
   onProximityStarted(user) {
+    if (!this.sensorEnabled) return;
+
     this.cancelCallClose(user._id);
     this.cancelCallOpening(user._id);
 
-    if (meet.api) return;
+    if (meet.api || Meteor.user()?.profile.guest) return;
     this.callsOpening[user._id] = setTimeout(() => this.createPeerCalls(user), Meteor.settings.public.peer.callDelay);
   },
 
   onProximityEnded(user) {
-    this.close(user._id, Meteor.settings.public.peer.delayBeforeClosingCall);
+    this.close(user._id, Meteor.settings.public.peer.delayBeforeClosingCall, 'proximity-ended');
   },
 
   cancelCallClose(userId) {
@@ -290,7 +296,7 @@ peer = {
 
     remoteCall.on('close', () => {
       if (debug) log(`remote call closed (with ${remoteUserId})`, { userId: remoteUserId, type: remoteCall.metadata.type });
-      this.close(remoteUserId);
+      this.close(remoteUserId, 0, 'peerjs-event');
     });
 
     // ensures a call to the other user exists on an answer to avoid one-way calls, do nothing if a call is already started
@@ -330,10 +336,6 @@ peer = {
     if (!Meteor.user()) return Promise.reject(new Error(`an user is required to create a peer`));
     if (Meteor.user().profile?.guest) return Promise.reject(new Error(`peer is forbidden for guest account`));
 
-    // init
-    userProximitySensor.onProximityStarted = userProximitySensor.onProximityStarted ?? this.onProximityStarted.bind(this);
-    userProximitySensor.onProximityEnded = userProximitySensor.onProximityEnded ?? this.onProximityEnded.bind(this);
-
     this.peerLoading = true;
     return new Promise((resolve, reject) => {
       Meteor.call('getPeerConfig', (err, result) => {
@@ -359,10 +361,6 @@ peer = {
         this.peerInstance.on('connection', connection => {
           connection.on('data', dataReceived => {
             if (dataReceived.type === 'audio') userVoiceRecorderAbility.playSound(dataReceived.data);
-            if (dataReceived.type === 'call-close-done') {
-              if (debug) log(`remote peer closed call (${dataReceived.user})`);
-              this.close(dataReceived.user);
-            }
           });
         });
 
@@ -395,5 +393,9 @@ peer = {
 
   isPeerValid(peer) {
     return peer?.id && !peer.disconnected;
+  },
+
+  isEnabled() {
+    return this.sensorEnabled;
   },
 };

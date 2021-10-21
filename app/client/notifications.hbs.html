@@ -11,13 +11,13 @@
 
 
 <template name="notifications">
-  <div class="notifications modal">
-    <button class="js-close">X</button>
-    <h1>Notifications</h1>
+  <div class="notifications">
+  {{#modal id="displayNotificationsPanel" title="Notifications"}}
     <ul>
       {{#each notification in notifications}}
         {{> notificationsItem notification}}
       {{/each}}
-    </ul>  
+    </ul>
+  {{/modal}}
   </div>
 </template>

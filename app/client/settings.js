@@ -1,74 +1,27 @@
+const mainSettings = 'settingsMain';
+const characterSettings = 'settingsCharacter';
+const mediasSettings = 'settingsMedias';
+const menus = [characterSettings, mediasSettings];
+
 Template.settings.events({
+  'click .js-go-back'() {
+    Session.set('displaySettings', mainSettings);
+  },
   'click .js-character-designer'() {
-    Session.set('settingsMode', 'character');
+    Session.set('displaySettings', characterSettings);
   },
   'click .js-medias-settings'() {
-    Session.set('settingsMode', 'medias');
+    Session.set('displaySettings', mediasSettings);
   },
-  'click .js-close-button'() {
-    if (Session.get('settingsMode') !== 'default') Session.set('settingsMode', 'default');
-    else Session.set('displaySettings', false);
+  'click .js-profile'() {
+    Session.set('displayProfile', Meteor.userId());
   },
-  'input .js-name'(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    const name = event.target.value;
-    if (!name) return false;
+});
 
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.name': name } });
-    userManager.rename(name);
-    return false;
+Template.settings.helpers({
+  mode() {
+    if (menus.includes(Session.get('displaySettings'))) return Session.get('displaySettings');
+    return mainSettings;
   },
-  'input .js-reaction'(event) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    const reaction = event.target.value;
-    if (!reaction) return false;
-
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.defaultReaction': reaction } });
-    return false;
-  },
-  'input .js-position'(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    const position = event.target.value;
-    if (!position) return false;
-
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.position': position } });
-    return false;
-  },
-  'input .js-social'(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    const social = event.target.value;
-    if (!social) return false;
-
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.social': social } });
-    return false;
-  },
-  'input .js-bio'(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    const bio = event.target.value;
-    if (!bio) return false;
-
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.bio': bio } });
-    return false;
-  },
-  'input .js-website'(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    const website = event.target.value;
-    if (!website) return false;
-
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.website': website } });
-    return false;
-  },
-  'change .js-mic-select'(event) {
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.audioRecorder': event.target.value } });
-  },
-  'change .js-cam-select'(event) {
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.videoRecorder': event.target.value } });
-  },
+  title() { return 'Settings'; },
 });
