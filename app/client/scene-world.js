@@ -4,20 +4,29 @@ const Phaser = require('phaser');
 
 const onZoneEntered = e => {
   const { zone } = e.detail;
-  const { targetedLevelId, inlineURL, roomName, url, fullscreen } = zone;
+  const { targetedLevelId, inlineURL, roomName, url, fullscreen, disableCommunications } = zone;
 
   if (targetedLevelId) levelManager.loadLevel(targetedLevelId);
   else if (inlineURL) characterPopIns.initFromZone(zone);
 
   if (roomName || url) game.scene.keys.WorldScene.resizeViewport(fullscreen ? 'fullscreen' : 'split-screen');
+  if (disableCommunications) {
+    setTimeout(() => Meteor.users.update(Meteor.userId(), { $set: {
+      'profile.shareVideo': false,
+      'profile.shareAudio': false,
+      'profile.shareScreen': false,
+    } }), 0);
+    peer.disable();
+  }
 };
 
 const onZoneLeaved = e => {
   const { zone } = e.detail;
-  const { popInConfiguration, roomName, url } = zone;
+  const { popInConfiguration, roomName, url, disableCommunications } = zone;
   if (!popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(Meteor.userId(), zone._id);
 
   if (roomName || url) game.scene.keys.WorldScene.resizeViewport('default');
+  if (disableCommunications) peer.enable();
 };
 
 WorldScene = new Phaser.Class({
