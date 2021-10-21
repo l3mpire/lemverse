@@ -1,6 +1,17 @@
-<img alt="lemverse" src="./app/public/lemverse-light.png">
+<p align="center">
+  <img alt="lemverse" src="./app/public/lemverse.png" width="128" height="128">  
+</p>
 
----
+# Table of contents
+- [What is `lemverse`?](#what-is--lemverse--)
+- [What can I do in lemverse?](#what-can-i-do-in-lemverse-)
+- [Getting started!](#getting-started-)
+- [Deploy in production!](#deploy-in-production-)
+- [Useful commands/tricks](#useful-commands-tricks)
+- [Assets](#assets)
+- [License](#license)
+- [Credits](#credits)
+- [Screenshots](#screenshots)
 
 # What is `lemverse`?
 
@@ -14,7 +25,8 @@
 If you have answer `yes` to one of those questions, then `lemverse` is for you!  
 You can either launch it locally, on a server or join us at [lemverse.com](https://lemverse.com).
 
-ℹ️ Can't wait to install lemverse? You can go directly to the [Getting started](#getting-started) section
+> ℹ️ Can't wait to install lemverse? You can go directly to the [Getting started](#getting-started) section  
+> :warning: For the moment we only focus on compatibility with the Chrome browser  
 
 # What can I do in lemverse?
 
@@ -88,6 +100,8 @@ Once you hit `e` again you will see something like this:
 You can add a zone then select on the map the top left followed by the bottom right corner of the new zone.
 
 If you want to edit a zone, simply click on either corner coordinate then click on the map.
+
+> ℹ️ Press "alt" or "option" during edition to snap world coordinates to tiles coordinates
 
 Each zone can be configured to make more things.  
 To edit those information, simply click on the name of the room (bold text).
@@ -238,14 +252,9 @@ Please note, that as stated in section `Deploy in production`, there is an addit
       "peer": { // Settings about webrtc connection
         "answerMaxAttempt": 5,
         "answerDelayBetweenAttempt": 750,
-        "avatars": [ // Avatar when users do not share their camera
-          "https://www.monchat.ca/wp-content/uploads/2020/01/Fond-ecran-mignon-chaton-en-position-de-priere-1024x640.jpg",
-          "https://animalaxy.fr/wp-content/uploads/2019/02/iStock5.jpg",
-          "https://cdn.radiofrance.fr/s3/cruiser-production/2018/12/9f19b228-269f-4995-ba7f-eda054945811/1136_gettyimages-155607257.jpg",
-          "https://chatfaitdubien.fr/wp-content/uploads/2016/09/chaton.jpg",
-          "https://i.pinimg.com/564x/8b/f7/c6/8bf7c6e26f7250944e963f23f364b68f.jpg"
-        ],
-        "callDelay": 250 // Delay before a call is started, useful to avoid a call when you pass by someone
+        "avatarAPI": "https://source.unsplash.com/320x240/?cat&sig=[user_id]", // Avatar when users do not share their camera
+        "callDelay": 250, // Delay before a call is started, useful to avoid a call when you pass by someone
+        "delayBeforeClosingCall": 1000
       },
 
       "meet": { // Jitsi settings
@@ -272,18 +281,27 @@ Please note, that as stated in section `Deploy in production`, there is an addit
     "defaultLevelId": "lvl_iLOVEaLOTlemverse", // Default level Id created at first run.
 
     "peer": {
-      "server": {
+      "path": "/peer",
+      "client": {
         "url": "peer.example.com",
         "port": 443,
-        "path": "/peer",
         "secret": "******", // Required for turn server support
         "credentialDuration": 86400,
         "config": {
           "iceServers": [{
             "urls": "stun:stun.l.google.com:19302"
           }],
-          "iceTransportPolicy" : "all"
+          "iceTransportPolicy" : "all",
+          "sdpSemantics": "unified-plan"
         }
+      },
+      // Details about the configuration bellow is available here: https://github.com/peers/peerjs-server#config--cli-options
+      "server": {
+        "port": 7010,
+        "key": "peerjs",
+        "alive_timeout": 60000,
+        "expire_timeout": 5000,
+        "allow_discovery": false,
       }
     }
   }
@@ -313,6 +331,8 @@ After that, simply launch `run-lt`.
 Modify `createMyPeer` in `peer.js` to change the host to `lemverse-peer-USER-DOMAIN` while `USER`=`whoami` and `DOMAIN`=`LT_DOMAIN` env variable.
 
 Access to your local instance at: `https://lemverse-USER-DOMAIN`.
+
+> :warning: Don't forget to change the port to 443 for peers when using local tunnel
 
 ## First login
 
@@ -420,18 +440,26 @@ server {
 
 Once you have done it, the subsequent deployments will be done using the command `./deploy`.
 
-## Build docker images
+## Docker images
 
-### Production
+### Official image
+
+The official lemverse image is `lempire/lemverse`.  
+If you want to pull the last version, you should do:  
+`docker pull lempire/lemverse:latest`
+
+
+### Build
+#### Production
 
 To build the latest version of lemverse, simply run the following command:  
-`docker build . -t l3mpire/lemverse:latest`
+`docker build . -t lempire/lemverse:latest`
 
-### Development
+#### Development
 
 To build from you source without having to install anything, you can run the following command:
 
-`docker build -f Dockerfile.dev . -t l3mpire/lemverse:dev`
+`docker build -f Dockerfile.dev . -t lempire/lemverse:dev`
 
 ## Slack Notification upon deployment
 
@@ -478,6 +506,22 @@ For example, to add a beta flag to yourself execute this command in your browser
 ```js
 remote("Meteor.users.update({ _id: Meteor.userId() }, { $addToSet: { 'beta': { $each: ['myAwesomeFeature'] } } });")
 ```
+
+## Custom avatars
+
+It's possible to modify the avatars displayed during a discussion using an image API. To do so, you just have to modify the `settings.json` file.
+
+You can add dynamic parameters to your URL using `[user_id]` or `[user_name]` to access id and name of the user who requests an avatar.
+
+Website with images API :
+- [Unsplash](https://source.unsplash.com)
+- [Robohash](https://robohash.org)
+
+> Example with Robohash: `https://robohash.org/[user_name]?set=set4&bgset=bg2&size=320x240`
+
+# Assets
+
+We use paid assets from [limezu](https://limezu.itch.io/) on [itch.io](https://limezu.itch.io/moderninteriors) in the *version 35*. Please keep in mind than lemverse doesn't support the new character format for the moment.
 
 # License
 

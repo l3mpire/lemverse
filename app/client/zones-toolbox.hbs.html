@@ -1,16 +1,14 @@
 <template name="zonesToolboxProperties">
-  <div class="modal zones-toolbox-properties">
-    <div>
-      {{#if name}}{{name}}{{else}}{{_id}}{{/if}}
-      <br><br>
+  {{#modal id="displayZoneId" title=name data=this}}
+    <div class="zones-toolbox-properties">
       <textarea>{{properties}}</textarea>
+      <div class="actions">
+        <span class="button js-zone-delete">🗑️ Delete</span>
+        <span class="button js-zone-cancel">❌ Cancel</span>
+        <span class="button js-zone-save">💾 Save</span>
+      </div>
     </div>
-    <div>
-      <span class="button js-zone-cancel">❌ Cancel</span>
-      <span class="button js-zone-save">💾 Save</span>
-      <span class="button js-zone-delete">🗑️ Delete</span>
-    </div>
-  </div>
+  {{/modal}}
 </template>
 
 <template name="zonesToolbox">

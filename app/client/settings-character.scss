@@ -13,6 +13,7 @@
 
   .renderCharacter {
     width: 75px;
+    min-width: 75px;
     display: flex;
     align-items: center;
 
@@ -74,7 +75,6 @@
       height: 100%;
       display: flex;
       flex-wrap: wrap;
-      max-width: 265px;
       gap: 0.3rem;
       overflow: scroll;
 

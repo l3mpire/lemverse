@@ -1,5 +1,5 @@
 <template name="reactionsToolbox">
-  <div class="reactions-toolbox {{#unless isLoading}}visible{{/unless}}">
+  <div class="reactions-toolbox {{#if and (not isLoading) (not isEscapeLevel)}}visible{{/if}}">
     <div class="buttons">
       {{#each reaction in reactions}}
         <button class="button js-reaction" data-value="{{reaction}}" type="button"><div class="emoji">{{reaction}}</div></button>

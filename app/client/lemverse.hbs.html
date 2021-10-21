@@ -28,25 +28,23 @@
         {{> reactionsToolbox}}
       {{/if}}
       {{> zonesName}}
-      <div id="game" class="{{#if neq (Session 'editor') 0}}edit{{/if}}"></div>
+      <div id="game" class="{{#if neq (Session 'editor') 0}}edit{{/if}} {{#if isLoading}}loading{{/if}}"></div>
     </div>
     <div id="meet"></div>
     <div id="webpage">
-      <iframe src="" frameborder="0" id="webpageIframe"></iframe>
+      <iframe src="" frameBorder="0" allowfullscreen="true" id="webpageIframe"></iframe>
     </div>
   </div>
-  {{#if Session 'displaySettings'}}
-    {{> settings}}
-  {{/if}}
-  {{#if Session 'displayNotificationsPanel'}}
-    {{> notifications}}
-  {{/if}}
+  {{> settings}}
+  {{> notifications}}
+  {{> profile}}
+  {{> gameMod}}
   {{> userList}}
   {{> notification}}
-  <audio class="js-audio-webrtc-in">
+  <audio class="js-audio-webrtc-in" muted>
     <source src="/assets/lemverse/webrtc-in.mp3" type="audio/mp3">
   </audio>
-  <audio class="js-audio-webrtc-out">
+  <audio class="js-audio-webrtc-out" muted>
     <source src="/assets/lemverse/webrtc-out.mp3" type="audio/mp3">
   </audio>
 </template>

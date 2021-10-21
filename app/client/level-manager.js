@@ -1,0 +1,169 @@
+const Phaser = require('phaser');
+
+const defaultLayer = 2;
+const defaultLayerCount = 9;
+const defaultLayerDepth = { 6: 10000, 7: 10001, 8: 10002 };
+const defaultTileset = { layer: defaultLayer, firstgid: 0, tileProperties: {} };
+
+levelManager = {
+  layers: [],
+  map: undefined,
+  scene: undefined,
+  teleporterGraphics: [],
+
+  init(scene) {
+    this.scene = scene;
+  },
+
+  createMap() {
+    this.map = this.scene.make.tilemap({ tileWidth: 48, tileHeight: 48, width: 100, height: 100 });
+    this.initMapLayers();
+    this.addTilesetsToLayers(Tilesets.find().fetch());
+
+    // physics
+    this.scene.physics.world.bounds.width = this.map.widthInPixels;
+    this.scene.physics.world.bounds.height = this.map.heightInPixels;
+  },
+
+  destroy() {
+    this.destroyMapLayers();
+    this.map?.destroy();
+  },
+
+  addTilesetsToLayers(tilesets) {
+    const newTilesets = [];
+    _.each(tilesets, tileset => {
+      if (this.findTileset(tileset._id)) return;
+      const tilesetImage = this.map.addTilesetImage(tileset._id, tileset._id, 16, 16, 0, 0, tileset.gid);
+      if (!tilesetImage) {
+        log('unable to load tileset', tileset._id);
+        return;
+      }
+
+      tilesetImage.tileProperties = tileset.tiles;
+      newTilesets.push(tilesetImage);
+
+      const collisionTileIndexes = _.map(tileset.collisionTileIndexes, i => i + tileset.gid);
+      _.each(this.layers, layer => layer.setCollision(collisionTileIndexes));
+    });
+
+    if (newTilesets.length) _.each(this.layers, layer => layer.setTilesets([...layer.tileset, ...newTilesets]));
+  },
+
+  initMapLayers() {
+    this.destroyMapLayers();
+    _.times(defaultLayerCount, i => this.layers.push(this.map.createBlankLayer(`${i}`)));
+    _.each(defaultLayerDepth, (value, key) => this.layers[key].setDepth(value));
+  },
+
+  destroyMapLayers() {
+    const { world: physicWorld } = this.scene.physics;
+    _.each(this.layers, layer => {
+      if (layer.playerCollider) physicWorld?.removeCollider(layer.playerCollider);
+      layer.destroy();
+    });
+
+    this.map.removeAllLayers();
+    this.layers = [];
+  },
+
+  findTileset(tilesetId) {
+    return this.map.getTileset(tilesetId);
+  },
+
+  loadLevel(levelId) {
+    const levelToLoad = Levels.findOne({ _id: levelId });
+    if (!levelToLoad) { error(`Level with the id "${levelId}" not found`); return; }
+
+    document.title = levelToLoad.name;
+    game.scene.keys.LoadingScene.setText(levelToLoad.name);
+    game.scene.keys.LoadingScene.show();
+    setTimeout(() => this.scene.scene.restart({ levelId }), 0);
+  },
+
+  tileRefresh(x, y) {
+    for (let i = 0; i < this.layers.length; i++) this.map.removeTileAt(x, y, false, false, i);
+
+    Tiles.find({ x, y }).forEach(tile => {
+      this.map.putTileAt(this.tileGlobalIndex(tile), tile.x, tile.y, false, this.tileLayer(tile));
+    });
+  },
+
+  tileGlobalIndex(tile) {
+    const tileset = this.findTileset(tile.tilesetId);
+    return (tileset?.firstgid || 0) + tile.index;
+  },
+
+  tileProperties(tile) {
+    if (!tile.tilesetId) return defaultTileset;
+    const tileset = this.findTileset(tile.tilesetId);
+    if (!tileset) return defaultTileset;
+    return tileset.tileProperties?.[tile.index];
+  },
+
+  tileLayer(tile) {
+    return this.tileProperties(tile)?.layer ?? defaultLayer;
+  },
+
+  onLevelLoaded() {
+    this.scene.scene.wake();
+
+    // simulate a first frame update to avoid weirds visual effects with characters animation and direction
+    this.scene.update(0, 0);
+    setTimeout(() => game.scene.keys.LoadingScene.hide(() => this.scene.enableKeyboard(true)), 0);
+
+    if (Meteor.settings.public.debug) {
+      this.layers[0].renderDebug(this.scene.add.graphics(), {
+        tileColor: null,
+        collidingTileColor: new Phaser.Display.Color(243, 134, 48, 200),
+        faceColor: new Phaser.Display.Color(40, 39, 37, 255),
+      });
+    }
+
+    if (Tiles.find().count() === 0) this.drawTeleporters(true);
+  },
+
+  onTilesetUpdated(oldTileset, newTileset) {
+    const oTileKeys = _.map(_.keys(oldTileset.tiles || {}), k => +k);
+    const nTileKeys = _.map(_.keys(newTileset.tiles || {}), k => +k);
+    const d1 = _.difference(oTileKeys, nTileKeys);
+    const d2 = _.difference(nTileKeys, oTileKeys);
+    const d3 = _.filter(oTileKeys, index => oldTileset.tiles[index]?.layer !== newTileset.tiles[index]?.layer);
+    const changedTileIndexes = _.union(d1, d2, d3);
+    const xys = _.map(Tiles.find({ tilesetId: newTileset._id, index: { $in: changedTileIndexes } }).fetch(), t => ({ x: t.x, y: t.y }));
+    _.forEach(xys, xy => levelManager.tileRefresh(xy.x, xy.y));
+
+    const enabledCollisionIndexes = _.difference(oldTileset.collisionTileIndexes, newTileset.collisionTileIndexes);
+    const disabledCollisionIndexes = _.difference(newTileset.collisionTileIndexes, oldTileset.collisionTileIndexes);
+
+    const enabledCollisionGlobalIndexes = _.map(enabledCollisionIndexes, i => this.tileGlobalIndex({ index: i, tilesetId: newTileset._id }));
+    const disabledCollisionGlobalIndexes = _.map(disabledCollisionIndexes, i => this.tileGlobalIndex({ index: i, tilesetId: newTileset._id }));
+
+    _.each(this.map.layers, layer => {
+      this.map.setCollision(enabledCollisionGlobalIndexes, true, false, layer.tilemapLayer);
+      this.map.setCollision(disabledCollisionGlobalIndexes, false, false, layer.tilemapLayer);
+    });
+  },
+
+  drawTeleporters(state) {
+    // clean previous
+    _.each(this.teleporterGraphics, zoneGraphic => zoneGraphic.destroy());
+    this.teleporterGraphics = [];
+
+    if (!state) return;
+
+    // create new ones
+    const zones = Zones.find({ $or: [{ targetedLevelId: { $exists: true, $ne: '' } }, { userLevelTeleporter: { $exists: true } }] }).fetch();
+    _.each(zones, zone => {
+      const graphic = this.scene.add.rectangle(zone.x1, zone.y1, zone.x2 - zone.x1, zone.y2 - zone.y1, 0x9966ff, 0.2);
+      graphic.setOrigin(0, 0);
+      graphic.setStrokeStyle(1, 0xefc53f);
+      graphic.setDepth(20000);
+      this.teleporterGraphics.push(graphic);
+    });
+  },
+};
+
+Template.registerHelper('tileLayer', function () { return levelManager.tileLayer(this); });
+Template.registerHelper('worldToTileX', x => levelManager.map.worldToTileX(x));
+Template.registerHelper('worldToTileY', y => levelManager.map.worldToTileY(y));

@@ -2,7 +2,7 @@ const maxAttempt = 10;
 const delayBetweenAttempt = 2000; // in ms
 const talkingDetectorThreshold = 10;
 
-const isRemoteUserSharingMedia = (user, type) => (type === 'screen' ? user.shareScreen : user.shareAudio || user.shareVideo);
+const isRemoteUserSharingMedia = (user, type) => (type === streamTypes.screen ? user.shareScreen : user.shareAudio || user.shareVideo);
 
 const addVolumeAudioContextProcessor = (stream, triggerVar) => {
   const audioContext = new AudioContext();
@@ -32,7 +32,7 @@ const checkMediaAvailable = (template, type) => {
     return;
   }
 
-  const remoteUserIsNear = remoteStreamsByUsers.get().find(usr => usr._id === remoteUser._id);
+  const remoteUserIsNear = peer.remoteStreamsByUsers.get().find(usr => usr._id === remoteUser._id);
   if (!remoteUserIsNear) {
     log(`Stop retry to get ${remoteUser.name}'s ${type}, ${remoteUser.name} is too far`);
     return;
@@ -41,10 +41,9 @@ const checkMediaAvailable = (template, type) => {
   const user = Meteor.users.findOne({ _id: remoteUser._id }).profile;
   if (!isRemoteUserSharingMedia(user, type)) {
     log(`Remote user has nothing to share`);
-    return;
   }
 
-  const source = type === 'screen' ? remoteUser.screen?.srcObject : remoteUser.user?.srcObject;
+  const source = type === streamTypes.screen ? remoteUser.screen?.srcObject : remoteUser.main?.srcObject;
   if (source) {
     template.firstNode.srcObject = source;
     template.firstNode.play().catch(() => {
@@ -65,14 +64,22 @@ Template.webcam.onRendered(function () {
   checkMediaAvailable(this, 'video-audio');
 
   if (lp.isLemverseBeta('talkIndicator')) {
-    const stream = this.data.remoteUser.user?.srcObject;
+    const stream = this.data.remoteUser.main?.srcObject;
     if (stream) addVolumeAudioContextProcessor(stream, this.data.triggerVar);
   }
+});
+
+Template.webcam.onDestroyed(function () {
+  destroyVideoSource(this.find('video'));
 });
 
 Template.screenshare.onRendered(function () {
   this.attempt = 1;
   checkMediaAvailable(this, 'screen');
+});
+
+Template.screenshare.onDestroyed(function () {
+  destroyVideoSource(this.find('video'));
 });
 
 Template.remoteStream.onCreated(function () {
@@ -81,10 +88,13 @@ Template.remoteStream.onCreated(function () {
 
 Template.remoteStream.helpers({
   mediaState() { return Meteor.users.findOne({ _id: this.remoteUser._id })?.profile; },
-  hasUserStream() { return this.remoteUser.user?.srcObject; },
+  hasMainStream() { return this.remoteUser.main?.srcObject; },
   hasScreenStream() { return this.remoteUser.screen?.srcObject; },
   state() {
-    const { profile } = Meteor.users.findOne({ _id: this.remoteUser._id });
+    const user = Meteor.users.findOne({ _id: this.remoteUser._id });
+    if (!user) return 'user-error';
+
+    const { profile } = user;
     if (profile.userMediaError) return 'media-error';
 
     return this.remoteUser.waitingCallAnswer ? 'calling' : 'connected';

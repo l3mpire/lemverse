@@ -11,11 +11,11 @@
   border: 2px #3A3A50 solid;
   padding: 15px;
   text-align: center;
-  transition: all 0.3s cubic-bezier(0.55, 0, 1, 0.45);
+  transition: transform 0.3s cubic-bezier(0.55, 0, 1, 0.45), opacity 0.3s linear;
 
   &.show {
     opacity: 1;
-    transition: all 0.2s cubic-bezier(0, 0.55, 0.45, 1);
+    transition: transform 0.2s cubic-bezier(0, 0.55, 0.45, 1), opacity 0.3s linear;
     transform: translate(-50%, 0);
   }
 }

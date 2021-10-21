@@ -1,8 +1,9 @@
 zones = {
   activeZone: undefined,
-  onZoneChanged: undefined,
   toastTimerInstance: undefined,
   toastBloc: undefined,
+  webpageContainer: undefined,
+  webpageIframeContainer: undefined,
 
   currentZone(user) {
     return Zones.findOne({
@@ -56,10 +57,11 @@ zones = {
     return this.getCenter(zone);
   },
 
-  usersInZone(zone) {
+  usersInZone(zone, includeCurrentUser = false) {
     if (!zone) return [];
 
-    const users = Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch();
+    const queryOption = includeCurrentUser ? {} : { _id: { $ne: Meteor.userId() } };
+    const users = Meteor.users.find(queryOption).fetch();
     const usersInZone = [];
 
     _.each(users, user => {
@@ -87,8 +89,7 @@ zones = {
     this.toastTimerInstance = setTimeout(() => this.toastBloc.removeClass('show'), 1500);
   },
 
-  checkDistances() {
-    const { player } = game?.scene?.keys?.WorldScene || {};
+  checkDistances(player) {
     if (!player) return;
 
     // check if we are in a new zone
@@ -110,19 +111,27 @@ zones = {
       return mz;
     }, {});
 
-    if (this.activeZone?.name !== zone?.name) {
-      if (this.onZoneChanged && this.activeZone?._id !== zone?._id) this.onZoneChanged(!_.isEmpty(zone) ? zone : undefined, this.activeZone);
+    if (this.activeZone?._id !== zone?._id) {
+      // notify about zone change
+      if (!_.isEmpty(this.activeZone)) {
+        const zoneLeavedEvent = new CustomEvent('onZoneLeaved', { detail: { zone: this.activeZone } });
+        window.dispatchEvent(zoneLeavedEvent);
+      }
+
+      if (!_.isEmpty(zone)) {
+        const zoneEnteredEvent = new CustomEvent('onZoneEntered', { detail: { zone, previousZone: this.activeZone } });
+        window.dispatchEvent(zoneEnteredEvent);
+      }
+
       this.activeZone = zone;
-      this.toastZoneName(zone?.name);
+      if (zone.name && !zone.hideName) this.toastZoneName(zone?.name);
 
       const dataPlayer = Meteor.users.findOne({ _id: player.userId });
 
       if (zone?.adminOnly && !dataPlayer?.roles?.admin && !dataPlayer.profile?.guest) {
         const [x, y] = zone.teleportEndpoint ? zone.teleportEndpoint.split(',') : [73, 45];
-        game.scene.keys.WorldScene.player.x = +x;
-        game.scene.keys.WorldScene.player.y = +y;
-        savePlayer(game.scene.keys.WorldScene.player);
-        lp.notif.error('This zone is reserved for admin')
+        userManager.teleportMainUser(+x, +y);
+        lp.notif.error('This zone is reserved for admin');
       }
 
       if (meet.api && !zone?.roomName) {
@@ -152,12 +161,23 @@ zones = {
       }
 
       if (zone?.url) {
-        $('#webpageIframe').attr('src', zone.url);
-        $('#webpage').addClass('show');
+        this.getIframeElement().src = zone.url;
+        if (zone.yt) this.getIframeElement().allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        this.getWebpageElement().classList.add('show');
       } else if ((!zone || !zone.url) && !meet?.api) {
-        $('#webpageIframe').attr('src', '');
-        $('#webpage').removeClass('show');
+        this.getIframeElement().src = '';
+        this.getWebpageElement().classList.remove('show');
       }
     }
+  },
+
+  getIframeElement() {
+    if (!this.webpageIframeContainer) this.webpageIframeContainer = document.querySelector('#webpageIframe');
+    return this.webpageIframeContainer;
+  },
+
+  getWebpageElement() {
+    if (!this.webpageContainer) this.webpageContainer = document.querySelector('#webpage');
+    return this.webpageContainer;
   },
 };

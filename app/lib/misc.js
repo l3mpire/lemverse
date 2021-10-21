@@ -1,5 +1,12 @@
 const crypto = require('crypto');
 
+destroyVideoSource = video => {
+  if (!video) return;
+  video.pause();
+  video.src = '';
+  video.load();
+};
+
 nearestDuration = duration => {
   const message = [];
   message.push(lp.s.lpad(moment.duration(duration).asHours() | 0, 2, '0'));
@@ -13,12 +20,11 @@ isEditionAllowed = userId => {
   if (!userId) return false;
   const user = Meteor.users.findOne(userId);
   if (!user) return false;
-  if (user?.roles?.admin) return true;
-
   const { levelId } = user.profile;
   const currentLevel = Levels.findOne(levelId);
+  if (user?.roles?.admin && !currentLevel?.disableEdit) return true;
 
-  return currentLevel?.sandbox || currentLevel?.editorUserIds?.includes(user._id) || user._id === currentLevel.createdBy;
+  return (currentLevel?.sandbox || currentLevel?.editorUserIds?.includes(user._id) || user._id === currentLevel.createdBy) && (!currentLevel?.disableEdit);
 };
 
 updateSkin = (user, levelId) => {
@@ -46,7 +52,7 @@ updateSkin = (user, levelId) => {
 };
 
 generateTURNCredentials = (name, secret) => {
-  const unixTimeStamp = parseInt(Date.now() / 1000, 10) + Meteor.settings.peer.server.credentialDuration;
+  const unixTimeStamp = parseInt(Date.now() / 1000, 10) + Meteor.settings.peer.client.credentialDuration;
   const username = [unixTimeStamp, name].join(':');
   const hmac = crypto.createHmac('sha1', secret);
   hmac.setEncoding('base64');
@@ -57,4 +63,37 @@ generateTURNCredentials = (name, secret) => {
     username,
     password: hmac.read(),
   };
+};
+
+waitFor = (condition, attempt, delay = 250) => new Promise((resolve, reject) => {
+  let currentAttempt = 0;
+  const waitFunc = () => {
+    currentAttempt++;
+    if (condition()) { resolve(); return; }
+    if (currentAttempt >= attempt) reject(new Error('too many attempt'));
+    else setTimeout(waitFunc, delay);
+  };
+
+  waitFunc();
+});
+
+getRandomAvatarForUser = user => {
+  let URL = Meteor.settings.public.peer.avatarAPI;
+  URL = URL.replace('[user_id]', encodeURI(user._id));
+  URL = URL.replace('[user_name]', encodeURI(user.profile.name));
+  URL = URL.replace('[user_avatar]', encodeURI(user.profile.avatar || 'cat'));
+
+  return URL;
+};
+
+stringToColor = str => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+
+  let colour = '#';
+  for (let i = 0; i < 3; i++) {
+    const value = (hash >> (i * 8)) & 0xFF;
+    colour += (`00${value.toString(16)}`).substr(-2);
+  }
+  return colour;
 };

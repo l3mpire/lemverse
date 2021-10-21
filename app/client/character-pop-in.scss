@@ -30,16 +30,18 @@
     }
   }
 
-  &.with-arrow:before {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    width: 0;
-    transform: translate(-50%, -1px);
-    border-top: 12px solid white;
-    border-left: 12px solid transparent;
-    border-right: 12px solid transparent;
+  &:not(.full-screen) {
+    &.with-arrow:before {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      width: 0;
+      transform: translate(-50%, -1px);
+      border-top: 12px solid white;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+    }
   }
 
   &.wood-style {
