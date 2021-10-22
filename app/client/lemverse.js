@@ -450,7 +450,6 @@ Template.lemverse.onCreated(function () {
   });
 
   hotkeys('shift+4', { scope: scopes.player }, () => {
-    if (!Session.get('displaySettings')) settings.enumerateDevices();
     Session.set('displaySettings', !Session.get('displaySettings'));
   });
 
