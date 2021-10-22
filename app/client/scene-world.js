@@ -2,6 +2,12 @@ import nipplejs from 'nipplejs';
 
 const Phaser = require('phaser');
 
+viewportModes = Object.freeze({
+  fullscreen: 'fullscreen',
+  small: 'small',
+  splitScreen: 'split-screen',
+});
+
 const onZoneEntered = e => {
   const { zone } = e.detail;
   const { targetedLevelId, inlineURL, roomName, url, fullscreen, disableCommunications } = zone;
@@ -9,7 +15,7 @@ const onZoneEntered = e => {
   if (targetedLevelId) levelManager.loadLevel(targetedLevelId);
   else if (inlineURL) characterPopIns.initFromZone(zone);
 
-  if (roomName || url) game.scene.keys.WorldScene.resizeViewport(fullscreen ? 'fullscreen' : 'split-screen');
+  if (roomName || url) game.scene.keys.WorldScene.updateViewport(fullscreen ? viewportModes.small : viewportModes.splitScreen);
   if (disableCommunications) {
     setTimeout(() => Meteor.users.update(Meteor.userId(), { $set: {
       'profile.shareVideo': false,
@@ -26,7 +32,7 @@ const onZoneLeaved = e => {
   const { popInConfiguration, roomName, url, disableCommunications } = zone;
   if (!popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(Meteor.userId(), zone._id);
 
-  if (roomName || url) game.scene.keys.WorldScene.resizeViewport('default');
+  if (roomName || url) game.scene.keys.WorldScene.updateViewport(viewportModes.fullscreen);
   if (disableCommunications) {
     peer.enable();
     if (userManager.player) userManager.setTintFromState(userManager.player);
@@ -45,6 +51,7 @@ WorldScene = new Phaser.Class({
     this.nippleData = undefined;
     this.nippleMoving = false;
     this.scene.sleep();
+    this.viewportMode = viewportModes.fullscreen;
     entityManager.init(this);
     levelManager.init(this);
     userManager.init(this);
@@ -54,6 +61,8 @@ WorldScene = new Phaser.Class({
 
     window.addEventListener('onZoneEntered', onZoneEntered);
     window.addEventListener('onZoneLeaved', onZoneLeaved);
+
+    this.scale.on('resize', () => this.updateViewport(this.viewportMode));
 
     const { levelId } = data;
     if (levelId && Meteor.user()) {
@@ -144,10 +153,12 @@ WorldScene = new Phaser.Class({
     else keyboard.disableGlobalCapture();
   },
 
-  resizeViewport(mode) {
-    if (mode === 'fullscreen') this.cameras.main.setViewport(0, 0, window.innerWidth / 3, window.innerHeight);
-    else if (mode === 'split-screen') this.cameras.main.setViewport(0, 0, window.innerWidth / 2, window.innerHeight);
+  updateViewport(mode) {
+    if (mode === viewportModes.small) this.cameras.main.setViewport(0, 0, window.innerWidth / 3, window.innerHeight);
+    else if (mode === viewportModes.splitScreen) this.cameras.main.setViewport(0, 0, window.innerWidth / 2, window.innerHeight);
     else this.cameras.main.setViewport(0, 0, window.innerWidth, window.innerHeight);
+
+    this.viewportMode = mode;
   },
 
   shutdown() {

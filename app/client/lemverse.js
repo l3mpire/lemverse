@@ -272,8 +272,8 @@ Template.lemverse.onCreated(function () {
             if (meet.api) {
               meet.fullscreen(zone.fullscreen);
               const worldScene = game.scene.getScene('WorldScene');
-              const screenMode = zone.fullscreen ? 'fullscreen' : 'split-screen';
-              worldScene.resizeViewport(screenMode);
+              const screenMode = zone.fullscreen ? viewportModes.small : viewportModes.splitScreen;
+              worldScene.updateViewport(screenMode);
             }
           },
         });
@@ -367,10 +367,10 @@ Template.lemverse.onCreated(function () {
 
     if (meet.api) {
       meet.close();
-      game.scene.keys.WorldScene.resizeViewport('default');
+      game.scene.keys.WorldScene.updateViewport(viewportModes.fullscreen);
     } else {
       meet.open();
-      game.scene.keys.WorldScene.resizeViewport('split-screen');
+      game.scene.keys.WorldScene.updateViewport(viewportModes.splitScreen);
     }
   });
 
