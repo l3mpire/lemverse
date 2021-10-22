@@ -365,7 +365,13 @@ Template.lemverse.onCreated(function () {
     event.preventDefault();
     if (event.repeat) return;
 
-    if (meet.api) meet.close(); else meet.open();
+    if (meet.api) {
+      meet.close();
+      game.scene.keys.WorldScene.resizeViewport('default');
+    } else {
+      meet.open();
+      game.scene.keys.WorldScene.resizeViewport('split-screen');
+    }
   });
 
   hotkeys('u', { scope: scopes.player }, event => {
