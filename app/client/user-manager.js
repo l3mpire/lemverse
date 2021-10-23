@@ -558,7 +558,7 @@ userManager = {
 
     return {
       x: player.x + directionVector[0] * characterInteractionDistance.x,
-      y: player.y + directionVector[1] * characterInteractionDistance.y,
+      y: player.y + characterFootOffset.y + directionVector[1] * characterInteractionDistance.y,
     };
   },
 
