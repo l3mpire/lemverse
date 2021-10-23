@@ -1,7 +1,7 @@
 const copyToClipboard = value => {
   navigator.clipboard.writeText(value)
-    .then(() => console.log('Async: Copying to clipboard was successful!'))
-    .catch(err => console.error('Async: Could not copy text: ', err));
+    .then(() => lp.notif.success('Tiles data copied to the clipboard'))
+    .catch(() => lp.notif.error('Unable to copy tiles to the clipboard'));
 };
 
 const pointerToTile = () => {
@@ -67,7 +67,7 @@ const bindKeyboardShortcuts = () => {
 const unbindKeyboardShortcuts = () => {
   hotkeys.unbind('command+z', scopes.editor);
   hotkeys.unbind('shift+command+z', scopes.editor);
-  hotkeys.unbind('ctrl+c', scopes.editor);
+  hotkeys.unbind('ctrl+c, cmd+c', scopes.editor);
   for (let i = 0; i < 8; i++) hotkeys.unbind(i.toString(), scopes.editor);
   hotkeys.unbind('c', scopes.editor);
 };
