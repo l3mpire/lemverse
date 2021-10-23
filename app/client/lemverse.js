@@ -307,7 +307,6 @@ Template.lemverse.onCreated(function () {
           added(tile) {
             const layer = levelManager.tileLayer(tile);
             levelManager.map.putTileAt(levelManager.tileGlobalIndex(tile), tile.x, tile.y, false, layer);
-            levelManager.drawTeleporters(false);
             window.dispatchEvent(new CustomEvent('onTileAdded', { detail: { tile, layer } }));
           },
           changed(tile) {
@@ -463,10 +462,12 @@ Template.lemverse.onCreated(function () {
     Session.set('displayNotificationsPanel', !Session.get('displayNotificationsPanel'));
   });
 
-  hotkeys('shift+0', { scope: scopes.player }, () => {
-    levelManager.drawTeleporters(!levelManager.teleporterGraphics.length);
+  hotkeys('shift+0', { scope: scopes.player }, event => {
+    if (event.repeat) return;
+    levelManager.drawTriggers(!levelManager.teleporterGraphics.length);
   });
 });
+
 Template.lemverse.onDestroyed(function () {
   if (this.handleObserveUsers) this.handleObserveUsers.stop();
   if (this.handleObserveEntities) this.handleObserveEntities.stop();
