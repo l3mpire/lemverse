@@ -103,6 +103,8 @@ userStreams = {
         error('requestUserMedia failed', err);
         Meteor.users.update(Meteor.userId(), { $set: { 'profile.userMediaError': true } });
         if (err.message === 'Permission denied') lp.notif.warning('Camera and microphone are required 😢');
+        if (err.message === 'Permission denied by system') lp.notif.warning('Unable to access the camera and microphone');
+
         return Promise.reject(err);
       })
       .finally(() => { this.streams.main.loading = false; });
