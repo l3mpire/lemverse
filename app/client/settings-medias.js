@@ -29,6 +29,7 @@ Template.settingsMedias.onCreated(function () {
 
 Template.settingsMedias.onDestroyed(() => {
   if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
+  navigator.mediaDevices.ondevicechange = undefined;
 });
 
 Template.settingsMedias.events({
