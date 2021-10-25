@@ -81,15 +81,15 @@ userStreams = {
     if (debug) log('destroy stream: done');
   },
 
-  requestUserMedia(forceNew = false) {
-    if (forceNew) this.destroyStream(streamTypes.main);
+  requestUserMedia(constraints = {}) {
+    if (constraints.forceNew) this.destroyStream(streamTypes.main);
     const { instance: currentStream, loading } = this.streams.main;
     if (currentStream) return new Promise(resolve => resolve(currentStream));
     if (!currentStream && loading) return waitFor(() => this.streams.main.instance !== undefined, 15, 500).then(() => this.streams.main.instance);
 
     this.streams.main.loading = true;
     return navigator.mediaDevices
-      .getUserMedia(this.getStreamConstraints(streamTypes.main))
+      .getUserMedia(constraints)
       .then(stream => {
         this.destroyStream(streamTypes.main);
 
@@ -109,20 +109,17 @@ userStreams = {
   },
 
   getStreamConstraints(type) {
-    const { shareVideo, shareAudio, videoRecorder, audioRecorder, screenShareFrameRate } = Meteor.user().profile;
-    const options = {};
+    const { videoRecorder, audioRecorder, screenShareFrameRate } = Meteor.user().profile;
+    const constraints = {};
 
     if (type === streamTypes.main) {
-      options.audio = { deviceId: shareAudio && audioRecorder || false };
-      options.video = { deviceId: shareVideo && videoRecorder || false, ...videoDefaultConfig };
-
-      // todo: allow streams without video flag to avoid camera's light on mac
-      // if (!shareVideo) delete options.video;
+      constraints.audio = { deviceId: audioRecorder };
+      constraints.video = { deviceId: videoRecorder, ...videoDefaultConfig };
     } else {
       const { defaultFrameRate, maxFrameRate } = screenShareDefaultConfig;
 
-      options.audio = false;
-      options.video = {
+      constraints.audio = false;
+      constraints.video = {
         frameRate: {
           ideal: +screenShareFrameRate || defaultFrameRate,
           max: maxFrameRate,
@@ -130,7 +127,7 @@ userStreams = {
       };
     }
 
-    return options;
+    return constraints;
   },
 
   requestDisplayMedia() {
@@ -151,7 +148,14 @@ userStreams = {
   },
 
   createStream(forceNew = false) {
-    return this.requestUserMedia(forceNew)
+    const { shareVideo, shareAudio } = Meteor.user().profile;
+    const constraints = this.getStreamConstraints(streamTypes.main);
+    constraints.forceNew = forceNew;
+
+    // todo: allow streams without video flag to avoid camera's light on mac (should delete the property options.video)
+    // if (!shareVideo) delete constraints.video;
+
+    return this.requestUserMedia(constraints)
       .then(stream => {
         if (!stream) return Promise.reject(new Error(`unable to get a valid stream`));
 
@@ -161,7 +165,6 @@ userStreams = {
         videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
 
         // ensures tracks are up-to-date
-        const { shareVideo, shareAudio } = Meteor.user().profile;
         this.audio(shareAudio);
         this.video(shareVideo);
 
