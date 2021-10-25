@@ -195,13 +195,8 @@ userManager = {
 
     // update tint
     if (userMediaError !== oldUser?.profile.userMediaError) {
-      charactersPartsKeys.filter(part => user.profile[part] || part === 'body').forEach(part => {
-        const characterPart = characterBodyContainer.getByName(part);
-        if (characterPart) {
-          if (userMediaError) characterPart.setTint(defaultUserMediaColorError);
-          else characterPart.clearTint();
-        }
-      });
+      if (userMediaError) this.setTint(player, defaultUserMediaColorError);
+      else this.clearTint(player);
     }
     characterBodyContainer.alpha = guest ? 0.7 : 1.0;
 
