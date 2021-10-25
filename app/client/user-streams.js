@@ -154,24 +154,28 @@ userStreams = {
     const constraints = this.getStreamConstraints(streamTypes.main);
     constraints.forceNew = forceNew;
 
-    // todo: allow streams without video flag to avoid camera's light on mac (should delete the property options.video)
-    // if (!shareVideo) delete constraints.video;
+    return this.enumerateDevices().then(({ cams }) => {
+      if (cams.length === 0) delete constraints.video;
 
-    return this.requestUserMedia(constraints)
-      .then(stream => {
-        if (!stream) return Promise.reject(new Error(`unable to get a valid stream`));
+      // todo: allow streams without video flag to avoid camera's light on mac (should delete the property options.video)
+      // if (!shareVideo) delete constraints.video;
 
-        // sync video element with the stream
-        const videoElement = this.getVideoElement();
-        if (stream.id !== videoElement.srcObject?.id) videoElement.srcObject = stream;
-        videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
+      return this.requestUserMedia(constraints)
+        .then(stream => {
+          if (!stream) return Promise.reject(new Error(`unable to get a valid stream`));
 
-        // ensures tracks are up-to-date
-        this.audio(shareAudio);
-        this.video(shareVideo);
+          // sync video element with the stream
+          const videoElement = this.getVideoElement();
+          if (stream.id !== videoElement.srcObject?.id) videoElement.srcObject = stream;
+          videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
 
-        return stream;
-      });
+          // ensures tracks are up-to-date
+          this.audio(shareAudio);
+          this.video(shareVideo);
+
+          return stream;
+        });
+    });
   },
 
   createScreenStream() {
