@@ -25,7 +25,7 @@ const startPaintMode = levelId => {
 
 const switchEntityStateLogic = (levelId, name, forcedState = undefined) => {
   check([levelId, name], [String]);
-  const entity = findEntity(name);
+  const entity = Entities.findOne({ name, levelId });
   if (!entity) return;
 
   const entityDocument = Entities.findOne({ levelId, name });

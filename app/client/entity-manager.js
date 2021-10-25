@@ -43,7 +43,7 @@ entityManager = {
     if (entity.name === 'room-4-ready') Session.set('showScoreInterface', !entity.state);
   },
 
-  onInteraction(tile) {
+  onInteraction(tile, interactionPosition) {
     const { levelId } = Meteor.user().profile;
 
     levelConfiguration.rooms.forEach(room => {
@@ -52,6 +52,23 @@ entityManager = {
         if (isUsed) Meteor.call('switchEntityState', levelId, entity.name);
       });
     });
+
+    const entities = Entities.find().fetch();
+    entities.forEach(entity => {
+      if (this.isEntityTriggered(entity, interactionPosition)) { Meteor.call('switchEntityState', levelId, entity.name); }
+    });
+  },
+
+  isEntityTriggered(entity, position) {
+    const area = entity.triggerArea;
+    if (!area) return false;
+
+    if (position.x < entity.x + area.x) return false;
+    if (position.x > entity.x + area.x + area.w) return false;
+    if (position.y < entity.y + area.y) return false;
+    if (position.y > entity.y + area.y + area.h) return false;
+
+    return true;
   },
 
   postUpdate() {

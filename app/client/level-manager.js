@@ -119,7 +119,7 @@ levelManager = {
       });
     }
 
-    if (Tiles.find().count() === 0) this.drawTeleporters(true);
+    if (Tiles.find().count() === 0) this.drawTriggers(true);
   },
 
   onTilesetUpdated(oldTileset, newTileset) {
@@ -144,19 +144,36 @@ levelManager = {
     });
   },
 
-  drawTeleporters(state) {
+  drawTriggers(state) {
     // clean previous
     _.each(this.teleporterGraphics, zoneGraphic => zoneGraphic.destroy());
     this.teleporterGraphics = [];
 
     if (!state) return;
 
-    // create new ones
-    const zones = Zones.find({ $or: [{ targetedLevelId: { $exists: true, $ne: '' } }, { userLevelTeleporter: { $exists: true } }] }).fetch();
+    // create zones
+    const zones = Zones.find({ targetedLevelId: { $exists: true, $ne: '' } }).fetch();
     _.each(zones, zone => {
       const graphic = this.scene.add.rectangle(zone.x1, zone.y1, zone.x2 - zone.x1, zone.y2 - zone.y1, 0x9966ff, 0.2);
       graphic.setOrigin(0, 0);
       graphic.setStrokeStyle(1, 0xefc53f);
+      graphic.setDepth(20000);
+      this.teleporterGraphics.push(graphic);
+    });
+
+    // create entities trigger areas
+    const entities = Entities.find().fetch();
+    _.each(entities, entity => {
+      if (!entity.triggerArea) return;
+
+      const x1 = entity.x + entity.triggerArea.x;
+      const y1 = entity.y + entity.triggerArea.y;
+      const x2 = entity.triggerArea.w;
+      const y2 = entity.triggerArea.h;
+
+      const graphic = this.scene.add.rectangle(x1, y1, x2, y2, 0xFFFF00, 0.2);
+      graphic.setOrigin(0, 0);
+      graphic.setStrokeStyle(1, 0xFFFF00);
       graphic.setDepth(20000);
       this.teleporterGraphics.push(graphic);
     });

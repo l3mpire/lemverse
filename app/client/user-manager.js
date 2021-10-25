@@ -12,6 +12,7 @@ const characterInteractionConfiguration = {
   hitAreaCallback: Phaser.Geom.Circle.Contains,
   cursor: 'pointer',
 };
+const unavailablePlayerColor = 0x888888;
 
 charactersParts = Object.freeze({
   body: 0,
@@ -108,7 +109,7 @@ userManager = {
     if (!user.profile.guest) {
       playerParts.setInteractive(characterInteractionConfiguration);
       playerParts.on('pointerover', () => this.setTint(this.players[user._id], 0xFFAAFF));
-      playerParts.on('pointerout', () => this.clearTint(this.players[user._id]));
+      playerParts.on('pointerout', () => this.setTintFromState(this.players[user._id]));
       playerParts.on('pointerup', () => {
         if (isModalOpen()) return;
         Session.set('displayProfile', user._id);
@@ -537,7 +538,8 @@ userManager = {
     const tiles = this.getTilesInFrontOfPlayer(this.player, [4, 0]);
     if (tiles.length) {
       const tile = tiles[0];
-      entityManager.onInteraction(tile);
+      const positionInFrontOfPlayer = this.getPositionInFrontOfPlayer(this.player);
+      entityManager.onInteraction(tile, positionInFrontOfPlayer);
     }
   },
 
@@ -556,6 +558,15 @@ userManager = {
     }
 
     return this.getTilesRelativeToPlayer(player, positionOffset, layers);
+  },
+
+  getPositionInFrontOfPlayer(player) {
+    const directionVector = this.directionToVector(player.direction);
+
+    return {
+      x: player.x + directionVector[0] * characterInteractionDistance.x,
+      y: player.y + characterFootOffset.y + directionVector[1] * characterInteractionDistance.y,
+    };
   },
 
   getTilesRelativeToPlayer(player, offset, layers = []) {
@@ -609,6 +620,13 @@ userManager = {
     playerBodyParts.list.forEach(bodyPart => {
       bodyPart.tint = color;
     });
+  },
+
+  setTintFromState(player) {
+    const user = Meteor.users.findOne(player.userId);
+    const currentZone = zones.currentZone(user);
+    if (currentZone && currentZone.disableCommunications) this.setTint(player, unavailablePlayerColor);
+    else this.setTint(player, 0xFFFFFF);
   },
 
   flashColor(player, color) {

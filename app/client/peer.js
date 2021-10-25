@@ -9,10 +9,22 @@ peer = {
   peerLoading: false,
   remoteStreamsByUsers: new ReactiveVar([]),
   sensorEnabled: true,
+  enabled: true,
 
   init() {
-    userProximitySensor.onProximityStarted = this.onProximityStarted.bind(this);
     userProximitySensor.onProximityEnded = this.onProximityEnded.bind(this);
+    this.enable();
+  },
+
+  enable() {
+    this.enabled = true;
+    userProximitySensor.onProximityStarted = this.onProximityStarted.bind(this);
+  },
+
+  disable() {
+    this.enabled = false;
+    userProximitySensor.onProximityStarted = undefined;
+    this.closeAll();
   },
 
   closeAll() {
@@ -262,6 +274,8 @@ peer = {
   },
 
   answerCall(remoteCall) {
+    if (!this.enabled) { log(`answer call: peer is disabled`); return false; }
+
     const remoteUserId = remoteCall.metadata?.userId;
     if (!remoteUserId) { log(`answer call: incomplete metadata for the remote call`); return false; }
     const remoteUser = Meteor.users.findOne({ _id: remoteUserId });

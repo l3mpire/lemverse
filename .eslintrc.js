@@ -127,6 +127,7 @@ module.exports = {
     findEntity: 'writable',
     stringToColor: 'writable',
     reactionsAnimations: 'writable',
+    viewportModes: 'writable',
 
     tileGlobalIndex: 'writable',
     tileLayer: 'writable',

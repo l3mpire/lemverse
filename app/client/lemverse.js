@@ -1,3 +1,4 @@
+import hotkeys from 'hotkeys-js';
 import DizzyEffect from '../public/assets/post-effects/DizzyEffect';
 
 const Phaser = require('phaser');
@@ -273,8 +274,8 @@ Template.lemverse.onCreated(function () {
             if (meet.api) {
               meet.fullscreen(zone.fullscreen);
               const worldScene = game.scene.getScene('WorldScene');
-              const screenMode = zone.fullscreen ? 'fullscreen' : 'split-screen';
-              worldScene.resizeViewport(screenMode);
+              const screenMode = zone.fullscreen ? viewportModes.small : viewportModes.splitScreen;
+              worldScene.updateViewport(screenMode);
             }
           },
         });
@@ -308,7 +309,6 @@ Template.lemverse.onCreated(function () {
           added(tile) {
             const layer = levelManager.tileLayer(tile);
             levelManager.map.putTileAt(levelManager.tileGlobalIndex(tile), tile.x, tile.y, false, layer);
-            levelManager.drawTeleporters(false);
             window.dispatchEvent(new CustomEvent('onTileAdded', { detail: { tile, layer } }));
           },
           changed(tile) {
@@ -366,7 +366,13 @@ Template.lemverse.onCreated(function () {
     event.preventDefault();
     if (event.repeat) return;
 
-    if (meet.api) meet.close(); else meet.open();
+    if (meet.api) {
+      meet.close();
+      game.scene.keys.WorldScene.updateViewport(viewportModes.fullscreen);
+    } else {
+      meet.open();
+      game.scene.keys.WorldScene.updateViewport(viewportModes.splitScreen);
+    }
   });
 
   hotkeys('u', { scope: scopes.player }, event => {
@@ -451,7 +457,6 @@ Template.lemverse.onCreated(function () {
   });
 
   hotkeys('shift+4', { scope: scopes.player }, () => {
-    if (!Session.get('displaySettings')) settings.enumerateDevices();
     Session.set('displaySettings', !Session.get('displaySettings'));
   });
 
@@ -459,10 +464,12 @@ Template.lemverse.onCreated(function () {
     Session.set('displayNotificationsPanel', !Session.get('displayNotificationsPanel'));
   });
 
-  hotkeys('shift+0', { scope: scopes.player }, () => {
-    levelManager.drawTeleporters(!levelManager.teleporterGraphics.length);
+  hotkeys('shift+0', { scope: scopes.player }, event => {
+    if (event.repeat) return;
+    levelManager.drawTriggers(!levelManager.teleporterGraphics.length);
   });
 });
+
 Template.lemverse.onDestroyed(function () {
   if (this.handleObserveUsers) this.handleObserveUsers.stop();
   if (this.handleObserveEntities) this.handleObserveEntities.stop();
@@ -515,7 +522,6 @@ Template.lemverse.events({
   'click .button.settings'(e) {
     e.preventDefault();
     e.stopPropagation();
-    if (!Session.get('displaySettings')) settings.enumerateDevices();
     Session.set('displaySettings', !Session.get('displaySettings'));
   },
   'click .button.js-notifications'(e) {

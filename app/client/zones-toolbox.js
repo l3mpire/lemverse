@@ -31,6 +31,7 @@ Template.zonesToolboxProperties.helpers({
     if (!props.targetedLevelId) props.targetedLevelId = '';
     if (!props.inlineURL) props.inlineURL = '';
     if (!props.hideName) props.hideName = false;
+    if (!props.disableCommunications) props.disableCommunications = false;
 
     return JSON.stringify(props, ' ', 2);
   },
