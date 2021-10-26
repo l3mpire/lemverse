@@ -145,6 +145,14 @@ Meteor.methods({
     if (!isEditionAllowed(userId)) Levels.update(levelId, { $addToSet: { editorUserIds: { $each: [userId] } } });
     else Levels.update(levelId, { $pull: { editorUserIds: userId } });
   },
+  teleportUserInLevel(levelId) {
+    if (!this.userId) return;
+    check(levelId, String);
+
+    const level = Levels.findOne(levelId) || Levels.findOne(Meteor.settings.defaultLevelId);
+    const { spawn } = level;
+    Meteor.users.update(Meteor.userId(), { $set: { 'profile.levelId': level._id, 'profile.x': spawn?.x || 0, 'profile.y': spawn?.y || 0 } });
+  },
   createLevel(templateId = undefined) {
     return createLevel(templateId);
   },

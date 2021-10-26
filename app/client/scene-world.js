@@ -65,10 +65,7 @@ WorldScene = new Phaser.Class({
     this.scale.on('resize', () => this.updateViewport(this.viewportMode));
 
     const { levelId } = data;
-    if (levelId && Meteor.user()) {
-      const { spawn } = Levels.findOne({ _id: levelId });
-      Meteor.users.update(Meteor.userId(), { $set: { 'profile.levelId': levelId, 'profile.x': spawn?.x || 0, 'profile.y': spawn?.y || 0 } });
-    }
+    if (levelId && Meteor.user()) Meteor.call('teleportUserInLevel', levelId);
   },
 
   create() {

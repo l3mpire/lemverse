@@ -1,5 +1,11 @@
 const Phaser = require('phaser');
 
+const extractLevelIdFromURL = () => {
+  const levelId = FlowRouter.getParam('_levelId');
+  if (!levelId) return undefined;
+  return `lvl_${levelId}`;
+};
+
 BootScene = new Phaser.Class({
   Extends: Phaser.Scene,
 
@@ -25,7 +31,7 @@ BootScene = new Phaser.Class({
   create() {
     this.loadAnimations();
     this.scene.add('LoadingScene', LoadingScene, true);
-    this.scene.add('WorldScene', WorldScene);
+    this.scene.add('WorldScene', WorldScene, false, { levelId: extractLevelIdFromURL() });
     this.scene.add('EditorScene', EditorScene);
     this.scene.launch('WorldScene');
     this.scene.launch('EditorScene');
