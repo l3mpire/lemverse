@@ -19,7 +19,7 @@ Tracker.autorun(() => {
 
 FlowRouter.route('/', { name: 'lemverse', action: renderRouteName });
 
-FlowRouter.route('/invite/:_levelId', { name: 'invite', action: renderRouteName });
+FlowRouter.route('/invite/:levelId', { name: 'invite', action: renderRouteName });
 
 FlowRouter.route('/editor', { name: 'editor', action: renderRouteName });
 

@@ -15,6 +15,12 @@
           {{#if website}}<a href="{{website}}" class="website" target="_blank">{{website}}</a> {{else}}<span class="website">-</span>{{/if}}
           <input type="text" name="website" class="js-website" value={{website}} placeholder="-" />
         </div>
+        {{#if editionAllowed}}
+          <div>
+            <label for="reaction">Avatar preference</label>
+            <input type="text" name="avatar" id="avatar" class="js-avatar" value={{#if profile.avatar}}{{profile.avatar}}{{else}}cat{{/if}}>
+          </div>
+        {{/if}}
         <div>
           <label for="bio">Bio/Hobbies</label>
           <textarea name="bio" placeholder="-" class="js-bio" >{{profile.bio}}</textarea>

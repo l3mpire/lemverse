@@ -1,7 +1,7 @@
 const Phaser = require('phaser');
 
 const extractLevelIdFromURL = () => {
-  const levelId = FlowRouter.getParam('_levelId');
+  const levelId = FlowRouter.getParam('levelId');
   if (!levelId) return undefined;
   return `lvl_${levelId}`;
 };
