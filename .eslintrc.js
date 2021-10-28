@@ -128,6 +128,7 @@ module.exports = {
     stringToColor: 'writable',
     reactionsAnimations: 'writable',
     viewportModes: 'writable',
+    teleportUserInLevel: 'writable',
 
     tileGlobalIndex: 'writable',
     tileLayer: 'writable',

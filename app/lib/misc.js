@@ -97,3 +97,13 @@ stringToColor = str => {
   }
   return colour;
 };
+
+teleportUserInLevel = (levelId, userId) => {
+  check([levelId, userId], [String]);
+
+  const level = Levels.findOne(levelId) || Levels.findOne(Meteor.settings.defaultLevelId);
+  const { spawn } = level;
+  Meteor.users.update(userId, { $set: { 'profile.levelId': level._id, 'profile.x': spawn?.x || 0, 'profile.y': spawn?.y || 0 } });
+
+  return level.name;
+};
