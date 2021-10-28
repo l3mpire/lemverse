@@ -18,13 +18,17 @@ Template.settingsMain.events({
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.defaultReaction': reaction } });
     return false;
   },
-  'input .js-avatar'(event) {
+  'click .js-copy-invitation'(event) {
     event.preventDefault();
     event.stopPropagation();
-    const avatar = event.target.value;
-    if (!avatar) return false;
 
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.avatar': avatar } });
+    const { levelId } = Meteor.user().profile;
+    const levelIdWithoutPrefix = levelId.substring(levelId.lastIndexOf('_') + 1);
+
+    const path = FlowRouter.path('invite', { levelId: levelIdWithoutPrefix });
+    const url = `${window.location.host}${path}`;
+    navigator.clipboard.writeText(url).then(() => lp.notif.success('✂️ Invitation copied to your clipboard'));
+
     return false;
   },
 });

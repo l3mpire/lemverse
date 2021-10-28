@@ -14,6 +14,7 @@ LoadingScene = new Phaser.Class({
   },
 
   preload() {
+    this.load.setBaseURL('/');
     this.load.image('logo', 'lemverse.png');
     this.load.image('scene-loader-background', 'assets/lemverse/scene-loader-background.png');
   },
