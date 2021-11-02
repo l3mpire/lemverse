@@ -72,7 +72,7 @@ Template.zonesToolboxProperties.events({
 
 Template.zonesToolbox.onRendered(function () {
   this.autorun(() => {
-    if (!Session.get('gameCreated')) return;
+    if (!Session.get('sceneWorldReady')) return;
 
     clearZoneRectangles();
 

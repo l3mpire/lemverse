@@ -48,7 +48,7 @@ const config = {
 Template.lemverse.onCreated(function () {
   Session.set('selectedTiles', undefined);
   Session.set('selectedTilesetId', undefined);
-  Session.set('gameCreated', false);
+  Session.set('sceneWorldReady', false);
   Session.set('loading', true);
   Session.set('tilesetsLoaded', false);
   Session.set('editor', 0);
@@ -72,6 +72,7 @@ Template.lemverse.onCreated(function () {
     document.activeElement.blur();
   });
 
+  this.hasLevelLoaded = false;
   this.subscribe('characters');
   this.subscribe('levels');
   this.subscribe('notifications');
@@ -88,11 +89,11 @@ Template.lemverse.onCreated(function () {
   });
 
   this.autorun(() => {
-    if (!Meteor.userId()) Session.set('gameCreated', false);
+    if (!Meteor.userId()) Session.set('sceneWorldReady', false);
   });
 
   this.autorun(() => {
-    if (!Session.get('gameCreated')) return;
+    if (!Session.get('sceneWorldReady')) return;
 
     const modalOpen = isModalOpen();
     Tracker.nonreactive(() => {
@@ -143,12 +144,12 @@ Template.lemverse.onCreated(function () {
   });
 
   this.autorun(() => {
-    if (!Session.get('gameCreated')) return;
+    if (!Session.get('sceneWorldReady')) return;
     game.scene.getScene('EditorScene')?.updateEditionMarker(Session.get('selectedTiles'));
   });
 
   this.autorun(() => {
-    if (!Session.get('gameCreated')) return;
+    if (!Session.get('sceneWorldReady')) return;
 
     Tracker.nonreactive(() => {
       if (this.handleObserveTilesets) this.handleObserveTilesets.stop();
@@ -221,14 +222,13 @@ Template.lemverse.onCreated(function () {
   });
 
   this.autorun(() => {
-    if (!Session.get('gameCreated')) return;
+    if (!Session.get('sceneWorldReady')) return;
 
     const loggedUser = Meteor.user({ fields: { 'profile.levelId': 1 } });
     if (!loggedUser) return;
     const { levelId } = loggedUser.profile;
 
     Tracker.nonreactive(() => {
-      log(`loading level: ${levelId || 'unknown'}…`);
       if (this.handleEntitiesSubscribe) this.handleEntitiesSubscribe.stop();
       if (this.handleTilesSubscribe) this.handleTilesSubscribe.stop();
       if (this.handleUsersSubscribe) this.handleUsersSubscribe.stop();
@@ -238,7 +238,20 @@ Template.lemverse.onCreated(function () {
       if (this.handleObserveUsers) this.handleObserveUsers.stop();
       if (this.handleObserveZones) this.handleObserveZones.stop();
 
+      // world clean-up
+      const loadingScene = game.scene.getScene('LoadingScene');
+      const worldScene = game.scene.getScene('WorldScene');
+      loadingScene.show();
+
+      if (this.hasLevelLoaded) {
+        log(`unloading current level…`);
+        worldScene.scene.restart();
+        this.hasLevelLoaded = false;
+        return;
+      }
+
       // Load users
+      log(`loading level: ${levelId || 'unknown'}…`);
       log(`loading level: loading users`);
       this.handleUsersSubscribe = this.subscribe('users', levelId, () => {
         this.handleObserveUsers = Meteor.users.find({ status: { $exists: true } }).observe({
@@ -272,7 +285,6 @@ Template.lemverse.onCreated(function () {
 
             if (meet.api) {
               meet.fullscreen(zone.fullscreen);
-              const worldScene = game.scene.getScene('WorldScene');
               const screenMode = zone.fullscreen ? viewportModes.small : viewportModes.splitScreen;
               worldScene.updateViewport(screenMode);
             }
@@ -325,6 +337,7 @@ Template.lemverse.onCreated(function () {
         levelManager.onLevelLoaded();
       });
 
+      this.hasLevelLoaded = true;
       game.scene.getScene('EditorScene')?.init();
     });
   });

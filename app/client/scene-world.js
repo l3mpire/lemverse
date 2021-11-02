@@ -46,29 +46,28 @@ WorldScene = new Phaser.Class({
     Phaser.Scene.call(this, { key: 'WorldScene' });
   },
 
-  init(data) {
+  init() {
     this.input.keyboard.enabled = false;
     this.nippleData = undefined;
     this.nippleMoving = false;
     this.scene.sleep();
     this.viewportMode = viewportModes.fullscreen;
-    entityManager.init(this);
-    levelManager.init(this);
-    userManager.init(this);
-    userVoiceRecorderAbility.init(this);
-    characterPopIns.init(this);
     this.physics.disableUpdate();
 
     window.addEventListener('onZoneEntered', onZoneEntered);
     window.addEventListener('onZoneLeaved', onZoneLeaved);
 
     this.scale.on('resize', () => this.updateViewport(this.viewportMode));
-
-    const { levelId } = data;
-    if (levelId && Meteor.user()) Meteor.call('teleportUserInLevel', levelId);
+    Session.set('sceneWorldReady', true);
   },
 
   create() {
+    entityManager.init(this);
+    levelManager.init(this);
+    userManager.init(this);
+    userVoiceRecorderAbility.init(this);
+    characterPopIns.init(this);
+
     levelManager.createMap();
 
     // controls
@@ -96,9 +95,6 @@ WorldScene = new Phaser.Class({
 
     // plugins
     userChatCircle.init(this);
-
-    Session.set('gameCreated', true);
-    Session.set('editor', 0);
 
     if (window.matchMedia('(pointer: coarse)').matches) {
       this.nippleManager = nipplejs.create({
@@ -163,6 +159,7 @@ WorldScene = new Phaser.Class({
 
     this.events.removeListener('postupdate');
     this.events.off('postupdate', this.postUpdate.bind(this), this);
+    this.scale.on('resize', () => {});
     window.removeEventListener('onZoneEntered', onZoneEntered);
     window.removeEventListener('onZoneLeaved', onZoneLeaved);
 
@@ -175,5 +172,6 @@ WorldScene = new Phaser.Class({
     peer.destroy();
 
     Session.set('showScoreInterface', false);
+    Session.set('sceneWorldReady', false);
   },
 });

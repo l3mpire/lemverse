@@ -46,7 +46,6 @@ userManager = {
     this.player = undefined;
     this.players = {};
     this.scene = scene;
-    throttledSavePlayer.cancel();
 
     scene.input.keyboard.on('keydown-SHIFT', () => { peer.sensorEnabled = false; });
     scene.input.keyboard.on('keyup-SHIFT', () => {
@@ -56,6 +55,7 @@ userManager = {
   },
 
   destroy() {
+    throttledSavePlayer.cancel();
     _.each(this.players, player => {
       clearInterval(player.reactionHandler);
       delete player.reactionHandler;

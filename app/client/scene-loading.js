@@ -42,7 +42,8 @@ LoadingScene = new Phaser.Class({
     this.container.visible = visible;
   },
 
-  hide(callback) {
+  hide(callback = undefined) {
+    if (!Session.get('loading')) return;
     if (!this.container) this.create(false);
 
     this.tweens.add({
@@ -56,12 +57,17 @@ LoadingScene = new Phaser.Class({
     });
   },
 
-  show() {
+  show(callback = undefined) {
+    if (Session.get('loading')) return;
+
     Session.set('loading', true);
     this.scene.wake();
     this.tweens.add({
       targets: this.container,
       alpha: { start: 0, from: 0, to: 1, duration: this.fadeInDuration, ease: 'Linear' },
+      onComplete: () => {
+        if (callback) callback();
+      },
     });
   },
 
