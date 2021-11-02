@@ -1,11 +1,11 @@
 const renderRouteName = () => {
   Tracker.autorun(track => {
-    let routeName = FlowRouter.getRouteName();
+    const routeName = FlowRouter.getRouteName();
     if (routeName === 'editor') {
       if (!Meteor.loggingIn() && !Meteor.user()) FlowRouter.redirect('/');
       if (Meteor.loggingIn() || !Meteor.user()?.status) { BlazeLayout.render('loading'); return; }
       if (!Meteor.user().roles?.admin) FlowRouter.redirect('/');
-    } else if (routeName === 'invite') routeName = 'lemverse';
+    }
 
     BlazeLayout.render('layout', { main: routeName });
     track.stop();
@@ -19,7 +19,7 @@ Tracker.autorun(() => {
 
 FlowRouter.route('/', { name: 'lemverse', action: renderRouteName });
 
-FlowRouter.route('/invite/:levelId', { name: 'invite', action: renderRouteName });
+FlowRouter.route('/invite/:levelId', { name: 'invite', action: () => BlazeLayout.render('layout', { main: 'lemverse' }) });
 
 FlowRouter.route('/editor', { name: 'editor', action: renderRouteName });
 
