@@ -168,6 +168,8 @@ Meteor.methods({
           profile: {
             ...profile,
             name,
+            shareAudio: true,
+            shareVideo: true,
           },
         },
       }));
