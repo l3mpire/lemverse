@@ -50,17 +50,6 @@ entityManager = {
     entities.forEach(entity => {
       if (this.isEntityTriggered(entity, interactionPosition)) Meteor.call('switchEntityState', levelId, entity.name);
     });
-
-    // todo: remove next lines. This is the old interaction system made during the team building/escape game event
-    if (tiles.length) {
-      const tile = tiles[0];
-      levelConfiguration.rooms.forEach(room => {
-        room.entities.forEach(entity => {
-          const isUsed = entity.coordinates.some(coordinate => tile.x === coordinate[0] && tile.y === coordinate[1]);
-          if (isUsed) Meteor.call('switchEntityState', levelId, entity.name);
-        });
-      });
-    }
   },
 
   isEntityTriggered(entity, position) {

@@ -123,8 +123,6 @@ module.exports = {
     levelManager: 'writable',
     userManager: 'writable',
     entityManager: 'writable',
-    levelConfiguration: 'writable',
-    findEntity: 'writable',
     stringToColor: 'writable',
     reactionsAnimations: 'writable',
     viewportModes: 'writable',
