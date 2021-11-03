@@ -55,7 +55,7 @@ userManager = {
   },
 
   destroy() {
-    throttledSavePlayer.cancel();
+    this.onSleep();
     _.each(this.players, player => {
       clearInterval(player.reactionHandler);
       delete player.reactionHandler;
@@ -64,6 +64,10 @@ userManager = {
     this.player = undefined;
     this.players = {};
     this.characterNamesObjects = {};
+  },
+
+  onSleep() {
+    throttledSavePlayer.cancel();
   },
 
   rename(name) {

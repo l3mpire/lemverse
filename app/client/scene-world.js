@@ -53,11 +53,16 @@ WorldScene = new Phaser.Class({
     this.scene.sleep();
     this.viewportMode = viewportModes.fullscreen;
     this.physics.disableUpdate();
+    this.sleepMethod = this.sleep.bind(this);
+    this.updateViewportMethod = this.updateViewport.bind(this, this.viewportMode);
+    this.postUpdateMethod = this.postUpdate.bind(this);
+    this.shutdownMethod = this.shutdown.bind(this);
 
     window.addEventListener('onZoneEntered', onZoneEntered);
     window.addEventListener('onZoneLeaved', onZoneLeaved);
 
-    this.scale.on('resize', () => this.updateViewport(this.viewportMode));
+    this.events.on('sleep', this.sleepMethod, this);
+    this.scale.on('resize', this.updateViewportMethod, this);
     Session.set('sceneWorldReady', true);
   },
 
@@ -122,8 +127,8 @@ WorldScene = new Phaser.Class({
     };
 
     // events
-    this.events.on('postupdate', this.postUpdate.bind(this), this);
-    this.events.once('shutdown', this.shutdown.bind(this), this);
+    this.events.on('postupdate', this.postUpdateMethod, this);
+    this.events.once('shutdown', this.shutdownMethod, this);
     hotkeys.setScope('guest');
   },
 
@@ -154,12 +159,17 @@ WorldScene = new Phaser.Class({
     this.viewportMode = mode;
   },
 
+  sleep() {
+    userManager.onSleep();
+  },
+
   shutdown() {
     this.nippleManager?.destroy();
 
     this.events.removeListener('postupdate');
-    this.events.off('postupdate', this.postUpdate.bind(this), this);
-    this.scale.on('resize', () => {});
+    this.events.off('postupdate', this.postUpdateMethod, this);
+    this.events.off('sleep', this.sleepMethod, this);
+    this.scale.off('resize', this.updateViewportMethod);
     window.removeEventListener('onZoneEntered', onZoneEntered);
     window.removeEventListener('onZoneLeaved', onZoneLeaved);
 
