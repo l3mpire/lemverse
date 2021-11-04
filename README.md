@@ -462,6 +462,7 @@ To build from you source without having to install anything, you can run the fol
 ### Deploy
 
 Visit `exemple/docker-compose-prod` to find the deployment instructions with docker compose stack.
+
 ## Slack Notification upon deployment
 
 To have a slack notification, you need to install the [slack cli](https://github.com/rockymadden/slack-cli) on the workstation from which you will deploy.
