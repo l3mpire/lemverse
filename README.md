@@ -461,7 +461,7 @@ To build from you source without having to install anything, you can run the fol
 
 ### Deploy
 
-Visit `exemple/docker-compose-prod` to find the deployment instructions with docker compose stack.
+Visit `example/docker-compose-prod` to find the deployment instructions with `docker-compose` stack.
 
 ## Slack Notification upon deployment
 
