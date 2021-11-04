@@ -24,6 +24,7 @@ const config = {
   height: window.innerHeight / Meteor.settings.public.zoom,
   zoom: Meteor.settings.public.zoom,
   pixelArt: true,
+  roundPixels: true,
   title: 'lemverse',
   url: 'https://lemverse.com',
   physics: {

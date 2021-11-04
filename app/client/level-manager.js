@@ -56,6 +56,7 @@ levelManager = {
     this.destroyMapLayers();
     _.times(defaultLayerCount, i => this.layers.push(this.map.createBlankLayer(`${i}`)));
     _.each(defaultLayerDepth, (value, key) => this.layers[key].setDepth(value));
+    _.each(this.layers, layer => layer.setCullPadding(2, 2));
   },
 
   destroyMapLayers() {

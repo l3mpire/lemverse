@@ -96,7 +96,7 @@ WorldScene = new Phaser.Class({
 
     // cameras
     this.cameras.main.setBounds(0, 0, levelManager.map.widthInPixels, levelManager.map.heightInPixels);
-    this.cameras.main.roundPixels = true;
+    this.cameras.main.setRoundPixels(true);
 
     // plugins
     userChatCircle.init(this);
