@@ -12,24 +12,33 @@ EditorScene = new Phaser.Class({
     this.marker = game.scene.keys.WorldScene.add.graphics();
     this.undoTiles = [];
     this.redoTiles = [];
+    this.areaSelector = game.scene.keys.WorldScene.add.graphics();
+    this.areaSelector.visible = false;
+    this.keys = this.input.keyboard.addKeys({
+      alt: Phaser.Input.Keyboard.KeyCodes.ALT,
+    }, false, false);
 
     // put editor in sleep mode on load (no rendering, no update)
     game.scene.keys.EditorScene.scene.sleep();
+    Session.set('editor', 0);
 
     this.events.on('wake', () => {
       this.marker.visible = true;
+      this.updateEditionMarker(Session.get('selectedTiles'));
     });
 
     this.events.on('sleep', () => {
       this.marker.visible = false;
+      this.areaSelector.visible = false;
     });
   },
 
   update() {
     if (!Session.get('editor')) return;
 
+    const altIsDown = this.keys.alt.isDown;
     const { WorldScene } = game.scene.keys;
-    const { map } = WorldScene;
+    const { map } = levelManager;
     const worldPoint = this.input.activePointer.positionToCamera(WorldScene.cameras.main);
     // Rounds down to nearest tile
     const pointerTileX = map.worldToTileX(worldPoint.x);
@@ -44,8 +53,16 @@ EditorScene = new Phaser.Class({
         this.isMouseDown = false;
         const zoneId = Session.get('selectedZoneId');
         if (zoneId) {
+          let { x, y } = worldPoint;
           const point = Session.get('selectedZonePoint');
-          Zones.update(zoneId, { $set: { [`x${point}`]: worldPoint.x | 0, [`y${point}`]: worldPoint.y | 0 } });
+          if (altIsDown) {
+            const { tileHeight, tileWidth } = levelManager.map;
+            const snappedStartPosition = this.snapToTile(x, y);
+            x = snappedStartPosition.x + ((point - 1) * tileWidth);
+            y = snappedStartPosition.y + ((point - 1) * tileHeight);
+          }
+
+          Zones.update(zoneId, { $set: { [`x${point}`]: x | 0, [`y${point}`]: y | 0 } });
 
           const zone = Zones.findOne(zoneId);
           if (!zone?.x2) {
@@ -53,8 +70,34 @@ EditorScene = new Phaser.Class({
           } else {
             Session.set('selectedZoneId', undefined);
             Session.set('selectedZonePoint', undefined);
+            this.areaSelector.visible = false;
           }
         }
+      }
+
+      if (Session.get('selectedZoneId')) {
+        const zoneId = Session.get('selectedZoneId');
+        const zone = Zones.findOne(zoneId);
+        let startPosition = { x: 0, y: 0 };
+        let size = { x: 0, y: 0 };
+
+        if (Session.get('selectedZonePoint') === 2) {
+          startPosition = { x: zone.x1, y: zone.y1 };
+          size = { x: worldPoint.x - startPosition.x, y: worldPoint.y - startPosition.y };
+        } else {
+          startPosition = { x: worldPoint.x, y: worldPoint.y };
+          size = { x: (zone.x2 || worldPoint.x) - startPosition.x, y: (zone.y2 || worldPoint.y) - startPosition.y };
+        }
+
+        if (altIsDown) {
+          const { tileHeight, tileWidth } = levelManager.map;
+          const snappedStartPosition = this.snapToTile(startPosition.x, startPosition.y);
+          const snappedSize = this.snapToTile(worldPoint.x - startPosition.x, worldPoint.y - startPosition.y);
+          size.x = snappedSize.x + (snappedStartPosition.x - startPosition.x) + tileWidth;
+          size.y = snappedSize.y + (snappedStartPosition.y - startPosition.y) + tileHeight;
+        }
+
+        this.showSelection(startPosition.x, startPosition.y, size.x, size.y);
       }
     } else if (Session.get('editorSelectedMenu') === 1) {
       // Snap to tile coordinates, but in world space
@@ -94,7 +137,7 @@ EditorScene = new Phaser.Class({
         } else if (selectedTiles?.index < 0) {
           const layer = -selectedTiles.index - 1;
           Tiles.find({ x: pointerTileX, y: pointerTileY }).forEach(tile => {
-            if (tileLayer(tile) === layer) {
+            if (levelManager.tileLayer(tile) === layer) {
               this.undoTiles.push(tile);
               Tiles.remove(tile._id);
             }
@@ -105,10 +148,10 @@ EditorScene = new Phaser.Class({
           for (let x = 0; x < selectedTiles.w; x++) {
             for (let y = 0; y < selectedTiles.h; y++) {
               const selectedTileIndex = (selectedTiles.y + y) * selectedTileset.width / 16 + (selectedTiles.x + x);
-              const layer = tileLayer({ tilesetId: selectedTiles.tilesetId, index: selectedTileIndex });
+              const layer = levelManager.tileLayer({ tilesetId: selectedTiles.tilesetId, index: selectedTileIndex });
 
               // eslint-disable-next-line no-loop-func
-              const tile = _.find(Tiles.find({ x: pointerTileX + x, y: pointerTileY + y }).fetch(), t => tileLayer({ tilesetId: t.tilesetId, index: t.index }) === layer);
+              const tile = _.find(Tiles.find({ x: pointerTileX + x, y: pointerTileY + y }).fetch(), t => levelManager.tileLayer({ tilesetId: t.tilesetId, index: t.index }) === layer);
 
               if (tile && (tile.index !== selectedTileIndex || tile.tilesetId !== selectedTileset._id)) {
                 this.undoTiles.push(tile);
@@ -161,9 +204,31 @@ EditorScene = new Phaser.Class({
 
   updateEditionMarker(selectedTiles) {
     if (!this.marker) return;
+    if (!levelManager.map) return;
+
+    const width = levelManager.map.tileWidth * (selectedTiles?.w || 1);
+    const height = levelManager.map.tileHeight * (selectedTiles?.h || 1);
     this.marker.clear();
-    this.marker.lineStyle(2, 0x00FF00, 1);
-    this.marker.strokeRect(0, 0, game.scene.keys.WorldScene.map.tileWidth * (selectedTiles?.w || 1), game.scene.keys.WorldScene.map.tileHeight * (selectedTiles?.h || 1));
+    this.marker.lineStyle(2, 0xFFFFFF, 1);
+    this.marker.strokeRect(0, 0, width, height);
+    this.marker.fillStyle(0xFFFFFF, 0.25);
+    this.marker.fillRect(0, 0, width, height);
     this.marker.setDepth(10002);
+  },
+
+  showSelection(x, y, width, height) {
+    this.areaSelector.visible = true;
+    this.areaSelector.clear();
+    this.areaSelector.strokeRect(x, y, width, height);
+    this.areaSelector.fillRect(x, y, width, height);
+  },
+
+  snapToTile(x, y) {
+    const { tileHeight, tileWidth } = levelManager.map;
+
+    return {
+      x: Math.floor(x / tileWidth) * tileWidth,
+      y: Math.floor(y / tileHeight) * tileHeight,
+    };
   },
 });

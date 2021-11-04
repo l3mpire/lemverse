@@ -1,9 +1,18 @@
+const Phaser = require('phaser');
+
 const defaultCharacterDirection = 'down';
 const defaultUserMediaColorError = '0xd21404';
-const characterNameOffset = { x: 0, y: -40 };
+const characterNameOffset = { x: 0, y: -85 };
+const characterSpritesOrigin = { x: 0.5, y: 1 };
 const characterInteractionDistance = { x: 32, y: 32 };
-const characterFootOffset = { x: -20, y: 32 };
+const characterFootOffset = { x: -20, y: -10 };
 const characterColliderSize = { x: 38, y: 16 };
+const characterInteractionConfiguration = {
+  hitArea: new Phaser.Geom.Circle(0, -13, 13),
+  hitAreaCallback: Phaser.Geom.Circle.Contains,
+  cursor: 'pointer',
+};
+const unavailablePlayerColor = 0x888888;
 
 charactersParts = Object.freeze({
   body: 0,
@@ -37,6 +46,27 @@ userManager = {
     this.player = undefined;
     this.players = {};
     this.scene = scene;
+
+    scene.input.keyboard.on('keydown-SHIFT', () => { peer.sensorEnabled = false; });
+    scene.input.keyboard.on('keyup-SHIFT', () => {
+      peer.sensorEnabled = true;
+      userProximitySensor.callProximityStartedForAllNearUsers();
+    });
+  },
+
+  destroy() {
+    this.onSleep();
+    _.each(this.players, player => {
+      clearInterval(player.reactionHandler);
+      delete player.reactionHandler;
+    });
+
+    this.player = undefined;
+    this.players = {};
+    this.characterNamesObjects = {};
+  },
+
+  onSleep() {
     throttledSavePlayer.cancel();
   },
 
@@ -73,13 +103,32 @@ userManager = {
     playerParts.setScale(3);
     playerParts.name = 'body';
 
+    if (!user.profile.guest) {
+      playerParts.setInteractive(characterInteractionConfiguration);
+      playerParts.on('pointerover', () => this.setTint(this.players[user._id], 0xFFAAFF));
+      playerParts.on('pointerout', () => this.setTintFromState(this.players[user._id]));
+      playerParts.on('pointerup', () => {
+        if (isModalOpen()) return;
+        Session.set('displayProfile', user._id);
+      });
+    }
+
+    const shadow = this.scene.add.circle(0, 6, 18, 0x000000);
+    shadow.alpha = 0.1;
+    shadow.scaleY = 0.4;
+    shadow.setDepth(-1);
+    shadow.setOrigin(characterSpritesOrigin.x, characterSpritesOrigin.y);
+    this.players[user._id].add(shadow);
+
     const bodyPlayer = this.scene.add.sprite(0, 0, body || guest ? Meteor.settings.public.skins.guest : Meteor.settings.public.skins.default);
+    bodyPlayer.setOrigin(characterSpritesOrigin.x, characterSpritesOrigin.y);
     bodyPlayer.name = 'body';
     playerParts.add(bodyPlayer);
 
     Object.keys(charactersParts).filter(part => part !== 'body' && user.profile[part]).forEach(part => {
       const spritePart = this.scene.add.sprite(0, 0, user.profile[part]);
       spritePart.name = part;
+      spritePart.setOrigin(characterSpritesOrigin.x, characterSpritesOrigin.y);
       playerParts.add(spritePart);
     });
 
@@ -111,8 +160,9 @@ userManager = {
 
     // show reactions
     if (reaction && !player.reactionHandler) {
-      this.spawnReaction(player, reaction);
-      player.reactionHandler = setInterval(() => this.spawnReaction(player, reaction), 250);
+      const animation = reaction === '❤️' ? 'zigzag' : 'linearUpScaleDown';
+      this.spawnReaction(player, reaction, animation, { randomOffset: 10 });
+      player.reactionHandler = setInterval(() => this.spawnReaction(player, reaction, animation, { randomOffset: 10 }), 250);
     } else if (!reaction && player.reactionHandler) {
       clearInterval(player.reactionHandler);
       delete player.reactionHandler;
@@ -131,6 +181,7 @@ userManager = {
       if (!characterPart) {
         const missingPart = this.scene.add.sprite(0, 0, user.profile[part]);
         missingPart.name = part;
+        missingPart.setOrigin(characterSpritesOrigin.x, characterSpritesOrigin.y);
         characterBodyContainer.add(missingPart);
       } else characterPart.setTexture(user.profile[part]);
     });
@@ -148,13 +199,8 @@ userManager = {
 
     // update tint
     if (userMediaError !== oldUser?.profile.userMediaError) {
-      charactersPartsKeys.filter(part => user.profile[part] || part === 'body').forEach(part => {
-        const characterPart = characterBodyContainer.getByName(part);
-        if (characterPart) {
-          if (userMediaError) characterPart.setTint(defaultUserMediaColorError);
-          else characterPart.clearTint();
-        }
-      });
+      if (userMediaError) this.setTint(player, defaultUserMediaColorError);
+      else this.clearTint(player);
     }
     characterBodyContainer.alpha = guest ? 0.7 : 1.0;
 
@@ -182,6 +228,8 @@ userManager = {
       // check zone and near users on move
       if (hasMoved) zones.checkDistances(this.player);
 
+      if (user.profile.avatar !== oldUser?.profile.avatar) userStreams.refreshVideoElementAvatar();
+
       if (shouldCheckDistance) {
         const otherUsers = Meteor.users.find({ _id: { $ne: mainUser._id } }).fetch();
         userProximitySensor.checkDistances(mainUser, otherUsers);
@@ -204,7 +252,6 @@ userManager = {
   },
 
   remove(user) {
-    if (user._id === Meteor.userId()) return;
     if (!this.players[user._id]) return;
 
     clearInterval(this.players[user._id].reactionHandler);
@@ -212,6 +259,8 @@ userManager = {
 
     this.players[user._id].destroy();
     this.destroyUserName(user._id);
+
+    if (user._id === Meteor.userId()) this.unsetMainPlayer();
 
     delete this.players[user._id];
   },
@@ -268,6 +317,8 @@ userManager = {
     const player = this.players[userId];
     if (!player) throw new Error(`Can't set as main player a non spawned character`);
 
+    const user = Meteor.users.findOne({ _id: userId });
+    const level = Levels.findOne({ _id: user.profile.levelId });
     // enable collisions for the user only, each client has its own physics simulation and there isn't collision between characters
     this.scene.physics.world.enableBody(player);
     player.body.setImmovable(true);
@@ -276,14 +327,13 @@ userManager = {
     player.body.setOffset(characterFootOffset.x, characterFootOffset.y);
 
     // add character's physic body to layers
-    _.each(this.scene.layers, layer => {
+    _.each(levelManager.layers, layer => {
       if (layer.playerCollider) this.scene.physics.world.removeCollider(layer.playerCollider);
-      layer.playerCollider = this.scene.physics.add.collider(player, layer);
+      if (!level.godMode) layer.playerCollider = this.scene.physics.add.collider(player, layer);
     });
 
     // ask camera to follow the player
-    this.scene.cameras.main.startFollow(player);
-    this.scene.cameras.main.roundPixels = true;
+    this.scene.cameras.main.startFollow(player, true, 0.1, 0.1);
 
     if (Meteor.user().guest) hotkeys.setScope('guest');
     else hotkeys.setScope(scopes.player);
@@ -291,9 +341,25 @@ userManager = {
     this.player = player;
   },
 
+  unsetMainPlayer(destroy = false) {
+    if (!this.player) return;
+
+    this.scene.physics.world.disableBody(this.player);
+    if (destroy) this.player.destroy();
+
+    _.each(levelManager.layers, layer => {
+      if (layer.playerCollider) this.scene.physics.world.removeCollider(layer.playerCollider);
+    });
+
+    this.scene.cameras.main.stopFollow();
+    hotkeys.setScope('guest');
+
+    this.player = undefined;
+  },
+
   createUserStateIndicator() {
-    const muteIndicatorMic = this.scene.add.text(0, 0, '🎤', { font: '23px Sans Open' }).setDepth(99996).setOrigin(0.5, 1);
-    const muteIndicatorCross = this.scene.add.text(0, -3, '❌', { font: '23px Sans Open' }).setDepth(99997).setOrigin(0.5, 1).setScale(0.6);
+    const muteIndicatorMic = this.scene.add.text(0, -40, '🎤', { font: '23px Sans Open' }).setDepth(99996).setOrigin(0.5, 1);
+    const muteIndicatorCross = this.scene.add.text(0, -40, '🚫', { font: '23px Sans Open' }).setDepth(99995).setOrigin(0.5, 1).setScale(0.8);
 
     const userStateIndicatorContainer = this.scene.add.container(0, 0);
     userStateIndicatorContainer.add([muteIndicatorMic, muteIndicatorCross]);
@@ -309,18 +375,15 @@ userManager = {
     this.characterNamesObjects[userId] = undefined;
   },
 
-  spawnReaction(player, emoji) {
-    const ReactionDiff = 10;
-    const positionX = player.x - ReactionDiff + _.random(-10, 10);
-    const positionY = player.y + characterNameOffset.y + _.random(-10, 10);
-    const reaction = this.scene.add.text(positionX, positionY, emoji, { font: '32px Sans Open' }).setDepth(99997).setOrigin(0.5, 1);
+  spawnReaction(player, content, animation, options) {
+    const ReactionDiff = animation === 'zigzag' ? 10 : 0;
+    const positionX = player.x - ReactionDiff + _.random(-options.randomOffset, options.randomOffset);
+    const positionY = player.y + characterNameOffset.y + _.random(-options.randomOffset, options.randomOffset);
+    const reaction = this.scene.add.text(positionX, positionY, content, { font: '32px Sans Open' }).setDepth(99997).setOrigin(0.5, 1);
 
     this.scene.tweens.add({
       targets: reaction,
-      alpha: { value: 0, duration: 250, delay: 750, ease: 'Power1' },
-      y: { value: positionY - 70, duration: 1300, ease: 'Power1' },
-      x: { value: positionX + (ReactionDiff * 2), duration: 250, ease: 'Linear', yoyo: true, repeat: -1 },
-      scale: { value: 1.2, duration: 175, ease: 'Quad.easeOut', yoyo: true, repeat: -1 },
+      ...reactionsAnimations[animation](positionX, positionY, ReactionDiff),
       onComplete: () => reaction.destroy(),
     });
   },
@@ -329,7 +392,7 @@ userManager = {
     const currentUser = Meteor.user();
 
     _.each(this.players, (player, userId) => {
-      if (userId === currentUser._id) return;
+      if (userId === currentUser?._id) return;
 
       if (!player.lwTargetDate) {
         this.pauseAnimation(player, true);
@@ -357,6 +420,12 @@ userManager = {
     if (!this.player) return;
     if (!this.player.nippleMoving) this.player.body.setVelocity(0);
     if (isModalOpen()) return;
+
+    const user = Meteor.user();
+    if (user.profile.freeze) {
+      this.pauseAnimation(this.player, true);
+      return;
+    }
 
     let velocity = keys.shift.isDown ? Meteor.settings.public.character.runSpeed : Meteor.settings.public.character.walkSpeed;
     let direction;
@@ -402,7 +471,16 @@ userManager = {
     userChatCircle.update(this.player.x, this.player.y);
     userVoiceRecorderAbility.update(this.player.x, this.player.y, delta);
 
-    const moving = Math.abs(this.player.body.velocity.x) > Number.EPSILON || Math.abs(this.player.body.velocity.y) > Number.EPSILON;
+    let moving = Math.abs(this.player.body.velocity.x) > Number.EPSILON || Math.abs(this.player.body.velocity.y) > Number.EPSILON;
+
+    // Handle freeze
+    const user = Meteor.user();
+    if (user.profile.freeze) moving = false;
+    if (user.profile.changeLevel) {
+      levelManager.loadLevel(user.profile.changeLevel);
+      Meteor.users.update(Meteor.userId(), { $set: { 'profile.levelId': user.profile.changeLevel }, $unset: { 'profile.changeLevel': 1 } });
+    }
+
     if (moving || this.playerWasMoving) {
       this.scene.physics.world.update(time, delta);
       throttledSavePlayer(this.player);
@@ -449,10 +527,9 @@ userManager = {
   },
 
   interact() {
-    const tiles = this.getTilesInFrontOfPlayer(this.player, [2, 3, 4, 5, 6, 7]);
-    if (tiles.length) {
-      // todo: interact using tiles properties here
-    }
+    const tiles = this.getTilesInFrontOfPlayer(this.player, [4, 0]);
+    const positionInFrontOfPlayer = this.getPositionInFrontOfPlayer(this.player);
+    entityManager.onInteraction(tiles, positionInFrontOfPlayer);
   },
 
   getTilesUnderPlayer(player, layers = []) {
@@ -472,21 +549,31 @@ userManager = {
     return this.getTilesRelativeToPlayer(player, positionOffset, layers);
   },
 
+  getPositionInFrontOfPlayer(player) {
+    const directionVector = this.directionToVector(player.direction);
+
+    return {
+      x: player.x + directionVector[0] * characterInteractionDistance.x,
+      y: player.y + characterFootOffset.y + directionVector[1] * characterInteractionDistance.y,
+    };
+  },
+
   getTilesRelativeToPlayer(player, offset, layers = []) {
     if (!player) return undefined;
 
-    const tileX = this.scene.map.worldToTileX(player.x + characterFootOffset.x + offset.x);
-    const tileY = this.scene.map.worldToTileY(player.y + characterFootOffset.y + offset.y);
+    const { map } = levelManager;
+    const tileX = map.worldToTileX(player.x + offset.x);
+    const tileY = map.worldToTileY(player.y + offset.y);
 
     const tiles = [];
     if (layers.length === 0) {
-      for (let l = this.scene.map.layers.length; l >= 0; l--) {
-        const tile = this.scene.map.getTileAt(tileX, tileY, false, l);
+      for (let l = map.layers.length; l >= 0; l--) {
+        const tile = map.getTileAt(tileX, tileY, false, l);
         if (tile) tiles.push(tile);
       }
     } else {
       layers.forEach(l => {
-        const tile = this.scene.map.getTileAt(tileX, tileY, false, l);
+        const tile = map.getTileAt(tileX, tileY, false, l);
         if (tile) tiles.push(tile);
       });
     }
@@ -507,5 +594,37 @@ userManager = {
       default:
         return [0, 0];
     }
+  },
+
+  takeDamage(player) {
+    this.flashColor(player, 0xFF0000);
+  },
+
+  clearTint(player) {
+    this.setTint(player, 0xFFFFFF);
+  },
+
+  setTint(player, color) {
+    const playerBodyParts = player.getByName('body');
+    playerBodyParts.list.forEach(bodyPart => {
+      bodyPart.tint = color;
+    });
+  },
+
+  setTintFromState(player) {
+    const user = Meteor.users.findOne(player.userId);
+    const currentZone = zones.currentZone(user);
+    if (currentZone && currentZone.disableCommunications) this.setTint(player, unavailablePlayerColor);
+    else this.setTint(player, 0xFFFFFF);
+  },
+
+  flashColor(player, color) {
+    this.setTint(player, color);
+
+    this.scene.time.addEvent({
+      delay: 350,
+      callback() { this.clearTint(player); },
+      callbackScope: this,
+    });
   },
 };

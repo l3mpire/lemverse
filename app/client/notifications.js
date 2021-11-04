@@ -71,21 +71,17 @@ Template.notificationsItem.events({
 
 Template.notifications.onCreated(function () {
   this.autorun(() => {
-    const notifications = Notifications.find({}, { fields: { createdBy: 1 } }).fetch();
-    const userIds = notifications.map(notification => notification.createdBy).filter(Boolean);
-    if (userIds?.length) this.subscribe('usernames', userIds);
+    const open = Session.get('displayNotificationsPanel');
+    if (open) {
+      const notifications = Notifications.find({}, { fields: { createdBy: 1 } }).fetch();
+      const userIds = notifications.map(notification => notification.createdBy).filter(Boolean);
+      if (userIds?.length) this.subscribe('usernames', userIds);
+    }
   });
 });
 
 Template.notifications.helpers({
   notifications() {
     return Notifications.find().fetch().sort((a, b) => b.createdAt - a.createdAt);
-  },
-});
-
-Template.notifications.events({
-  'click .js-close'(event) {
-    event.preventDefault();
-    Session.set('displayNotificationsPanel', false);
   },
 });

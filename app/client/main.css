@@ -32,7 +32,7 @@ body {
   padding: 30px;
   color: white;
   text-align: center;
-  z-index: 2;
+  z-index: 50;
 }
 
 .status.connecting {

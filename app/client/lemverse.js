@@ -1,3 +1,6 @@
+import hotkeys from 'hotkeys-js';
+import DizzyEffect from '../public/assets/post-effects/DizzyEffect';
+
 const Phaser = require('phaser');
 
 scopes = {
@@ -10,13 +13,9 @@ hotkeys.filter = function (event) {
   return !/^(INPUT|TEXTAREA)$/.test(tagName);
 };
 
-Template.registerHelper('tileLayer', function () { return tileLayer(this); });
-Template.registerHelper('worldToTileX', x => game?.scene.keys.WorldScene.map.worldToTileX(x));
-Template.registerHelper('worldToTileY', y => game?.scene.keys.WorldScene.map.worldToTileY(y));
-
 game = undefined;
 
-isModalOpen = () => Session.get('displaySettings') || Session.get('displayZoneId') || Session.get('displayNotificationsPanel');
+isModalOpen = () => Session.get('displaySettings') || Session.get('displayZoneId') || Session.get('displayNotificationsPanel') || Session.get('displayProfile');
 
 const config = {
   type: Phaser.AUTO,
@@ -25,6 +24,8 @@ const config = {
   height: window.innerHeight / Meteor.settings.public.zoom,
   zoom: Meteor.settings.public.zoom,
   pixelArt: true,
+  title: 'lemverse',
+  url: 'https://lemverse.com',
   physics: {
     default: 'arcade',
     arcade: {
@@ -32,15 +33,22 @@ const config = {
       gravity: { y: 0 },
     },
   },
+  scale: {
+    mode: Phaser.Scale.RESIZE,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    width: 800, // Default game window width
+    height: 600, // Default game window height,
+  },
   dom: {
     createContainer: true,
   },
+  pipeline: { DizzyEffect },
 };
 
 Template.lemverse.onCreated(function () {
   Session.set('selectedTiles', undefined);
   Session.set('selectedTilesetId', undefined);
-  Session.set('gameCreated', false);
+  Session.set('sceneWorldReady', false);
   Session.set('loading', true);
   Session.set('tilesetsLoaded', false);
   Session.set('editor', 0);
@@ -48,7 +56,10 @@ Template.lemverse.onCreated(function () {
   Session.set('displayUserList', false);
   Session.set('displayNotification', false);
   Session.set('displayNotificationsPanel', false);
-  Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } });
+
+  window.addEventListener('beforeunload', () => {
+    Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } });
+  });
 
   document.addEventListener('keydown', event => {
     if (event.code !== 'Escape') return;
@@ -56,10 +67,12 @@ Template.lemverse.onCreated(function () {
     Session.set('displayZoneId', false);
     Session.set('displayNotificationsPanel', false);
     Session.set('displayUserList', false);
+    Session.set('displayProfile', false);
     game.scene.keys.WorldScene.enableKeyboard(true, true);
     document.activeElement.blur();
   });
 
+  this.hasLevelLoaded = false;
   this.subscribe('characters');
   this.subscribe('levels');
   this.subscribe('notifications');
@@ -76,7 +89,11 @@ Template.lemverse.onCreated(function () {
   });
 
   this.autorun(() => {
-    if (!game) return;
+    if (!Meteor.userId()) Session.set('sceneWorldReady', false);
+  });
+
+  this.autorun(() => {
+    if (!Session.get('sceneWorldReady')) return;
 
     const modalOpen = isModalOpen();
     Tracker.nonreactive(() => {
@@ -127,42 +144,22 @@ Template.lemverse.onCreated(function () {
   });
 
   this.autorun(() => {
-    if (!Session.get('gameCreated')) return;
+    if (!Session.get('sceneWorldReady')) return;
     game.scene.getScene('EditorScene')?.updateEditionMarker(Session.get('selectedTiles'));
   });
 
   this.autorun(() => {
-    if (!Session.get('gameCreated')) return;
+    if (!Session.get('sceneWorldReady')) return;
 
-    const worldScene = game.scene.getScene('WorldScene');
     Tracker.nonreactive(() => {
       if (this.handleObserveTilesets) this.handleObserveTilesets.stop();
       if (!this.handleObserveTilesets) {
         this.handleObserveTilesets = Tilesets.find().observe({
           added(tileset) {
-            game.scene.keys.BootScene.loadTilesetsAtRuntime([tileset], worldScene.addTilesetsToLayers);
+            game.scene.keys.BootScene.loadTilesetsAtRuntime([tileset], levelManager.addTilesetsToLayers.bind(levelManager));
           },
           changed(o, n) {
-            const oTileKeys = _.map(_.keys(o.tiles || {}), k => +k);
-            const nTileKeys = _.map(_.keys(n.tiles || {}), k => +k);
-            const d1 = _.difference(oTileKeys, nTileKeys);
-            const d2 = _.difference(nTileKeys, oTileKeys);
-            const d3 = _.filter(oTileKeys, index => o.tiles[index]?.layer !== n.tiles[index]?.layer);
-            const changedTileIndexes = _.union(d1, d2, d3);
-            const xys = _.map(Tiles.find({ tilesetId: n._id, index: { $in: changedTileIndexes } }).fetch(), t => ({ x: t.x, y: t.y }));
-            _.forEach(xys, xy => worldScene.tileRefresh(xy.x, xy.y));
-
-            const enabledCollisionIndexes = _.difference(o.collisionTileIndexes, n.collisionTileIndexes);
-            const disabledCollisionIndexes = _.difference(n.collisionTileIndexes, o.collisionTileIndexes);
-
-            const enabledCollisionGlobalIndexes = _.map(enabledCollisionIndexes, i => tileGlobalIndex({ index: i, tilesetId: n._id }));
-            const disabledCollisionGlobalIndexes = _.map(disabledCollisionIndexes, i => tileGlobalIndex({ index: i, tilesetId: n._id }));
-
-            const { layers } = worldScene.map;
-            _.each(layers, layer => {
-              worldScene.map.setCollision(enabledCollisionGlobalIndexes, true, false, layer.tilemapLayer);
-              worldScene.map.setCollision(disabledCollisionGlobalIndexes, false, false, layer.tilemapLayer);
-            });
+            levelManager.onTilesetUpdated(o, n);
           },
         });
       }
@@ -225,20 +222,36 @@ Template.lemverse.onCreated(function () {
   });
 
   this.autorun(() => {
-    if (!Session.get('gameCreated')) return;
+    if (!Session.get('sceneWorldReady')) return;
 
-    const levelId = Meteor.user({ fields: { 'profile.levelId': 1 } }).profile?.levelId;
+    const loggedUser = Meteor.user({ fields: { 'profile.levelId': 1 } });
+    if (!loggedUser) return;
+    const { levelId } = loggedUser.profile;
+
     Tracker.nonreactive(() => {
-      log(`loading level: ${levelId || 'unknown'}…`);
+      if (this.handleEntitiesSubscribe) this.handleEntitiesSubscribe.stop();
       if (this.handleTilesSubscribe) this.handleTilesSubscribe.stop();
       if (this.handleUsersSubscribe) this.handleUsersSubscribe.stop();
       if (this.handleZonesSubscribe) this.handleZonesSubscribe.stop();
+      if (this.handleObserveEntities) this.handleObserveEntities.stop();
       if (this.handleObserveTiles) this.handleObserveTiles.stop();
       if (this.handleObserveUsers) this.handleObserveUsers.stop();
       if (this.handleObserveZones) this.handleObserveZones.stop();
+
+      // world clean-up
+      const loadingScene = game.scene.getScene('LoadingScene');
       const worldScene = game.scene.getScene('WorldScene');
+      loadingScene.show();
+
+      if (this.hasLevelLoaded) {
+        log(`unloading current level…`);
+        worldScene.scene.restart();
+        this.hasLevelLoaded = false;
+        return;
+      }
 
       // Load users
+      log(`loading level: ${levelId || 'unknown'}…`);
       log(`loading level: loading users`);
       this.handleUsersSubscribe = this.subscribe('users', levelId, () => {
         this.handleObserveUsers = Meteor.users.find({ status: { $exists: true } }).observe({
@@ -270,7 +283,11 @@ Template.lemverse.onCreated(function () {
             const currentZone = zones.currentZone(Meteor.user());
             if (!currentZone || currentZone._id !== zone._id) return;
 
-            if (meet.api) meet.fullscreen(zone.fullscreen);
+            if (meet.api) {
+              meet.fullscreen(zone.fullscreen);
+              const screenMode = zone.fullscreen ? viewportModes.small : viewportModes.splitScreen;
+              worldScene.updateViewport(screenMode);
+            }
           },
         });
 
@@ -278,31 +295,58 @@ Template.lemverse.onCreated(function () {
         zones.checkDistances(userManager.player);
       });
 
+      // Load entities
+      log(`loading level: loading entities`);
+      this.handleEntitiesSubscribe = this.subscribe('entities', levelId, () => {
+        this.handleObserveEntities = Entities.find().observe({
+          added(entity) {
+            entityManager.create(entity);
+          },
+          changed(entity) {
+            setTimeout(() => entityManager.update(entity), 0);
+          },
+          removed(entity) {
+            entityManager.remove(entity);
+          },
+        });
+
+        log('loading level: all entities loaded');
+      });
+
       // Load tiles
       log(`loading level: loading tiles`);
       this.handleTilesSubscribe = this.subscribe('tiles', levelId, () => {
         this.handleObserveTiles = Tiles.find().observe({
           added(tile) {
-            const layer = tileLayer(tile);
-            worldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
-            worldScene.drawTeleporters(false);
+            const layer = levelManager.tileLayer(tile);
+            levelManager.map.putTileAt(levelManager.tileGlobalIndex(tile), tile.x, tile.y, false, layer);
+            window.dispatchEvent(new CustomEvent('onTileAdded', { detail: { tile, layer } }));
           },
           changed(tile) {
-            const layer = tileLayer(tile);
-            worldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
+            const layer = levelManager.tileLayer(tile);
+            levelManager.map.putTileAt(levelManager.tileGlobalIndex(tile), tile.x, tile.y, false, layer);
+            window.dispatchEvent(new CustomEvent('onTileChanged', { detail: { tile, layer } }));
           },
           removed(tile) {
-            const layer = tileLayer(tile);
-            worldScene.map.removeTileAt(tile.x, tile.y, false, false, layer);
+            const layer = levelManager.tileLayer(tile);
+            levelManager.map.removeTileAt(tile.x, tile.y, false, false, layer);
           },
         });
 
         log('loading level: all tiles loaded');
-        worldScene.onLevelLoaded();
+        levelManager.onLevelLoaded();
       });
 
+      this.hasLevelLoaded = true;
       game.scene.getScene('EditorScene')?.init();
     });
+  });
+
+  this.autorun(() => {
+    const currentLevel = Session.get('currentLevel');
+    if (!currentLevel) {
+      Meteor.call('currentLevel', (err, level) => { if (level) Session.set('currentLevel', level); });
+    }
   });
 
   hotkeys('e', { scope: 'all' }, event => {
@@ -334,7 +378,13 @@ Template.lemverse.onCreated(function () {
     event.preventDefault();
     if (event.repeat) return;
 
-    if (meet.api) meet.close(); else meet.open();
+    if (meet.api) {
+      meet.close();
+      game.scene.keys.WorldScene.updateViewport(viewportModes.fullscreen);
+    } else {
+      meet.open();
+      game.scene.keys.WorldScene.updateViewport(viewportModes.splitScreen);
+    }
   });
 
   hotkeys('u', { scope: scopes.player }, event => {
@@ -419,7 +469,6 @@ Template.lemverse.onCreated(function () {
   });
 
   hotkeys('shift+4', { scope: scopes.player }, () => {
-    if (!Session.get('displaySettings')) settings.enumerateDevices();
     Session.set('displaySettings', !Session.get('displaySettings'));
   });
 
@@ -427,37 +476,19 @@ Template.lemverse.onCreated(function () {
     Session.set('displayNotificationsPanel', !Session.get('displayNotificationsPanel'));
   });
 
-  hotkeys('shift+0', { scope: scopes.player }, () => {
-    game.scene.keys.WorldScene.drawTeleporters(!game?.scene.keys.WorldScene.teleporterGraphics.length);
-  });
-});
-
-Template.lemverse.onRendered(function () {
-  this.autorun(() => {
-    if (!Session.get('gameCreated')) return;
-
-    if (!this.resizeObserver) {
-      const resizeObserver = new ResizeObserver(entries => {
-        entries.forEach(entry => {
-          config.width = entry.contentRect.width / Meteor.settings.public.zoom;
-          config.height = entry.contentRect.height / Meteor.settings.public.zoom;
-          game.scale.resize(config.width, config.height);
-        });
-      });
-      const simulation = document.querySelector('.simulation');
-      if (simulation) {
-        this.resizeObserver = true;
-        resizeObserver.observe(simulation);
-      }
-    }
+  hotkeys('shift+0', { scope: scopes.player }, event => {
+    if (event.repeat) return;
+    levelManager.drawTriggers(!levelManager.teleporterGraphics.length);
   });
 });
 
 Template.lemverse.onDestroyed(function () {
   if (this.handleObserveUsers) this.handleObserveUsers.stop();
+  if (this.handleObserveEntities) this.handleObserveEntities.stop();
   if (this.handleObserveTiles) this.handleObserveTiles.stop();
   if (this.handleObserveTilesets) this.handleObserveTilesets.stop();
   if (this.handleObserveZones) this.handleObserveZones.stop();
+  if (this.handleEntitiesSubscribe) this.handleEntitiesSubscribe.stop();
   if (this.handleTilesSubscribe) this.handleTilesSubscribe.stop();
   if (this.handleUsersSubscribe) this.handleUsersSubscribe.stop();
   if (this.handleZonesSubscribe) this.handleZonesSubscribe.stop();
@@ -481,6 +512,7 @@ Template.lemverse.helpers({
   isGuest: () => Meteor.user()?.profile.guest,
   hasNotifications: () => Notifications.find().count(),
   pendingNotificationsCount: () => Notifications.find({ read: false }).count(),
+  screenMode: () => Template.instance().screenMode.get(),
 });
 
 Template.lemverse.events({
@@ -494,7 +526,6 @@ Template.lemverse.events({
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': !Meteor.user().profile.shareScreen } });
   },
   'click .button.settings'() {
-    if (!Session.get('displaySettings')) settings.enumerateDevices();
     Session.set('displaySettings', !Session.get('displaySettings'));
   },
   'click .button.js-notifications'() {

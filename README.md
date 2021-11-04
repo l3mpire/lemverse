@@ -101,6 +101,8 @@ You can add a zone then select on the map the top left followed by the bottom ri
 
 If you want to edit a zone, simply click on either corner coordinate then click on the map.
 
+> ℹ️ Press "alt" or "option" during edition to snap world coordinates to tiles coordinates
+
 Each zone can be configured to make more things.  
 To edit those information, simply click on the name of the room (bold text).
 
@@ -117,6 +119,7 @@ To edit those information, simply click on the name of the room (bold text).
   "fullscreen": false, // Set the iframe if full screen or not
   "targetedLevelId": "", // Used for teleport zone. Should be the id of the level to teleport to.,
   "inlineURL": "https://status.lemlist.com|<p>My custom text</p>", // Create a pop-in with URL or HTML content
+  "disableCommunications": false, // Disabling communications for the user inside
   "popInConfiguration": {
     "position": "top", // Optional: Pop-in position on the zone (center, left, right, bottom or top), set "relative" for custom position using "x" & "y" (default center)
     "x": 0, // Optional: Relative position from the zone's center on X (you need to set "position" to "relative")
@@ -459,11 +462,13 @@ To build from you source without having to install anything, you can run the fol
 
 `docker build -f Dockerfile.dev . -t lempire/lemverse:dev`
 
-Or run the full dev env with hot reload:
-
-`docker-compose up -d` 
+Or run the full dev env with hot reload: `docker-compose up -d`  
 It take a while to start the server.
 Then every change in the project will be automatically reloaded.
+
+### Deploy
+
+Visit `example/docker-compose-prod` to find the deployment instructions with `docker-compose` stack.
 
 ## Slack Notification upon deployment
 

@@ -7,6 +7,79 @@ AccountsGuest.enabled = true;
 AccountsGuest.forced = true;
 AccountsGuest.name = true;
 
+createLevel = (templateId = undefined, newName = undefined) => {
+  const newLevelId = Levels.id();
+  Levels.insert({
+    _id: newLevelId,
+    name: newName || `${Meteor.user().profile.name || Meteor.user().username}'s world`,
+    spawn: { x: 200, y: 200 },
+    createdAt: new Date(),
+    createdBy: Meteor.userId(),
+  });
+
+  if (templateId) {
+    const templateLevel = Levels.findOne(templateId);
+    Levels.update({ _id: newLevelId }, { $set: { template: false, metadata: templateLevel.metadata } });
+    if (templateLevel.spawn) Levels.update({ _id: newLevelId }, { $set: { spawn: templateLevel.spawn } });
+
+    const tiles = Tiles.find({ levelId: templateId }).fetch();
+    const zones = Zones.find({ levelId: templateId }).fetch();
+
+    tiles.forEach(tile => {
+      Tiles.insert({
+        ...tile,
+        _id: Tiles.id(),
+        createdAt: new Date(),
+        createdBy: Meteor.userId(),
+        levelId: newLevelId,
+      });
+    });
+
+    zones.forEach(zone => {
+      Zones.insert({
+        ...zone,
+        _id: Zones.id(),
+        createdAt: new Date(),
+        createdBy: Meteor.userId(),
+        levelId: newLevelId,
+      });
+    });
+  } else {
+    const { levelId } = Meteor.user().profile;
+
+    Zones.insert({
+      _id: Zones.id(),
+      adminOnly: false,
+      createdAt: new Date(),
+      createdBy: Meteor.userId(),
+      levelId: newLevelId,
+      targetedLevelId: levelId,
+      name: 'Previous world',
+      x1: 10,
+      x2: 110,
+      y1: 10,
+      y2: 110,
+    });
+  }
+
+  return newLevelId;
+};
+
+deleteLevel = levelId => {
+  log('deleteLevel: start', { levelId });
+
+  const numLevels = Levels.find().count();
+  if (numLevels === 1) {
+    error('deleteLevel: can not delete last level');
+    throw new Meteor.Error('not-allowed', 'Can not delete last level');
+  }
+
+  Zones.remove({ levelId });
+  Tiles.remove({ levelId });
+  Levels.remove({ _id: levelId });
+  Meteor.users.update({ 'profile.levelId': levelId }, { $set: { 'profile.levelId': Meteor.settings.defaultLevelId } }, { multi: true });
+};
+
 Meteor.publish('notifications', function () {
   if (!this.userId) return undefined;
 
@@ -17,13 +90,20 @@ Meteor.publish('tiles', function (levelId) {
   if (!this.userId) return undefined;
   if (!levelId) levelId = Meteor.settings.defaultLevelId;
 
-  return Tiles.find({ levelId }, { fields: { index: 1, x: 1, y: 1, tilesetId: 1, levelId: 1 } });
+  return Tiles.find({ levelId, $or: [{ invisible: false }, { invisible: { $exists: false } }] }, { fields: { index: 1, x: 1, y: 1, tilesetId: 1, levelId: 1, metadata: 1 } });
 });
 
 Meteor.publish('levels', function () {
   if (!this.userId) return undefined;
 
   return Levels.find();
+});
+
+Meteor.publish('entities', function (levelId) {
+  if (!this.userId) return undefined;
+  if (!levelId) levelId = Meteor.settings.defaultLevelId;
+
+  return Entities.find({ levelId });
 });
 
 Meteor.publish('zones', function (levelId) {
@@ -43,6 +123,13 @@ Meteor.publish('usernames', function (userIds) {
   );
 });
 
+Meteor.publish('userProfile', function (userId) {
+  if (!this.userId) return undefined;
+  check(userId, String);
+
+  return Meteor.users.find(userId, { fields: { 'profile.name': 1, 'profile.company': 1, 'profile.bio': 1, 'profile.website': 1, createdAt: 1 } });
+});
+
 Meteor.publish('characters', function () {
   if (!this.userId) return undefined;
 
@@ -58,58 +145,11 @@ Meteor.methods({
     if (!isEditionAllowed(userId)) Levels.update(levelId, { $addToSet: { editorUserIds: { $each: [userId] } } });
     else Levels.update(levelId, { $pull: { editorUserIds: userId } });
   },
+  teleportUserInLevel(levelId) {
+    return teleportUserInLevel(levelId, Meteor.userId());
+  },
   createLevel(templateId = undefined) {
-    const newLevelId = Levels.id();
-    Levels.insert({
-      _id: newLevelId,
-      name: `${Meteor.user().profile.name || Meteor.user().username}'s world`,
-      spawn: { x: 200, y: 200 },
-      createdAt: new Date(),
-      createdBy: Meteor.userId(),
-    });
-
-    if (templateId) {
-      const tiles = Tiles.find({ levelId: templateId }).fetch();
-      const zones = Zones.find({ levelId: templateId }).fetch();
-
-      tiles.forEach(tile => {
-        Tiles.insert({
-          ...tile,
-          _id: Tiles.id(),
-          createdAt: new Date(),
-          createdBy: Meteor.userId(),
-          levelId: newLevelId,
-        });
-      });
-
-      zones.forEach(zone => {
-        Zones.insert({
-          ...zone,
-          _id: Zones.id(),
-          createdAt: new Date(),
-          createdBy: Meteor.userId(),
-          levelId: newLevelId,
-        });
-      });
-    } else {
-      const { levelId } = Meteor.user().profile;
-
-      Zones.insert({
-        _id: Zones.id(),
-        adminOnly: false,
-        createdAt: new Date(),
-        createdBy: Meteor.userId(),
-        levelId: newLevelId,
-        targetedLevelId: levelId,
-        name: 'Previous world',
-        x1: 10,
-        x2: 110,
-        y1: 10,
-        y2: 110,
-      });
-    }
-
-    return newLevelId;
+    return createLevel(templateId);
   },
   markNotificationAsRead(notificationId) {
     if (!this.userId) return;
@@ -128,6 +168,8 @@ Meteor.methods({
           profile: {
             ...profile,
             name,
+            shareAudio: true,
+            shareVideo: true,
           },
         },
       }));

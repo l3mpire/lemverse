@@ -1,6 +1,8 @@
 const listMode = 'list';
 
 const askLoadLevel = (levelId, incrementVisit = false) => {
+  if (Meteor.user().profile.levelId === levelId) return;
+
   if (incrementVisit) Meteor.call('increaseLevelVisits', levelId);
 
   if (window.self !== window.top) {
@@ -17,7 +19,7 @@ Template.levels.onCreated(function () {
   this.tab = new ReactiveVar(listMode);
 
   this.autorun(() => {
-    const levels = Levels.find({ _id: { $ne: Meteor.settings.public.templateLevelId } }, { fields: { createdBy: 1 } }).fetch();
+    const levels = Levels.find({ _id: { $ne: Meteor.settings.public.templateLevelId }, $or: [{ template: false }, { template: { $exists: false } }] }, { fields: { createdBy: 1 } }).fetch();
     const userIds = levels.map(level => level.createdBy).filter(Boolean);
     if (userIds?.length) this.subscribe('usernames', userIds);
   });
@@ -52,7 +54,8 @@ Template.levels.events({
 Template.levels.helpers({
   isLevelOwner(level) { return Meteor.userId() === level.createdBy; },
   levels() {
-    const levels = Levels.find({}, { sort: { visit: -1 } }).fetch();
+    const currentLevelId = Meteor.user()?.profile.levelId;
+    const levels = Levels.find({ $or: [{ template: false }, { template: { $exists: false } }], _id: { $ne: currentLevelId } }, { sort: { visit: -1 } }).fetch();
     const userId = Meteor.userId();
 
     return levels.sort((a, b) => {

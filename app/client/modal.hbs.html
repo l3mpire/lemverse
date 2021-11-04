@@ -1,0 +1,18 @@
+<template name="modal">
+  <div class="modal {{#if open}}visible{{/if}}">
+    <div class="modal-background js-modal-background"></div>
+    <dialog id="js-modal" class="modal-window" role="dialog" open="" aria-labelledby="modal-title">
+      {{#if open}}
+        <div role="document" class="modal-body">
+          <button type="button" class="js-modal-close" title="Close this modal">
+            <span class="simple-modal-close__text">x</span>
+          </button>
+          <h1 id="modal-title" class="modal-title">{{ title }}</h1>
+          <div class="modal-content">
+            {{> Template.contentBlock }}
+          </div>
+        </div>
+      {{/if}}
+    </dialog>
+  </div>
+</template>

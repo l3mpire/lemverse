@@ -8,10 +8,23 @@ peer = {
   peerInstance: undefined,
   peerLoading: false,
   remoteStreamsByUsers: new ReactiveVar([]),
+  sensorEnabled: true,
+  enabled: true,
 
   init() {
-    userProximitySensor.onProximityStarted = this.onProximityStarted.bind(this);
     userProximitySensor.onProximityEnded = this.onProximityEnded.bind(this);
+    this.enable();
+  },
+
+  enable() {
+    this.enabled = true;
+    userProximitySensor.onProximityStarted = this.onProximityStarted.bind(this);
+  },
+
+  disable() {
+    this.enabled = false;
+    userProximitySensor.onProximityStarted = undefined;
+    this.closeAll();
   },
 
   closeAll() {
@@ -114,7 +127,10 @@ peer = {
   createPeerCalls(user) {
     const { shareAudio, shareScreen, shareVideo } = Meteor.user().profile;
 
-    if (!this.calls[`${user._id}-${streamTypes.main}`] && !this.calls[`${user._id}-${streamTypes.screen}`]) sounds.play('webrtc-in');
+    if (!this.calls[`${user._id}-${streamTypes.main}`] && !this.calls[`${user._id}-${streamTypes.screen}`]) {
+      sounds.play('webrtc-in');
+      if (userProximitySensor.nearUsersCount() === 1) Meteor.call('addUserInterruption');
+    }
 
     this.getPeer().then(peer => {
       if (shareAudio || shareVideo) userStreams.createStream().then(stream => this.createPeerCall(peer, stream, user));
@@ -166,6 +182,8 @@ peer = {
   },
 
   onProximityStarted(user) {
+    if (!this.sensorEnabled) return;
+
     this.cancelCallClose(user._id);
     this.cancelCallOpening(user._id);
 
@@ -256,6 +274,8 @@ peer = {
   },
 
   answerCall(remoteCall) {
+    if (!this.enabled) { log(`answer call: peer is disabled`); return false; }
+
     const remoteUserId = remoteCall.metadata?.userId;
     if (!remoteUserId) { log(`answer call: incomplete metadata for the remote call`); return false; }
     const remoteUser = Meteor.users.findOne({ _id: remoteUserId });
@@ -362,8 +382,10 @@ peer = {
 
         this.peerInstance.on('error', peerErr => {
           if (['server-error', 'network'].includes(peerErr.type) && this.peerInstance.disconnected) this.peerInstance.reconnect();
+          else if (peerErr.type === 'unavailable-id') lp.notif.error(`It seems that lemverse is already open in another tab (unavailable-id)`);
+          else lp.notif.error(`Peer ${peerErr} (${peerErr.type})`);
+
           log(`peer error ${peerErr.type}`, peerErr);
-          lp.notif.error(`Peer ${peerErr} (${peerErr.type})`);
         });
 
         this.peerInstance.on('call', remoteCall => {
@@ -387,5 +409,9 @@ peer = {
 
   isPeerValid(peer) {
     return peer?.id && !peer.disconnected;
+  },
+
+  isEnabled() {
+    return this.sensorEnabled;
   },
 };
