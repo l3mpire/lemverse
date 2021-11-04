@@ -1,7 +1,7 @@
 version: "3.8"
 services:
     mongodb:
-        image: mongo
+        image: mongo:5.0.3
         container_name: mongodb
         environment:
             - PUID=1000
