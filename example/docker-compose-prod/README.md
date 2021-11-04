@@ -6,7 +6,7 @@ Have docker and docker-compose installed on your machine.
 
 To enable the usage of conference room, you will need to have instance of [JITSI](https://jitsi.org/downloads/) running.
 
-follow instruction in jitsi folder to setup jitsi instance
+To setup the Jitsi instance, follow instruction in the Jitsi folder.
 
 ## Run lemverse in production 
 
