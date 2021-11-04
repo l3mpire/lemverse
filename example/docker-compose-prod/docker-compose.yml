@@ -89,7 +89,7 @@ services:
                     }
                 }
     peer:
-        image: peerjs/peerjs-server
+        image: peerjs/peerjs-server:0.6.1
         container_name: peer
         restart: unless-stopped
         networks:
