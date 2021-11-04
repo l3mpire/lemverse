@@ -60,7 +60,7 @@ const getInterruptionStats = () => {
 const cleanUsersStats = () => Meteor.users.update({}, { $unset: { stats: 1 } }, { multi: true });
 
 lp.deferStartup('stats', () => {
-  cron.schedule('0 0 0 * * *', Meteor.bindEnvironment(() => {
+  cron.schedule('0 0 * * *', Meteor.bindEnvironment(() => {
     stats = getInterruptionStats();
     stats.date = new Date();
     cleanUsersStats();
