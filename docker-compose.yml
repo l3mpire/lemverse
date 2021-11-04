@@ -7,7 +7,7 @@ services:
             - PUID=1000
             - PGID=1000
         volumes:
-            - db:/data/db # Necessary volume to keep database data between restarts
+            - lemverse-db:/data/db # Necessary volume to keep database data between restarts
         ports:
             - 27017:27017 # Expose port to let you connect in db for debug, dont do it in prod
         restart: unless-stopped
