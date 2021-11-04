@@ -2,7 +2,7 @@
 
 ## Initial setup
 
-have docker and docker-compose install on your machine
+Have docker and docker-compose installed on your machine.
 
 To enable the usage of conference room, you will need to have instance of [JITSI](https://jitsi.org/downloads/) running.
 
