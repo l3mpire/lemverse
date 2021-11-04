@@ -475,11 +475,6 @@ Template.lemverse.onCreated(function () {
   hotkeys('shift+5', { scope: scopes.player }, () => {
     Session.set('displayNotificationsPanel', !Session.get('displayNotificationsPanel'));
   });
-
-  hotkeys('shift+0', { scope: scopes.player }, event => {
-    if (event.repeat) return;
-    levelManager.drawTriggers(!levelManager.teleporterGraphics.length);
-  });
 });
 
 Template.lemverse.onDestroyed(function () {
