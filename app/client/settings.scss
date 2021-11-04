@@ -1,4 +1,7 @@
 div.settings {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   padding: 0 10px;
 
@@ -64,6 +67,19 @@ div.settings {
     }
   }
 
+  button.link {
+    border-radius: 10px;
+    background-color: transparent;
+    border: 0;
+    text-decoration: underline;
+    color: hsl(209, 100%, 45%);
+
+    &:hover {
+      background-color: transparent;
+      color: hsl(209, 100%, 25%)
+    }
+  }
+
   video {
     display: block;
     min-height: 200px;
@@ -74,6 +90,8 @@ div.settings {
   }
 
   .shortcuts {
+    flex-grow: 1;
+
     ul {
       display: flex;
       flex-direction: row;

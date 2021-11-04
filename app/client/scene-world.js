@@ -2,22 +2,41 @@ import nipplejs from 'nipplejs';
 
 const Phaser = require('phaser');
 
+viewportModes = Object.freeze({
+  fullscreen: 'fullscreen',
+  small: 'small',
+  splitScreen: 'split-screen',
+});
+
 const onZoneEntered = e => {
   const { zone } = e.detail;
-  const { targetedLevelId, inlineURL, roomName, url, fullscreen } = zone;
+  const { targetedLevelId, inlineURL, roomName, url, fullscreen, disableCommunications } = zone;
 
   if (targetedLevelId) levelManager.loadLevel(targetedLevelId);
   else if (inlineURL) characterPopIns.initFromZone(zone);
 
-  if (roomName || url) game.scene.keys.WorldScene.resizeViewport(fullscreen ? 'fullscreen' : 'split-screen');
+  if (roomName || url) game.scene.keys.WorldScene.updateViewport(fullscreen ? viewportModes.small : viewportModes.splitScreen);
+  if (disableCommunications) {
+    setTimeout(() => Meteor.users.update(Meteor.userId(), { $set: {
+      'profile.shareVideo': false,
+      'profile.shareAudio': false,
+      'profile.shareScreen': false,
+    } }), 0);
+    peer.disable();
+    if (userManager.player) userManager.setTintFromState(userManager.player);
+  }
 };
 
 const onZoneLeaved = e => {
   const { zone } = e.detail;
-  const { popInConfiguration, roomName, url } = zone;
+  const { popInConfiguration, roomName, url, disableCommunications } = zone;
   if (!popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(Meteor.userId(), zone._id);
 
-  if (roomName || url) game.scene.keys.WorldScene.resizeViewport('default');
+  if (roomName || url) game.scene.keys.WorldScene.updateViewport(viewportModes.fullscreen);
+  if (disableCommunications) {
+    peer.enable();
+    if (userManager.player) userManager.setTintFromState(userManager.player);
+  }
 };
 
 WorldScene = new Phaser.Class({
@@ -27,29 +46,33 @@ WorldScene = new Phaser.Class({
     Phaser.Scene.call(this, { key: 'WorldScene' });
   },
 
-  init(data) {
+  init() {
     this.input.keyboard.enabled = false;
     this.nippleData = undefined;
     this.nippleMoving = false;
     this.scene.sleep();
+    this.viewportMode = viewportModes.fullscreen;
+    this.physics.disableUpdate();
+    this.sleepMethod = this.sleep.bind(this);
+    this.updateViewportMethod = this.updateViewport.bind(this, this.viewportMode);
+    this.postUpdateMethod = this.postUpdate.bind(this);
+    this.shutdownMethod = this.shutdown.bind(this);
+
+    window.addEventListener('onZoneEntered', onZoneEntered);
+    window.addEventListener('onZoneLeaved', onZoneLeaved);
+
+    this.events.on('sleep', this.sleepMethod, this);
+    this.scale.on('resize', this.updateViewportMethod, this);
+    Session.set('sceneWorldReady', true);
+  },
+
+  create() {
     entityManager.init(this);
     levelManager.init(this);
     userManager.init(this);
     userVoiceRecorderAbility.init(this);
     characterPopIns.init(this);
-    this.physics.disableUpdate();
 
-    window.addEventListener('onZoneEntered', onZoneEntered);
-    window.addEventListener('onZoneLeaved', onZoneLeaved);
-
-    const { levelId } = data;
-    if (levelId && Meteor.user()) {
-      const { spawn } = Levels.findOne({ _id: levelId });
-      Meteor.users.update(Meteor.userId(), { $set: { 'profile.levelId': levelId, 'profile.x': spawn?.x || 0, 'profile.y': spawn?.y || 0 } });
-    }
-  },
-
-  create() {
     levelManager.createMap();
 
     // controls
@@ -78,9 +101,6 @@ WorldScene = new Phaser.Class({
     // plugins
     userChatCircle.init(this);
 
-    Session.set('gameCreated', true);
-    Session.set('editor', 0);
-
     if (window.matchMedia('(pointer: coarse)').matches) {
       this.nippleManager = nipplejs.create({
         mode: 'dynamic',
@@ -107,8 +127,8 @@ WorldScene = new Phaser.Class({
     };
 
     // events
-    this.events.on('postupdate', this.postUpdate.bind(this), this);
-    this.events.once('shutdown', this.shutdown.bind(this), this);
+    this.events.on('postupdate', this.postUpdateMethod, this);
+    this.events.once('shutdown', this.shutdownMethod, this);
     hotkeys.setScope('guest');
   },
 
@@ -131,17 +151,25 @@ WorldScene = new Phaser.Class({
     else keyboard.disableGlobalCapture();
   },
 
-  resizeViewport(mode) {
-    if (mode === 'fullscreen') this.cameras.main.setViewport(0, 0, window.innerWidth / 3, window.innerHeight);
-    else if (mode === 'split-screen') this.cameras.main.setViewport(0, 0, window.innerWidth / 2, window.innerHeight);
+  updateViewport(mode) {
+    if (mode === viewportModes.small) this.cameras.main.setViewport(0, 0, window.innerWidth / 3, window.innerHeight);
+    else if (mode === viewportModes.splitScreen) this.cameras.main.setViewport(0, 0, window.innerWidth / 2, window.innerHeight);
     else this.cameras.main.setViewport(0, 0, window.innerWidth, window.innerHeight);
+
+    this.viewportMode = mode;
+  },
+
+  sleep() {
+    userManager.onSleep();
   },
 
   shutdown() {
     this.nippleManager?.destroy();
 
     this.events.removeListener('postupdate');
-    this.events.off('postupdate', this.postUpdate.bind(this), this);
+    this.events.off('postupdate', this.postUpdateMethod, this);
+    this.events.off('sleep', this.sleepMethod, this);
+    this.scale.off('resize', this.updateViewportMethod);
     window.removeEventListener('onZoneEntered', onZoneEntered);
     window.removeEventListener('onZoneLeaved', onZoneLeaved);
 
@@ -154,5 +182,6 @@ WorldScene = new Phaser.Class({
     peer.destroy();
 
     Session.set('showScoreInterface', false);
+    Session.set('sceneWorldReady', false);
   },
 });

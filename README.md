@@ -119,6 +119,7 @@ To edit those information, simply click on the name of the room (bold text).
   "fullscreen": false, // Set the iframe if full screen or not
   "targetedLevelId": "", // Used for teleport zone. Should be the id of the level to teleport to.,
   "inlineURL": "https://status.lemlist.com|<p>My custom text</p>", // Create a pop-in with URL or HTML content
+  "disableCommunications": false, // Disabling communications for the user inside
   "popInConfiguration": {
     "position": "top", // Optional: Pop-in position on the zone (center, left, right, bottom or top), set "relative" for custom position using "x" & "y" (default center)
     "x": 0, // Optional: Relative position from the zone's center on X (you need to set "position" to "relative")

@@ -12,6 +12,7 @@ const characterInteractionConfiguration = {
   hitAreaCallback: Phaser.Geom.Circle.Contains,
   cursor: 'pointer',
 };
+const unavailablePlayerColor = 0x888888;
 
 charactersParts = Object.freeze({
   body: 0,
@@ -45,7 +46,6 @@ userManager = {
     this.player = undefined;
     this.players = {};
     this.scene = scene;
-    throttledSavePlayer.cancel();
 
     scene.input.keyboard.on('keydown-SHIFT', () => { peer.sensorEnabled = false; });
     scene.input.keyboard.on('keyup-SHIFT', () => {
@@ -55,6 +55,7 @@ userManager = {
   },
 
   destroy() {
+    this.onSleep();
     _.each(this.players, player => {
       clearInterval(player.reactionHandler);
       delete player.reactionHandler;
@@ -63,6 +64,10 @@ userManager = {
     this.player = undefined;
     this.players = {};
     this.characterNamesObjects = {};
+  },
+
+  onSleep() {
+    throttledSavePlayer.cancel();
   },
 
   rename(name) {
@@ -101,7 +106,7 @@ userManager = {
     if (!user.profile.guest) {
       playerParts.setInteractive(characterInteractionConfiguration);
       playerParts.on('pointerover', () => this.setTint(this.players[user._id], 0xFFAAFF));
-      playerParts.on('pointerout', () => this.clearTint(this.players[user._id]));
+      playerParts.on('pointerout', () => this.setTintFromState(this.players[user._id]));
       playerParts.on('pointerup', () => {
         if (isModalOpen()) return;
         Session.set('displayProfile', user._id);
@@ -194,13 +199,8 @@ userManager = {
 
     // update tint
     if (userMediaError !== oldUser?.profile.userMediaError) {
-      charactersPartsKeys.filter(part => user.profile[part] || part === 'body').forEach(part => {
-        const characterPart = characterBodyContainer.getByName(part);
-        if (characterPart) {
-          if (userMediaError) characterPart.setTint(defaultUserMediaColorError);
-          else characterPart.clearTint();
-        }
-      });
+      if (userMediaError) this.setTint(player, defaultUserMediaColorError);
+      else this.clearTint(player);
     }
     characterBodyContainer.alpha = guest ? 0.7 : 1.0;
 
@@ -528,10 +528,8 @@ userManager = {
 
   interact() {
     const tiles = this.getTilesInFrontOfPlayer(this.player, [4, 0]);
-    if (tiles.length) {
-      const tile = tiles[0];
-      entityManager.onInteraction(tile);
-    }
+    const positionInFrontOfPlayer = this.getPositionInFrontOfPlayer(this.player);
+    entityManager.onInteraction(tiles, positionInFrontOfPlayer);
   },
 
   getTilesUnderPlayer(player, layers = []) {
@@ -549,6 +547,15 @@ userManager = {
     }
 
     return this.getTilesRelativeToPlayer(player, positionOffset, layers);
+  },
+
+  getPositionInFrontOfPlayer(player) {
+    const directionVector = this.directionToVector(player.direction);
+
+    return {
+      x: player.x + directionVector[0] * characterInteractionDistance.x,
+      y: player.y + characterFootOffset.y + directionVector[1] * characterInteractionDistance.y,
+    };
   },
 
   getTilesRelativeToPlayer(player, offset, layers = []) {
@@ -602,6 +609,13 @@ userManager = {
     playerBodyParts.list.forEach(bodyPart => {
       bodyPart.tint = color;
     });
+  },
+
+  setTintFromState(player) {
+    const user = Meteor.users.findOne(player.userId);
+    const currentZone = zones.currentZone(user);
+    if (currentZone && currentZone.disableCommunications) this.setTint(player, unavailablePlayerColor);
+    else this.setTint(player, 0xFFFFFF);
   },
 
   flashColor(player, color) {
