@@ -145,8 +145,11 @@ Meteor.methods({
     if (!isEditionAllowed(userId)) Levels.update(levelId, { $addToSet: { editorUserIds: { $each: [userId] } } });
     else Levels.update(levelId, { $pull: { editorUserIds: userId } });
   },
+  teleportUserInLevel(levelId) {
+    return teleportUserInLevel(levelId, Meteor.userId());
+  },
   createLevel(templateId = undefined) {
-    createLevel(templateId);
+    return createLevel(templateId);
   },
   markNotificationAsRead(notificationId) {
     if (!this.userId) return;
@@ -165,6 +168,8 @@ Meteor.methods({
           profile: {
             ...profile,
             name,
+            shareAudio: true,
+            shareVideo: true,
           },
         },
       }));

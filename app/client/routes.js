@@ -7,7 +7,7 @@ const renderRouteName = () => {
       if (!Meteor.user().roles?.admin) FlowRouter.redirect('/');
     }
 
-    BlazeLayout.render('layout', { main: FlowRouter.getRouteName() });
+    BlazeLayout.render('layout', { main: routeName });
     track.stop();
   });
 };
@@ -18,6 +18,8 @@ Tracker.autorun(() => {
 });
 
 FlowRouter.route('/', { name: 'lemverse', action: renderRouteName });
+
+FlowRouter.route('/invite/:levelId', { name: 'invite', action: () => BlazeLayout.render('layout', { main: 'lemverse' }) });
 
 FlowRouter.route('/editor', { name: 'editor', action: renderRouteName });
 

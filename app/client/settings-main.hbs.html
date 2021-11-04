@@ -10,17 +10,13 @@
         <label for="reaction">Custom reaction</label>
         <input type="text" name="reaction" id="reaction" class="js-reaction" value={{#if currentUser.profile.defaultReaction}}{{currentUser.profile.defaultReaction}}{{else}}❤️{{/if}}>
       </div>
-      
-      <div>
-        <label for="reaction">Avatar preference</label>
-        <input type="text" name="avatar" id="avatar" class="js-avatar" value={{#if currentUser.profile.avatar}}{{currentUser.profile.avatar}}{{else}}cat{{/if}}>
-      </div>
 
       <div>
         <button class="js-profile">Edit profile</button>
         <button class="js-character-designer" id="character-edit">Character editor</button>
         <button class="js-medias-settings" id="medias-edit">Audio/Video settings</button>
       </div>
+
     </div>
     <div class="shortcuts">
       <h2 class="h2">Shortcuts</h2>
@@ -34,6 +30,10 @@
         <li><b>1-5</b> to react</li>
         <li><b>shift + 1|4</b> toggle source</li>
       </ul>
+    </div>
+
+    <div class="actions">
+      <button class="js-copy-invitation link">Copy invitation link ⎘</button>
     </div>
   </div>
 </template>

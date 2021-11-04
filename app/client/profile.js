@@ -16,7 +16,10 @@ const formatURL = url => {
 };
 
 Template.profile.onCreated(function () {
-  this.subscribe('userProfile', Session.get('displayProfile'));
+  Tracker.autorun(() => {
+    const userId = Session.get('displayProfile');
+    if (userId) this.subscribe('userProfile', userId);
+  });
 });
 
 Template.profile.helpers({
@@ -90,6 +93,15 @@ Template.profile.events({
     if (!value) return false;
 
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.bio': value } });
+    return false;
+  },
+  'input .js-avatar'(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const avatar = event.target.value;
+    if (!avatar) return false;
+
+    Meteor.users.update(Meteor.userId(), { $set: { 'profile.avatar': avatar } });
     return false;
   },
 });

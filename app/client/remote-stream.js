@@ -1,29 +1,7 @@
 const maxAttempt = 10;
 const delayBetweenAttempt = 2000; // in ms
-const talkingDetectorThreshold = 10;
 
 const isRemoteUserSharingMedia = (user, type) => (type === streamTypes.screen ? user.shareScreen : user.shareAudio || user.shareVideo);
-
-const addVolumeAudioContextProcessor = (stream, triggerVar) => {
-  const audioContext = new AudioContext();
-  const mediaStreamSource = audioContext.createMediaStreamSource(stream);
-  const processor = audioContext.createScriptProcessor(2048, 1, 1);
-
-  mediaStreamSource.connect(audioContext.destination);
-  mediaStreamSource.connect(processor);
-  processor.connect(audioContext.destination);
-
-  processor.onaudioprocess = e => {
-    const inputData = e.inputBuffer.getChannelData(0);
-    const inputDataLength = inputData.length;
-    let total = 0;
-
-    for (let i = 0; i < inputDataLength; i++) total += Math.abs(inputData[i++]);
-
-    const rms = Math.sqrt(total / inputDataLength);
-    triggerVar.set(rms * 100 >= talkingDetectorThreshold);
-  };
-};
 
 const checkMediaAvailable = (template, type) => {
   const { remoteUser } = template.data;
@@ -62,11 +40,6 @@ const checkMediaAvailable = (template, type) => {
 Template.webcam.onRendered(function () {
   this.attempt = 1;
   checkMediaAvailable(this, 'video-audio');
-
-  if (lp.isLemverseBeta('talkIndicator')) {
-    const stream = this.data.remoteUser.main?.srcObject;
-    if (stream) addVolumeAudioContextProcessor(stream, this.data.triggerVar);
-  }
 });
 
 Template.webcam.onDestroyed(function () {
