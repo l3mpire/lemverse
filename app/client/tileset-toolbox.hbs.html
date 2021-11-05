@@ -1,6 +1,9 @@
 <template name="tileImg">
   <div style="display: inline-block; background-image: url('/api/files/{{tileset.fileId}}'); width: 16px; height: 16px; background-position: -{{tileToTilesetX}}px -{{tileToTilesetY}}px;"></div>
 </template>
+<template name="tileData">
+  <div class="tileData" style="{{#if hasCollision index}}border-color:#FF0000;{{/if}}">{{> tileImg}} {{tileLayer}}</div>
+</template>
 
 <template name="tilesetToolbox">
   <div class="tileset-toolbox">
@@ -36,14 +39,17 @@
         <span class="button js-erase-8 {{#if eq selectedTilesIndex -9}}active{{/if}}">🧽8</span>
         <span class="button js-erase-all {{#if eq selectedTilesIndex -99}}active{{/if}}">🧽C</span>
       </div>
+    </div>
+    <div>
       <div class="tileset-toolbox-info">
-        {{#with Session 'selectedTiles'}}
-          Selected {{tileLayer}} {{> tileImg}}
-        {{/with}}
-        Pointer {{worldToTileX (Session 'pointerX')}}/{{worldToTileY (Session 'pointerY')}} ({{Session 'pointerX'}}/{{Session 'pointerY'}})
-        {{#each pointerTile}}
-          {{tileLayer}} {{> tileImg}}
+        <div>Pointer x: {{worldToTileX (Session 'pointerX')}} y: {{worldToTileY (Session 'pointerY')}}
+          {{#each pointerTile}}
+          {{> tileData}}
         {{/each}}
+        </div>
+        {{#with Session 'selectedTiles'}}
+        Selected {{> tileData}}
+        {{/with}}
       </div>
     </div>
   </div>
