@@ -85,6 +85,10 @@ Template.tilesetToolbox.onDestroyed(() => {
   unbindKeyboardShortcuts();
 });
 
+Template.tileData.helpers({
+  hasCollision(index) { return selectedTileset().collisionTileIndexes.includes(index); },
+});
+
 Template.tilesetToolbox.helpers({
   pointerTile() { return pointerToTile(); },
   user(userId) { return Meteor.users.findOne(userId); },

@@ -30,6 +30,16 @@
   .js-tilesets-select {
     width: 100%;
   }
+  
+  .tileData {
+    display: inline-block;
+    border: 1px solid #4C566A;
+    color: #4C566A;
+    background-color: white;
+    border-radius: 4px;
+    margin: 5px 1px;
+    padding: 4px;
+  }
 
   .tileset-toolbox-erase {
     height: 200px;
