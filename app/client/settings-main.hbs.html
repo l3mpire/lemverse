@@ -1,7 +1,7 @@
 <template name="settingsMain">
   {{#modal title="Settings"}}
     <div class="settings">
-      <div class="options">
+      <div class="options container">
         <div>
           <label for="name">Name</label>
           <input type="text" name="name" id="name" class="js-name" value={{currentUser.profile.name}}>
@@ -19,7 +19,7 @@
         </div>
 
       </div>
-      <div class="shortcuts">
+      <div class="shortcuts container background-lighter">
         <h2 class="h2">Shortcuts</h2>
         <ul>
           <li><b>shift</b> to run</li>
@@ -33,7 +33,7 @@
         </ul>
       </div>
 
-      <div class="actions">
+      <div class="actions container background-lighter">
         <button class="js-copy-invitation link">Copy invitation link ⎘</button>
       </div>
     </div>
