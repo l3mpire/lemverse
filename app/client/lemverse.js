@@ -25,8 +25,8 @@ const config = {
   zoom: Meteor.settings.public.zoom,
   pixelArt: true,
   roundPixels: true,
-  title: 'lemverse',
-  url: 'https://lemverse.com',
+  title: Meteor.settings.public.lp.product,
+  url: Meteor.settings.public.lp.website,
   physics: {
     default: 'arcade',
     arcade: {
