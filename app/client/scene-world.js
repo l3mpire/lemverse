@@ -54,7 +54,7 @@ WorldScene = new Phaser.Class({
     this.viewportMode = viewportModes.fullscreen;
     this.physics.disableUpdate();
     this.sleepMethod = this.sleep.bind(this);
-    this.updateViewportMethod = this.updateViewport.bind(this, this.viewportMode);
+    this.updateViewportMethod = this.updateViewport.bind(this);
     this.postUpdateMethod = this.postUpdate.bind(this);
     this.shutdownMethod = this.shutdown.bind(this);
 
@@ -152,6 +152,8 @@ WorldScene = new Phaser.Class({
   },
 
   updateViewport(mode) {
+    if (typeof mode !== 'string') mode = this.viewportMode;
+
     if (mode === viewportModes.small) this.cameras.main.setViewport(0, 0, window.innerWidth / 3, window.innerHeight);
     else if (mode === viewportModes.splitScreen) this.cameras.main.setViewport(0, 0, window.innerWidth / 2, window.innerHeight);
     else this.cameras.main.setViewport(0, 0, window.innerWidth, window.innerHeight);
