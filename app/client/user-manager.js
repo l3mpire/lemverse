@@ -108,8 +108,8 @@ userManager = {
       playerParts.on('pointerover', () => this.setTint(this.players[user._id], 0xFFAAFF));
       playerParts.on('pointerout', () => this.setTintFromState(this.players[user._id]));
       playerParts.on('pointerup', () => {
-        if (isModalOpen()) return;
-        Session.set('displayProfile', user._id);
+        if (isModalOpen() || Session.get('editor')) return;
+        Session.set('modal', { template: 'profile', userId: user._id });
       });
     }
 
@@ -228,7 +228,7 @@ userManager = {
       // check zone and near users on move
       if (hasMoved) zones.checkDistances(this.player);
 
-      if (user.profile.avatar !== oldUser?.profile.avatar) userStreams.refreshVideoElementAvatar();
+      if (user.profile.avatar !== oldUser?.profile.avatar) userStreams.refreshVideoElementAvatar(userStreams.getVideoElement());
 
       if (shouldCheckDistance) {
         const otherUsers = Meteor.users.find({ _id: { $ne: mainUser._id } }).fetch();

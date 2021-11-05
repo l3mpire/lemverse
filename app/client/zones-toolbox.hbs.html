@@ -1,5 +1,5 @@
 <template name="zonesToolboxProperties">
-  {{#modal id="displayZoneId" title=name data=this}}
+  {{#modal title=name data=this}}
     <div class="zones-toolbox-properties">
       <textarea>{{properties}}</textarea>
       <div class="actions">
@@ -26,7 +26,4 @@
     </div>
     Pointer {{Session 'pointerX'}}/{{Session 'pointerY'}}
   </div>
-  {{#with displayZone}}
-    {{> zonesToolboxProperties}}
-  {{/with}}
 </template>

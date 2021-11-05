@@ -1,4 +1,5 @@
 <template name="settingsMedias">
+  {{#modal title="Medias settings"}}
     <div class="settings">
       <div>
         <video id="js-video-preview" muted></video>
@@ -23,7 +24,6 @@
         <label for="video-framerate">Screen sharing framerate ({{frameRate}})</label>
         <input type="range" class="js-screen-framerate" name="video-framerate" min="5" max="30" value={{frameRate}}>
       </div>
-
-      <button type="button" class="js-go-back">Go back</button>
     </div>
+  {{/modal}}
 </template>

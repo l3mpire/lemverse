@@ -1,10 +1,10 @@
 $background-color: #eeeff3;
 $text-color: #4f4f4f;
 
-.modal {
+.modal-container {
   pointer-events: none;
 
-  .modal-background {
+  .background {
     position: absolute;
     top: 0;
     left: 0;
@@ -16,70 +16,78 @@ $text-color: #4f4f4f;
     transition: opacity 0.15s linear;
   }
 
-  .modal-window {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 101;
-    width: 500px;
-    height: 500px;
-    background-color: $background-color;
-    border: 2px solid white;
-    border-radius: 10px;
-    margin: 0;
-    overflow: hidden;
-    padding: 0;
-    opacity: 0;
-    transition: opacity 0.15s linear;
-
-    .modal-body {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
+  .modal {
+    .modal-window {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 101;
+      width: 500px;
+      height: 500px;
+      background-color: $background-color;
+      border: 2px solid white;
+      border-radius: 10px;
+      margin: 0;
       overflow: hidden;
-    }
+      padding: 0;
+      opacity: 0;
+      transition: opacity 0.15s linear;
 
-    .js-modal-close {
-      position: absolute;
-      right: 10px;
-      top: 10px;
-      appearance: none;
-      background: none;
-      border: 0;
-      cursor: pointer;
-      font-size: 1.5rem;
-      font-weight: 700;
-      line-height: 1;
-      opacity: 0.5;
+      .modal-body {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+      }
 
-      &:hover {
-        opacity: 1;
+      .js-modal-close {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        appearance: none;
+        background: none;
+        border: 0;
+        cursor: pointer;
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1;
+        opacity: 0.5;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+
+      .modal-title {
+        color: black;
+        text-align: center;
+        margin: 0;
+        padding: 10px;
+      }
+
+      .modal-content {
+        color: $text-color;
+        overflow-y: auto;
+        height: 100%;
       }
     }
 
-    .modal-title {
-      color: black;
-      text-align: center;
-      margin: 0;
-      padding: 10px;
-    }
-
-    .modal-content {
-      color: $text-color;
-      overflow-y: auto;
-      height: 100%;
+    &.visible {
+      .modal-window {
+        opacity: 1;
+      }
     }
   }
 
   &.visible {
     pointer-events: all;
 
-    .modal-background {
+    .background {
       opacity: 0.3;
     }
 
-    .modal-window {
+    .modal .modal-window {
       opacity: 1;
     }
   }

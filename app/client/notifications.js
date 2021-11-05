@@ -34,15 +34,9 @@ Template.notificationsItem.onDestroyed(function () {
 });
 
 Template.notificationsItem.helpers({
-  date() {
-    return moment(this.createdAt).calendar();
-  },
-  duration() {
-    return formatedDuration(Template.instance()._duration.get());
-  },
-  isPlaying() {
-    return Template.instance()._playing.get();
-  },
+  date() { return moment(this.createdAt).calendar(); },
+  duration() { return formatedDuration(Template.instance()._duration.get()); },
+  isPlaying() { return Template.instance()._playing.get(); },
   author() {
     const { createdBy } = Template.instance().data;
     return Meteor.users.findOne(createdBy)?.profile.name || createdBy;
@@ -70,14 +64,9 @@ Template.notificationsItem.events({
 });
 
 Template.notifications.onCreated(function () {
-  this.autorun(() => {
-    const open = Session.get('displayNotificationsPanel');
-    if (open) {
-      const notifications = Notifications.find({}, { fields: { createdBy: 1 } }).fetch();
-      const userIds = notifications.map(notification => notification.createdBy).filter(Boolean);
-      if (userIds?.length) this.subscribe('usernames', userIds);
-    }
-  });
+  const notifications = Notifications.find({}, { fields: { createdBy: 1 } }).fetch();
+  const userIds = notifications.map(notification => notification.createdBy).filter(Boolean);
+  if (userIds?.length) this.subscribe('usernames', userIds);
 });
 
 Template.notifications.helpers({
