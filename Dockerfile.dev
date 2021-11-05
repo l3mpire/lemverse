@@ -15,8 +15,9 @@ RUN apt update && apt install -y \
         graphicsmagick
 
 
-WORKDIR /opt/src
+WORKDIR $APP_SOURCE_FOLDER
 
-RUN chown -Rh root .meteor/local
+RUN meteor build --directory $APP_SOURCE_FOLDER --server-only
+RUN chown -Rh root $APP_SOURCE_FOLDER/.meteor/local
 
 CMD ["meteor", "--settings", "settings-dev.json", "--port", "9000"]

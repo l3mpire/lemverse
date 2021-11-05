@@ -3,7 +3,7 @@
     "lp": {
       "product": "lemverse",
       "process": "main",
-      "gods": [],
+      "gods": ["usr_FaftLaxmHHhkhKsbF"],
       "production": false,
       "staging": false,
       "enableLogClient": false
