@@ -126,8 +126,11 @@ levelManager = {
     if (Tiles.find().count() === 0) this.drawTriggers(true);
   },
 
-  onTilesetUpdated(oldTileset, newTileset) {
+  onTilesetUpdated(newTileset, oldTileset) {
     if (!this.map) return;
+
+    const tileset = this.findTileset(newTileset._id);
+    tileset.tileProperties = newTileset.tiles;
 
     const oTileKeys = _.map(_.keys(oldTileset.tiles || {}), k => +k);
     const nTileKeys = _.map(_.keys(newTileset.tiles || {}), k => +k);
