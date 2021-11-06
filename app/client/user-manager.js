@@ -37,6 +37,7 @@ const throttledSavePlayer = throttle(savePlayer, 100, { leading: false });
 userManager = {
   characterNamesObjects: {},
   player: undefined,
+  playerVelocity: new Phaser.Math.Vector2(),
   playerWasMoving: false,
   players: {},
   scene: undefined,
@@ -417,9 +418,7 @@ userManager = {
   },
 
   handleUserInputs(keys, nippleMoving, nippleData) {
-    if (!this.player) return;
-    if (!this.player.nippleMoving) this.player.body.setVelocity(0);
-    if (isModalOpen()) return;
+    if (!this.player || isModalOpen()) return;
 
     const user = Meteor.user();
     if (user.profile.freeze) {
@@ -427,40 +426,43 @@ userManager = {
       return;
     }
 
-    let velocity = keys.shift.isDown ? Meteor.settings.public.character.runSpeed : Meteor.settings.public.character.walkSpeed;
+    const maxSpeed = keys.shift.isDown ? Meteor.settings.public.character.runSpeed : Meteor.settings.public.character.walkSpeed;
+    this.playerVelocity.set(0, 0);
     let direction;
 
     if (nippleMoving) {
-      const xVel = nippleData.vector.x * Meteor.settings.public.character.walkSpeed * 2;
-      const yVel = nippleData.vector.y * -Meteor.settings.public.character.walkSpeed * 2;
-      this.player.body.setVelocityX(xVel);
-      this.player.body.setVelocityY(yVel);
-      velocity = Math.max(Math.abs(xVel), Math.abs(yVel));
+      this.playerVelocity.x = nippleData.vector.x;
+      this.playerVelocity.y = -nippleData.vector.y;
       direction = nippleData?.direction?.angle;
     } else {
       // Horizontal movement
-      if (keys.left.isDown || keys.q.isDown || keys.a.isDown) this.player.body.setVelocityX(-velocity);
-      else if (keys.right.isDown || keys.d.isDown) this.player.body.setVelocityX(velocity);
+      if (keys.left.isDown || keys.q.isDown || keys.a.isDown) {
+        this.playerVelocity.x = -1;
+        direction = 'left';
+      } else if (keys.right.isDown || keys.d.isDown) {
+        this.playerVelocity.x = 1;
+        direction = 'right';
+      }
 
       // Vertical movement
-      if (keys.up.isDown || keys.z.isDown || keys.w.isDown) this.player.body.setVelocityY(-velocity);
-      else if (keys.down.isDown || keys.s.isDown) this.player.body.setVelocityY(velocity);
+      if (keys.up.isDown || keys.z.isDown || keys.w.isDown) {
+        this.playerVelocity.y = -1;
+        direction = 'up';
+      } else if (keys.down.isDown || keys.s.isDown) {
+        this.playerVelocity.y = 1;
+        direction = 'down';
+      }
     }
 
-    this.player.body.velocity.normalize().scale(velocity);
-
-    if (keys.left.isDown || keys.q.isDown || keys.a.isDown) direction = 'left';
-    else if (keys.right.isDown || keys.d.isDown) direction = 'right';
-    else if (keys.up.isDown || keys.z.isDown || keys.w.isDown) direction = 'up';
-    else if (keys.down.isDown || keys.s.isDown) direction = 'down';
-    if (direction) this.player.direction = direction;
+    this.playerVelocity.normalize().scale(maxSpeed);
+    this.player.body.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
+    this.player.setDepth(this.player.y);
 
     if (direction) {
+      this.player.direction = direction;
       this.pauseAnimation(this.player, false);
       this.updateAnimation(this.player, direction);
     } else this.pauseAnimation(this.player, true);
-
-    this.player.setDepth(this.player.y);
   },
 
   postUpdate(time, delta) {
