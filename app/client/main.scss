@@ -11,6 +11,7 @@ body {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: none;
   overscroll-behavior-y: none;
+  -webkit-font-smoothing: antialiased;
 }
 
 .status {
