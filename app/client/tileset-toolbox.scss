@@ -1,3 +1,5 @@
+@import "_variables";
+
 .tileset-toolbox {
   position: fixed;
   left: 0;
@@ -41,7 +43,10 @@
     padding: 4px;
 
     &.has-collision {
-      border-color: #FF0000;
+      border-color: rgba($lem-color-7, 0.5);
+      background-color: rgba($lem-color-7, 0.2);
+      color: $lem-color-7;
+      font-weight: bold;
     }
   }
 
