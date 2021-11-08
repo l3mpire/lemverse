@@ -17,6 +17,4 @@ RUN apt update && apt install -y \
 
 WORKDIR $APP_SOURCE_FOLDER
 
-RUN chown -Rh root .meteor
-
 CMD ["meteor", "--unsafe-perm", "--settings", "settings-dev.json", "--port", "9000"]
