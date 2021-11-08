@@ -57,8 +57,8 @@ Template.zonesToolboxProperties.events({
     Session.set('displayZoneId', undefined);
   },
   'click .js-zone-delete'() {
-    lp.notif.confirm('Zone deletion', `Are you sure to delete the zone "<b>${this.name || this._id}</b>"?`, () => {
-      Zones.remove({ _id: this._id });
+    lp.notif.confirm('Zone deletion', `Are you sure to delete the zone "<b>${this.zone.name || this.zone._id}</b>"?`, () => {
+      Zones.remove(this.zone._id);
       Session.set('displayZoneId', undefined);
     });
   },
