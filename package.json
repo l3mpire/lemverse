@@ -4,8 +4,7 @@
   "description": "lemverse master root",
   "main": ".eslintrc.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "docker:build": "docker build . -t lemverse:latest"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
