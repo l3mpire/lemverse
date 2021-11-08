@@ -34,6 +34,11 @@
     }
 
     .infos {
+      .js-profile:hover {
+        cursor: pointer;
+        text-decoration: underline;
+      }
+
       .js-toggle-edition {
         position: relative;
 

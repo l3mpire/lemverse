@@ -7,7 +7,7 @@
   position: fixed;
   left: 10px;
   top: 10px;
-  padding: 5px;
+  padding: 3px 0;
   margin: 5px;
   width: auto;
   display: flex;
@@ -16,10 +16,14 @@
   z-index: 2;
   opacity: 0;
   transition: opacity 0.15s;
+  background-color: hsl(220, 27%, 94%);
+  border: 2px solid white;
+  border-radius: 15px;
 
   .buttons {
     display: flex;
     flex-direction: row;
+    padding: 0 5px;
 
     button {
       width: var(--emoji-button-size);
@@ -27,8 +31,20 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 5px;
-  
+      margin: 0 3px;
+      appearance: none;
+      background-color: transparent;
+      border: 0;
+      transition: all 0.1s linear;
+
+      &:hover {
+        transform: scale(1.5);
+      }
+
+      &[data-value="❤️"]:hover {
+        animation: heartbeat 1s infinite;
+      }
+
       div.emoji {
         pointer-events: none;
         font-size: var(--emoji-size);
@@ -41,5 +57,31 @@
 
   &.visible {
     opacity: 1;
+  }
+}
+
+@keyframes heartbeat {
+  0% {
+    transform: scale(1);
+  }
+
+  20% {
+    transform: scale(1.25);
+  }
+
+  40% {
+    transform: scale(1);
+  }
+
+  60% {
+    transform: scale(1.25);
+  }
+
+  80% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(1);
   }
 }

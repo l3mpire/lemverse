@@ -114,6 +114,7 @@ module.exports = {
     updateSkin: 'writable',
     generateTURNCredentials: 'writable',
     isModalOpen: 'writable',
+    toggleModal: 'writable',
     scopes: 'writable',
     destroyVideoSource: 'writable',
     waitFor: 'writable',
