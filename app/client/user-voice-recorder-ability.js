@@ -11,7 +11,7 @@ userVoiceRecorderAbility = {
   onSoundRecorded: undefined,
   progress: 0,
   recordingIndicator: undefined,
-  recordingIndicatorOffset: { x: 0, y: -85 },
+  recordingIndicatorOffset: { x: 0, y: -125 },
   recordingIndicatorRadius: 30,
 
   init(container) {

@@ -1,0 +1,17 @@
+https://{$FRONTEND_HOST} {
+    encode zstd gzip
+    tls admin@lemverse.com
+    reverse_proxy http://{$FRONTEND_SERVICE}:3000
+}
+
+https://{$PEER_HOST} {
+    encode zstd gzip
+    tls admin@lemverse.com
+    reverse_proxy http://{$PEER_SERVICE}:9000
+}
+
+https://{$JITSI_HOST} {
+    encode zstd gzip
+    tls admin@lemverse.com
+    reverse_proxy http://{$JITSI_SERVICE}:80
+}

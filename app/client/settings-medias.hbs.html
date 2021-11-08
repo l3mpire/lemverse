@@ -1,33 +1,29 @@
 <template name="settingsMedias">
-    <div class="modal">
-      <button type="button" class="js-close-button">x</button>
-      <div class="settings">
-        <h1 class="title">Medias settings</h1>
-        <div>
-          <div>
-            <video id="js-video-preview" muted></video>
-            <label for="video-source">Video source</label>
-            <select name="video-source" id="video-source" class="js-cam-select">
-              {{#each Session 'videoRecorders'}}
-                <option value={{this.deviceId}} selected={{eq this.deviceId currentUser.profile.videoRecorder}}>{{this.label}}</option>
-              {{/each}}
-            </select>
-          </div>
+  {{#modal title="Medias settings"}}
+    <div class="settings container">
+      <div>
+        <video id="js-video-preview" muted></video>
+        <label for="video-source">Video source</label>
+        <select name="video-source" id="video-source" class="js-cam-select">
+          {{#each videoRecorders}}
+            <option value={{this.deviceId}} selected={{eq this.deviceId currentUser.profile.videoRecorder}}>{{this.label}}</option>
+          {{/each}}
+        </select>
+      </div>
 
-          <div>
-            <label for="audio-source">Audio source</label>
-            <select name="audio-source" id="audio-source" class="js-mic-select">
-              {{#each Session 'audioRecorders'}}
-                <option value={{this.deviceId}} selected={{eq this.deviceId currentUser.profile.audioRecorder}}>{{this.label}}</option>
-              {{/each}}
-            </select>
-          </div>
+      <div>
+        <label for="audio-source">Audio source</label>
+        <select name="audio-source" id="audio-source" class="js-mic-select">
+          {{#each audioRecorders}}
+            <option value={{this.deviceId}} selected={{eq this.deviceId currentUser.profile.audioRecorder}}>{{this.label}}</option>
+          {{/each}}
+        </select>
+      </div>
 
-          <div>
-            <label for="video-framerate">Screen sharing framerate ({{frameRate}})</label>
-            <input type="range" class="js-screen-framerate" name="video-framerate" min="10" max="30" value={{frameRate}}>
-          </div>
-        </div>
+      <div>
+        <label for="video-framerate">Screen sharing framerate ({{frameRate}})</label>
+        <input type="range" class="js-screen-framerate" name="video-framerate" min="5" max="30" value={{frameRate}}>
       </div>
     </div>
+  {{/modal}}
 </template>

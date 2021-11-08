@@ -28,7 +28,7 @@ Accounts.onLogin(param => {
 
   if (user.profile.guest) return;
 
-  const isBodyValid = user.profile?.body.includes('chr_') || Meteor.settings.public.includes(user.profile.body);
+  const isBodyValid = user.profile.body?.includes('chr_') || Meteor.settings.public.characterNames.includes(user.profile.body);
   if (!isBodyValid) {
     log('onLogin: setting default skin', { userId: user._id, ip: param.connection?.httpHeaders?.['x-forwarded-for'], userAgent: param.connection?.httpHeaders?.['user-agent'], languages: param.connection?.httpHeaders?.['accept-language'] });
     updateSkin(user, Meteor.settings.defaultLevelId);

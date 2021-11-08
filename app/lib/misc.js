@@ -20,12 +20,11 @@ isEditionAllowed = userId => {
   if (!userId) return false;
   const user = Meteor.users.findOne(userId);
   if (!user) return false;
-  if (user?.roles?.admin) return true;
-
   const { levelId } = user.profile;
   const currentLevel = Levels.findOne(levelId);
+  if (user?.roles?.admin && !currentLevel?.disableEdit) return true;
 
-  return currentLevel?.sandbox || currentLevel?.editorUserIds?.includes(user._id) || user._id === currentLevel.createdBy;
+  return (currentLevel?.sandbox || currentLevel?.editorUserIds?.includes(user._id) || user._id === currentLevel.createdBy) && (!currentLevel?.disableEdit);
 };
 
 updateSkin = (user, levelId) => {
@@ -77,3 +76,34 @@ waitFor = (condition, attempt, delay = 250) => new Promise((resolve, reject) => 
 
   waitFunc();
 });
+
+getRandomAvatarForUser = user => {
+  let URL = Meteor.settings.public.peer.avatarAPI;
+  URL = URL.replace('[user_id]', encodeURI(user._id));
+  URL = URL.replace('[user_name]', encodeURI(user.profile.name));
+  URL = URL.replace('[user_avatar]', encodeURI(user.profile.avatar || 'cat'));
+
+  return URL;
+};
+
+stringToColor = str => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+
+  let colour = '#';
+  for (let i = 0; i < 3; i++) {
+    const value = (hash >> (i * 8)) & 0xFF;
+    colour += (`00${value.toString(16)}`).substr(-2);
+  }
+  return colour;
+};
+
+teleportUserInLevel = (levelId, userId) => {
+  check([levelId, userId], [String]);
+
+  const level = Levels.findOne(levelId) || Levels.findOne(Meteor.settings.defaultLevelId);
+  const { spawn } = level;
+  Meteor.users.update(userId, { $set: { 'profile.levelId': level._id, 'profile.x': spawn?.x || 0, 'profile.y': spawn?.y || 0 } });
+
+  return level.name;
+};

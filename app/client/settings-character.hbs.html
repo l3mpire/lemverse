@@ -1,8 +1,6 @@
 <template name="settingsCharacter">
-  <div class="modal">
-    <button type="button" class="js-close-button">x</button>
-    <div class="settings">
-      <h1 class="title">Character editor</h1>
+  {{#modal title="Character"}}
+    <div class="settings container">
       <div class="settingsCharacter">
         <div class="renderCharacter">
           {{#each getAppearance}}
@@ -45,5 +43,5 @@
         </div>
       </div>
     </div>
-  </div>
+  {{/modal}}
 </template>
