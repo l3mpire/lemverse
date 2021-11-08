@@ -1,7 +1,7 @@
 @import "_variables";
 
 .form-account {
-  position: absolute;
+  position: fixed;
   width: auto;
   min-height: 150px;
   padding: 15px;
@@ -38,6 +38,7 @@
       display: flex;
       align-items: center;
       margin-bottom: 5px;
+      z-index: 50;
   
       label {
         flex-grow: 1;
@@ -48,6 +49,7 @@
         flex-grow: 1;
         background-color: white;
         border-radius: $radius;
+        z-index: 51;
         border: 0;
         min-width: 250px;
         padding: 0 5px;

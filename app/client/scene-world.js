@@ -9,13 +9,14 @@ viewportModes = Object.freeze({
 });
 
 const onZoneEntered = e => {
+  const { guest } = Meteor.user().profile;
   const { zone } = e.detail;
   const { targetedLevelId, inlineURL, roomName, url, fullscreen, disableCommunications } = zone;
 
   if (targetedLevelId) levelManager.loadLevel(targetedLevelId);
   else if (inlineURL) characterPopIns.initFromZone(zone);
 
-  if (roomName || url) game.scene.keys.WorldScene.updateViewport(fullscreen ? viewportModes.small : viewportModes.splitScreen);
+  if ((roomName && !guest) || url) game.scene.keys.WorldScene.updateViewport(fullscreen ? viewportModes.small : viewportModes.splitScreen);
   if (disableCommunications) {
     setTimeout(() => Meteor.users.update(Meteor.userId(), { $set: {
       'profile.shareVideo': false,

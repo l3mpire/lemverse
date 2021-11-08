@@ -21,13 +21,17 @@ Template.reactionsToolbox.helpers({
 });
 
 Template.reactionsToolbox.events({
-  'mousedown .js-reaction'(event) {
+  'touchstart .js-reaction, mousedown .js-reaction'(e) {
+    e.preventDefault();
+    e.stopPropagation();
     const { value } = event.target.dataset;
     if (!reactions.includes(value)) return;
 
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.reaction': value } });
   },
-  'mouseup .js-reaction'() {
+  'touchend .js-reaction, mouseup .js-reaction'(e) {
+    e.preventDefault();
+    e.stopPropagation();
     Meteor.users.update(Meteor.userId(), { $unset: { 'profile.reaction': 1 } });
   },
 });

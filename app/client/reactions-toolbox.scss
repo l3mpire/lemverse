@@ -5,6 +5,7 @@
 
 .reactions-toolbox {
   position: fixed;
+  z-index: 50;
   left: 10px;
   top: 10px;
   padding: 3px 0;
@@ -13,7 +14,6 @@
   display: flex;
   flex-direction: column;
   color: #2E3440;
-  z-index: 2;
   opacity: 0;
   transition: opacity 0.15s;
   background-color: hsl(220, 27%, 94%);
@@ -23,6 +23,7 @@
   .buttons {
     display: flex;
     flex-direction: row;
+    z-index: 51;
     padding: 0 5px;
 
     button {
@@ -32,6 +33,7 @@
       justify-content: center;
       align-items: center;
       margin: 0 3px;
+      z-index: 52;
       appearance: none;
       background-color: transparent;
       border: 0;
@@ -47,6 +49,7 @@
 
       div.emoji {
         pointer-events: none;
+        z-index: 53;
         font-size: var(--emoji-size);
         line-height: var(--emoji-size);
         width: var(--emoji-size);
