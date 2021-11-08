@@ -13,15 +13,15 @@
           {{/each}}
         </div>
         <div class="user-panel {{#unless isLoading}}visible{{/unless}}">
-          <button type="button" class="button js-notifications {{#if hasNotifications}}visible{{/if}}" data-count="{{ pendingNotificationsCount }}">🔔</button>
+          <button type="button" class="fix-emoji-retina button js-notifications {{#if hasNotifications}}visible{{/if}}" data-count="{{ pendingNotificationsCount }}"><span role="img">🔔</span></button>
           <div class="js-video-screen-me"></div>
           <div class="js-video-me">
             <video type="video/mp4" width="160" height="120" autoplay muted></video>
             <div class="buttons">
-              <button class="button audio {{#if currentUser.profile.shareAudio}}active{{/if}}" type="button">🎤</button>
-              <button class="button video {{#if currentUser.profile.shareVideo}}active{{/if}}" type="button">🎥</button>
-              <button class="button screen {{#if currentUser.profile.shareScreen}}active{{/if}}" type="button">📺</button>
-              <button class="button settings {{#if settingsOpen}}active{{/if}}" type="button">⚙️</button>
+              <button class="fix-emoji-retina button audio {{#if currentUser.profile.shareAudio}}active{{/if}}" type="button"><span role="img"></span></button>
+              <button class="fix-emoji-retina button video {{#if currentUser.profile.shareVideo}}active{{/if}}" type="button"><span role="img">🎥</span></button>
+              <button class="fix-emoji-retina button screen {{#if currentUser.profile.shareScreen}}active{{/if}}" type="button"><span role="img">📺</span></button>
+              <button class="fix-emoji-retina button settings {{#if settingsOpen}}active{{/if}}" type="button"><span role="img">⚙️</span></button>
             </div>
           </div>
         </div>
