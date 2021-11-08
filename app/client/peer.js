@@ -184,6 +184,12 @@ peer = {
   onProximityStarted(user) {
     if (!this.sensorEnabled) return;
 
+    const userZone = zones.currentZone(user);
+    if (userZone && userZone.disableCommunications) {
+      lp.notif.warning(`${user.profile.name} isn't available at the moment.<br /> Leave him a voice message by pressing "P"`);
+      return;
+    }
+
     this.cancelCallClose(user._id);
     this.cancelCallOpening(user._id);
 
