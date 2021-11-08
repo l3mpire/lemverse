@@ -185,7 +185,7 @@ peer = {
     if (!this.sensorEnabled) return;
 
     const userZone = zones.currentZone(user);
-    if (userZone && userZone.disableCommunications) {
+    if (userZone?.disableCommunications) {
       lp.notif.warning(`${user.profile.name} isn't available at the moment.<br /> Leave him a voice message by pressing "P"`);
       return;
     }
