@@ -202,7 +202,7 @@ button:focus {
   .js-video-me {
     position: relative;
     width: 164px;
-    height: 124px;
+    height: 44px;
     background-color: #ECEFF4;
     border-radius: 10px;
     border: 2px solid white;
@@ -220,12 +220,16 @@ button:focus {
     }
 
     &.active video {
+      height: 124px;
       display: block;
+    }
+    &.active {
+      height: 124px;
     }
 
     .buttons {
       position: absolute;
-      bottom: -10px;
+      bottom: 0px;
       left: 0;
       right: 0;
       display: flex;
@@ -233,10 +237,10 @@ button:focus {
 
       .button {
         background-color: #ECEFF4;
-        border: 1px solid #4C566A;
+        border: none;
         padding-left: 5px;
         padding-right: 2px;
-        border-radius: 4px;
+        border-radius: 10px;
         height: 26px;
         width: 20px;
         font-size: 12pt;
