@@ -451,7 +451,11 @@ Template.lemverse.onCreated(function () {
   hotkeys('shift+3', { scope: scopes.player }, () => toggleUserProperty('shareScreen'));
   hotkeys('shift+4', { scope: scopes.player }, () => toggleModal('settingsMain'));
   hotkeys('shift+5', { scope: scopes.player }, () => toggleModal('notifications'));
-  hotkeys('tab', { scope: scopes.player }, () => toggleModal('userList'));
+  hotkeys('tab', { scope: scopes.player }, e => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleModal('userList');
+  });
 });
 
 Template.lemverse.onDestroyed(function () {
