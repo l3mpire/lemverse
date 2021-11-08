@@ -2,12 +2,11 @@ Session.setDefault('retryTimeDuration', 0);
 const updateRetryTimeDuration = () => Session.set('retryTimeDuration', moment(Meteor.status().retryTime).diff());
 
 Template.layout.onRendered(() => {
-  $(function () {
+  $(document).ready(() => {
     const script = document.createElement('script');
     script.type = 'text/javascript';
     script.src = `https://${Meteor.settings.public.meet.serverURL}/external_api.js`;
     $('head').append(script);
-    document.title = Meteor.settings.public.title
   });
 });
 

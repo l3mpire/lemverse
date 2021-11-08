@@ -80,7 +80,14 @@ levelManager = {
     const loadingScene = game.scene.getScene('LoadingScene');
     loadingScene.show(() => {
       this.scene.scene.sleep();
-      Meteor.call('teleportUserInLevel', levelId, levelName => loadingScene.setText(levelName));
+      Meteor.call('teleportUserInLevel', levelId, (error, levelName) => {
+        if (error) {
+          lp.notif.error(`An error occured while loading the level ${levelId}`);
+          return;
+        }
+
+        loadingScene.setText(levelName);
+      });
     });
   },
 
