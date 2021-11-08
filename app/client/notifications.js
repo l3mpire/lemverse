@@ -7,10 +7,7 @@ const formatedDuration = value => {
   return `${minutes}:${seconds}`;
 };
 
-const markAsRead = template => {
-  template._playing.set(false);
-  Meteor.call('markNotificationAsRead', template.data._id);
-};
+const resetPlayButtonState = template => template._playing.set(false);
 
 Template.notificationsItem.onCreated(function () {
   this._duration = new ReactiveVar(0);
@@ -47,6 +44,8 @@ Template.notificationsItem.events({
   'click .js-play'(event, template) {
     event.preventDefault();
 
+    Meteor.call('markNotificationAsRead', template.data._id);
+
     template._playing.set(true);
     if (template.audio.paused && template.audio.currentTime > 0 && !template.audio.ended) template.audio.play();
     else if (!template.audio.paused && template.audio.currentTime > 0 && !template.audio.ended) {
@@ -57,8 +56,8 @@ Template.notificationsItem.events({
       template.audio.volume = 1;
       template.audio.play();
 
-      template.audio.removeEventListener('ended', markAsRead);
-      template.audio.addEventListener('ended', markAsRead.bind(this, template));
+      template.audio.removeEventListener('ended', resetPlayButtonState);
+      template.audio.addEventListener('ended', resetPlayButtonState.bind(this, template));
     }
   },
 });
