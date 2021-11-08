@@ -2,18 +2,19 @@ version: "3.8"
 services:
     mongodb:
         image: mongo:5.0.3
-        container_name: mongodb
+        container_name: lemverse_db
         environment:
             - PUID=1000
             - PGID=1000
         volumes:
-            - lemverse-db:/data/db # Necessary volume to keep database data between restarts
+            - lemverse_db:/data/db # Necessary volume to keep database data between restarts
         ports:
             - 27017:27017 # Expose port to let you connect in db for debug, dont do it in prod
         restart: unless-stopped
         networks:
             - net_lemverse
     lemverse:
+        container_name: lemverse
         build:
             context: .
             dockerfile: Dockerfile.dev
@@ -23,9 +24,8 @@ services:
             - net_lemverse
         depends_on:
             - mongodb
-            - peer
         ports:
-            - '9001:9000' # Expose web port to see your change
+            - '9000:9000' # Expose web port to see your change
             - '7010:7010' # expose peer port
         volumes:
             - lemverse:/var/tmp/lemverse # Necessary volume for upload tileset and keep them between restart
@@ -36,7 +36,7 @@ services:
 volumes:
     lemverse:
         driver: local 
-    db:
+    lemverse_db:
         driver: local
     
 # Custom network so all services can communicate using a FQDN
