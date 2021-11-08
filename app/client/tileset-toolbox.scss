@@ -30,7 +30,7 @@
   .js-tilesets-select {
     width: 100%;
   }
-  
+
   .tileData {
     display: inline-block;
     border: 1px solid #4C566A;
@@ -39,6 +39,10 @@
     border-radius: 4px;
     margin: 5px 1px;
     padding: 4px;
+
+    &.has-collision {
+      border-color: #FF0000;
+    }
   }
 
   .tileset-toolbox-erase {
