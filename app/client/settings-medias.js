@@ -23,13 +23,15 @@ const updateSettingsStream = template => {
 Template.settingsMedias.onCreated(function () {
   this.audioRecorders = new ReactiveVar([]);
   this.videoRecorders = new ReactiveVar([]);
+  this.deviceChangerListener = () => updateSettingsStream(this);
   updateSettingsStream(this);
-  navigator.mediaDevices.ondevicechange = () => updateSettingsStream(this);
+
+  navigator.mediaDevices.addEventListener('devicechange', this.deviceChangerListener);
 });
 
-Template.settingsMedias.onDestroyed(() => {
+Template.settingsMedias.onDestroyed(function () {
   if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
-  navigator.mediaDevices.ondevicechange = undefined;
+  navigator.mediaDevices.removeEventListener('devicechange', this.deviceChangerListener);
 });
 
 Template.settingsMedias.events({

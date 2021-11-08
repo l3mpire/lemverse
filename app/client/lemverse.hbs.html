@@ -21,13 +21,12 @@
               <button class="button audio {{#if currentUser.profile.shareAudio}}active{{/if}}" type="button">🎤</button>
               <button class="button video {{#if currentUser.profile.shareVideo}}active{{/if}}" type="button">🎥</button>
               <button class="button screen {{#if currentUser.profile.shareScreen}}active{{/if}}" type="button">📺</button>
-              <button class="button settings {{#if (Session 'displaySettings')}}active{{/if}}" type="button">⚙️</button>
+              <button class="button settings {{#if settingsOpen}}active{{/if}}" type="button">⚙️</button>
             </div>
           </div>
         </div>
         {{> reactionsToolbox}}
       {{/if}}
-      {{> zonesName}}
       <div id="game" class="{{#if neq (Session 'editor') 0}}edit{{/if}} {{#if isLoading}}loading{{/if}}"></div>
     </div>
     <div id="meet"></div>
@@ -35,12 +34,10 @@
       <iframe src="" frameBorder="0" allowfullscreen="true" id="webpageIframe"></iframe>
     </div>
   </div>
-  {{> settings}}
-  {{> notifications}}
-  {{> profile}}
+  {{> zonesName}}
   {{> gameMod}}
-  {{> userList}}
-  {{> notification}}
+  {{> modalContainer }}
+
   <audio class="js-audio-webrtc-in" muted>
     <source src="/assets/lemverse/webrtc-in.mp3" type="audio/mp3">
   </audio>

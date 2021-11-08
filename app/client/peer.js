@@ -382,8 +382,10 @@ peer = {
 
         this.peerInstance.on('error', peerErr => {
           if (['server-error', 'network'].includes(peerErr.type) && this.peerInstance.disconnected) this.peerInstance.reconnect();
+          else if (peerErr.type === 'unavailable-id') lp.notif.error(`It seems that lemverse is already open in another tab (unavailable-id)`);
+          else lp.notif.error(`Peer ${peerErr} (${peerErr.type})`);
+
           log(`peer error ${peerErr.type}`, peerErr);
-          lp.notif.error(`Peer ${peerErr} (${peerErr.type})`);
         });
 
         this.peerInstance.on('call', remoteCall => {

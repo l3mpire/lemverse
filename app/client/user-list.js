@@ -29,11 +29,6 @@ Template.userList.helpers({
 });
 
 Template.userList.events({
-  'click .js-toggle-edition'() {
-    Meteor.call('toggleLevelEditionPermission', this._id);
-  },
-  'click .js-profile'() {
-    Session.set('displayUserList', false);
-    Session.set('displayProfile', this._id);
-  },
+  'click .js-toggle-edition'() { Meteor.call('toggleLevelEditionPermission', this._id); },
+  'click .js-profile'() { Session.set('modal', { template: 'profile', userId: this._id, append: true }); },
 });

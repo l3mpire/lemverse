@@ -1,7 +1,7 @@
 <template name="profile">
-  {{#modal id="displayProfile" title=title}}
+  {{#modal title=title}}
     <div class="profile {{#if editionAllowed}}edition-allowed{{/if}}">
-      <div class="content">
+      <div class="content container">
         <div>
           <label for="company">Company</label>
           <input type="text" name="company" class="js-company" value={{profile.company.name}} placeholder="-" />
@@ -25,8 +25,8 @@
           <label for="bio">Bio/Hobbies</label>
           <textarea name="bio" placeholder="-" class="js-bio" >{{profile.bio}}</textarea>
         </div>
-        <div class="age">{{age}} days old in lemverse</div>
       </div>
+      <div class="age">{{age}} days old in lemverse</div>
     </div>
   {{/modal}}
 </template>

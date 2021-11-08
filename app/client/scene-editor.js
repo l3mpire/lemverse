@@ -20,6 +20,7 @@ EditorScene = new Phaser.Class({
 
     // put editor in sleep mode on load (no rendering, no update)
     game.scene.keys.EditorScene.scene.sleep();
+    Session.set('editor', 0);
 
     this.events.on('wake', () => {
       this.marker.visible = true;
@@ -203,6 +204,7 @@ EditorScene = new Phaser.Class({
 
   updateEditionMarker(selectedTiles) {
     if (!this.marker) return;
+    if (!levelManager.map) return;
 
     const width = levelManager.map.tileWidth * (selectedTiles?.w || 1);
     const height = levelManager.map.tileHeight * (selectedTiles?.h || 1);

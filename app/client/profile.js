@@ -1,5 +1,3 @@
-const isEditionAllowed = () => Session.get('displayProfile') === Meteor.userId();
-
 const formatURL = url => {
   let formattedURL;
   try {
@@ -15,36 +13,20 @@ const formatURL = url => {
   return formattedURL;
 };
 
+const getUser = template => Meteor.users.findOne(template.data.userId);
+
 Template.profile.onCreated(function () {
-  Tracker.autorun(() => {
-    const userId = Session.get('displayProfile');
-    if (userId) this.subscribe('userProfile', userId);
-  });
+  const { userId } = this.data;
+  if (userId) this.subscribe('userProfile', userId);
 });
 
 Template.profile.helpers({
-  title() { return Meteor.users.findOne(Session.get('displayProfile'))?.profile.name; },
-  profile() {
-    const user = Meteor.users.findOne(Session.get('displayProfile'));
-    if (!user) {
-      Session.set('displayProfile', null);
-      return undefined;
-    }
-
-    return user.profile;
-  },
-  age() {
-    const user = Meteor.users.findOne(Session.get('displayProfile'));
-    if (!user) {
-      Session.set('displayProfile', null);
-      return undefined;
-    }
-
-    return moment().diff(user.createdAt, 'days');
-  },
-  editionAllowed() { return isEditionAllowed(); },
+  title() { return getUser(Template.instance()).profile.name; },
+  profile() { return getUser(Template.instance()).profile; },
+  age() { return moment().diff(getUser(Template.instance()).createdAt, 'days'); },
+  editionAllowed() { return Template.instance().data.userId === Meteor.userId(); },
   website() {
-    const { website } = Meteor.users.findOne(Session.get('displayProfile')).profile;
+    const { website } = getUser(Template.instance()).profile;
     if (!website) return null;
 
     const url = formatURL(website);
@@ -53,9 +35,6 @@ Template.profile.helpers({
 });
 
 Template.profile.events({
-  'click .js-close-button'() {
-    Session.set('displayProfile', null);
-  },
   'input .js-company'(event) {
     event.preventDefault();
     event.stopPropagation();

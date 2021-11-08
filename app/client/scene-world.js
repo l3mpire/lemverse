@@ -46,29 +46,33 @@ WorldScene = new Phaser.Class({
     Phaser.Scene.call(this, { key: 'WorldScene' });
   },
 
-  init(data) {
+  init() {
     this.input.keyboard.enabled = false;
     this.nippleData = undefined;
     this.nippleMoving = false;
     this.scene.sleep();
     this.viewportMode = viewportModes.fullscreen;
+    this.physics.disableUpdate();
+    this.sleepMethod = this.sleep.bind(this);
+    this.updateViewportMethod = this.updateViewport.bind(this);
+    this.postUpdateMethod = this.postUpdate.bind(this);
+    this.shutdownMethod = this.shutdown.bind(this);
+
+    window.addEventListener('onZoneEntered', onZoneEntered);
+    window.addEventListener('onZoneLeaved', onZoneLeaved);
+
+    this.events.on('sleep', this.sleepMethod, this);
+    this.scale.on('resize', this.updateViewportMethod, this);
+    Session.set('sceneWorldReady', true);
+  },
+
+  create() {
     entityManager.init(this);
     levelManager.init(this);
     userManager.init(this);
     userVoiceRecorderAbility.init(this);
     characterPopIns.init(this);
-    this.physics.disableUpdate();
 
-    window.addEventListener('onZoneEntered', onZoneEntered);
-    window.addEventListener('onZoneLeaved', onZoneLeaved);
-
-    this.scale.on('resize', () => this.updateViewport(this.viewportMode));
-
-    const { levelId } = data;
-    if (levelId && Meteor.user()) Meteor.call('teleportUserInLevel', levelId);
-  },
-
-  create() {
     levelManager.createMap();
 
     // controls
@@ -92,13 +96,10 @@ WorldScene = new Phaser.Class({
 
     // cameras
     this.cameras.main.setBounds(0, 0, levelManager.map.widthInPixels, levelManager.map.heightInPixels);
-    this.cameras.main.roundPixels = true;
+    this.cameras.main.setRoundPixels(true);
 
     // plugins
     userChatCircle.init(this);
-
-    Session.set('gameCreated', true);
-    Session.set('editor', 0);
 
     if (window.matchMedia('(pointer: coarse)').matches) {
       this.nippleManager = nipplejs.create({
@@ -126,8 +127,8 @@ WorldScene = new Phaser.Class({
     };
 
     // events
-    this.events.on('postupdate', this.postUpdate.bind(this), this);
-    this.events.once('shutdown', this.shutdown.bind(this), this);
+    this.events.on('postupdate', this.postUpdateMethod, this);
+    this.events.once('shutdown', this.shutdownMethod, this);
     hotkeys.setScope('guest');
   },
 
@@ -151,6 +152,8 @@ WorldScene = new Phaser.Class({
   },
 
   updateViewport(mode) {
+    if (typeof mode !== 'string') mode = this.viewportMode;
+
     if (mode === viewportModes.small) this.cameras.main.setViewport(0, 0, window.innerWidth / 3, window.innerHeight);
     else if (mode === viewportModes.splitScreen) this.cameras.main.setViewport(0, 0, window.innerWidth / 2, window.innerHeight);
     else this.cameras.main.setViewport(0, 0, window.innerWidth, window.innerHeight);
@@ -158,11 +161,17 @@ WorldScene = new Phaser.Class({
     this.viewportMode = mode;
   },
 
+  sleep() {
+    userManager.onSleep();
+  },
+
   shutdown() {
     this.nippleManager?.destroy();
 
     this.events.removeListener('postupdate');
-    this.events.off('postupdate', this.postUpdate.bind(this), this);
+    this.events.off('postupdate', this.postUpdateMethod, this);
+    this.events.off('sleep', this.sleepMethod, this);
+    this.scale.off('resize', this.updateViewportMethod);
     window.removeEventListener('onZoneEntered', onZoneEntered);
     window.removeEventListener('onZoneLeaved', onZoneLeaved);
 
@@ -175,5 +184,6 @@ WorldScene = new Phaser.Class({
     peer.destroy();
 
     Session.set('showScoreInterface', false);
+    Session.set('sceneWorldReady', false);
   },
 });

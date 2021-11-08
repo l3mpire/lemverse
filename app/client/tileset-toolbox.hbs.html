@@ -5,6 +5,10 @@
   <div class="tileData" style="{{#if hasCollision tilesetId index}}border-color:#FF0000;{{/if}}">{{> tileImg}} {{tileLayer}}</div>
 </template>
 
+<template name="tileData">
+  <div class="tileData {{#if hasCollision tilesetId index}}has-collision{{/if}}">{{> tileImg}} {{tileLayer}}</div>
+</template>
+
 <template name="tilesetToolbox">
   <div class="tileset-toolbox">
     <div>
@@ -44,11 +48,11 @@
       <div class="tileset-toolbox-info">
         <div>Pointer x: {{worldToTileX (Session 'pointerX')}} y: {{worldToTileY (Session 'pointerY')}}
           {{#each pointerTile}}
-          {{> tileData}}
-        {{/each}}
+            {{> tileData}}
+          {{/each}}
         </div>
         {{#with Session 'selectedTiles'}}
-        Selected {{> tileData}}
+          Selected {{> tileData}}
         {{/with}}
       </div>
     </div>

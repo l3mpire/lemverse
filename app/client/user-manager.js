@@ -37,6 +37,7 @@ const throttledSavePlayer = throttle(savePlayer, 100, { leading: false });
 userManager = {
   characterNamesObjects: {},
   player: undefined,
+  playerVelocity: new Phaser.Math.Vector2(),
   playerWasMoving: false,
   players: {},
   scene: undefined,
@@ -46,7 +47,6 @@ userManager = {
     this.player = undefined;
     this.players = {};
     this.scene = scene;
-    throttledSavePlayer.cancel();
 
     scene.input.keyboard.on('keydown-SHIFT', () => { peer.sensorEnabled = false; });
     scene.input.keyboard.on('keyup-SHIFT', () => {
@@ -56,6 +56,7 @@ userManager = {
   },
 
   destroy() {
+    this.onSleep();
     _.each(this.players, player => {
       clearInterval(player.reactionHandler);
       delete player.reactionHandler;
@@ -64,6 +65,10 @@ userManager = {
     this.player = undefined;
     this.players = {};
     this.characterNamesObjects = {};
+  },
+
+  onSleep() {
+    throttledSavePlayer.cancel();
   },
 
   rename(name) {
@@ -111,8 +116,8 @@ userManager = {
       playerParts.on('pointerover', () => this.setTint(this.players[user._id], 0xFFAAFF));
       playerParts.on('pointerout', () => this.setTintFromState(this.players[user._id]));
       playerParts.on('pointerup', () => {
-        if (isModalOpen()) return;
-        Session.set('displayProfile', user._id);
+        if (isModalOpen() || Session.get('editor')) return;
+        Session.set('modal', { template: 'profile', userId: user._id });
       });
     }
 
@@ -231,7 +236,7 @@ userManager = {
       // check zone and near users on move
       if (hasMoved) zones.checkDistances(this.player);
 
-      if (user.profile.avatar !== oldUser?.profile.avatar) userStreams.refreshVideoElementAvatar();
+      if (user.profile.avatar !== oldUser?.profile.avatar) userStreams.refreshVideoElementAvatar(userStreams.getVideoElement());
 
       if (shouldCheckDistance) {
         const otherUsers = Meteor.users.find({ _id: { $ne: mainUser._id } }).fetch();
@@ -420,9 +425,7 @@ userManager = {
   },
 
   handleUserInputs(keys, nippleMoving, nippleData) {
-    if (!this.player) return;
-    if (!this.player.nippleMoving) this.player.body.setVelocity(0);
-    if (isModalOpen()) return;
+    if (!this.player || isModalOpen()) return;
 
     const user = Meteor.user();
     if (user.profile.freeze) {
@@ -430,40 +433,43 @@ userManager = {
       return;
     }
 
-    let velocity = keys.shift.isDown ? Meteor.settings.public.character.runSpeed : Meteor.settings.public.character.walkSpeed;
+    const maxSpeed = keys.shift.isDown ? Meteor.settings.public.character.runSpeed : Meteor.settings.public.character.walkSpeed;
+    this.playerVelocity.set(0, 0);
     let direction;
 
     if (nippleMoving) {
-      const xVel = nippleData.vector.x * Meteor.settings.public.character.walkSpeed * 2;
-      const yVel = nippleData.vector.y * -Meteor.settings.public.character.walkSpeed * 2;
-      this.player.body.setVelocityX(xVel);
-      this.player.body.setVelocityY(yVel);
-      velocity = Math.max(Math.abs(xVel), Math.abs(yVel));
+      this.playerVelocity.x = nippleData.vector.x;
+      this.playerVelocity.y = -nippleData.vector.y;
       direction = nippleData?.direction?.angle;
     } else {
       // Horizontal movement
-      if (keys.left.isDown || keys.q.isDown || keys.a.isDown) this.player.body.setVelocityX(-velocity);
-      else if (keys.right.isDown || keys.d.isDown) this.player.body.setVelocityX(velocity);
+      if (keys.left.isDown || keys.q.isDown || keys.a.isDown) {
+        this.playerVelocity.x = -1;
+        direction = 'left';
+      } else if (keys.right.isDown || keys.d.isDown) {
+        this.playerVelocity.x = 1;
+        direction = 'right';
+      }
 
       // Vertical movement
-      if (keys.up.isDown || keys.z.isDown || keys.w.isDown) this.player.body.setVelocityY(-velocity);
-      else if (keys.down.isDown || keys.s.isDown) this.player.body.setVelocityY(velocity);
+      if (keys.up.isDown || keys.z.isDown || keys.w.isDown) {
+        this.playerVelocity.y = -1;
+        direction = 'up';
+      } else if (keys.down.isDown || keys.s.isDown) {
+        this.playerVelocity.y = 1;
+        direction = 'down';
+      }
     }
 
-    this.player.body.velocity.normalize().scale(velocity);
-
-    if (keys.left.isDown || keys.q.isDown || keys.a.isDown) direction = 'left';
-    else if (keys.right.isDown || keys.d.isDown) direction = 'right';
-    else if (keys.up.isDown || keys.z.isDown || keys.w.isDown) direction = 'up';
-    else if (keys.down.isDown || keys.s.isDown) direction = 'down';
-    if (direction) this.player.direction = direction;
+    this.playerVelocity.normalize().scale(maxSpeed);
+    this.player.body.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
+    this.player.setDepth(this.player.y);
 
     if (direction) {
+      this.player.direction = direction;
       this.pauseAnimation(this.player, false);
       this.updateAnimation(this.player, direction);
     } else this.pauseAnimation(this.player, true);
-
-    this.player.setDepth(this.player.y);
   },
 
   postUpdate(time, delta) {
@@ -479,10 +485,6 @@ userManager = {
     // Handle freeze
     const user = Meteor.user();
     if (user.profile.freeze) moving = false;
-    if (user.profile.changeLevel) {
-      levelManager.loadLevel(user.profile.changeLevel);
-      Meteor.users.update(Meteor.userId(), { $set: { 'profile.levelId': user.profile.changeLevel }, $unset: { 'profile.changeLevel': 1 } });
-    }
 
     if (moving || this.playerWasMoving) {
       this.scene.physics.world.update(time, delta);
@@ -531,11 +533,8 @@ userManager = {
 
   interact() {
     const tiles = this.getTilesInFrontOfPlayer(this.player, [4, 0]);
-    if (tiles.length) {
-      const tile = tiles[0];
-      const positionInFrontOfPlayer = this.getPositionInFrontOfPlayer(this.player);
-      entityManager.onInteraction(tile, positionInFrontOfPlayer);
-    }
+    const positionInFrontOfPlayer = this.getPositionInFrontOfPlayer(this.player);
+    entityManager.onInteraction(tiles, positionInFrontOfPlayer);
   },
 
   getTilesUnderPlayer(player, layers = []) {

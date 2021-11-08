@@ -1,3 +1,5 @@
+@import "_variables";
+
 .tileset-toolbox {
   position: fixed;
   left: 0;
@@ -39,6 +41,23 @@
     border-radius: 4px;
     margin: 5px 1px;
     padding: 4px;
+  }
+
+  .tileData {
+    display: inline-block;
+    border: 1px solid #4C566A;
+    color: #4C566A;
+    background-color: white;
+    border-radius: 4px;
+    margin: 5px 1px;
+    padding: 4px;
+
+    &.has-collision {
+      border-color: rgba($lem-color-7, 0.5);
+      background-color: rgba($lem-color-7, 0.2);
+      color: $lem-color-7;
+      font-weight: bold;
+    }
   }
 
   .tileset-toolbox-erase {

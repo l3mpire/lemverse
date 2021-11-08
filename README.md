@@ -474,15 +474,13 @@ To build from you source without having to install anything, you can run the fol
 
 `docker build -f Dockerfile.dev . -t lempire/lemverse:dev`
 
-## Build docker with Github Actions
+Or run the full dev env with hot reload: `docker-compose up -d`  
+It take a while to start the server.
+Then every change in the project will be automatically reloaded.
 
-In your github repo setting
-add secrets:
-- PERSONAL_ACCESS_TOKEN (need to push to github tag and commit changelog following https://www.conventionalcommits.org/en/v1.0.0/ get it here : https://github.com/settings/tokens and allow repo )
-- DOCKERHUB_USERNAME (need to push to dockerhub)
-- DOCKERHUB_TOKEN (need to push to dockerhub)
+### Deploy
 
-All commit into `next` branch will be automatically create as tag and then build as docker image.
+Visit `example/docker-compose-prod` to find the deployment instructions with `docker-compose` stack.
 
 ## Slack Notification upon deployment
 

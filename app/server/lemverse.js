@@ -148,12 +148,7 @@ Meteor.methods({
     else Levels.update(levelId, { $pull: { editorUserIds: userId } });
   },
   teleportUserInLevel(levelId) {
-    if (!this.userId) return;
-    check(levelId, String);
-
-    const level = Levels.findOne(levelId) || Levels.findOne(Meteor.settings.defaultLevelId);
-    const { spawn } = level;
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.levelId': level._id, 'profile.x': spawn?.x || 0, 'profile.y': spawn?.y || 0 } });
+    return teleportUserInLevel(levelId, Meteor.userId());
   },
   createLevel(templateId = undefined) {
     return createLevel(templateId);
@@ -175,6 +170,8 @@ Meteor.methods({
           profile: {
             ...profile,
             name,
+            shareAudio: true,
+            shareVideo: true,
           },
         },
       }));

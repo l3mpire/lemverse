@@ -31,6 +31,8 @@ levelManager = {
   },
 
   addTilesetsToLayers(tilesets) {
+    if (!this.map) return;
+
     const newTilesets = [];
     _.each(tilesets, tileset => {
       if (this.findTileset(tileset._id)) return;
@@ -54,6 +56,7 @@ levelManager = {
     this.destroyMapLayers();
     _.times(defaultLayerCount, i => this.layers.push(this.map.createBlankLayer(`${i}`)));
     _.each(defaultLayerDepth, (value, key) => this.layers[key].setDepth(value));
+    _.each(this.layers, layer => layer.setCullPadding(2, 2));
   },
 
   destroyMapLayers() {
@@ -72,12 +75,13 @@ levelManager = {
   },
 
   loadLevel(levelId) {
-    const levelToLoad = Levels.findOne({ _id: levelId });
-    if (!levelToLoad) { error(`Level with the id "${levelId}" not found`); return; }
+    if (Meteor.user().profile.levelId === levelId) return;
 
-    game.scene.keys.LoadingScene.setText(levelToLoad.name);
-    game.scene.keys.LoadingScene.show();
-    setTimeout(() => this.scene.scene.restart({ levelId }), 0);
+    const loadingScene = game.scene.getScene('LoadingScene');
+    loadingScene.show(() => {
+      this.scene.scene.sleep();
+      Meteor.call('teleportUserInLevel', levelId, levelName => loadingScene.setText(levelName));
+    });
   },
 
   tileRefresh(x, y) {
@@ -122,7 +126,12 @@ levelManager = {
     if (Tiles.find().count() === 0) this.drawTriggers(true);
   },
 
-  onTilesetUpdated(oldTileset, newTileset) {
+  onTilesetUpdated(newTileset, oldTileset) {
+    if (!this.map) return;
+
+    const tileset = this.findTileset(newTileset._id);
+    tileset.tileProperties = newTileset.tiles;
+
     const oTileKeys = _.map(_.keys(oldTileset.tiles || {}), k => +k);
     const nTileKeys = _.map(_.keys(newTileset.tiles || {}), k => +k);
     const d1 = _.difference(oTileKeys, nTileKeys);

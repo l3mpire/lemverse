@@ -18,7 +18,7 @@ const clearZoneRectangles = () => _.each(zoneRectangles, r => r.destroy());
 
 Template.zonesToolboxProperties.helpers({
   properties() {
-    const props = _.clone(this);
+    const props = _.clone(this.zone);
     zoneHideProperties.forEach(property => { delete props[property]; });
     if (!props.roomName) props.roomName = '';
     if (!props.name) props.name = '';
@@ -35,13 +35,11 @@ Template.zonesToolboxProperties.helpers({
 
     return JSON.stringify(props, ' ', 2);
   },
-  name() { return this.name || this._id; },
+  name() { return this.zone.name || this.zone._id; },
 });
 
 Template.zonesToolboxProperties.events({
-  'click .js-zone-cancel'() {
-    Session.set('displayZoneId', undefined);
-  },
+  'click .js-zone-cancel'() { Session.set('displayZoneId', undefined); },
   'click .js-zone-save'() {
     const currentFields = Zones.findOne(Session.get('displayZoneId'));
     let newValues;
@@ -70,9 +68,18 @@ Template.zonesToolboxProperties.events({
 // zonesToolbox
 //
 
+Template.zonesToolbox.onCreated(() => {
+  Tracker.autorun(() => {
+    const zoneId = Session.get('displayZoneId');
+
+    if (zoneId) Session.set('modal', { template: 'zonesToolboxProperties', zone: Zones.findOne(zoneId) });
+    else Session.set('modal', null);
+  });
+});
+
 Template.zonesToolbox.onRendered(function () {
   this.autorun(() => {
-    if (!Session.get('gameCreated')) return;
+    if (!Session.get('sceneWorldReady')) return;
 
     clearZoneRectangles();
 
