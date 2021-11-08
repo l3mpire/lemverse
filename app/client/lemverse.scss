@@ -236,9 +236,10 @@ button:focus {
 
       @media only screen and (-webkit-min-device-pixel-ratio: 2), not all, not all, not all, only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
         .fix-emoji-retina {
+          padding-bottom: 0.1em;
           span {
             display: inline-block;
-            margin-right: -0.15em;
+            margin-right: -0.25em;
           }
         }
       }
@@ -247,7 +248,7 @@ button:focus {
         background-color: #ECEFF4;
         border: 1px solid black;
         padding-left: 5px;
-        padding-right: 2px;
+        padding-right: 5px;
         border-radius: 10px;
         height: 26px;
         width: 20px;
