@@ -2,12 +2,12 @@ version: "3.8"
 services:
     mongodb:
         image: mongo:5.0.3
-        container_name: mongodb
+        container_name: lemverse_db
         environment:
             - PUID=1000
             - PGID=1000
         volumes:
-            - lemverse-db:/data/db # Necessary volume to keep database data between restarts
+            - lemverse_db:/data/db # Necessary volume to keep database data between restarts
         ports:
             - 27017:27017 # Expose port to let you connect in db for debug, dont do it in prod
         restart: unless-stopped
@@ -23,7 +23,6 @@ services:
             - net_lemverse
         depends_on:
             - mongodb
-            - peer
         ports:
             - '9001:9000' # Expose web port to see your change
             - '7010:7010' # expose peer port
@@ -36,7 +35,7 @@ services:
 volumes:
     lemverse:
         driver: local 
-    db:
+    lemverse_db:
         driver: local
     
 # Custom network so all services can communicate using a FQDN

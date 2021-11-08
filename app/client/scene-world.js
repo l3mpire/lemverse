@@ -147,7 +147,6 @@ WorldScene = new Phaser.Class({
     const { keyboard } = this.input;
     if (!keyboard) return;
     keyboard.enabled = value;
-
     if (globalCapture) keyboard.enableGlobalCapture();
     else keyboard.disableGlobalCapture();
   },
