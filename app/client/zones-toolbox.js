@@ -5,13 +5,12 @@ const zoneHideProperties = [
   'y1',
   'x2',
   'y2',
+  'levelId',
   'createdAt',
   'createdBy',
 ];
 
-const clearZoneRectangles = () => {
-  _.each(zoneRectangles, r => r.destroy());
-};
+const clearZoneRectangles = () => _.each(zoneRectangles, r => r.destroy());
 
 //
 // zonesToolboxProperties
@@ -19,7 +18,7 @@ const clearZoneRectangles = () => {
 
 Template.zonesToolboxProperties.helpers({
   properties() {
-    const props = _.clone(this);
+    const props = _.clone(this.zone);
     zoneHideProperties.forEach(property => { delete props[property]; });
     if (!props.roomName) props.roomName = '';
     if (!props.name) props.name = '';
@@ -31,18 +30,23 @@ Template.zonesToolboxProperties.helpers({
     if (!props.fullscreen) props.fullscreen = false;
     if (!props.targetedLevelId) props.targetedLevelId = '';
     if (!props.inlineURL) props.inlineURL = '';
+    if (!props.hideName) props.hideName = false;
+    if (!props.disableCommunications) props.disableCommunications = false;
 
     return JSON.stringify(props, ' ', 2);
   },
+  name() { return this.zone.name || this.zone._id; },
 });
 
 Template.zonesToolboxProperties.events({
-  'click .js-zone-cancel'() {
-    Session.set('displayZoneId', undefined);
-  },
+  'click .js-zone-cancel'() { Session.set('displayZoneId', undefined); },
   'click .js-zone-save'() {
     const currentFields = Zones.findOne(Session.get('displayZoneId'));
-    const newValues = JSON.parse($('.modal.zones-toolbox-properties textarea').val());
+    let newValues;
+    try {
+      newValues = JSON.parse($('.zones-toolbox-properties textarea').val());
+    } catch (err) { lp.notif.error(`invalid JSON format`, err); }
+
     const $unset = _.reduce(currentFields, (root, k, i) => {
       const newObject = { ...root };
       if (!zoneHideProperties.includes(i) && !Object.keys(newValues).includes(i)) newObject[i] = 1;
@@ -58,16 +62,24 @@ Template.zonesToolboxProperties.events({
       Session.set('displayZoneId', undefined);
     });
   },
-
 });
 
 //
 // zonesToolbox
 //
 
+Template.zonesToolbox.onCreated(() => {
+  Tracker.autorun(() => {
+    const zoneId = Session.get('displayZoneId');
+
+    if (zoneId) Session.set('modal', { template: 'zonesToolboxProperties', zone: Zones.findOne(zoneId) });
+    else Session.set('modal', null);
+  });
+});
+
 Template.zonesToolbox.onRendered(function () {
   this.autorun(() => {
-    if (!Session.get('gameCreated')) return;
+    if (!Session.get('sceneWorldReady')) return;
 
     clearZoneRectangles();
 
@@ -85,6 +97,7 @@ Template.zonesToolbox.onRendered(function () {
 
 Template.zonesToolbox.onDestroyed(() => {
   clearZoneRectangles();
+  Session.set('displayZoneId', null);
 });
 
 const getZoneCenter = zone => [(zone.x1 + zone.x2) * 0.5, (zone.y1 + zone.y2) * 0.5];

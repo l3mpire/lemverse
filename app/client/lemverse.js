@@ -1,3 +1,6 @@
+import hotkeys from 'hotkeys-js';
+import DizzyEffect from '../public/assets/post-effects/DizzyEffect';
+
 const Phaser = require('phaser');
 
 scopes = {
@@ -10,13 +13,11 @@ hotkeys.filter = function (event) {
   return !/^(INPUT|TEXTAREA)$/.test(tagName);
 };
 
-Template.registerHelper('tileLayer', function () { return tileLayer(this); });
-Template.registerHelper('worldToTileX', x => game?.scene.keys.WorldScene.map.worldToTileX(x));
-Template.registerHelper('worldToTileY', y => game?.scene.keys.WorldScene.map.worldToTileY(y));
+const toggleUserProperty = propertyName => {
+  Meteor.users.update(Meteor.userId(), { $set: { [`profile.${propertyName}`]: !Meteor.user().profile[propertyName] } });
+};
 
 game = undefined;
-
-isModalOpen = () => Session.get('displaySettings') || Session.get('displayZoneId') || Session.get('displayNotificationsPanel');
 
 const config = {
   type: Phaser.AUTO,
@@ -25,6 +26,9 @@ const config = {
   height: window.innerHeight / Meteor.settings.public.zoom,
   zoom: Meteor.settings.public.zoom,
   pixelArt: true,
+  roundPixels: true,
+  title: Meteor.settings.public.lp.product,
+  url: Meteor.settings.public.lp.website,
   physics: {
     default: 'arcade',
     arcade: {
@@ -32,34 +36,32 @@ const config = {
       gravity: { y: 0 },
     },
   },
+  scale: {
+    mode: Phaser.Scale.RESIZE,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    width: 800, // Default game window width
+    height: 600, // Default game window height,
+  },
   dom: {
     createContainer: true,
   },
+  pipeline: { DizzyEffect },
 };
 
 Template.lemverse.onCreated(function () {
   Session.set('selectedTiles', undefined);
   Session.set('selectedTilesetId', undefined);
-  Session.set('gameCreated', false);
+  Session.set('sceneWorldReady', false);
   Session.set('loading', true);
   Session.set('tilesetsLoaded', false);
   Session.set('editor', 0);
-  Session.set('displaySettings', false);
-  Session.set('displayUserList', false);
-  Session.set('displayNotification', false);
-  Session.set('displayNotificationsPanel', false);
-  Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } });
+  Session.set('modal', undefined);
 
-  document.addEventListener('keydown', event => {
-    if (event.code !== 'Escape') return;
-    Session.set('displaySettings', false);
-    Session.set('displayZoneId', false);
-    Session.set('displayNotificationsPanel', false);
-    Session.set('displayUserList', false);
-    game.scene.keys.WorldScene.enableKeyboard(true, true);
-    document.activeElement.blur();
+  window.addEventListener('beforeunload', () => {
+    Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } });
   });
 
+  this.hasLevelLoaded = false;
   this.subscribe('characters');
   this.subscribe('levels');
   this.subscribe('notifications');
@@ -76,190 +78,264 @@ Template.lemverse.onCreated(function () {
   });
 
   this.autorun(() => {
+    if (!Meteor.userId()) Session.set('sceneWorldReady', false);
+  });
+
+  this.autorun(() => {
+    if (!Session.get('sceneWorldReady')) return;
+
     const modalOpen = isModalOpen();
-    game?.scene?.keys?.WorldScene?.enableKeyboard(!modalOpen, !modalOpen);
-    game?.scene?.keys?.WorldScene?.playerPauseAnimation(undefined, modalOpen);
+    Tracker.nonreactive(() => {
+      const worldScene = game.scene.getScene('WorldScene');
+      worldScene.enableKeyboard(!modalOpen, !modalOpen);
+      userManager.pauseAnimation(undefined, modalOpen);
+    });
   });
 
   this.autorun(() => {
     const user = Meteor.user({ fields: { 'profile.shareAudio': 1 } });
     if (!user) return;
-    if (userProximitySensor.nearUsersCount() === 0) peer.destroyStream(myStream);
-    else peer.createStream().then(() => peer.audio(user.profile.shareAudio, true));
+    Tracker.nonreactive(() => {
+      if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
+      else if (!user.profile.shareAudio) userStreams.audio(false);
+      else if (user.profile.shareAudio) {
+        userStreams.createStream().then(() => {
+          userStreams.audio(true);
+          userProximitySensor.callProximityStartedForAllNearUsers();
+        });
+      }
+    });
   });
 
   this.autorun(() => {
     const user = Meteor.user({ fields: { 'profile.shareVideo': 1 } });
     if (!user) return;
-    if (userProximitySensor.nearUsersCount() === 0) peer.destroyStream(myStream);
-    else peer.createStream().then(() => peer.video(user.profile.shareVideo, true));
+    Tracker.nonreactive(() => {
+      if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
+      else if (!user.profile.shareVideo) userStreams.video(false);
+      else if (user.profile.shareVideo) {
+        const forceNewStream = userStreams.shouldCreateNewStream(streamTypes.main, true, true);
+        userStreams.createStream(forceNewStream).then(() => {
+          userStreams.video(true);
+          userProximitySensor.callProximityStartedForAllNearUsers();
+        });
+      }
+    });
   });
 
   this.autorun(() => {
     const user = Meteor.user({ fields: { 'profile.shareScreen': 1 } });
     if (!user) return;
-    if (user.profile.shareScreen) peer.createScreenStream().then(() => peer.screen(true, true));
-    else peer.screen(false);
-  });
-
-  this.autorun(() => {
-    if (!Session.get('gameCreated')) return;
-    game.scene.keys.EditorScene.updateEditionMarker(Session.get('selectedTiles'));
-  });
-
-  this.autorun(() => {
-    if (!Session.get('gameCreated')) return;
-
-    if (this.handleObserveUsers) this.handleObserveUsers.stop();
-    this.handleObserveUsers = Meteor.users.find({ status: { $exists: true } }).observe({
-      added(user) {
-        game.scene.keys.WorldScene.playerCreate(user);
-      },
-      changed(user, oldUser) {
-        game.scene.keys.WorldScene.playerUpdate(user, oldUser);
-      },
-      removed(user) {
-        game.scene.keys.WorldScene.playerRemove(user);
-        userProximitySensor.removeNearUser(user);
-        lp.defer(() => peer.close(user._id));
-      },
+    Tracker.nonreactive(() => {
+      if (user.profile.shareScreen) userStreams.createScreenStream().then(() => userStreams.screen(true));
+      else userStreams.screen(false);
     });
+  });
 
-    if (this.handleObserveTilesets) this.handleObserveTilesets.stop();
-    if (!this.handleObserveTilesets) {
-      this.handleObserveTilesets = Tilesets.find().observe({
-        added(tileset) {
-          game.scene.keys.BootScene.loadTilesetsAtRuntime([tileset], game.scene.keys.WorldScene.addTilesetsToLayers);
-        },
-        changed(o, n) {
-          const oTileKeys = _.map(_.keys(o.tiles || {}), k => +k);
-          const nTileKeys = _.map(_.keys(n.tiles || {}), k => +k);
-          const d1 = _.difference(oTileKeys, nTileKeys);
-          const d2 = _.difference(nTileKeys, oTileKeys);
-          const d3 = _.filter(oTileKeys, index => o.tiles[index]?.layer !== n.tiles[index]?.layer);
-          const changedTileIndexes = _.union(d1, d2, d3);
-          const xys = _.map(Tiles.find({ tilesetId: n._id, index: { $in: changedTileIndexes } }).fetch(), t => ({ x: t.x, y: t.y }));
-          _.forEach(xys, xy => game.scene.keys.WorldScene.tileRefresh(xy.x, xy.y));
+  this.autorun(() => {
+    if (!Session.get('sceneWorldReady')) return;
+    game.scene.getScene('EditorScene')?.updateEditionMarker(Session.get('selectedTiles'));
+  });
 
-          const enabledCollisionIndexes = _.difference(o.collisionTileIndexes, n.collisionTileIndexes);
-          const disabledCollisionIndexes = _.difference(n.collisionTileIndexes, o.collisionTileIndexes);
+  this.autorun(() => {
+    if (!Session.get('sceneWorldReady')) return;
 
-          const enabledCollisionGlobalIndexes = _.map(enabledCollisionIndexes, i => tileGlobalIndex({ index: i, tilesetId: n._id }));
-          const disabledCollisionGlobalIndexes = _.map(disabledCollisionIndexes, i => tileGlobalIndex({ index: i, tilesetId: n._id }));
+    Tracker.nonreactive(() => {
+      if (this.handleObserveTilesets) this.handleObserveTilesets.stop();
+      if (!this.handleObserveTilesets) {
+        this.handleObserveTilesets = Tilesets.find().observe({
+          added(tileset) {
+            game.scene.keys.BootScene.loadTilesetsAtRuntime([tileset], levelManager.addTilesetsToLayers.bind(levelManager));
+          },
+          changed(n, o) {
+            levelManager.onTilesetUpdated(n, o);
+          },
+        });
+      }
 
-          const { layers } = game.scene.keys.WorldScene.map;
-          _.each(layers, layer => {
-            game.scene.keys.WorldScene.map.setCollision(enabledCollisionGlobalIndexes, true, false, layer.tilemapLayer);
-            game.scene.keys.WorldScene.map.setCollision(disabledCollisionGlobalIndexes, false, false, layer.tilemapLayer);
-          });
-        },
-      });
-    }
+      if (this.handleObserveCharacters) this.handleObserveCharacters.stop();
+      if (!this.handleObserveCharacters) {
+        this.handleObserveCharacters = Characters.find().observe({
+          added(character) {
+            game.scene.keys.BootScene.loadCharactersAtRuntime([character]);
+          },
+          changed(character, previous) {
+            if (!character.category) return;
 
-    if (this.handleObserveCharacters) this.handleObserveCharacters.stop();
-    if (!this.handleObserveCharacters) {
-      this.handleObserveCharacters = Characters.find().observe({
-        added(character) {
-          game.scene.keys.BootScene.loadCharactersAtRuntime([character]);
-        },
-        changed(character, previous) {
-          if (!character.category) return;
+            const { anims } = game.scene.keys.WorldScene;
+            const animExist = (sprite, orientation) => anims[`${sprite._id}${sprite.category}${orientation}`];
 
-          const { anims } = game.scene.keys.WorldScene;
-          const animExist = (sprite, orientation) => anims[`${sprite._id}${sprite.category}${orientation}`];
+            // Remove previous animation
+            ['up', 'down', 'left', 'right'].forEach(orientation => {
+              if (animExist(previous, orientation)) {
+                anims.remove(`${previous._id}${previous.category}${orientation}`);
+              }
+            });
 
-          // Remove previous animation
-          ['up', 'down', 'left', 'right'].forEach(orientation => {
-            if (animExist(previous, orientation)) {
-              anims.remove(`${previous._id}${previous.category}${orientation}`);
+            if (!animExist(character, 'right')) {
+              anims.create({
+                key: `${character._id}right`,
+                frames: anims.generateFrameNumbers(character._id, { frames: [48, 49, 50, 51, 52, 53] }),
+                frameRate: 10,
+                repeat: -1,
+              });
             }
-          });
-
-          if (!animExist(character, 'right')) {
-            anims.create({
-              key: `${character._id}right`,
-              frames: anims.generateFrameNumbers(character._id, { frames: [48, 49, 50, 51, 52, 53] }),
-              frameRate: 10,
-              repeat: -1,
-            });
-          }
-          if (!animExist(character, 'up')) {
-            anims.create({
-              key: `${character._id}up`,
-              frames: anims.generateFrameNumbers(character._id, { frames: [54, 55, 56, 57, 58, 59] }),
-              frameRate: 10,
-              repeat: -1,
-            });
-          }
-          if (!animExist(character, 'left')) {
-            anims.create({
-              key: `${character._id}left`,
-              frames: anims.generateFrameNumbers(character._id, { frames: [60, 61, 62, 63, 64, 65] }),
-              frameRate: 10,
-              repeat: -1,
-            });
-          }
-          if (!animExist(character, 'down')) {
-            anims.create({
-              key: `${character._id}down`,
-              frames: anims.generateFrameNumbers(character._id, { frames: [66, 67, 68, 69, 70, 71] }),
-              frameRate: 10,
-              repeat: -1,
-            });
-          }
-        },
-      });
-    }
-
-    if (this.handleObserveZones) this.handleObserveZones.stop();
-    this.handleObserveZones = Zones.find().observe({
-      added(zone) {
-        if (zone.popInConfiguration?.autoOpen) characterPopIns.initFromZone(zone);
-      },
-      changed(zone) {
-        const currentZone = zones.currentZone(Meteor.user());
-        if (!currentZone || currentZone._id !== zone._id) return;
-
-        if (meet.api) meet.fullscreen(zone.fullscreen);
-      },
+            if (!animExist(character, 'up')) {
+              anims.create({
+                key: `${character._id}up`,
+                frames: anims.generateFrameNumbers(character._id, { frames: [54, 55, 56, 57, 58, 59] }),
+                frameRate: 10,
+                repeat: -1,
+              });
+            }
+            if (!animExist(character, 'left')) {
+              anims.create({
+                key: `${character._id}left`,
+                frames: anims.generateFrameNumbers(character._id, { frames: [60, 61, 62, 63, 64, 65] }),
+                frameRate: 10,
+                repeat: -1,
+              });
+            }
+            if (!animExist(character, 'down')) {
+              anims.create({
+                key: `${character._id}down`,
+                frames: anims.generateFrameNumbers(character._id, { frames: [66, 67, 68, 69, 70, 71] }),
+                frameRate: 10,
+                repeat: -1,
+              });
+            }
+          },
+        });
+      }
     });
   });
 
   this.autorun(() => {
-    if (!Session.get('gameCreated')) return;
+    if (!Session.get('sceneWorldReady')) return;
 
-    const levelId = Meteor.user({ fields: { 'profile.levelId': 1 } })?.profile?.levelId;
+    const loggedUser = Meteor.user({ fields: { 'profile.levelId': 1 } });
+    if (!loggedUser) return;
+    const { levelId } = loggedUser.profile;
 
-    if (this.handleZonesSubscribe) this.handleZonesSubscribe.stop();
-    if (this.handleUsersSubscribe) this.handleUsersSubscribe.stop();
-    if (this.handleObserveTiles) this.handleObserveTiles.stop();
-    if (this.handleTilesSubscribe) this.handleTilesSubscribe.stop();
-    this.handleUsersSubscribe = this.subscribe('users', levelId, () => {
-      if (!Meteor.user()?.profile.guest) peer.createMyPeer();
-    });
-    this.handleZonesSubscribe = this.subscribe('zones', levelId, () => zones.checkDistances());
+    Tracker.nonreactive(() => {
+      if (this.handleEntitiesSubscribe) this.handleEntitiesSubscribe.stop();
+      if (this.handleTilesSubscribe) this.handleTilesSubscribe.stop();
+      if (this.handleUsersSubscribe) this.handleUsersSubscribe.stop();
+      if (this.handleZonesSubscribe) this.handleZonesSubscribe.stop();
+      if (this.handleObserveEntities) this.handleObserveEntities.stop();
+      if (this.handleObserveTiles) this.handleObserveTiles.stop();
+      if (this.handleObserveUsers) this.handleObserveUsers.stop();
+      if (this.handleObserveZones) this.handleObserveZones.stop();
 
-    log(`Loading tiles for the level ${levelId || 'unknown'}…`);
-    this.handleTilesSubscribe = this.subscribe('tiles', levelId, () => {
-      this.handleObserveTiles = Tiles.find().observe({
-        added(tile) {
-          const layer = tileLayer(tile);
-          game.scene.keys.WorldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
-          game.scene.keys.WorldScene.drawTeleporters(false);
-        },
-        changed(tile) {
-          const layer = tileLayer(tile);
-          game.scene.keys.WorldScene.map.putTileAt(tileGlobalIndex(tile), tile.x, tile.y, false, layer);
-        },
-        removed(tile) {
-          const layer = tileLayer(tile);
-          game.scene.keys.WorldScene.map.removeTileAt(tile.x, tile.y, false, false, layer);
-        },
+      // world clean-up
+      const loadingScene = game.scene.getScene('LoadingScene');
+      const worldScene = game.scene.getScene('WorldScene');
+      loadingScene.show();
+
+      if (this.hasLevelLoaded) {
+        log(`unloading current level…`);
+        worldScene.scene.restart();
+        this.hasLevelLoaded = false;
+        return;
+      }
+
+      // Load users
+      log(`loading level: ${levelId || 'unknown'}…`);
+      log(`loading level: loading users`);
+      this.handleUsersSubscribe = this.subscribe('users', levelId, () => {
+        this.handleObserveUsers = Meteor.users.find({ status: { $exists: true } }).observe({
+          added(user) {
+            userManager.create(user);
+          },
+          changed(user, oldUser) {
+            userManager.update(user, oldUser);
+          },
+          removed(user) {
+            userManager.remove(user);
+            userProximitySensor.removeNearUser(user);
+            lp.defer(() => peer.close(user._id, 0, 'user-disconnected'));
+          },
+        });
+
+        log('loading level: all users loaded');
+        peer.init();
       });
 
-      log('All tiles loaded');
-      game.scene.keys.WorldScene.onLevelLoaded();
+      // Load zones
+      log(`loading level: loading zones`);
+      this.handleZonesSubscribe = this.subscribe('zones', levelId, () => {
+        this.handleObserveZones = Zones.find().observe({
+          added(zone) {
+            if (zone.popInConfiguration?.autoOpen) characterPopIns.initFromZone(zone);
+          },
+          changed(zone) {
+            const currentZone = zones.currentZone(Meteor.user());
+            if (!currentZone || currentZone._id !== zone._id) return;
+
+            if (meet.api) {
+              meet.fullscreen(zone.fullscreen);
+              const screenMode = zone.fullscreen ? viewportModes.small : viewportModes.splitScreen;
+              worldScene.updateViewport(screenMode);
+            }
+          },
+        });
+
+        log('loading level: all zones loaded');
+        zones.checkDistances(userManager.player);
+      });
+
+      // Load entities
+      log(`loading level: loading entities`);
+      this.handleEntitiesSubscribe = this.subscribe('entities', levelId, () => {
+        this.handleObserveEntities = Entities.find().observe({
+          added(entity) {
+            entityManager.create(entity);
+          },
+          changed(entity) {
+            setTimeout(() => entityManager.update(entity), 0);
+          },
+          removed(entity) {
+            entityManager.remove(entity);
+          },
+        });
+
+        log('loading level: all entities loaded');
+      });
+
+      // Load tiles
+      log(`loading level: loading tiles`);
+      this.handleTilesSubscribe = this.subscribe('tiles', levelId, () => {
+        this.handleObserveTiles = Tiles.find().observe({
+          added(tile) {
+            const layer = levelManager.tileLayer(tile);
+            levelManager.map.putTileAt(levelManager.tileGlobalIndex(tile), tile.x, tile.y, false, layer);
+            window.dispatchEvent(new CustomEvent('onTileAdded', { detail: { tile, layer } }));
+          },
+          changed(tile) {
+            const layer = levelManager.tileLayer(tile);
+            levelManager.map.putTileAt(levelManager.tileGlobalIndex(tile), tile.x, tile.y, false, layer);
+            window.dispatchEvent(new CustomEvent('onTileChanged', { detail: { tile, layer } }));
+          },
+          removed(tile) {
+            const layer = levelManager.tileLayer(tile);
+            levelManager.map.removeTileAt(tile.x, tile.y, false, false, layer);
+          },
+        });
+
+        log('loading level: all tiles loaded');
+        levelManager.onLevelLoaded();
+      });
+
+      this.hasLevelLoaded = true;
+      game.scene.getScene('EditorScene')?.init();
     });
+  });
+
+  this.autorun(() => {
+    const currentLevel = Session.get('currentLevel');
+    if (!currentLevel) {
+      Meteor.call('currentLevel', (err, level) => { if (level) Session.set('currentLevel', level); });
+    }
   });
 
   hotkeys('e', { scope: 'all' }, event => {
@@ -291,17 +367,29 @@ Template.lemverse.onCreated(function () {
     event.preventDefault();
     if (event.repeat) return;
 
-    if (meet.api) meet.close(); else meet.open();
+    if (meet.api) {
+      meet.close();
+      game.scene.keys.WorldScene.updateViewport(viewportModes.fullscreen);
+    } else {
+      meet.open();
+      game.scene.keys.WorldScene.updateViewport(viewportModes.splitScreen);
+    }
+  });
+
+  hotkeys('u', { scope: scopes.player }, event => {
+    event.preventDefault();
+    if (event.repeat) return;
+    userManager.interact();
   });
 
   const recordVoice = (event, callback) => {
     userVoiceRecorderAbility.onSoundRecorded = callback;
 
     if (event.type === 'keydown' && !userVoiceRecorderAbility.isRecording()) {
-      peer.audio(false);
+      userStreams.audio(false);
       userVoiceRecorderAbility.start();
     } else if (event.type === 'keyup') {
-      peer.audio(Meteor.user()?.profile.shareAudio);
+      userStreams.audio(Meteor.user()?.profile.shareAudio);
       userVoiceRecorderAbility.stop();
     }
   };
@@ -350,65 +438,21 @@ Template.lemverse.onCreated(function () {
     });
   });
 
-  hotkeys('tab', event => {
-    if (event.repeat) return;
-    event.preventDefault();
-
-    Session.set('displayUserList', !Session.get('displayUserList'));
-  });
-
-  hotkeys('shift+1', { scope: scopes.player }, () => {
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareAudio': !Meteor.user().profile.shareAudio } });
-  });
-
-  hotkeys('shift+2', { scope: scopes.player }, () => {
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareVideo': !Meteor.user().profile.shareVideo } });
-  });
-
-  hotkeys('shift+3', { scope: scopes.player }, () => {
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': !Meteor.user().profile.shareScreen } });
-  });
-
-  hotkeys('shift+4', { scope: scopes.player }, () => {
-    if (!Session.get('displaySettings')) settings.enumerateDevices();
-    Session.set('displaySettings', !Session.get('displaySettings'));
-  });
-
-  hotkeys('shift+5', { scope: scopes.player }, () => {
-    Session.set('displayNotificationsPanel', !Session.get('displayNotificationsPanel'));
-  });
-
-  hotkeys('shift+0', { scope: scopes.player }, () => {
-    game.scene.keys.WorldScene.drawTeleporters(!game?.scene.keys.WorldScene.teleporterGraphics.length);
-  });
-});
-
-Template.lemverse.onRendered(function () {
-  this.autorun(() => {
-    if (!Session.get('gameCreated')) return;
-
-    if (!this.resizeObserver) {
-      const resizeObserver = new ResizeObserver(entries => {
-        entries.forEach(entry => {
-          config.width = entry.contentRect.width / Meteor.settings.public.zoom;
-          config.height = entry.contentRect.height / Meteor.settings.public.zoom;
-          game.scale.resize(config.width, config.height);
-        });
-      });
-      const simulation = document.querySelector('.simulation');
-      if (simulation) {
-        this.resizeObserver = true;
-        resizeObserver.observe(simulation);
-      }
-    }
-  });
+  hotkeys('shift+1', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
+  hotkeys('shift+2', { scope: scopes.player }, () => toggleUserProperty('shareVideo'));
+  hotkeys('shift+3', { scope: scopes.player }, () => toggleUserProperty('shareScreen'));
+  hotkeys('shift+4', { scope: scopes.player }, () => toggleModal('settingsMain'));
+  hotkeys('shift+5', { scope: scopes.player }, () => toggleModal('notifications'));
+  hotkeys('tab', { scope: scopes.player }, () => toggleModal('userList'));
 });
 
 Template.lemverse.onDestroyed(function () {
   if (this.handleObserveUsers) this.handleObserveUsers.stop();
+  if (this.handleObserveEntities) this.handleObserveEntities.stop();
   if (this.handleObserveTiles) this.handleObserveTiles.stop();
   if (this.handleObserveTilesets) this.handleObserveTilesets.stop();
   if (this.handleObserveZones) this.handleObserveZones.stop();
+  if (this.handleEntitiesSubscribe) this.handleEntitiesSubscribe.stop();
   if (this.handleTilesSubscribe) this.handleTilesSubscribe.stop();
   if (this.handleUsersSubscribe) this.handleUsersSubscribe.stop();
   if (this.handleZonesSubscribe) this.handleZonesSubscribe.stop();
@@ -427,28 +471,19 @@ Template.lemverse.onDestroyed(function () {
 });
 
 Template.lemverse.helpers({
-  allRemoteStreamsByUsers: () => remoteStreamsByUsers.get(),
+  allRemoteStreamsByUsers: () => peer.remoteStreamsByUsers.get(),
   isLoading: () => Session.get('loading'),
   isGuest: () => Meteor.user()?.profile.guest,
   hasNotifications: () => Notifications.find().count(),
   pendingNotificationsCount: () => Notifications.find({ read: false }).count(),
+  screenMode: () => Template.instance().screenMode.get(),
+  settingsOpen: () => (!Session.get('modal') ? false : (Session.get('modal').template.indexOf('settings') !== -1)),
 });
 
 Template.lemverse.events({
-  'click .button.audio'() {
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareAudio': !Meteor.user().profile.shareAudio } });
-  },
-  'click .button.video'() {
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareVideo': !Meteor.user().profile.shareVideo } });
-  },
-  'click .button.screen'() {
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': !Meteor.user().profile.shareScreen } });
-  },
-  'click .button.settings'() {
-    if (!Session.get('displaySettings')) settings.enumerateDevices();
-    Session.set('displaySettings', !Session.get('displaySettings'));
-  },
-  'click .button.js-notifications'() {
-    Session.set('displayNotificationsPanel', !Session.get('displayNotificationsPanel'));
-  },
+  'click .button.audio'() { toggleUserProperty('shareAudio'); },
+  'click .button.video'() { toggleUserProperty('shareVideo'); },
+  'click .button.screen'() { toggleUserProperty('shareScreen'); },
+  'click .button.settings'() { toggleModal('settingsMain'); },
+  'click .button.js-notifications'() { toggleModal('notifications'); },
 });

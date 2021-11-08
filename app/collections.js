@@ -36,6 +36,12 @@ Notifications = lp.collectionRegister('notifications', 'not', [], {
   remove(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
 });
 
+Entities = lp.collectionRegister('entities', 'ent', [], {
+  insert(userId) { return isEditionAllowed(userId); },
+  update(userId) { return isEditionAllowed(userId); },
+  remove(userId) { return isEditionAllowed(userId); },
+});
+
 Files = new FilesCollection({
   collectionName: 'Files',
   storagePath: '/var/tmp/lemverse',

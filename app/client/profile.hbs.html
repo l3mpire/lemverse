@@ -1,0 +1,32 @@
+<template name="profile">
+  {{#modal title=title}}
+    <div class="profile {{#if editionAllowed}}edition-allowed{{/if}}">
+      <div class="content container">
+        <div>
+          <label for="company">Company</label>
+          <input type="text" name="company" class="js-company" value={{profile.company.name}} placeholder="-" />
+        </div>
+        <div>
+          <label for="position">Position</label>
+          <input type="text" name="position" class="js-position" value={{profile.company.position}} placeholder="-" />
+        </div>
+        <div>
+          <label for="website">Website</label>
+          {{#if website}}<a href="{{website}}" class="website" target="_blank">{{website}}</a> {{else}}<span class="website">-</span>{{/if}}
+          <input type="text" name="website" class="js-website" value={{website}} placeholder="-" />
+        </div>
+        {{#if editionAllowed}}
+          <div>
+            <label for="reaction">Avatar preference</label>
+            <input type="text" name="avatar" id="avatar" class="js-avatar" value={{#if profile.avatar}}{{profile.avatar}}{{else}}cat{{/if}}>
+          </div>
+        {{/if}}
+        <div>
+          <label for="bio">Bio/Hobbies</label>
+          <textarea name="bio" placeholder="-" class="js-bio" >{{profile.bio}}</textarea>
+        </div>
+      </div>
+      <div class="age">{{age}} days old in lemverse</div>
+    </div>
+  {{/modal}}
+</template>
