@@ -4,8 +4,8 @@ const screenShareDefaultConfig = {
 };
 
 const videoDefaultConfig = {
-  width: { ideal: 320, max: 320 },
-  height: { ideal: 240, max: 240 },
+  width: { ideal: 320 },
+  height: { ideal: 240 },
   frameRate: { max: 20 },
 };
 
