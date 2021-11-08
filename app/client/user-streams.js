@@ -6,7 +6,7 @@ const screenShareDefaultConfig = {
 const videoDefaultConfig = {
   width: { ideal: 320 },
   height: { ideal: 240 },
-  frameRate: { max: 20 },
+  frameRate: { ideal: 20 },
 };
 
 streamTypes = Object.freeze({
