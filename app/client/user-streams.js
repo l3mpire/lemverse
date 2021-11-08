@@ -225,14 +225,13 @@ userStreams = {
   getVideoElement() {
     if (!this.streams.main.domElement) {
       this.streams.main.domElement = document.querySelector('.js-video-me video');
-      this.refreshVideoElementAvatar();
+      if (this.streams.main.domElement) this.refreshVideoElementAvatar(this.streams.main.domElement);
     }
 
     return this.streams.main.domElement;
   },
 
-  refreshVideoElementAvatar() {
-    const videoElement = this.getVideoElement();
+  refreshVideoElementAvatar(videoElement) {
     videoElement.parentElement.dataset.avatar = getRandomAvatarForUser(Meteor.user());
     if (this.streams.main.instance) videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
   },

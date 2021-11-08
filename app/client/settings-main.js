@@ -32,3 +32,9 @@ Template.settingsMain.events({
     return false;
   },
 });
+
+Template.settingsMain.events({
+  'click .js-character-designer'() { Session.set('modal', { template: 'settingsCharacter', append: true }); },
+  'click .js-medias-settings'() { Session.set('modal', { template: 'settingsMedias', append: true }); },
+  'click .js-profile'() { Session.set('modal', { template: 'profile', userId: Meteor.userId(), append: true }); },
+});

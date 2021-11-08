@@ -20,7 +20,7 @@ Meteor.methods({
 
     // Teleport user
     log('escapeMakeLevel: teleport users', { usersToTeleport: usersToTeleport.map(user => user._id), newLevelId });
-    Meteor.users.update({ _id: { $in: usersToTeleport.map(user => user._id) } }, { $set: { 'profile.changeLevel': newLevelId } }, { multi: true });
+    usersToTeleport.map(user => user._id).forEach(userId => teleportUserInLevel(newLevelId, userId));
 
     // Free the transport rings!
     escapeTransport[templateId] = [];

@@ -1,23 +1,50 @@
-const keydownListener = (id, e) => {
-  if (e.code === 'Escape' && id) Session.set(id, null);
+isModalOpen = () => Session.get('modal');
+
+toggleModal = modalName => {
+  if (Session.get('modal')?.template === modalName) Session.set('modal', null);
+  else Session.set('modal', { template: modalName });
 };
 
-Template.modal.onCreated(function () {
-  this.keydownListener = keydownListener.bind(this, this.data.id);
+const keydownListener = e => {
+  if (e.code !== 'Escape' || !Session.get('modal')) return;
+
+  Session.set('modal', null);
+  game.scene.keys.WorldScene.enableKeyboard(true, true);
+  document.activeElement.blur();
+};
+
+let modals = [];
+
+Template.modalContainer.onCreated(() => {
+  document.addEventListener('keydown', keydownListener);
 
   Tracker.autorun(() => {
-    const open = Session.get(this.data.id);
-    if (open) document.addEventListener('keydown', this.keydownListener);
-    else document.removeEventListener('keydown', this.keydownListener);
+    const modal = Session.get('modal');
+
+    // allow multiple modals opened at the same time
+    if (modal) modals.push(modal);
+    else {
+      const modalClosed = modals.pop();
+      if (modalClosed && modalClosed.append) {
+        const previousModal = modals[modals.length - 1];
+        if (previousModal) Session.set('modal', previousModal);
+      } else modals = [];
+    }
   });
 });
 
-Template.modal.events({
-  'click .js-modal-close, click .js-modal-background'() {
-    Session.set(Template.instance().data.id, null);
-  },
+Template.modalContainer.onDestroyed(() => {
+  document.removeEventListener('keydown', keydownListener);
 });
 
-Template.modal.helpers({
-  open() { return Session.get(Template.instance().data.id); },
+Template.modalContainer.events({
+  'click .js-modal-background'() { Session.set('modal', null); },
+});
+
+Template.modalContainer.helpers({
+  modal() { return Session.get('modal'); },
+});
+
+Template.modal.events({
+  'click .js-modal-close'() { Session.set('modal', null); },
 });

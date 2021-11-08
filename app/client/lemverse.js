@@ -13,9 +13,11 @@ hotkeys.filter = function (event) {
   return !/^(INPUT|TEXTAREA)$/.test(tagName);
 };
 
-game = undefined;
+const toggleUserProperty = propertyName => {
+  Meteor.users.update(Meteor.userId(), { $set: { [`profile.${propertyName}`]: !Meteor.user().profile[propertyName] } });
+};
 
-isModalOpen = () => Session.get('displaySettings') || Session.get('displayZoneId') || Session.get('displayNotificationsPanel') || Session.get('displayProfile');
+game = undefined;
 
 const config = {
   type: Phaser.AUTO,
@@ -25,8 +27,9 @@ const config = {
   zoom: Meteor.settings.public.zoom,
   inputWindowEvents: false,
   pixelArt: true,
-  title: 'lemverse',
-  url: 'https://lemverse.com',
+  roundPixels: true,
+  title: Meteor.settings.public.lp.product,
+  url: Meteor.settings.public.lp.website,
   physics: {
     default: 'arcade',
     arcade: {
@@ -53,24 +56,10 @@ Template.lemverse.onCreated(function () {
   Session.set('loading', true);
   Session.set('tilesetsLoaded', false);
   Session.set('editor', 0);
-  Session.set('displaySettings', false);
-  Session.set('displayUserList', false);
-  Session.set('displayNotification', false);
-  Session.set('displayNotificationsPanel', false);
+  Session.set('modal', undefined);
 
   window.addEventListener('beforeunload', () => {
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } });
-  });
-
-  document.addEventListener('keydown', event => {
-    if (event.code !== 'Escape') return;
-    Session.set('displaySettings', false);
-    Session.set('displayZoneId', false);
-    Session.set('displayNotificationsPanel', false);
-    Session.set('displayUserList', false);
-    Session.set('displayProfile', false);
-    game.scene.keys.WorldScene.enableKeyboard(true, true);
-    document.activeElement.blur();
   });
 
   this.hasLevelLoaded = false;
@@ -159,8 +148,8 @@ Template.lemverse.onCreated(function () {
           added(tileset) {
             game.scene.keys.BootScene.loadTilesetsAtRuntime([tileset], levelManager.addTilesetsToLayers.bind(levelManager));
           },
-          changed(o, n) {
-            levelManager.onTilesetUpdated(o, n);
+          changed(n, o) {
+            levelManager.onTilesetUpdated(n, o);
           },
         });
       }
@@ -450,37 +439,12 @@ Template.lemverse.onCreated(function () {
     });
   });
 
-  hotkeys('tab', event => {
-    if (event.repeat) return;
-    event.preventDefault();
-
-    Session.set('displayUserList', !Session.get('displayUserList'));
-  });
-
-  hotkeys('shift+1', { scope: scopes.player }, () => {
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareAudio': !Meteor.user().profile.shareAudio } });
-  });
-
-  hotkeys('shift+2', { scope: scopes.player }, () => {
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareVideo': !Meteor.user().profile.shareVideo } });
-  });
-
-  hotkeys('shift+3', { scope: scopes.player }, () => {
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': !Meteor.user().profile.shareScreen } });
-  });
-
-  hotkeys('shift+4', { scope: scopes.player }, () => {
-    Session.set('displaySettings', !Session.get('displaySettings'));
-  });
-
-  hotkeys('shift+5', { scope: scopes.player }, () => {
-    Session.set('displayNotificationsPanel', !Session.get('displayNotificationsPanel'));
-  });
-
-  hotkeys('shift+0', { scope: scopes.player }, event => {
-    if (event.repeat) return;
-    levelManager.drawTriggers(!levelManager.teleporterGraphics.length);
-  });
+  hotkeys('shift+1', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
+  hotkeys('shift+2', { scope: scopes.player }, () => toggleUserProperty('shareVideo'));
+  hotkeys('shift+3', { scope: scopes.player }, () => toggleUserProperty('shareScreen'));
+  hotkeys('shift+4', { scope: scopes.player }, () => toggleModal('settingsMain'));
+  hotkeys('shift+5', { scope: scopes.player }, () => toggleModal('notifications'));
+  hotkeys('tab', { scope: scopes.player }, () => toggleModal('userList'));
 });
 
 Template.lemverse.onDestroyed(function () {
@@ -514,32 +478,33 @@ Template.lemverse.helpers({
   hasNotifications: () => Notifications.find().count(),
   pendingNotificationsCount: () => Notifications.find({ read: false }).count(),
   screenMode: () => Template.instance().screenMode.get(),
+  settingsOpen: () => (!Session.get('modal') ? false : (Session.get('modal').template.indexOf('settings') !== -1)),
 });
 
 Template.lemverse.events({
   'click .button.audio'(e) {
     e.preventDefault();
     e.stopPropagation();
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareAudio': !Meteor.user().profile.shareAudio } });
+    toggleUserProperty('shareAudio');
   },
   'click .button.video'(e) {
     e.preventDefault();
     e.stopPropagation();
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareVideo': !Meteor.user().profile.shareVideo } });
+    toggleUserProperty('shareVideo');
   },
   'click .button.screen'(e) {
     e.preventDefault();
     e.stopPropagation();
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': !Meteor.user().profile.shareScreen } });
+    toggleUserProperty('shareScreen');
   },
   'click .button.settings'(e) {
     e.preventDefault();
     e.stopPropagation();
-    if (!Session.get('displaySettings')) settings.enumerateDevices();
+    toggleModal('settingsMain');
   },
   'click .button.js-notifications'(e) {
     e.preventDefault();
     e.stopPropagation();
-    Session.set('displayNotificationsPanel', !Session.get('displayNotificationsPanel'));
+    toggleModal('notifications');
   },
 });

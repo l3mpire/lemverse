@@ -56,6 +56,7 @@ levelManager = {
     this.destroyMapLayers();
     _.times(defaultLayerCount, i => this.layers.push(this.map.createBlankLayer(`${i}`)));
     _.each(defaultLayerDepth, (value, key) => this.layers[key].setDepth(value));
+    _.each(this.layers, layer => layer.setCullPadding(2, 2));
   },
 
   destroyMapLayers() {
@@ -125,8 +126,11 @@ levelManager = {
     if (Tiles.find().count() === 0) this.drawTriggers(true);
   },
 
-  onTilesetUpdated(oldTileset, newTileset) {
+  onTilesetUpdated(newTileset, oldTileset) {
     if (!this.map) return;
+
+    const tileset = this.findTileset(newTileset._id);
+    tileset.tileProperties = newTileset.tiles;
 
     const oTileKeys = _.map(_.keys(oldTileset.tiles || {}), k => +k);
     const nTileKeys = _.map(_.keys(newTileset.tiles || {}), k => +k);
