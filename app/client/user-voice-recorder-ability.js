@@ -11,7 +11,7 @@ userVoiceRecorderAbility = {
   onSoundRecorded: undefined,
   progress: 0,
   recordingIndicator: undefined,
-  recordingIndicatorOffset: { x: 0, y: -85 },
+  recordingIndicatorOffset: { x: 0, y: -125 },
   recordingIndicatorRadius: 30,
 
   init(container) {
@@ -27,6 +27,10 @@ userVoiceRecorderAbility = {
       container.add.circle(0, 0, this.recordingIndicatorRadius * 0.7, 0x4da9ff),
       container.add.text(0, 0, '📣', { font: '22px Sans Open' }).setOrigin(0.5, 0.5).setDepth(99999),
     ]);
+  },
+
+  destroy() {
+    this.recordingIndicator.destroy();
   },
 
   initMediaRecorder() {

@@ -42,19 +42,14 @@
   }
 }
 
-.modal.zones-toolbox-properties {
-  z-index: 15;
+.zones-toolbox-properties {
   display: flex;
   flex-direction: column;
-  top: 0;
-
-  >div {
-    display: flex;
-  }
+  height: 100%;
 
   > :first-child {
-    flex-direction: column;
-    flex: 1;
+    flex-grow: 1;
+    flex-shrink: 1;
   }
 
   textarea {
@@ -63,7 +58,12 @@
     flex: 1;
   }
 
-  .js-zone-delete {
-    margin-left: auto;
+  .actions {
+    display: flex;
+    flex-direction: row;
+
+    .button:nth-last-child(2) {
+      margin-left: auto;
+    }
   }
 }

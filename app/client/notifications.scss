@@ -1,16 +1,6 @@
-.modal.notifications {
-  width: 500px;
-  padding: 10px 20px;
-
-  .js-close {
-    cursor: pointer;
-    position: absolute;
-    right: 10px;
-    top: 10px;
-  }
-
+.notifications {
   ul {
-    padding: 0;
+    padding: 0 10px;
 
     li {
       display: flex;

@@ -34,6 +34,11 @@ Template.editorTilesets.onCreated(function () {
     selectedTileset();
   });
 
+  hotkeys('p', event => {
+    event.preventDefault();
+    Session.set('displayTilesetPropertiesModal', Session.get('pointerTileIndex'));
+  });
+
   hotkeys('c', event => {
     event.preventDefault();
     const pointerTileIndex = Session.get('pointerTileIndex');
@@ -46,47 +51,47 @@ Template.editorTilesets.onCreated(function () {
   hotkeys('0', event => {
     event.preventDefault();
     const pointerTileIndex = Session.get('pointerTileIndex');
-    Tilesets.update(selectedTileset()._id, { $set: { [`tiles.${pointerTileIndex}`]: { layer: 0 } } });
+    Tilesets.update(selectedTileset()._id, { $set: { [`tiles.${pointerTileIndex}.layer`]: 0 } });
   });
   hotkeys('1', event => {
     event.preventDefault();
     const pointerTileIndex = Session.get('pointerTileIndex');
-    Tilesets.update(selectedTileset()._id, { $set: { [`tiles.${pointerTileIndex}`]: { layer: 1 } } });
+    Tilesets.update(selectedTileset()._id, { $set: { [`tiles.${pointerTileIndex}.layer`]: 1 } });
   });
   hotkeys('2', event => {
     event.preventDefault();
     const pointerTileIndex = Session.get('pointerTileIndex');
-    Tilesets.update(selectedTileset()._id, { $unset: { [`tiles.${pointerTileIndex}`]: { layer: 2 } } });
+    Tilesets.update(selectedTileset()._id, { $unset: { [`tiles.${pointerTileIndex}.layer`]: 2 } });
   });
   hotkeys('3', event => {
     event.preventDefault();
     const pointerTileIndex = Session.get('pointerTileIndex');
-    Tilesets.update(selectedTileset()._id, { $set: { [`tiles.${pointerTileIndex}`]: { layer: 3 } } });
+    Tilesets.update(selectedTileset()._id, { $set: { [`tiles.${pointerTileIndex}.layer`]: 3 } });
   });
   hotkeys('4', event => {
     event.preventDefault();
     const pointerTileIndex = Session.get('pointerTileIndex');
-    Tilesets.update(selectedTileset()._id, { $set: { [`tiles.${pointerTileIndex}`]: { layer: 4 } } });
+    Tilesets.update(selectedTileset()._id, { $set: { [`tiles.${pointerTileIndex}.layer`]: 4 } });
   });
   hotkeys('5', event => {
     event.preventDefault();
     const pointerTileIndex = Session.get('pointerTileIndex');
-    Tilesets.update(selectedTileset()._id, { $set: { [`tiles.${pointerTileIndex}`]: { layer: 5 } } });
+    Tilesets.update(selectedTileset()._id, { $set: { [`tiles.${pointerTileIndex}.layer`]: 5 } });
   });
   hotkeys('6', event => {
     event.preventDefault();
     const pointerTileIndex = Session.get('pointerTileIndex');
-    Tilesets.update(selectedTileset()._id, { $set: { [`tiles.${pointerTileIndex}`]: { layer: 6 } } });
+    Tilesets.update(selectedTileset()._id, { $set: { [`tiles.${pointerTileIndex}.layer`]: 6 } });
   });
   hotkeys('7', event => {
     event.preventDefault();
     const pointerTileIndex = Session.get('pointerTileIndex');
-    Tilesets.update(selectedTileset()._id, { $set: { [`tiles.${pointerTileIndex}`]: { layer: 7 } } });
+    Tilesets.update(selectedTileset()._id, { $set: { [`tiles.${pointerTileIndex}.layer`]: 7 } });
   });
   hotkeys('8', event => {
     event.preventDefault();
     const pointerTileIndex = Session.get('pointerTileIndex');
-    Tilesets.update(selectedTileset()._id, { $set: { [`tiles.${pointerTileIndex}`]: { layer: 8 } } });
+    Tilesets.update(selectedTileset()._id, { $set: { [`tiles.${pointerTileIndex}.layer`]: 8 } });
   });
 });
 
@@ -114,6 +119,7 @@ Template.editorTilesets.helpers({
     const tileset = selectedTileset();
     return Object.entries(tileset?.tiles || {}).map(([tileIndex, { layer }], idx) => ({ _id: `${tileset._id}-${idx}`, tileIndex, layer }));
   },
+  displayTilesetPropertiesModal() { return Session.get('displayTilesetPropertiesModal'); },
 });
 
 Template.editorTilesets.events({
@@ -194,5 +200,37 @@ Template.editorTilesets.events({
         }
       });
     }, null);
+  },
+});
+
+Template.tilePropertiesModal.onCreated(function () {
+  if (!Session.get('selectedTiles')) {
+    Session.set('displayTilesetPropertiesModal', undefined);
+    return;
+  }
+
+  const selectedTilesIndex = Session.get('selectedTiles')?.index;
+  this.properties = {};
+  if (selectedTileset().tiles) this.properties = selectedTileset().tiles[selectedTilesIndex] || {};
+});
+
+Template.tilePropertiesModal.helpers({
+  properties() {
+    const props = _.clone(Template.instance().properties);
+    return JSON.stringify(props, ' ', 2);
+  },
+});
+
+Template.tilePropertiesModal.events({
+  'click .js-tile-properties-cancel'() {
+    Session.set('displayTilesetPropertiesModal', undefined);
+  },
+  'click .js-tile-properties-save'() {
+    if (!Session.get('selectedTiles')) return;
+    const selectedTilesIndex = Session.get('selectedTiles')?.index;
+
+    const properties = JSON.parse($('.modal.tile-properties-modal textarea').val());
+    Tilesets.update(selectedTileset()._id, { $set: { [`tiles.${selectedTilesIndex}`]: properties } });
+    Session.set('displayTilesetPropertiesModal', undefined);
   },
 });

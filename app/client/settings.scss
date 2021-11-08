@@ -1,6 +1,9 @@
 div.settings {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-  padding: 10px;
+  padding: 0;
 
   .title {
     margin-top: 0;
@@ -11,15 +14,15 @@ div.settings {
 
   .h2 {
     font-size: 14pt;
-    margin-top: 25px;
     margin-bottom: 10px;
-    text-align: center;
+    text-align: left;
   }
 
   .options {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    padding-bottom: 25px;
 
     >* {
       width: calc(50% - 10px);
@@ -64,6 +67,19 @@ div.settings {
     }
   }
 
+  button.link {
+    border-radius: 10px;
+    background-color: transparent;
+    border: 0;
+    text-decoration: underline;
+    color: hsl(209, 100%, 45%);
+
+    &:hover {
+      background-color: transparent;
+      color: hsl(209, 100%, 25%)
+    }
+  }
+
   video {
     display: block;
     min-height: 200px;
@@ -74,6 +90,8 @@ div.settings {
   }
 
   .shortcuts {
+    flex-grow: 1;
+
     ul {
       display: flex;
       flex-direction: row;
@@ -102,19 +120,24 @@ div.settings {
     line-height: normal;
     user-select: none;
     vertical-align: middle;
-    background-color: #e6e6e6;
+    background-color: #b5bed0;
     border: 1px solid #ddd;
-    border-radius: 2px;
-    color: rgba(0, 0, 0, .8);
+    border-radius: 5px;
+    color: #4e576a;
     font-size: 100%;
     padding: .5em 1em;
     text-decoration: none;
     margin-top: 7px;
     width: 100%;
+    transition: all 0.25s;
 
     &:hover {
-      background-color: #0078e7;
+      background-color: darken(hsl(220, 22%, 76%), 15%);
       color: #fff;
+    }
+
+    &.js-go-back {
+      margin-bottom: 20px;
     }
   }
 }

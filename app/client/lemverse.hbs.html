@@ -21,32 +21,27 @@
               <button class="button audio {{#if currentUser.profile.shareAudio}}active{{/if}}" type="button">🎤</button>
               <button class="button video {{#if currentUser.profile.shareVideo}}active{{/if}}" type="button">🎥</button>
               <button class="button screen {{#if currentUser.profile.shareScreen}}active{{/if}}" type="button">📺</button>
-              <button class="button settings {{#if (Session 'displaySettings')}}active{{/if}}" type="button">⚙️</button>
+              <button class="button settings {{#if settingsOpen}}active{{/if}}" type="button">⚙️</button>
             </div>
           </div>
         </div>
         {{> reactionsToolbox}}
       {{/if}}
-      {{> zonesName}}
-      <div id="game" class="{{#if neq (Session 'editor') 0}}edit{{/if}}"></div>
+      <div id="game" class="{{#if neq (Session 'editor') 0}}edit{{/if}} {{#if isLoading}}loading{{/if}}"></div>
     </div>
     <div id="meet"></div>
     <div id="webpage">
-      <iframe src="" frameborder="0" id="webpageIframe"></iframe>
+      <iframe src="" frameBorder="0" allowfullscreen="true" id="webpageIframe"></iframe>
     </div>
   </div>
-  {{#if Session 'displaySettings'}}
-    {{> settings}}
-  {{/if}}
-  {{#if Session 'displayNotificationsPanel'}}
-    {{> notifications}}
-  {{/if}}
-  {{> userList}}
-  {{> notification}}
-  <audio class="js-audio-webrtc-in">
+  {{> zonesName}}
+  {{> gameMod}}
+  {{> modalContainer }}
+
+  <audio class="js-audio-webrtc-in" muted>
     <source src="/assets/lemverse/webrtc-in.mp3" type="audio/mp3">
   </audio>
-  <audio class="js-audio-webrtc-out">
+  <audio class="js-audio-webrtc-out" muted>
     <source src="/assets/lemverse/webrtc-out.mp3" type="audio/mp3">
   </audio>
 </template>

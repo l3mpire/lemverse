@@ -1,6 +1,17 @@
-<img alt="lemverse" src="./app/public/lemverse-light.png">
+<p align="center">
+  <img alt="lemverse" src="./app/public/lemverse.png" width="128" height="128">  
+</p>
 
----
+# Table of contents
+- [What is `lemverse`?](#what-is--lemverse--)
+- [What can I do in lemverse?](#what-can-i-do-in-lemverse-)
+- [Getting started!](#getting-started-)
+- [Deploy in production!](#deploy-in-production-)
+- [Useful commands/tricks](#useful-commands-tricks)
+- [Assets](#assets)
+- [License](#license)
+- [Credits](#credits)
+- [Screenshots](#screenshots)
 
 # What is `lemverse`?
 
@@ -14,7 +25,8 @@
 If you have answer `yes` to one of those questions, then `lemverse` is for you!  
 You can either launch it locally, on a server or join us at [lemverse.com](https://lemverse.com).
 
-ℹ️ Can't wait to install lemverse? You can go directly to the [Getting started](#getting-started) section
+> ℹ️ Can't wait to install lemverse? You can go directly to the [Getting started](#getting-started) section  
+> :warning: For the moment we only focus on compatibility with the Chrome browser  
 
 # What can I do in lemverse?
 
@@ -89,6 +101,8 @@ You can add a zone then select on the map the top left followed by the bottom ri
 
 If you want to edit a zone, simply click on either corner coordinate then click on the map.
 
+> ℹ️ Press "alt" or "option" during edition to snap world coordinates to tiles coordinates
+
 Each zone can be configured to make more things.  
 To edit those information, simply click on the name of the room (bold text).
 
@@ -105,6 +119,7 @@ To edit those information, simply click on the name of the room (bold text).
   "fullscreen": false, // Set the iframe if full screen or not
   "targetedLevelId": "", // Used for teleport zone. Should be the id of the level to teleport to.,
   "inlineURL": "https://status.lemlist.com|<p>My custom text</p>", // Create a pop-in with URL or HTML content
+  "disableCommunications": false, // Disabling communications for the user inside
   "popInConfiguration": {
     "position": "top", // Optional: Pop-in position on the zone (center, left, right, bottom or top), set "relative" for custom position using "x" & "y" (default center)
     "x": 0, // Optional: Relative position from the zone's center on X (you need to set "position" to "relative")
@@ -122,7 +137,7 @@ To help you setting up the spawn position, you simply have to walk where your wa
 remote(`setSpawnLevelXY()`)
 ```
 
-This command is reserved for admin only, and will update the spawn position of the current level you are in.
+This command is reserved for `god` only, and will update the spawn position of the current level you are in.
 
 ## Shortcuts in lemverse
 
@@ -223,65 +238,88 @@ You can use the level id everywhere it's useful, like in the `defaultLevelId` pr
 This file regroup all information about the settings.  
 Please note, that as stated in section `Deploy in production`, there is an additional file with sensitive information that will me merge with the one in the repository.
 
-```jsonc
-{
-  "public": {
-    "lp": {
-      "product": "lemverse",
-      "process": "main",
-      "admins": [], // List of admin (can use remote command) like "usr_11111111111111111"
-      "production": true,
-      "staging": false,
-      "enableLogClient": false
+ℹ️  It's better to copy the file `_settings.json` available in the app folder instead of copying the excerpt below
+<details>
+  <summary>Click to toggle contents of _settings.json</summary>
+  <p>
+
+  ```jsonc
+  {
+    "public": {
+      "lp": {
+        "product": "lemverse",
+        "process": "main",
+        "gods": [], // List of gods (can use remote command) like "usr_11111111111111111"
+        "production": true,
+        "staging": false,
+        "enableLogClient": false
+      },
+
+      "debug": false,
+
+      "defaultReaction" : "❤️",
+
+      "zoom": 1,
+
+      "peer": { // Settings about webrtc connection
+        "answerMaxAttempt": 5,
+        "answerDelayBetweenAttempt": 750,
+        "avatarAPI": "https://source.unsplash.com/320x240/?cat&sig=[user_id]", // Avatar when users do not share their camera
+        "callDelay": 250, // Delay before a call is started, useful to avoid a call when you pass by someone
+        "delayBeforeClosingCall": 1000
+      },
+
+      "meet": { // Jitsi settings
+        "serverURL": "meet.jit.si",
+        "roomDefaultName": "lemverse"
+      },
+
+      "character": { // Settings to handle velocity of the character
+        "walkSpeed": 180,
+        "runSpeed": 720
+      },
+
+      "characterNames": ["Basic", "Ghost"], // List of in repository characters (should not change since you can upload new ones)
+
+      "skins": {  // Default skins (can be defined at level)
+        "guest": "Ghost", // Simple format
+        "guest": { // Layered format
+          "body": "chr_H2ARGyiKd8wQ4hQcr"
+        },
+        "default": "Basic"
+      }
     },
 
-    "debug": false,
+    "defaultLevelId": "lvl_iLOVEaLOTlemverse", // Default level Id created at first run.
 
-    "defaultReaction" : "❤️",
-
-    "zoom": 1,
-
-    "peer": { // Settings about webrtc connection
-      "server": {
+    "peer": {
+      "path": "/peer",
+      "client": {
         "url": "peer.example.com",
         "port": 443,
-        "path": "/peer"
+        "secret": "******", // Required for turn server support
+        "credentialDuration": 86400,
+        "config": {
+          "iceServers": [{
+            "urls": "stun:stun.l.google.com:19302"
+          }],
+          "iceTransportPolicy" : "all",
+          "sdpSemantics": "unified-plan"
+        }
       },
-      "answerMaxAttempt": 5,
-      "answerDelayBetweenAttempt": 750,
-      "avatars": [ // Avatar when users do not share their camera
-        "https://www.monchat.ca/wp-content/uploads/2020/01/Fond-ecran-mignon-chaton-en-position-de-priere-1024x640.jpg",
-        "https://animalaxy.fr/wp-content/uploads/2019/02/iStock5.jpg",
-        "https://cdn.radiofrance.fr/s3/cruiser-production/2018/12/9f19b228-269f-4995-ba7f-eda054945811/1136_gettyimages-155607257.jpg",
-        "https://chatfaitdubien.fr/wp-content/uploads/2016/09/chaton.jpg",
-        "https://i.pinimg.com/564x/8b/f7/c6/8bf7c6e26f7250944e963f23f364b68f.jpg"
-      ]
-    },
-
-    "meet": { // Jitsi settings
-      "serverURL": "meet.jit.si",
-      "roomDefaultName": "lemverse"
-    },
-
-    "character": { // Settings to handle velocity of the character
-      "walkSpeed": 180,
-      "runSpeed": 720
-    },
-
-    "characterNames": ["Basic", "Ghost"], // List of in repository characters (should not change since you can upload new ones)
-
-    "skins": {  // Default skins (can be defined at level)
-      "guest": "Ghost", // Simple format
-      "guest": { // Layered format
-        "body": "chr_H2ARGyiKd8wQ4hQcr"
-      },
-      "default": "Basic"
+      // Details about the configuration bellow is available here: https://github.com/peers/peerjs-server#config--cli-options
+      "server": {
+        "port": 7010,
+        "key": "peerjs",
+        "alive_timeout": 60000,
+        "expire_timeout": 5000,
+        "allow_discovery": false,
+      }
     }
-  },
-
-  "defaultLevelId": "lvl_iLOVEaLOTlemverse" // Default level Id created at first run.
-}
+  }
 ```
+</p>
+</details>
 
 # Getting started!
 
@@ -306,6 +344,8 @@ Modify `createMyPeer` in `peer.js` to change the host to `lemverse-peer-USER-DOM
 
 Access to your local instance at: `https://lemverse-USER-DOMAIN`.
 
+> :warning: Don't forget to change the port to 443 for peers when using local tunnel
+
 ## First login
 
 Simply create your account and voila!  
@@ -322,6 +362,15 @@ remote(`Meteor.users.update(Meteor.userId(), { $set: { roles: { admin: true } }}
 Now enjoy the possibility to edit by simply pressing `E` on you keyboard (see more detail below).
 
 ℹ️ In production, to execute the `remote` command you need to add yourself (`Meteor.userId()`) in the admin array in `settings.json` (something like `usr_XXXXXX`) or hide it in the `/usr/local/etc/lemverse.json` (Server side only!).
+
+## Roles
+
+In lemverse you have different roles:
+- `Guest`: Can move everywhere but can not talk, share screen nor listen
+- `User`: Can move everywhere except admin zone (`adminOnly=true`), talk, listen, share screen
+- `Editor`: Same as `User` but can also edit the level
+- `Admin`: Same as `Editor` (for all levels) but can go to every zones and give people `Editor` roles (Through UI)
+- `God`: Same as `Admin` but can also run `remote` command from the console
 
 # Deploy in production!
 
@@ -403,17 +452,35 @@ server {
 
 Once you have done it, the subsequent deployments will be done using the command `./deploy`.
 
-## Build docker images
+## Docker images
 
-### Production
+### Official image
+
+The official lemverse image is `lempire/lemverse`.  
+If you want to pull the last version, you should do:  
+`docker pull lempire/lemverse:latest`
+
+
+### Build
+#### Production
 
 To build the latest version of lemverse, simply run the following command:  
-`docker build . -t l3mpire/lemverse:latest`
-### Development
+`docker build . -t lempire/lemverse:latest`
+
+#### Development
 
 To build from you source without having to install anything, you can run the following command:
 
-`docker build -f Dockerfile.dev . -t l3mpire/lemverse:dev`
+`docker build -f Dockerfile.dev . -t lempire/lemverse:dev`
+
+Or run the full dev env with hot reload: `docker-compose up -d`  
+It take a while to start the server.
+Then every change in the project will be automatically reloaded.
+
+### Deploy
+
+Visit `example/docker-compose-prod` to find the deployment instructions with `docker-compose` stack.
+
 ## Slack Notification upon deployment
 
 To have a slack notification, you need to install the [slack cli](https://github.com/rockymadden/slack-cli) on the workstation from which you will deploy.
@@ -451,7 +518,7 @@ The command will replace the current `tilesets` collection with the data inside 
 
 ## `remote` command
 
-Within your browser, you can safely (admin only) execute command in your backend.
+Within your browser, you can safely (`god` only) execute command in your backend.
 
 We provide a command named `remote` that will pass the content to the backend to be executed with `eval`.
 
@@ -459,6 +526,22 @@ For example, to add a beta flag to yourself execute this command in your browser
 ```js
 remote("Meteor.users.update({ _id: Meteor.userId() }, { $addToSet: { 'beta': { $each: ['myAwesomeFeature'] } } });")
 ```
+
+## Custom avatars
+
+It's possible to modify the avatars displayed during a discussion using an image API. To do so, you just have to modify the `settings.json` file.
+
+You can add dynamic parameters to your URL using `[user_id]` or `[user_name]` to access id and name of the user who requests an avatar.
+
+Website with images API :
+- [Unsplash](https://source.unsplash.com)
+- [Robohash](https://robohash.org)
+
+> Example with Robohash: `https://robohash.org/[user_name]?set=set4&bgset=bg2&size=320x240`
+
+# Assets
+
+We use paid assets from [limezu](https://limezu.itch.io/) on [itch.io](https://limezu.itch.io/moderninteriors) in the *version 35*. Please keep in mind than lemverse doesn't support the new character format for the moment.
 
 # License
 

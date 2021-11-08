@@ -1,5 +1,11 @@
 const Phaser = require('phaser');
 
+const extractLevelIdFromURL = () => {
+  const levelId = FlowRouter.getParam('levelId');
+  if (!levelId) return undefined;
+  return `lvl_${levelId}`;
+};
+
 BootScene = new Phaser.Class({
   Extends: Phaser.Scene,
 
@@ -23,13 +29,15 @@ BootScene = new Phaser.Class({
   },
 
   create() {
-    this.loadAnimations();
+    const levelId = extractLevelIdFromURL();
+    if (levelId) Meteor.call('teleportUserInLevel', levelId);
+
     this.scene.add('LoadingScene', LoadingScene, true);
-    this.scene.add('WorldScene', WorldScene);
-    this.scene.add('EditorScene', EditorScene);
-    this.scene.launch('WorldScene');
-    this.scene.launch('EditorScene');
+    this.scene.add('WorldScene', WorldScene, true);
+    this.scene.add('EditorScene', EditorScene, true);
     this.scene.bringToTop('LoadingScene');
+
+    this.loadAnimations();
   },
 
   loadAnimations() {

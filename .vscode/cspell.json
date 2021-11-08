@@ -2,6 +2,7 @@
     "version": "0.1",
     "language": "en",
     "words": [
+        "allowfullscreen",
         "anims",
         "autorun",
         "builtins",
@@ -23,6 +24,7 @@
         "graphicsmagick",
         "JITSI",
         "lemguest",
+        "Lemverse",
         "Lerp",
         "letsencrypt",
         "linebreak",

@@ -38,11 +38,11 @@ userProximitySensor = {
   },
 
   callProximityStartedForAllNearUsers() {
-    _.each(this.nearUsers, user => this.onProximityStarted(user));
+    if (this.onProximityStarted) _.each(this.nearUsers, user => this.onProximityStarted(user));
   },
 
   callProximityEndedForAllNearUsers() {
-    _.each(this.nearUsers, user => this.onProximityEnded(user));
+    if (this.onProximityEnded) _.each(this.nearUsers, user => this.onProximityEnded(user));
     this.nearUsers = {};
   },
 

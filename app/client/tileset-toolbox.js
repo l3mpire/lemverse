@@ -1,3 +1,18 @@
+const copyToClipboard = value => {
+  navigator.clipboard.writeText(value)
+    .then(() => lp.notif.success('Tiles data copied to the clipboard'))
+    .catch(() => lp.notif.error('Unable to copy tiles to the clipboard'));
+};
+
+const pointerToTile = () => {
+  const pointerX = Session.get('pointerX');
+  const pointerY = Session.get('pointerY');
+  const x = levelManager.map.worldToTileX(pointerX);
+  const y = levelManager.map.worldToTileY(pointerY);
+
+  return Tiles.find({ x, y });
+};
+
 //
 // tilesetImg
 //
@@ -22,31 +37,39 @@ Template.tileImg.helpers({
 // tilesetToolbox
 //
 const bindKeyboardShortcuts = () => {
-  hotkeys('command+z', { scope: 'editor-menu' }, event => {
+  hotkeys('command+z', { scope: scopes.editor }, event => {
     event.preventDefault();
     game.scene.keys.EditorScene.undo();
   });
-  hotkeys('shift+command+z', { scope: 'editor-menu' }, event => {
+  hotkeys('shift+command+z', { scope: scopes.editor }, event => {
     event.preventDefault();
     game.scene.keys.EditorScene.redo();
   });
-  hotkeys('0', () => Session.set('selectedTiles', { index: -1, scope: 'editor-menu' }));
-  hotkeys('1', () => Session.set('selectedTiles', { index: -2, scope: 'editor-menu' }));
-  hotkeys('2', () => Session.set('selectedTiles', { index: -3, scope: 'editor-menu' }));
-  hotkeys('3', () => Session.set('selectedTiles', { index: -4, scope: 'editor-menu' }));
-  hotkeys('4', () => Session.set('selectedTiles', { index: -5, scope: 'editor-menu' }));
-  hotkeys('5', () => Session.set('selectedTiles', { index: -6, scope: 'editor-menu' }));
-  hotkeys('6', () => Session.set('selectedTiles', { index: -7, scope: 'editor-menu' }));
-  hotkeys('7', () => Session.set('selectedTiles', { index: -8, scope: 'editor-menu' }));
-  hotkeys('8', () => Session.set('selectedTiles', { index: -9, scope: 'editor-menu' }));
-  hotkeys('c', () => Session.set('selectedTiles', { index: -99, scope: 'editor-menu' }));
+  hotkeys('ctrl+c, cmd+c', { scope: scopes.editor }, event => {
+    event.preventDefault();
+
+    const tiles = pointerToTile().fetch();
+    if (!tiles.length) return;
+    copyToClipboard(JSON.stringify(tiles, null, 2));
+  });
+  hotkeys('0', () => Session.set('selectedTiles', { index: -1, scope: scopes.editor }));
+  hotkeys('1', () => Session.set('selectedTiles', { index: -2, scope: scopes.editor }));
+  hotkeys('2', () => Session.set('selectedTiles', { index: -3, scope: scopes.editor }));
+  hotkeys('3', () => Session.set('selectedTiles', { index: -4, scope: scopes.editor }));
+  hotkeys('4', () => Session.set('selectedTiles', { index: -5, scope: scopes.editor }));
+  hotkeys('5', () => Session.set('selectedTiles', { index: -6, scope: scopes.editor }));
+  hotkeys('6', () => Session.set('selectedTiles', { index: -7, scope: scopes.editor }));
+  hotkeys('7', () => Session.set('selectedTiles', { index: -8, scope: scopes.editor }));
+  hotkeys('8', () => Session.set('selectedTiles', { index: -9, scope: scopes.editor }));
+  hotkeys('c', () => Session.set('selectedTiles', { index: -99, scope: scopes.editor }));
 };
 
 const unbindKeyboardShortcuts = () => {
-  hotkeys.unbind('command+z');
-  hotkeys.unbind('shift+command+z');
-  for (let i = 0; i < 8; i++) hotkeys.unbind(i.toString());
-  hotkeys.unbind('c');
+  hotkeys.unbind('command+z', scopes.editor);
+  hotkeys.unbind('shift+command+z', scopes.editor);
+  hotkeys.unbind('ctrl+c, cmd+c', scopes.editor);
+  for (let i = 0; i < 8; i++) hotkeys.unbind(i.toString(), scopes.editor);
+  hotkeys.unbind('c', scopes.editor);
 };
 
 Template.tilesetToolbox.onCreated(() => {
@@ -62,14 +85,15 @@ Template.tilesetToolbox.onDestroyed(() => {
   unbindKeyboardShortcuts();
 });
 
-Template.tilesetToolbox.helpers({
-  pointerTile() {
-    const pointerX = Session.get('pointerX');
-    const pointerY = Session.get('pointerY');
-    const x = game?.scene.keys.WorldScene.map.worldToTileX(pointerX);
-    const y = game?.scene.keys.WorldScene.map.worldToTileY(pointerY);
-    return Tiles.find({ x, y });
+Template.tileData.helpers({
+  hasCollision(tilesetId, index) {
+    const tileset = Tilesets.findOne(tilesetId);
+    return tileset.collisionTileIndexes?.includes(index);
   },
+});
+
+Template.tilesetToolbox.helpers({
+  pointerTile() { return pointerToTile(); },
   user(userId) { return Meteor.users.findOne(userId); },
   email() { return this?.emails?.[0]?.address; },
   selectedTilesIndex() { return Session.get('selectedTiles')?.index; },
