@@ -229,9 +229,16 @@ Template.lemverse.onCreated(function () {
       if (this.handleObserveZones) this.handleObserveZones.stop();
 
       // world clean-up
+      const levelName = Levels.findOne(levelId)?.name;
       const loadingScene = game.scene.getScene('LoadingScene');
       const worldScene = game.scene.getScene('WorldScene');
+      loadingScene.setText(levelName);
       loadingScene.show();
+
+      // update title
+      const titleParts = [Meteor.settings.public.lp.product];
+      if (levelName) titleParts.push(levelName);
+      document.title = titleParts.reverse().join(' - ');
 
       if (this.hasLevelLoaded) {
         log(`unloading current level…`);

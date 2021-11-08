@@ -63,12 +63,12 @@
           }
       },
       "server": {
-          "start": false,
-          "port": 443,
-          "key": "peerjs",
-          "alive_timeout": 60000,
-          "expire_timeout": 5000,
-          "allow_discovery": true
+        "start": true,
+        "port": 7010,
+        "key": "peerjs",
+        "alive_timeout": 60000,
+        "expire_timeout": 5000,
+        "allow_discovery": true
       }
     },
   "services": {
