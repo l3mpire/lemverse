@@ -15,8 +15,8 @@ RUN apt update && apt install -y \
         graphicsmagick
 
 
-WORKDIR /opt/src
+WORKDIR $APP_SOURCE_FOLDER
 
-RUN chown -Rh root .meteor/local
+RUN chown -Rh root .meteor
 
-CMD ["meteor", "--settings", "settings-dev.json", "--port", "9000"]
+CMD ["meteor", "--unsafe-perm", "--settings", "settings-dev.json", "--port", "9000"]
