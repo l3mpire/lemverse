@@ -22,8 +22,8 @@ game = undefined;
 const config = {
   type: Phaser.AUTO,
   parent: 'game',
-  width: screen.width / Meteor.settings.public.zoom,
-  height: screen.height / Meteor.settings.public.zoom,
+  width: window.innerWidth / Meteor.settings.public.zoom,
+  height: window.innerHeight / Meteor.settings.public.zoom,
   zoom: Meteor.settings.public.zoom,
   inputWindowEvents: false,
   pixelArt: true,
