@@ -62,6 +62,7 @@
       }
     },
     "server": {
+      "start": true,
       "port": 7010,
       "key": "peerjs",
       "alive_timeout": 60000,

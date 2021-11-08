@@ -1,7 +1,9 @@
 import { PeerServer } from 'peer';
 
-// eslint-disable-next-line new-cap
-PeerServer({ ...Meteor.settings.peer.server, path: Meteor.settings.peer.path });
+if (Meteor.settings.peer.server.start) {
+  // eslint-disable-next-line new-cap
+  PeerServer({ ...Meteor.settings.peer.server, path: Meteor.settings.peer.path });
+}
 
 AccountsGuest.enabled = true;
 AccountsGuest.forced = true;
