@@ -25,6 +25,7 @@ const config = {
   width: window.innerWidth / Meteor.settings.public.zoom,
   height: window.innerHeight / Meteor.settings.public.zoom,
   zoom: Meteor.settings.public.zoom,
+  inputWindowEvents: false,
   pixelArt: true,
   roundPixels: true,
   title: Meteor.settings.public.lp.product,
@@ -481,9 +482,29 @@ Template.lemverse.helpers({
 });
 
 Template.lemverse.events({
-  'click .button.audio'() { toggleUserProperty('shareAudio'); },
-  'click .button.video'() { toggleUserProperty('shareVideo'); },
-  'click .button.screen'() { toggleUserProperty('shareScreen'); },
-  'click .button.settings'() { toggleModal('settingsMain'); },
-  'click .button.js-notifications'() { toggleModal('notifications'); },
+  'click .button.audio'(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleUserProperty('shareAudio');
+  },
+  'click .button.video'(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleUserProperty('shareVideo');
+  },
+  'click .button.screen'(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleUserProperty('shareScreen');
+  },
+  'click .button.settings'(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleModal('settingsMain');
+  },
+  'click .button.js-notifications'(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleModal('notifications');
+  },
 });
