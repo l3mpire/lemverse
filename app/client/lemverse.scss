@@ -202,7 +202,7 @@ button:focus {
   .js-video-me {
     position: relative;
     width: 164px;
-    height: 124px;
+    height: 44px;
     background-color: #ECEFF4;
     border-radius: 10px;
     border: 2px solid white;
@@ -222,25 +222,40 @@ button:focus {
     &.active video {
       display: block;
     }
+    &.active {
+      height: 124px;
+    }
 
     .buttons {
       position: absolute;
-      bottom: -10px;
+      bottom: 0px;
       left: 0;
       right: 0;
       display: flex;
       justify-content: space-evenly;
 
+      @media only screen and (-webkit-min-device-pixel-ratio: 2), not all, not all, not all, only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+        .fix-emoji-retina {
+          padding-bottom: 0.1em;
+          span {
+            display: inline-block;
+            margin-right: -0.25em;
+          }
+        }
+      }
+
       .button {
         background-color: #ECEFF4;
-        border: 1px solid #4C566A;
+        border: 1px solid black;
         padding-left: 5px;
-        padding-right: 2px;
-        border-radius: 4px;
+        padding-right: 5px;
+        border-radius: 10px;
         height: 26px;
         width: 20px;
         font-size: 12pt;
         box-sizing: content-box;
+
+
 
         &:hover {
           background-color: #E5E9F0;
