@@ -1,9 +1,6 @@
 <template name="tileImg">
   <div style="display: inline-block; background-image: url('/api/files/{{tileset.fileId}}'); width: 16px; height: 16px; background-position: -{{tileToTilesetX}}px -{{tileToTilesetY}}px;"></div>
 </template>
-<template name="tileData">
-  <div class="tileData" style="{{#if hasCollision tilesetId index}}border-color:#FF0000;{{/if}}">{{> tileImg}} {{tileLayer}}</div>
-</template>
 
 <template name="tileData">
   <div class="tileData {{#if hasCollision tilesetId index}}has-collision{{/if}}">{{> tileImg}} {{tileLayer}}</div>
