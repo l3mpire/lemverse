@@ -287,6 +287,9 @@ peer = {
     const remoteUser = Meteor.users.findOne({ _id: remoteUserId });
     if (!remoteUser) { log(`answer call: user not found "${remoteUserId}"`); return false; }
 
+    // Send global notification
+    sendEvent('proximity-started', { user: remoteUser });
+
     // IMPORTANT :
     // It looks like Meteor update locale collection when user focus the tab (chrome put asleep the tab maybe)
     // So, the locale position is probably the old-one, blocking the logic below

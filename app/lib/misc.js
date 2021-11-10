@@ -107,3 +107,7 @@ teleportUserInLevel = (levelId, userId) => {
 
   return level.name;
 };
+
+sendEvent = (command, data = {}) => {
+  window.parent.postMessage(JSON.stringify({ command, ...data }), '*');
+};

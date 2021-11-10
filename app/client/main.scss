@@ -12,6 +12,7 @@ body {
   overscroll-behavior-x: none;
   overscroll-behavior-y: none;
   -webkit-font-smoothing: antialiased;
+  -webkit-app-region: drag;
 }
 
 .status {
