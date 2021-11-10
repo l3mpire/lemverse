@@ -128,6 +128,7 @@ module.exports = {
     reactionsAnimations: 'writable',
     viewportModes: 'writable',
     teleportUserInLevel: 'writable',
+    sendEvent: 'writable',
 
     tileGlobalIndex: 'writable',
     tileLayer: 'writable',

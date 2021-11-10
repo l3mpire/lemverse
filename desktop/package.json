@@ -1,0 +1,33 @@
+{
+  "name": "lemverse",
+  "version": "0.0.1",
+  "description": "Desktop version of lemverse",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder -p always",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^10.0.0"
+  },
+  "devDependencies": {
+    "electron": "^15.3.1",
+    "electron-builder": "^22.13.1",
+    "electron-notarize": "^1.1.1"
+  },
+  "build": {
+    "appId": "com.lempire.lemverse",
+    "productName": "lemverse",
+    "afterSign": "scripts/notarize.js",
+    "mac": {
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
+    }
+  }
+}
