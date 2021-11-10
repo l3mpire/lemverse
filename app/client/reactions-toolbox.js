@@ -24,7 +24,7 @@ Template.reactionsToolbox.events({
   'touchstart .js-reaction, mousedown .js-reaction'(e) {
     e.preventDefault();
     e.stopPropagation();
-    const { value } = event.target.dataset;
+    const { value } = e.target.dataset;
     if (!reactions.includes(value)) return;
 
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.reaction': value } });

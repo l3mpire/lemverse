@@ -31,6 +31,7 @@ Template.editToolbox.onDestroyed(() => {
   hotkeys.setScope(scopes.player);
 
   game.scene.keys.EditorScene.scene.sleep();
+  levelManager.drawTriggers(false);
 });
 
 Template.editToolbox.events({

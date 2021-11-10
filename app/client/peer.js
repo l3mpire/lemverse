@@ -184,6 +184,12 @@ peer = {
   onProximityStarted(user) {
     if (!this.sensorEnabled) return;
 
+    const userZone = zones.currentZone(user);
+    if (userZone?.disableCommunications) {
+      lp.notif.warning(`${user.profile.name} isn't available at the moment.<br /> Leave him a voice message by pressing "P"`);
+      return;
+    }
+
     this.cancelCallClose(user._id);
     this.cancelCallOpening(user._id);
 
@@ -280,6 +286,9 @@ peer = {
     if (!remoteUserId) { log(`answer call: incomplete metadata for the remote call`); return false; }
     const remoteUser = Meteor.users.findOne({ _id: remoteUserId });
     if (!remoteUser) { log(`answer call: user not found "${remoteUserId}"`); return false; }
+
+    // Send global notification
+    sendEvent('proximity-started', { user: remoteUser });
 
     // IMPORTANT :
     // It looks like Meteor update locale collection when user focus the tab (chrome put asleep the tab maybe)

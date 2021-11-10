@@ -14,6 +14,24 @@
     }
   }
 
+  .loading {
+    background-color: black;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font: 20px "Verdana";
+    color: white;
+
+    & img {
+      width: 128px;
+      height: 128px;
+      margin-bottom: 20px;
+    }
+  }
+
   .tabs {
     position: sticky;
     padding: 0;
@@ -25,7 +43,7 @@
     top: 0;
     background: #eceff3;
 
-    > button {
+    >button {
       display: block;
       flex: 1;
       text-align: center;
@@ -36,7 +54,8 @@
       border-bottom: 2px solid transparent;
       padding: 10px 0;
 
-      &.active, &:hover {
+      &.active,
+      &:hover {
         border-bottom: 2px solid #0078e7;
         color: #0078e7;
       }
@@ -85,7 +104,9 @@
     }
   }
 
-  input, textarea, select {
+  input,
+  textarea,
+  select {
     -moz-appearance: none;
     -webkit-appearance: none;
     appearance: none;
