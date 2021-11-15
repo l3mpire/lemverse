@@ -13,7 +13,7 @@ hotkeys.filter = function (event) {
   return !/^(INPUT|TEXTAREA)$/.test(tagName);
 };
 
-const toggleUserProperty = propertyName => {
+toggleUserProperty = propertyName => {
   Meteor.users.update(Meteor.userId(), { $set: { [`profile.${propertyName}`]: !Meteor.user().profile[propertyName] } });
 };
 
@@ -57,6 +57,7 @@ Template.lemverse.onCreated(function () {
   Session.set('tilesetsLoaded', false);
   Session.set('editor', 0);
   Session.set('modal', undefined);
+  Session.set('menu', undefined);
 
   window.addEventListener('dblclick', () => sendEvent('toggle-fullscreen'));
   window.addEventListener('beforeunload', () => Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } }));

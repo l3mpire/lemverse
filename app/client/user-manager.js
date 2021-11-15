@@ -14,6 +14,11 @@ const characterInteractionConfiguration = {
 };
 const unavailablePlayerColor = 0x888888;
 
+const getRelativePositionToCanvas = (gameObject, camera) => ({
+  x: (gameObject.x - camera.worldView.x) * camera.zoom,
+  y: (gameObject.y - camera.worldView.y) * camera.zoom,
+});
+
 charactersParts = Object.freeze({
   body: 0,
   outfit: 1,
@@ -106,11 +111,19 @@ userManager = {
 
     if (!user.profile.guest) {
       playerParts.setInteractive(characterInteractionConfiguration);
-      playerParts.on('pointerover', () => this.setTint(this.players[user._id], 0xFFAAFF));
+      playerParts.on('pointerover', () => {
+        if (user._id === Meteor.userId()) {
+          Session.set('menu', true);
+          const screenPosition = getRelativePositionToCanvas(this.players[user._id], this.scene.cameras.main);
+          Session.set('menu-position', screenPosition);
+        } else this.setTint(this.players[user._id], 0xFFAAFF);
+      });
+
       playerParts.on('pointerout', () => this.setTintFromState(this.players[user._id]));
       playerParts.on('pointerup', () => {
         if (isModalOpen() || Session.get('editor')) return;
-        Session.set('modal', { template: 'profile', userId: user._id });
+        if (user._id === Meteor.userId()) Session.set('menu', !Session.get('menu'));
+        else Session.set('modal', { template: 'profile', userId: user._id });
       });
     }
 
@@ -462,6 +475,7 @@ userManager = {
       this.player.direction = direction;
       this.pauseAnimation(this.player, false);
       this.updateAnimation(this.player, direction);
+      Session.set('menu', false);
     } else this.pauseAnimation(this.player, true);
   },
 

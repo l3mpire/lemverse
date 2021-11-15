@@ -115,6 +115,7 @@ module.exports = {
     generateTURNCredentials: 'writable',
     isModalOpen: 'writable',
     toggleModal: 'writable',
+    toggleUserProperty: 'writable',
     scopes: 'writable',
     destroyVideoSource: 'writable',
     waitFor: 'writable',
