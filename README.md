@@ -265,7 +265,9 @@ Please note, that as stated in section `Deploy in production`, there is an addit
 
       "character": { // Settings to handle velocity of the character
         "walkSpeed": 180,
-        "runSpeed": 720
+        "runSpeed": 720,
+        "sensorNearDistance": 75, // Distance required before starting a call with an user
+        "sensorFarDistance": 85  // Distance required before closing a call with an user
       },
 
       "characterNames": ["Basic", "Ghost"], // List of in repository characters (should not change since you can upload new ones)
