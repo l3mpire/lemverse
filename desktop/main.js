@@ -38,8 +38,8 @@ const createWindow = () => {
     skipTaskbar: true,
     closable: true,
     autoHideMenuBar: true,
-    transparent: true,
-    shadow: true,
+    transparent: false,
+    shadow: false,
     webPreferences: {
       webSecurity: !isDev,
       devTools: isDev,
