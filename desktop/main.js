@@ -43,7 +43,7 @@ const createWindow = () => {
     webPreferences: {
       webSecurity: !isDev,
       devTools: isDev,
-      preload: path.join(__dirname, 'renderer.js'),
+      preload: path.join(__dirname, 'preload.js'),
     },
   });
 
