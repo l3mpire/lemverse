@@ -101,6 +101,8 @@ app.whenReady().then(() => {
   // set the window under the tray icon on first load
   const position = calculateWindowPositionUnderTrayIcon();
   window.setPosition(position.x, position.y, false);
+
+  showWindow(true);
 });
 
 ipcMain.on('asynchronous-message', (event, message) => {
