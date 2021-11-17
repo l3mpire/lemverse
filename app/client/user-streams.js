@@ -196,6 +196,9 @@ userStreams = {
         videoElm.autoplay = true;
         videoElm.srcObject = stream;
 
+        // set framerate after stream creation due to a deprecated constraints issue with the frameRate attribute
+        this.applyConstraints(streamTypes.screen, 'video', this.getStreamConstraints(streamTypes.screen));
+
         return stream;
       });
   },

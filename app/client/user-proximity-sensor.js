@@ -2,8 +2,8 @@ const Phaser = require('phaser');
 
 userProximitySensor = {
   nearUsers: {},
-  nearDistance: 75,
-  farDistance: 85,
+  nearDistance: Meteor.settings.public.character.sensorNearDistance,
+  farDistance: Meteor.settings.public.character.sensorFarDistance,
   onProximityStarted: undefined,
   onProximityEnded: undefined,
 

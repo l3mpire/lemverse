@@ -1,4 +1,4 @@
-const { ipcMain, app, BrowserWindow, Menu, Tray } = require('electron');
+const { ipcMain, app, globalShortcut, BrowserWindow, Menu, Tray } = require('electron');
 const path = require('path');
 const settings = require('./settings.json');
 
@@ -38,17 +38,18 @@ const createWindow = () => {
     skipTaskbar: true,
     closable: true,
     autoHideMenuBar: true,
-    transparent: true,
-    shadow: true,
+    transparent: false,
+    shadow: false,
     webPreferences: {
       webSecurity: !isDev,
       devTools: isDev,
-      preload: path.join(__dirname, 'renderer.js'),
+      preload: path.join(__dirname, 'preload.js'),
     },
   });
 
   window.loadURL(appURL);
   window.setAlwaysOnTop(true, 'screen-saver');
+  window.setSkipTaskbar(true);
   window.setVisibleOnAllWorkspaces(true);
   window.on('focus', () => cancelWindowAutoClose());
 };
@@ -77,19 +78,31 @@ const createTrayMenu = () => {
   tray.setToolTip('lemverse');
   tray.setIgnoreDoubleClickEvents(true);
 
-  const contextMenu = Menu.buildFromTemplate([]);
-  tray.setContextMenu(contextMenu);
+  const menu = Menu.buildFromTemplate([{
+    label: 'Debug', click() { window?.openDevTools(); },
+  }, {
+    role: 'quit',
+  }]);
 
-  tray.on('mouse-down', () => toggleWindow(undefined, true));
+  tray.on('right-click', () => tray.popUpContextMenu(menu));
+  tray.on('click', () => toggleWindow(undefined, true));
 };
 
 app.whenReady().then(() => {
   createWindow();
   createTrayMenu();
 
+  // Hide icon in the dock
+  if (process.platform === 'darwin') app.dock.hide();
+
+  // Shortcut
+  globalShortcut.register('Alt+Cmd+v', () => toggleWindow(undefined, true));
+
   // set the window under the tray icon on first load
   const position = calculateWindowPositionUnderTrayIcon();
   window.setPosition(position.x, position.y, false);
+
+  showWindow(true);
 });
 
 ipcMain.on('asynchronous-message', (event, message) => {

@@ -1,0 +1,22 @@
+<template name="radialMenuItem">
+  <li style="top: {{x}}px; left: {{y}}px;">
+    {{#if toggle}}
+      <button type="button" class="js-toggle {{#if isActive toggle}}on{{else}}off{{/if}}">{{icon}}</button>
+    {{else}}
+      <button type="button" class="js-button">{{icon}}</button>
+    {{/if}}
+  </li>
+</template>
+
+<template name="radialMenu">
+  <div class="radial-menu-container" style="top: {{position.y}}px; left: {{position.x}}px;">
+    <div class="radial-menu {{#if open}}show{{/if}}">
+      <ul>
+        {{#each item in items}}
+          {{> radialMenuItem item}}
+        {{/each}}
+      </ul>
+      <div class="background"></div>
+    </div>
+  </div>
+</template>

@@ -25,7 +25,9 @@
             </div>
           </div>
         </div>
-        {{> reactionsToolbox}}
+        {{#unless isBeta "radial-menu"}}
+          {{> reactionsToolbox}}
+        {{/unless}}
       {{/if}}
       <div id="game" class="{{#if neq (Session 'editor') 0}}edit{{/if}} {{#if isLoading}}loading{{/if}}"></div>
     </div>
@@ -37,6 +39,9 @@
   {{> zonesName}}
   {{> gameMod}}
   {{> modalContainer }}
+  {{#if isBeta "radial-menu"}}
+    {{> radialMenu }}
+  {{/if}}
 
   <audio class="js-audio-webrtc-in" muted>
     <source src="/assets/lemverse/webrtc-in.mp3" type="audio/mp3">

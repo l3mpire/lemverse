@@ -1,3 +1,17 @@
-const { ipcRenderer } = require('electron');
+/**
+ * Override the default "getDisplayMedia" method with the electron one.
+ */
+navigator.mediaDevices.getDisplayMedia = async () => {
+  const selectedSource = await globalThis.electronCustomDisplayMedia();
+  const mergedConstraints = {
+    audio: false,
+    video: {
+      mandatory: {
+        chromeMediaSource: 'desktop',
+        chromeMediaSourceId: selectedSource.id,
+      },
+    },
+  };
 
-window.addEventListener('message', e => ipcRenderer.send('asynchronous-message', e.data), false);
+  return navigator.mediaDevices.getUserMedia(mergedConstraints);
+};
