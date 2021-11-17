@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@jitsi/electron-sdk": "^3.0.1",
     "dotenv": "^10.0.0"
   },
   "devDependencies": {
@@ -27,7 +28,15 @@
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "entitlements": "build/entitlements.mac.plist",
-      "entitlementsInherit": "build/entitlements.mac.plist"
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "extendInfo": {
+        "LSUIElement": 1
+      }
+    },
+    "dmg": {
+      "sign": false,
+      "title": "lemverse",
+      "icon": "Icon.png"
     }
   }
 }

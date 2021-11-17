@@ -2,7 +2,7 @@
  * Override the default "getDisplayMedia" method with the electron one.
  */
 navigator.mediaDevices.getDisplayMedia = async () => {
-  const selectedSource = await globalThis.electronCustomDisplayMedia();
+  const selectedSource = await globalThis.electron.customDisplayMedia();
   const mergedConstraints = {
     audio: false,
     video: {

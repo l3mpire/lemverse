@@ -2,6 +2,7 @@
   "appBundleId": "com.lempire.lemverse",
   "appleId": "",
   "appleIdPassword": "",
+  "name": "lemverse",
   "website": "https://app.lemverse.com",
   "window": {
     "autoCloseDelay": 2500,
