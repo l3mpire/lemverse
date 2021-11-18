@@ -335,6 +335,7 @@ Template.lemverse.onCreated(function () {
       });
 
       this.hasLevelLoaded = true;
+      Session.set('menu', undefined);
       game.scene.getScene('EditorScene')?.init();
     });
   });
