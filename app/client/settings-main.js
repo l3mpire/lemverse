@@ -26,7 +26,7 @@ Template.settingsMain.events({
     const levelIdWithoutPrefix = levelId.substring(levelId.lastIndexOf('_') + 1);
 
     const path = FlowRouter.path('invite', { levelId: levelIdWithoutPrefix });
-    const url = `${window.location.host}${path}`;
+    const url = `${window.location.protocol}//${window.location.host}${path}`;
     navigator.clipboard.writeText(url).then(() => lp.notif.success('✂️ Invitation copied to your clipboard'));
 
     return false;
