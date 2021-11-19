@@ -6,13 +6,18 @@
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder -p always",
+    "dist": "electron-builder -p always --universal",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
+  "repository": "github:l3mpire/lemverse",
   "dependencies": {
-    "dotenv": "^10.0.0"
+    "@jitsi/electron-sdk": "^3.0.1",
+    "dotenv": "^10.0.0",
+    "electron-log": "^4.4.1",
+    "electron-reload": "^2.0.0-alpha.1",
+    "electron-updater": "^4.3.9"
   },
   "devDependencies": {
     "electron": "^15.3.1",
@@ -27,7 +32,18 @@
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "entitlements": "build/entitlements.mac.plist",
-      "entitlementsInherit": "build/entitlements.mac.plist"
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "extendInfo": {
+        "LSUIElement": 1
+      }
+    },
+    "publish": {
+      "provider": "github"
+    },
+    "dmg": {
+      "sign": false,
+      "title": "lemverse",
+      "icon": "Icon.png"
     }
   }
 }

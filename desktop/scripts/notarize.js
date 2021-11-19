@@ -6,6 +6,11 @@ exports.default = async function notarizing(context) {
   const { electronPlatformName, appOutDir } = context;
   if (electronPlatformName !== 'darwin') return;
 
+  if (!appBundleId || !appleId || !appleId) {
+    console.log('Skipping notarization');
+    return;
+  }
+
   const appName = context.packager.appInfo.productFilename;
   await notarize({
     appBundleId,

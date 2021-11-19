@@ -4,7 +4,7 @@ echo Are you sure you want to deploy in production? \(ctrl-c if not\)
 read
 
 WHO=`whoami`
-LEMVERSE_CHANNEL="${LEMVERSE_CHANNEL:-#dev-notifications}"
+LEMVERSE_CHANNEL="${LEMVERSE_CHANNEL:-#dev-notif-info}"
 
 command -v slack >/dev/null 2>&1 && slack chat send " --------------------:mario_luigi_dance::mario_luigi_dance: *lemverse* starting deployment by _ $WHO _... :mario_luigi_dance::mario_luigi_dance:-------------------" "$LEMVERSE_CHANNEL" > /dev/null
 

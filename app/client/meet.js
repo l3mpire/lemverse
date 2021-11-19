@@ -26,8 +26,6 @@ meet = {
       height: '100%',
       parentNode: document.querySelector('#meet'),
       configOverwrite: {
-        // startWithAudioMuted: !mediaManager.constraintsMedia.audio,
-        // startWithVideoMuted: mediaManager.constraintsMedia.video === false,
         prejoinPageEnabled: false,
       },
       userInfo: {
@@ -38,7 +36,6 @@ meet = {
         SHOW_CHROME_EXTENSION_BANNER: false,
         MOBILE_APP_PROMO: false,
         HIDE_INVITE_MORE_HEADER: true,
-        // Note: hiding brand does not seem to work, we probably need to put this on the server side.
         SHOW_BRAND_WATERMARK: false,
         SHOW_JITSI_WATERMARK: false,
         SHOW_POWERED_BY: false,
@@ -60,6 +57,11 @@ meet = {
 
     peer.destroy();
     userProximitySensor.callProximityEndedForAllNearUsers();
+
+    if (window.electron) {
+      const { setupScreenSharingRender } = window.electron.jitsiMeetElectronUtils;
+      setupScreenSharingRender(meet.api);
+    }
   },
 
   close() {
