@@ -1,4 +1,6 @@
-const { ipcMain, app, globalShortcut, BrowserWindow, Menu, Tray } = require('electron');
+const { ipcMain, app, dialog, globalShortcut, BrowserWindow, Menu, Tray } = require('electron');
+const log = require('electron-log');
+const { autoUpdater } = require('electron-updater');
 const { setupScreenSharingMain } = require('@jitsi/electron-sdk');
 
 const path = require('path');
@@ -11,6 +13,17 @@ const iconPath = `${__dirname}/assets/icon-tray.png`;
 let autoCloseCallback;
 let tray;
 let mainWindow;
+
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+
+// Hot-reload
+if (isDev) {
+  // eslint-disable-next-line global-require, import/no-dynamic-require
+  const electron = require(`${__dirname}/node_modules/electron`);
+  // eslint-disable-next-line global-require
+  require('electron-reload')(__dirname, { electron });
+}
 
 // Allow multi-screens window
 if (process.platform === 'darwin') app.dock.hide();
@@ -89,12 +102,26 @@ const toggleFullScreen = () => {
   mainWindow.setFullScreen(!mainWindow.isFullScreen());
 };
 
+const showAboutMenu = () => {
+  const dialogOpts = {
+    type: 'info',
+    buttons: [],
+    title: 'About',
+    message: '',
+    detail: `An application made by lempire (v${app.getVersion()}).`,
+  };
+
+  dialog.showMessageBox(dialogOpts);
+};
+
 const createTrayMenu = () => {
   tray = new Tray(iconPath);
   tray.setToolTip('lemverse');
   tray.setIgnoreDoubleClickEvents(true);
 
   const menu = Menu.buildFromTemplate([{
+    label: 'About', click() { showAboutMenu(); },
+  }, {
     label: 'Debug', click() { mainWindow?.openDevTools(); },
   }, {
     role: 'quit',
@@ -119,9 +146,11 @@ app.whenReady().then(() => {
   // Shortcut
   globalShortcut.register('Alt+Cmd+v', () => toggleWindow(undefined, true));
 
-  // set the window under the tray icon on first load
+  // Set the window under the tray icon on first load
   const position = calculateWindowPositionUnderTrayIcon();
   mainWindow.setPosition(position.x, position.y, false);
+
+  if (!isDev) setInterval(() => autoUpdater.checkForUpdates(), settings.checkUpdateInterval);
 });
 
 ipcMain.on('asynchronous-message', (event, data) => {
@@ -135,4 +164,23 @@ ipcMain.on('asynchronous-message', (event, data) => {
 
     toggleWindow(true, false);
   } else if (data.command === 'toggle-fullscreen') toggleFullScreen();
+});
+
+autoUpdater.on('update-downloaded', () => {
+  const dialogOpts = {
+    type: 'info',
+    buttons: ['Restart', 'Later'],
+    title: 'Application Update',
+    message: '',
+    detail: 'A new version has been downloaded. Restart the application to apply the updates.',
+  };
+
+  dialog.showMessageBox(dialogOpts).then(returnValue => {
+    if (returnValue.response === 0) autoUpdater.quitAndInstall();
+  });
+});
+
+autoUpdater.on('error', message => {
+  console.error('There was a problem updating the application');
+  console.error(message);
 });

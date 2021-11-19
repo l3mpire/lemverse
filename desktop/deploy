@@ -14,4 +14,9 @@ fi
 
 nvm use 14
 
-npm run dist
+GH_TOKEN=MY_TOKEN npm run dist
+
+open https://github.com/l3mpire/lemverse/releases
+echo release the draft version
+echo click on update
+echo restart lemverse

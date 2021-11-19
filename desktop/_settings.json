@@ -4,6 +4,7 @@
   "appleIdPassword": "",
   "name": "lemverse",
   "website": "https://app.lemverse.com",
+  "checkUpdateInterval": 1800000,
   "window": {
     "autoCloseDelay": 2500,
     "width": 640,
