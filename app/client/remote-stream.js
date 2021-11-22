@@ -59,6 +59,10 @@ Template.remoteStream.onCreated(function () {
   this.talking = new ReactiveVar(false);
 });
 
+Template.remoteStream.onDestroyed(() => {
+  if (!isModalOpen()) game.scene.getScene('WorldScene')?.enableMouse(true);
+});
+
 Template.remoteStream.helpers({
   mediaState() { return Meteor.users.findOne({ _id: this.remoteUser._id })?.profile; },
   hasMainStream() { return this.remoteUser.main?.srcObject; },
@@ -77,16 +81,11 @@ Template.remoteStream.helpers({
 });
 
 Template.remoteStream.events({
-  'click .js-webcam'(e) {
+  'click .js-webcam, click .js-screenshare'(e) {
     e.preventDefault();
-    const full = $(e.target).hasClass('fullscreen');
-    $('.fullscreen').removeClass('fullscreen');
-    if (!full) $(e.target).addClass('fullscreen');
-  },
-  'click .js-screenshare'(e) {
-    e.preventDefault();
-    const full = $(e.target).hasClass('fullscreen');
-    $('.fullscreen').removeClass('fullscreen');
-    if (!full) $(e.target).addClass('fullscreen');
+    if (!e.target.querySelectorAll('video').length) return;
+    e.target.classList.toggle('fullscreen');
+
+    game.scene.getScene('WorldScene')?.enableMouse(!e.target.classList.contains('fullscreen'));
   },
 });

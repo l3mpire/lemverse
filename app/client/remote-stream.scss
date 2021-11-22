@@ -46,6 +46,11 @@
     z-index: 10;
   }
 
+  img,
+  video {
+    pointer-events: none;
+  }
+
   .webcam {
     width: 320px;
     height: 240px;
@@ -122,7 +127,8 @@
     }
   }
 
-  video.fullscreen {
+  .screenshare.fullscreen,
+  .webcam.fullscreen {
     position: fixed;
     top: 0;
     left: 0;

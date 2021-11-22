@@ -152,6 +152,12 @@ WorldScene = new Phaser.Class({
     else keyboard.disableGlobalCapture();
   },
 
+  enableMouse(value) {
+    const { mouse } = this.input;
+    if (!mouse) return;
+    mouse.enabled = value;
+  },
+
   updateViewport(mode) {
     if (typeof mode !== 'string') mode = this.viewportMode;
 

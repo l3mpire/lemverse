@@ -114,16 +114,14 @@ userManager = {
       playerParts.on('pointerover', () => {
         if (user._id === Meteor.userId()) {
           Session.set('menu', true);
-          const screenPosition = getRelativePositionToCanvas(this.players[user._id], this.scene.cameras.main);
-          Session.set('menu-position', screenPosition);
+          Session.set('menu-position', getRelativePositionToCanvas(this.players[user._id], this.scene.cameras.main));
         } else this.setTint(this.players[user._id], 0xFFAAFF);
       });
 
       playerParts.on('pointerout', () => this.setTintFromState(this.players[user._id]));
       playerParts.on('pointerup', () => {
-        if (isModalOpen() || Session.get('editor')) return;
         if (user._id === Meteor.userId()) Session.set('menu', !Session.get('menu'));
-        else Session.set('modal', { template: 'profile', userId: user._id });
+        else if (!Session.get('menu')) Session.set('modal', { template: 'profile', userId: user._id });
       });
     }
 

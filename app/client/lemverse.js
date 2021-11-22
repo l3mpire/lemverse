@@ -85,11 +85,14 @@ Template.lemverse.onCreated(function () {
   this.autorun(() => {
     if (!Session.get('sceneWorldReady')) return;
 
+    const menuOpen = Session.set('menu');
     const modalOpen = isModalOpen();
     Tracker.nonreactive(() => {
+      const interfaceOpen = menuOpen || modalOpen;
       const worldScene = game.scene.getScene('WorldScene');
-      worldScene.enableKeyboard(!modalOpen, !modalOpen);
       userManager.pauseAnimation(undefined, modalOpen);
+      worldScene.enableMouse(!interfaceOpen);
+      worldScene.enableKeyboard(!modalOpen, !modalOpen);
     });
   });
 
