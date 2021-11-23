@@ -141,21 +141,22 @@
     border-radius: 0;
     margin: 0;
 
-    video {
-      height: auto;
-      max-width: 100%;
-      border-right: 2px solid white;
-      width: 100%;
-      background-image: url("loader-white.gif");
-      background-size: inherit;
-      background-repeat: no-repeat;
-      background-position: center;
-    }
-
+    video,
     img {
       height: auto;
       max-width: 100%;
       width: 100%;
+      border-right: 2px solid white;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    video {
+      background-image: url("loader-white.gif");
+      background-size: inherit;
+      background-repeat: no-repeat;
+      background-position: center;
     }
   }
 }
