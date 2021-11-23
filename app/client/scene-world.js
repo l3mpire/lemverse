@@ -8,6 +8,12 @@ viewportModes = Object.freeze({
   splitScreen: 'split-screen',
 });
 
+const zoomConfig = Object.freeze({
+  min: 0.8,
+  max: 1.5,
+  delta: 450,
+});
+
 const onZoneEntered = e => {
   const { guest } = Meteor.user().profile;
   const { zone } = e.detail;
@@ -65,6 +71,11 @@ WorldScene = new Phaser.Class({
     this.events.on('sleep', this.sleepMethod, this);
     this.scale.on('resize', this.updateViewportMethod, this);
     Session.set('sceneWorldReady', true);
+
+    this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY) => {
+      const zoom = Math.min(Math.max(this.cameras.main.zoom + (deltaY / zoomConfig.delta), zoomConfig.min), zoomConfig.max);
+      this.cameras.main.setZoom(zoom);
+    });
   },
 
   create() {
