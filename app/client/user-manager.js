@@ -112,6 +112,8 @@ userManager = {
     if (!user.profile.guest) {
       playerParts.setInteractive(characterInteractionConfiguration);
       playerParts.on('pointerover', () => {
+        if (Session.get('editor')) return;
+
         if (user._id === Meteor.userId()) {
           Session.set('menu', true);
           Session.set('menu-position', getRelativePositionToCanvas(this.players[user._id], this.scene.cameras.main));
