@@ -341,10 +341,21 @@ peer = {
         } catch (err) { reconnected = false; }
 
         // peerjs reconnect doesn't offer a promise or callback so we have to wait a certain time until the reconnection is done
-        if (reconnected) return waitFor(() => this.isPeerValid(this.peerInstance), 5, 250).then(() => resolve(this.peerInstance));
+        if (reconnected) {
+          return waitFor(() => this.isPeerValid(this.peerInstance), 5, 250)
+            .then(() => resolve(this.peerInstance))
+            .catch(() => {
+              this.destroy();
+              lp.notif.error('Unable to reconnect to the peer server');
+            });
+        }
       }
 
-      if (!this.peerInstance && this.peerLoading) return waitFor(() => this.peerInstance !== undefined, 5, 250).then(() => resolve(this.peerInstance));
+      if (!this.peerInstance && this.peerLoading) {
+        return waitFor(() => this.peerInstance !== undefined, 5, 250)
+          .then(() => resolve(this.peerInstance))
+          .catch(() => lp.notif.error('Unable to get a valid peer instance'));
+      }
 
       if (debug) log('Peer invalid, creating new peer…');
       this.peerInstance = undefined;
