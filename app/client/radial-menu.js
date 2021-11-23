@@ -50,6 +50,7 @@ Template.radialMenuItem.helpers({
 Template.radialMenu.onCreated(function () {
   this.items = new ReactiveVar([]);
   document.addEventListener('mousemove', onMouseMove);
+  Session.set('menu-position', { x: 0, y: 0 });
 
   this.autorun(() => {
     const open = Session.get('menu');
