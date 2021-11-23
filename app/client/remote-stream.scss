@@ -151,6 +151,12 @@
       background-repeat: no-repeat;
       background-position: center;
     }
+
+    img {
+      height: auto;
+      max-width: 100%;
+      width: 100%;
+    }
   }
 }
 
