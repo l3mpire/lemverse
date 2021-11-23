@@ -84,8 +84,13 @@ Template.remoteStream.events({
   'click .js-webcam, click .js-screenshare'(e) {
     e.preventDefault();
     if (!e.target.querySelectorAll('video').length) return;
-    e.target.classList.toggle('fullscreen');
 
+    // remove all fullscreen streams before
+    document.querySelectorAll('.stream .fullscreen').forEach(stream => {
+      if (stream !== e.target) stream.classList.remove('fullscreen');
+    });
+
+    e.target.classList.toggle('fullscreen');
     game.scene.getScene('WorldScene')?.enableMouse(!e.target.classList.contains('fullscreen'));
   },
 });
