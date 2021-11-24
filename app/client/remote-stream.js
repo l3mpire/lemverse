@@ -3,6 +3,17 @@ const delayBetweenAttempt = 2000; // in ms
 
 const isRemoteUserSharingMedia = (user, type) => (type === streamTypes.screen ? user.shareScreen : user.shareAudio || user.shareVideo);
 
+const removeAllFullScreenElement = ignoredElement => {
+  document.querySelectorAll('.stream .fullscreen').forEach(stream => {
+    if (stream.parentElement !== ignoredElement) stream.classList.remove('fullscreen');
+  });
+};
+
+const updatePhaserMouseInputState = () => {
+  const hasStreamInFullScreen = document.querySelectorAll('.stream .fullscreen').length;
+  game.scene.getScene('WorldScene')?.enableMouse(!hasStreamInFullScreen);
+};
+
 const checkMediaAvailable = (template, type) => {
   const { remoteUser } = template.data;
   if (!remoteUser._id) {
@@ -81,16 +92,20 @@ Template.remoteStream.helpers({
 });
 
 Template.remoteStream.events({
+  'click .stream video, click .stream img'(e) {
+    e.preventDefault();
+    removeAllFullScreenElement(e.target);
+    e.target.classList.toggle('fullscreen');
+
+    updatePhaserMouseInputState();
+  },
   'click .js-webcam, click .js-screenshare'(e) {
     e.preventDefault();
-    if (!e.target.querySelectorAll('video').length) return;
+    removeAllFullScreenElement(e.target);
 
-    // remove all fullscreen streams before
-    document.querySelectorAll('.stream .fullscreen').forEach(stream => {
-      if (stream !== e.target) stream.classList.remove('fullscreen');
-    });
+    const child = e.target.querySelector('video, img');
+    child?.classList.toggle('fullscreen');
 
-    e.target.classList.toggle('fullscreen');
-    game.scene.getScene('WorldScene')?.enableMouse(!e.target.classList.contains('fullscreen'));
+    updatePhaserMouseInputState();
   },
 });
