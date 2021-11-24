@@ -1,6 +1,6 @@
 {
   "name": "lemverse",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "description": "Desktop version of lemverse",
   "main": "main.js",
   "scripts": {
@@ -29,13 +29,20 @@
     "productName": "lemverse",
     "afterSign": "scripts/notarize.js",
     "mac": {
+      "category": "public.app-category.business",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
-      "entitlements": "build/entitlements.mac.plist",
-      "entitlementsInherit": "build/entitlements.mac.plist",
+      "entitlements": "./build/entitlements.mac.plist",
+      "entitlementsInherit": "./build/entitlements.mac.plist",
       "extendInfo": {
+        "NSMicrophoneUsageDescription": "Please give us access to your microphone",
+        "NSCameraUsageDescription": "Please give us access to your camera",
         "LSUIElement": 1
       }
+    },
+    "mas": {
+        "entitlements": "./build/entitlements.mas.plist",
+        "entitlementsInherit": "./build/entitlements.mas.inherit.plist"
     },
     "publish": {
       "provider": "github"
