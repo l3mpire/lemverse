@@ -144,8 +144,10 @@ app.whenReady().then(() => {
   const position = calculateWindowPositionUnderTrayIcon();
   mainWindow.setPosition(position.x, position.y, false);
 
-  autoUpdater.checkForUpdates();
-  if (!isDev) setInterval(() => autoUpdater.checkForUpdates(), settings.checkUpdateInterval);
+  if (!isDev) {
+    autoUpdater.checkForUpdates();
+    setInterval(() => autoUpdater.checkForUpdates(), settings.checkUpdateInterval);
+  }
 });
 
 ipcMain.on('asynchronous-message', (event, data) => {
