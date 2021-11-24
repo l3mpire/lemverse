@@ -1,4 +1,4 @@
-const { ipcMain, app, dialog, globalShortcut, BrowserWindow, Menu, Tray } = require('electron');
+const { ipcMain, app, dialog, globalShortcut, shell, BrowserWindow, Menu, Tray } = require('electron');
 const log = require('electron-log');
 const { autoUpdater } = require('electron-updater');
 const { setupScreenSharingMain } = require('@jitsi/electron-sdk');
@@ -87,6 +87,12 @@ const createWindow = () => {
   mainWindow.on('focus', () => cancelWindowAutoClose());
   mainWindow.on('closed', () => { mainWindow = null; });
   mainWindow.once('ready-to-show', () => showWindow(true));
+
+  // open target="_blank" links in the default browser
+  mainWindow.webContents.on('new-window', (e, url) => {
+    e.preventDefault();
+    shell.openExternal(url);
+  });
 };
 
 const toggleWindow = (value, autoFocus = false) => {
