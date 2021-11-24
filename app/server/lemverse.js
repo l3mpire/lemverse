@@ -5,6 +5,7 @@ if (Meteor.settings.peer.server.start) {
   PeerServer({ ...Meteor.settings.peer.server, path: Meteor.settings.peer.path });
 }
 
+Accounts.emailTemplates.from = Meteor.settings.email.from;
 AccountsGuest.enabled = true;
 AccountsGuest.forced = true;
 AccountsGuest.name = true;
