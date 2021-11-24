@@ -102,25 +102,13 @@ const toggleFullScreen = () => {
   mainWindow.setFullScreen(!mainWindow.isFullScreen());
 };
 
-const showAboutMenu = () => {
-  const dialogOpts = {
-    type: 'info',
-    buttons: [],
-    title: 'About',
-    message: '',
-    detail: `An application made by lempire (v${app.getVersion()}).`,
-  };
-
-  dialog.showMessageBox(dialogOpts);
-};
-
 const createTrayMenu = () => {
   tray = new Tray(iconPath);
   tray.setToolTip('lemverse');
   tray.setIgnoreDoubleClickEvents(true);
 
   const menu = Menu.buildFromTemplate([{
-    label: 'About', click() { showAboutMenu(); },
+    label: `lemverse (v${app.getVersion()})`, click() { autoUpdater.checkForUpdates(); },
   }, {
     label: 'Debug', click() { mainWindow?.openDevTools(); },
   }, {
@@ -150,6 +138,7 @@ app.whenReady().then(() => {
   const position = calculateWindowPositionUnderTrayIcon();
   mainWindow.setPosition(position.x, position.y, false);
 
+  autoUpdater.checkForUpdates();
   if (!isDev) setInterval(() => autoUpdater.checkForUpdates(), settings.checkUpdateInterval);
 });
 
