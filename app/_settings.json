@@ -48,6 +48,10 @@
 
   "defaultLevelId": "lvl_iLOVEaLOTlemverse",
 
+  "email": {
+    "from": "The lembot <contact@m.lemverse.com>"
+  },
+
   "peer": {
     "path": "/peer",
     "client": {

@@ -1,5 +1,9 @@
 import stringify from 'fast-json-stable-stringify';
 
+Meteor.startup(() => {
+  Accounts.emailTemplates.from = Meteor.settings.email.from;
+});
+
 Accounts.onCreateUser((options, user) => {
   log('onCreateUser', { options, user });
   user._id = `usr_${Random.id()}`;

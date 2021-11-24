@@ -283,6 +283,10 @@ Please note, that as stated in section `Deploy in production`, there is an addit
 
     "defaultLevelId": "lvl_iLOVEaLOTlemverse", // Default level Id created at first run.
 
+    "email": {
+      "from": "The lembot <contact@domain.com>"
+    },
+
     "peer": {
       "path": "/peer",
       "client": {
