@@ -177,6 +177,10 @@ WorldScene = new Phaser.Class({
     mouse.enabled = value;
   },
 
+  resetZoom() {
+    this.cameras.main.setZoom(zoomConfig.default);
+  },
+
   updateViewport(mode) {
     if (typeof mode !== 'string') mode = this.viewportMode;
 

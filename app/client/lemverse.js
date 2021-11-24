@@ -355,6 +355,11 @@ Template.lemverse.onCreated(function () {
     Session.set('editor', !Session.get('editor'));
   });
 
+  hotkeys('shift+r', { scope: 'all' }, event => {
+    if (event.repeat) return;
+    game.scene.getScene('WorldScene')?.resetZoom();
+  });
+ 
   hotkeys('l', { keyup: true, scope: scopes.player }, event => {
     if (event.repeat) return;
 
@@ -479,6 +484,7 @@ Template.lemverse.onDestroyed(function () {
   hotkeys.unbind('j', scopes.player);
   hotkeys.unbind('l', scopes.player);
   hotkeys.unbind('r', scopes.player);
+  hotkeys.unbind('shift+r', scopes.player);
   hotkeys.unbind('tab', scopes.player);
   hotkeys.unbind('shift+1', scopes.player);
   hotkeys.unbind('shift+2', scopes.player);
