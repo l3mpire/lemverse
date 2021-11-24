@@ -427,8 +427,18 @@ peer = {
     });
   },
 
+  hasActiveStreams() {
+    return this.remoteStreamsByUsers.get().length;
+  },
+
   isPeerValid(peer) {
     return peer?.id && !peer.disconnected;
+  },
+
+  enableSensor(value) {
+    if (value === this.sensorEnabled) return;
+    this.sensorEnabled = value;
+    if (this.sensorEnabled) userProximitySensor.callProximityStartedForAllNearUsers();
   },
 
   isEnabled() {

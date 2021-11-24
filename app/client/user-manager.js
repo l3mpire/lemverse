@@ -52,12 +52,6 @@ userManager = {
     this.player = undefined;
     this.players = {};
     this.scene = scene;
-
-    scene.input.keyboard.on('keydown-SHIFT', () => { peer.sensorEnabled = false; });
-    scene.input.keyboard.on('keyup-SHIFT', () => {
-      peer.sensorEnabled = true;
-      userProximitySensor.callProximityStartedForAllNearUsers();
-    });
   },
 
   destroy() {
@@ -470,6 +464,9 @@ userManager = {
     this.playerVelocity.normalize().scale(maxSpeed);
     this.player.body.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
     this.player.setDepth(this.player.y);
+
+    const running = keys.shift.isDown && direction;
+    if (!peer.hasActiveStreams()) peer.enableSensor(!running);
 
     if (direction) {
       this.player.direction = direction;

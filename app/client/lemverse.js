@@ -359,7 +359,7 @@ Template.lemverse.onCreated(function () {
     if (event.repeat) return;
     game.scene.getScene('WorldScene')?.resetZoom();
   });
- 
+
   hotkeys('l', { keyup: true, scope: scopes.player }, event => {
     if (event.repeat) return;
 
