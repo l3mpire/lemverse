@@ -74,7 +74,7 @@ const createWindow = () => {
       contextIsolation: false,
       nativeWindowOpen: true,
       nodeIntegration: false,
-      webSecurity: !isDev,
+      webSecurity: false,
       devTools: true,
       preload: path.join(__dirname, 'preload.js'),
     },
