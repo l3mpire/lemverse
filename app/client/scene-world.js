@@ -18,6 +18,7 @@ const onZoneEntered = e => {
   const { guest } = Meteor.user().profile;
   const { zone } = e.detail;
   const { targetedLevelId, inlineURL, roomName, url, fullscreen, disableCommunications } = zone;
+  sendEvent('zone-entered', { zone });
 
   if (targetedLevelId) levelManager.loadLevel(targetedLevelId);
   else if (inlineURL) characterPopIns.initFromZone(zone);
@@ -37,6 +38,8 @@ const onZoneEntered = e => {
 const onZoneLeaved = e => {
   const { zone } = e.detail;
   const { popInConfiguration, roomName, url, disableCommunications } = zone;
+  sendEvent('zone-leaved', { zone });
+
   if (!popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(Meteor.userId(), zone._id);
 
   if (roomName || url) game.scene.keys.WorldScene.updateViewport(viewportModes.fullscreen);
