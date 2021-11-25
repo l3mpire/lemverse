@@ -10,6 +10,7 @@ peer = {
   remoteStreamsByUsers: new ReactiveVar([]),
   sensorEnabled: true,
   enabled: true,
+  lockedCalls: {},
 
   init() {
     userProximitySensor.onProximityEnded = this.onProximityEnded.bind(this);
@@ -28,6 +29,7 @@ peer = {
   },
 
   closeAll() {
+    this.unlockCalls();
     if (Meteor.user().options?.debug) log('peer.closeAll: start');
     _.each(this.calls, call => this.close(call.peer, Meteor.settings.public.peer.delayBeforeClosingCall, 'close-all'));
   },
@@ -198,6 +200,7 @@ peer = {
   },
 
   onProximityEnded(user) {
+    if (this.lockedCalls[user._id]) return;
     this.close(user._id, Meteor.settings.public.peer.delayBeforeClosingCall, 'proximity-ended');
   },
 
@@ -395,6 +398,15 @@ peer = {
         this.peerInstance.on('connection', connection => {
           connection.on('data', dataReceived => {
             if (dataReceived.type === 'audio') userVoiceRecorderAbility.playSound(dataReceived.data);
+            else if (dataReceived.type === 'followed') {
+              const user = Meteor.users.findOne(dataReceived.emitter);
+              this.lockCall(user);
+              lp.notif.warning(`${user.profile.name} is following you 👀`);
+            } else if (dataReceived.type === 'unfollowed') {
+              const user = Meteor.users.findOne(dataReceived.emitter);
+              this.unlockCall(user);
+              lp.notif.warning(`${user.profile.name} has finally stopped following you 🎉`);
+            }
           });
         });
 
@@ -425,6 +437,20 @@ peer = {
         return resolve(this.peerInstance);
       });
     });
+  },
+
+  lockCall(user, notify = false) {
+    if (notify && !this.lockedCalls[user._id]) this.sendData([user], { type: 'followed', emitter: Meteor.userId() });
+    this.lockedCalls[user._id] = true;
+  },
+
+  unlockCall(user, notify = false) {
+    if (notify && this.lockedCalls[user._id]) this.sendData([user], { type: 'unfollowed', emitter: Meteor.userId() });
+    delete this.lockedCalls[user._id];
+  },
+
+  unlockCalls() {
+    _.each(this.lockedCalls, (value, userId) => this.unlockCall(Meteor.users.findOne(userId), true));
   },
 
   hasActiveStreams() {
