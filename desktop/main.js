@@ -103,9 +103,10 @@ const toggleWindow = (value, autoFocus = false) => {
   else showWindow(autoFocus);
 };
 
-const toggleFullScreen = () => {
+const toggleFullScreen = value => {
   if (!mainWindow) return;
-  mainWindow.setFullScreen(!mainWindow.isFullScreen());
+  if (value !== undefined) mainWindow.setFullScreen(value);
+  else mainWindow.setFullScreen(!mainWindow.isFullScreen());
 };
 
 const createTrayMenu = () => {
