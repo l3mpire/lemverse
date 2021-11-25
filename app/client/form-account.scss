@@ -39,12 +39,12 @@
       align-items: center;
       margin-bottom: 5px;
       z-index: 50;
-  
+
       label {
         flex-grow: 1;
         font-weight: bold;
       }
-  
+
       input {
         flex-grow: 1;
         background-color: white;
@@ -68,7 +68,8 @@
     color: $text-color;
     cursor: pointer;
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       background-color: darken($lem-color-4, 10%);
       color: white;
     }
@@ -88,7 +89,8 @@
     text-decoration: underline;
     cursor: pointer;
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       color: darken($lem-color-1, 15%);
     }
   }
@@ -104,7 +106,8 @@
     transform: translate(0, -50%);
     cursor: pointer;
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       color: darken($text-color, 5%);
     }
   }
@@ -116,5 +119,6 @@
     bottom: 15px;
     transform: translate(-50%, 0);
     max-width: 650px;
+    min-width: 520px;
   }
 }
