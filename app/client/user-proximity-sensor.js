@@ -15,13 +15,17 @@ userProximitySensor = {
     if (user._id === otherUser._id) return;
     if (otherUser?.profile?.guest) return;
 
-    const { x: userX, y: userY } = user.profile;
-    const { x, y } = otherUser.profile;
-    // eslint-disable-next-line new-cap
-    const distance = Phaser.Math.Distance.Between(x, y, userX, userY);
-
+    const distance = this.distance(user, otherUser);
     if (distance < this.nearDistance) this.addNearUser(otherUser);
     else if (distance > this.farDistance) this.removeNearUser(otherUser);
+  },
+
+  distance(user, otherUser) {
+    const { x: userX, y: userY } = user.profile;
+    const { x, y } = otherUser.profile;
+
+    // eslint-disable-next-line new-cap
+    return Phaser.Math.Distance.Between(x, y, userX, userY);
   },
 
   addNearUser(user) {
@@ -56,6 +60,22 @@ userProximitySensor = {
 
   nearUsersCount() {
     return Object.keys(this.nearUsers).length;
+  },
+
+  nearestUser(user) {
+    if (!this.nearUsersCount()) return undefined;
+
+    let nearestUser;
+    let nearestDistance = Infinity;
+    _.each(this.nearUsers, nearUser => {
+      const distance = this.distance(user, nearUser);
+      if (distance < nearestDistance) {
+        nearestUser = nearUser;
+        nearestDistance = distance;
+      }
+    });
+
+    return nearestUser;
   },
 
   barycenter(user) {
