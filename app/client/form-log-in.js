@@ -40,7 +40,7 @@ const onSubmit = template => {
     }
 
     hotkeys.setScope(scopes.player);
-    userManager.update(Meteor.user());
+    userManager.updateUser(Meteor.user());
   });
 };
 

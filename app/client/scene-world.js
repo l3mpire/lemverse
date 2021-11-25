@@ -151,8 +151,7 @@ WorldScene = new Phaser.Class({
   },
 
   update() {
-    userManager.interpolatePlayerPositions();
-    userManager.handleUserInputs(this.keys, this.nippleMoving, this.nippleData);
+    userManager.update();
   },
 
   postUpdate(time, delta) {

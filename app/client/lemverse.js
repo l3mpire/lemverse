@@ -272,13 +272,13 @@ Template.lemverse.onCreated(function () {
       this.handleUsersSubscribe = this.subscribe('users', levelId, () => {
         this.handleObserveUsers = Meteor.users.find({ status: { $exists: true } }).observe({
           added(user) {
-            userManager.create(user);
+            userManager.createUser(user);
           },
           changed(user, oldUser) {
-            userManager.update(user, oldUser);
+            userManager.updateUser(user, oldUser);
           },
           removed(user) {
-            userManager.remove(user);
+            userManager.removeUser(user);
             userProximitySensor.removeNearUser(user);
             lp.defer(() => peer.close(user._id, 0, 'user-disconnected'));
           },
@@ -386,14 +386,16 @@ Template.lemverse.onCreated(function () {
   });
 
   hotkeys('f', { scope: scopes.player }, event => {
-    if (event.repeat || !meet.api) return;
+    if (event.repeat) return;
     event.preventDefault();
 
-    const user = Meteor.user();
-    if (!user.roles?.admin) return;
+    if (meet.api) {
+      const user = Meteor.user();
+      if (!user.roles?.admin) return;
 
-    const currentZone = zones.currentZone(user);
-    if (currentZone) zones.setFullscreen(currentZone, !currentZone.fullscreen);
+      const currentZone = zones.currentZone(user);
+      if (currentZone) zones.setFullscreen(currentZone, !currentZone.fullscreen);
+    } else userManager.follow(userProximitySensor.nearestUser(Meteor.user()));
   });
 
   hotkeys('j', { scope: scopes.player }, event => {
