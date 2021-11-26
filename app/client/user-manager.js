@@ -633,13 +633,18 @@ userManager = {
 
   follow(user) {
     if (!user || (user && this.entityFollowed)) {
-      if (this.entityFollowed) peer.unlockCall(Meteor.users.findOne(this.entityFollowed.userId), true);
+      if (this.entityFollowed) {
+        lp.notif.success(`You no longer follow anyone`);
+        peer.unlockCall(Meteor.users.findOne(this.entityFollowed.userId), true);
+      }
+
       this.entityFollowed = undefined;
 
       return;
     }
 
     this.entityFollowed = this.players[user._id];
+    lp.notif.success(`You are following ${user.profile.name}`);
     peer.lockCall(user, true);
   },
 
