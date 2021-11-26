@@ -77,18 +77,4 @@ userProximitySensor = {
 
     return nearestUser;
   },
-
-  barycenter(user) {
-    let { x, y } = user.profile;
-    const usersCount = this.nearUsersCount();
-    if (usersCount === 0) return { x, y };
-
-    _.each(this.nearUsers, otherUser => {
-      const { x: otherUserX, y: otherUserY } = otherUser.profile;
-      x += otherUserX;
-      y += otherUserY;
-    });
-
-    return { x: x / (usersCount + 1), y: y / (usersCount + 1) };
-  },
 };
