@@ -77,6 +77,7 @@ deleteLevel = levelId => {
     throw new Meteor.Error('not-allowed', 'Can not delete last level');
   }
 
+  Entities.remove({ levelId });
   Zones.remove({ levelId });
   Tiles.remove({ levelId });
   Levels.remove({ _id: levelId });
