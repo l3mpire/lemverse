@@ -1,4 +1,4 @@
-const { ipcMain, app, dialog, globalShortcut, shell, BrowserWindow, Menu, Tray } = require('electron');
+const { ipcMain, app, dialog, globalShortcut, shell, desktopCapturer, BrowserWindow, Menu, Tray } = require('electron');
 const log = require('electron-log');
 const { autoUpdater } = require('electron-updater');
 const { setupScreenSharingMain } = require('@jitsi/electron-sdk');
@@ -182,3 +182,8 @@ autoUpdater.on('error', message => {
   console.error('There was a problem updating the application');
   console.error(message);
 });
+
+ipcMain.handle(
+  'DESKTOP_CAPTURER_GET_SOURCES',
+  (event, opts) => desktopCapturer.getSources(opts),
+);
