@@ -89,9 +89,9 @@ const createWindow = () => {
   mainWindow.once('ready-to-show', () => showWindow(true));
 
   // open target="_blank" links in the default browser
-  mainWindow.webContents.on('new-window', (e, url) => {
-    e.preventDefault();
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
+    return { action: 'deny' };
   });
 };
 
