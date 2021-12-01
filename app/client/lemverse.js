@@ -521,27 +521,27 @@ Template.lemverse.helpers({
 });
 
 Template.lemverse.events({
-  'click .button.audio'(e) {
+  'mouseup .button.audio'(e) {
     e.preventDefault();
     e.stopPropagation();
     toggleUserProperty('shareAudio');
   },
-  'click .button.video'(e) {
+  'mouseup .button.video'(e) {
     e.preventDefault();
     e.stopPropagation();
     toggleUserProperty('shareVideo');
   },
-  'click .button.screen'(e) {
+  'mouseup .button.screen'(e) {
     e.preventDefault();
     e.stopPropagation();
     toggleUserProperty('shareScreen');
   },
-  'click .button.settings'(e) {
+  'mouseup .button.settings'(e) {
     e.preventDefault();
     e.stopPropagation();
     toggleModal('settingsMain');
   },
-  'click .button.js-notifications'(e) {
+  'mouseup .button.js-notifications'(e) {
     e.preventDefault();
     e.stopPropagation();
     toggleModal('notifications');
