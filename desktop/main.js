@@ -13,6 +13,7 @@ const iconPath = `${__dirname}/assets/icon-tray.png`;
 let autoCloseCallback;
 let tray;
 let mainWindow;
+let wasFullscreen = false;
 
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
@@ -105,6 +106,7 @@ const toggleWindow = (value, autoFocus = false) => {
 
 const toggleFullScreen = value => {
   if (!mainWindow) return;
+  wasFullscreen = false;
   if (value !== undefined) mainWindow.setFullScreen(value);
   else mainWindow.setFullScreen(!mainWindow.isFullScreen());
 };
@@ -139,7 +141,26 @@ app.whenReady().then(() => {
   if (process.platform === 'darwin') app.dock.hide();
 
   // Shortcut
-  globalShortcut.register('Alt+Cmd+v', () => toggleWindow(undefined, true));
+  globalShortcut.register('Alt+Cmd+v', () => {
+    // the user wants to hide the app currently in fullscreen
+    if (mainWindow.isFullScreen() && mainWindow.isVisible()) {
+      mainWindow.once('leave-full-screen', () => {
+        wasFullscreen = true;
+        toggleWindow(false, true);
+      });
+      toggleFullScreen(false);
+      return;
+    }
+
+    // the user wants to show the app previously in fullscreen
+    if (!mainWindow.isVisible() && wasFullscreen) {
+      mainWindow.once('enter-full-screen', () => toggleWindow(true, true));
+      toggleFullScreen(true);
+      return;
+    }
+
+    toggleWindow(undefined, true);
+  });
 
   // Set the window under the tray icon on first load
   const position = calculateWindowPositionUnderTrayIcon();
