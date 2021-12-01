@@ -36,7 +36,7 @@ levelManager = {
     const newTilesets = [];
     _.each(tilesets, tileset => {
       if (this.findTileset(tileset._id)) return;
-      const tilesetImage = this.map.addTilesetImage(tileset._id, tileset._id, 16, 16, 0, 0, tileset.gid);
+      const tilesetImage = this.map.addTilesetImage(tileset._id, tileset.fileId, 16, 16, 0, 0, tileset.gid);
       if (!tilesetImage) {
         log('unable to load tileset', tileset._id);
         return;
@@ -137,6 +137,15 @@ levelManager = {
     if (!this.map) return;
 
     const tileset = this.findTileset(newTileset._id);
+    if (newTileset.fileId !== oldTileset.fileId) {
+      this.scene.load.image(newTileset.fileId, `/api/files/${newTileset.fileId}`);
+      this.scene.load.once(Phaser.Loader.Events.COMPLETE, () => {
+        this.scene.textures.remove(oldTileset.fileId);
+        tileset.setImage(this.scene.textures.get(newTileset.fileId));
+      });
+      this.scene.load.start();
+    }
+
     tileset.tileProperties = newTileset.tiles;
 
     const oTileKeys = _.map(_.keys(oldTileset.tiles || {}), k => +k);
