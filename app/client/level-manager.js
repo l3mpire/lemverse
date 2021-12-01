@@ -148,15 +148,15 @@ levelManager = {
     const xys = _.map(Tiles.find({ tilesetId: newTileset._id, index: { $in: changedTileIndexes } }).fetch(), t => ({ x: t.x, y: t.y }));
     _.forEach(xys, xy => levelManager.tileRefresh(xy.x, xy.y));
 
-    const enabledCollisionIndexes = _.difference(oldTileset.collisionTileIndexes, newTileset.collisionTileIndexes);
-    const disabledCollisionIndexes = _.difference(newTileset.collisionTileIndexes, oldTileset.collisionTileIndexes);
+    const enabledCollisionIndexes = _.difference(newTileset.collisionTileIndexes, oldTileset.collisionTileIndexes);
+    const disabledCollisionIndexes = _.difference(oldTileset.collisionTileIndexes, newTileset.collisionTileIndexes);
 
     const enabledCollisionGlobalIndexes = _.map(enabledCollisionIndexes, i => this.tileGlobalIndex({ index: i, tilesetId: newTileset._id }));
     const disabledCollisionGlobalIndexes = _.map(disabledCollisionIndexes, i => this.tileGlobalIndex({ index: i, tilesetId: newTileset._id }));
 
     _.each(this.map.layers, layer => {
-      this.map.setCollision(enabledCollisionGlobalIndexes, true, false, layer.tilemapLayer);
-      this.map.setCollision(disabledCollisionGlobalIndexes, false, false, layer.tilemapLayer);
+      this.map.setCollision(enabledCollisionGlobalIndexes, true, false, layer.tilemapLayer, true);
+      this.map.setCollision(disabledCollisionGlobalIndexes, false, false, layer.tilemapLayer, true);
     });
   },
 

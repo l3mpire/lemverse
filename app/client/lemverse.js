@@ -167,8 +167,8 @@ Template.lemverse.onCreated(function () {
           added(tileset) {
             game.scene.keys.BootScene.loadTilesetsAtRuntime([tileset], levelManager.addTilesetsToLayers.bind(levelManager));
           },
-          changed(n, o) {
-            levelManager.onTilesetUpdated(n, o);
+          changed(newTileset, oldTileset) {
+            levelManager.onTilesetUpdated(newTileset, oldTileset);
           },
         });
       }
