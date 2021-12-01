@@ -204,7 +204,7 @@ userManager = {
       if (!user.profile[part]) characterBodyContainer?.getByName(part)?.destroy();
     });
 
-    if (hasUpdatedSkin) {
+    if (hasUpdatedSkin || user.profile.direction !== oldUser?.profile.direction) {
       delete player.lastDirection;
       this.updateAnimation(player);
       this.pauseAnimation(player, true, true);
