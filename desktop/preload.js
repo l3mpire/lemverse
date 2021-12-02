@@ -27,7 +27,7 @@ window.electron = {
       types: ['window', 'screen'],
     });
 
-    return sources[0];
+    return sources;
   },
   jitsiMeetElectronUtils,
 };
