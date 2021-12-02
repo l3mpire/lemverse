@@ -1,0 +1,6 @@
+.build*
+.npm
+smart.lock
+versions.json
+.idea
+.versions

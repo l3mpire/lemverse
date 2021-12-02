@@ -36,3 +36,4 @@ underscore@1.0.10
 ostrio:files
 accounts-guest
 lempire:lempire
+astraload:meteor-apm-client
