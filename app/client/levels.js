@@ -1,5 +1,13 @@
 const listMode = 'list';
 
+const levelQueryFilters = ignoredLevelId => ({
+  _id: { $ne: ignoredLevelId || Meteor.settings.public.templateLevelId },
+  $and: [
+    { $or: [{ template: false }, { template: { $exists: false } }] }, // todo: remove later
+    { $or: [{ hide: false }, { hide: { $exists: false } }] },
+  ],
+});
+
 const askLoadLevel = (levelId, incrementVisit = false) => {
   if (Meteor.user().profile.levelId === levelId) return;
 
@@ -19,7 +27,7 @@ Template.levels.onCreated(function () {
   this.tab = new ReactiveVar(listMode);
 
   this.autorun(() => {
-    const levels = Levels.find({ _id: { $ne: Meteor.settings.public.templateLevelId }, $or: [{ template: false }, { template: { $exists: false } }] }, { fields: { createdBy: 1 } }).fetch();
+    const levels = Levels.find(levelQueryFilters(), { fields: { createdBy: 1 } }).fetch();
     const userIds = levels.map(level => level.createdBy).filter(Boolean);
     if (userIds?.length) this.subscribe('usernames', userIds);
   });
@@ -55,7 +63,7 @@ Template.levels.helpers({
   isLevelOwner(level) { return Meteor.userId() === level.createdBy; },
   levels() {
     const currentLevelId = Meteor.user()?.profile.levelId;
-    const levels = Levels.find({ $or: [{ template: false }, { template: { $exists: false } }], _id: { $ne: currentLevelId } }, { sort: { visit: -1 } }).fetch();
+    const levels = Levels.find(levelQueryFilters(currentLevelId), { sort: { visit: -1 } }).fetch();
     const userId = Meteor.userId();
 
     return levels.sort((a, b) => {
