@@ -1,6 +1,6 @@
 const waitSourceSelection = () => new Promise((resolve, reject) => {
   const modal = document.querySelector('.modal-container');
-  if (!modal) return reject(new Error('modal not found'));
+  if (!modal) { reject(new Error('modal not found')); return; }
   // todo : remove old listeners
   modal.addEventListener('window-selected', e => resolve(e.detail), false);
   modal.addEventListener('screen-share-canceled', () => reject(new Error('screen share canceled')), false);
