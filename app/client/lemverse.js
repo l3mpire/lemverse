@@ -26,22 +26,38 @@ const config = {
   height: window.innerHeight / Meteor.settings.public.zoom,
   zoom: Meteor.settings.public.zoom,
   inputWindowEvents: false,
-  pixelArt: true,
-  roundPixels: true,
   title: Meteor.settings.public.lp.product,
   url: Meteor.settings.public.lp.website,
+  powerPreference: 'low-power',
+  fps: {
+    min: 5,
+    target: 60,
+    forceSetTimeOut: false,
+    deltaHistory: 10,
+    panicMax: 120,
+    smoothStep: true,
+  },
   physics: {
     default: 'arcade',
     arcade: {
       debug: Meteor.settings.public.debug,
       gravity: { y: 0 },
+      useTree: false,
     },
+  },
+  render: {
+    pixelArt: true,
+    roundPixels: true,
+    antialias: false,
+    antialiasGL: false,
   },
   scale: {
     mode: Phaser.Scale.RESIZE,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     width: 800, // Default game window width
     height: 600, // Default game window height,
+    autoRound: true,
+    resizeInterval: 999999,
   },
   dom: {
     createContainer: true,
@@ -85,11 +101,14 @@ Template.lemverse.onCreated(function () {
   this.autorun(() => {
     if (!Session.get('sceneWorldReady')) return;
 
+    const menuOpen = Session.set('menu');
     const modalOpen = isModalOpen();
     Tracker.nonreactive(() => {
+      const interfaceOpen = menuOpen || modalOpen;
       const worldScene = game.scene.getScene('WorldScene');
-      worldScene.enableKeyboard(!modalOpen, !modalOpen);
       userManager.pauseAnimation(undefined, modalOpen);
+      worldScene.enableMouse(!interfaceOpen);
+      worldScene.enableKeyboard(!modalOpen, !modalOpen);
     });
   });
 
@@ -148,8 +167,8 @@ Template.lemverse.onCreated(function () {
           added(tileset) {
             game.scene.keys.BootScene.loadTilesetsAtRuntime([tileset], levelManager.addTilesetsToLayers.bind(levelManager));
           },
-          changed(n, o) {
-            levelManager.onTilesetUpdated(n, o);
+          changed(newTileset, oldTileset) {
+            levelManager.onTilesetUpdated(newTileset, oldTileset);
           },
         });
       }
@@ -253,13 +272,13 @@ Template.lemverse.onCreated(function () {
       this.handleUsersSubscribe = this.subscribe('users', levelId, () => {
         this.handleObserveUsers = Meteor.users.find({ status: { $exists: true } }).observe({
           added(user) {
-            userManager.create(user);
+            userManager.createUser(user);
           },
           changed(user, oldUser) {
-            userManager.update(user, oldUser);
+            userManager.updateUser(user, oldUser);
           },
           removed(user) {
-            userManager.remove(user);
+            userManager.removeUser(user);
             userProximitySensor.removeNearUser(user);
             lp.defer(() => peer.close(user._id, 0, 'user-disconnected'));
           },
@@ -352,6 +371,11 @@ Template.lemverse.onCreated(function () {
     Session.set('editor', !Session.get('editor'));
   });
 
+  hotkeys('shift+r', { scope: 'all' }, event => {
+    if (event.repeat) return;
+    game.scene.getScene('WorldScene')?.resetZoom();
+  });
+
   hotkeys('l', { keyup: true, scope: scopes.player }, event => {
     if (event.repeat) return;
 
@@ -362,14 +386,16 @@ Template.lemverse.onCreated(function () {
   });
 
   hotkeys('f', { scope: scopes.player }, event => {
-    if (event.repeat || !meet.api) return;
+    if (event.repeat) return;
     event.preventDefault();
 
-    const user = Meteor.user();
-    if (!user.roles?.admin) return;
+    if (meet.api) {
+      const user = Meteor.user();
+      if (!user.roles?.admin) return;
 
-    const currentZone = zones.currentZone(user);
-    if (currentZone) zones.setFullscreen(currentZone, !currentZone.fullscreen);
+      const currentZone = zones.currentZone(user);
+      if (currentZone) zones.setFullscreen(currentZone, !currentZone.fullscreen);
+    } else userManager.follow(userProximitySensor.nearestUser(Meteor.user()));
   });
 
   hotkeys('j', { scope: scopes.player }, event => {
@@ -476,6 +502,7 @@ Template.lemverse.onDestroyed(function () {
   hotkeys.unbind('j', scopes.player);
   hotkeys.unbind('l', scopes.player);
   hotkeys.unbind('r', scopes.player);
+  hotkeys.unbind('shift+r', scopes.player);
   hotkeys.unbind('tab', scopes.player);
   hotkeys.unbind('shift+1', scopes.player);
   hotkeys.unbind('shift+2', scopes.player);
@@ -494,27 +521,27 @@ Template.lemverse.helpers({
 });
 
 Template.lemverse.events({
-  'click .button.audio'(e) {
+  'mouseup .button.audio'(e) {
     e.preventDefault();
     e.stopPropagation();
     toggleUserProperty('shareAudio');
   },
-  'click .button.video'(e) {
+  'mouseup .button.video'(e) {
     e.preventDefault();
     e.stopPropagation();
     toggleUserProperty('shareVideo');
   },
-  'click .button.screen'(e) {
+  'mouseup .button.screen'(e) {
     e.preventDefault();
     e.stopPropagation();
     toggleUserProperty('shareScreen');
   },
-  'click .button.settings'(e) {
+  'mouseup .button.settings'(e) {
     e.preventDefault();
     e.stopPropagation();
     toggleModal('settingsMain');
   },
-  'click .button.js-notifications'(e) {
+  'mouseup .button.js-notifications'(e) {
     e.preventDefault();
     e.stopPropagation();
     toggleModal('notifications');

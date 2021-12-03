@@ -44,10 +44,20 @@
       "default": "Basic"
     },
 
-    "templateLevelId": "lvl_iLOVEaLOTlemverse"
+    "templateLevelId": "lvl_iLOVEaLOTlemverse",
+
+    "tos": {
+      "terms": "",
+      "cookies": "",
+      "privacy": ""
+    }
   },
 
   "defaultLevelId": "lvl_iLOVEaLOTlemverse",
+
+  "email": {
+    "from": "The lembot <contact@m.lemverse.com>"
+  },
 
   "peer": {
     "path": "/peer",

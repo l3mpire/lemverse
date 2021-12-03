@@ -16,7 +16,7 @@ BootScene = new Phaser.Class({
   preload() {
     // load the resources here
     Tilesets.find().forEach(tileset => {
-      this.load.image(tileset._id, `/api/files/${tileset.fileId}`);
+      this.load.image(tileset.fileId, `/api/files/${tileset.fileId}`);
     });
 
     Meteor.settings.public.characterNames.forEach(characterName => {
@@ -24,7 +24,7 @@ BootScene = new Phaser.Class({
     });
 
     Characters.find().forEach(character => {
-      this.load.spritesheet(character._id, `/api/files/${character.fileId}`, { frameWidth: 16, frameHeight: 32 });
+      this.load.spritesheet(character.fileId, `/api/files/${character.fileId}`, { frameWidth: 16, frameHeight: 32 });
     });
   },
 
@@ -45,25 +45,25 @@ BootScene = new Phaser.Class({
     Characters.find({}).forEach(character => {
       this.anims.create({
         key: `${character._id}right`,
-        frames: this.anims.generateFrameNumbers(character._id, { frames: [48, 49, 50, 51, 52, 53] }),
+        frames: this.anims.generateFrameNumbers(character.fileId, { frames: [48, 49, 50, 51, 52, 53] }),
         frameRate: 10,
         repeat: -1,
       });
       this.anims.create({
         key: `${character._id}up`,
-        frames: this.anims.generateFrameNumbers(character._id, { frames: [54, 55, 56, 57, 58, 59] }),
+        frames: this.anims.generateFrameNumbers(character.fileId, { frames: [54, 55, 56, 57, 58, 59] }),
         frameRate: 10,
         repeat: -1,
       });
       this.anims.create({
         key: `${character._id}left`,
-        frames: this.anims.generateFrameNumbers(character._id, { frames: [60, 61, 62, 63, 64, 65] }),
+        frames: this.anims.generateFrameNumbers(character.fileId, { frames: [60, 61, 62, 63, 64, 65] }),
         frameRate: 10,
         repeat: -1,
       });
       this.anims.create({
         key: `${character._id}down`,
-        frames: this.anims.generateFrameNumbers(character._id, { frames: [66, 67, 68, 69, 70, 71] }),
+        frames: this.anims.generateFrameNumbers(character.fileId, { frames: [66, 67, 68, 69, 70, 71] }),
         frameRate: 10,
         repeat: -1,
       });
@@ -101,10 +101,10 @@ BootScene = new Phaser.Class({
   loadCharactersAtRuntime(characters) {
     let imageLoadedCount = 0;
     _.each(characters, character => {
-      if (this.textures.exists(character._id)) return;
+      if (this.textures.exists(character.fileId)) return;
 
       imageLoadedCount++;
-      this.load.spritesheet(character._id, `/api/files/${character.fileId}`, { frameWidth: 16, frameHeight: 32 });
+      this.load.spritesheet(character.fileId, `/api/files/${character.fileId}`, { frameWidth: 16, frameHeight: 32 });
     });
 
     const addCharacters = () => {
@@ -115,7 +115,7 @@ BootScene = new Phaser.Class({
         if (!animExist('right')) {
           this.anims.create({
             key: `${character._id}right`,
-            frames: this.anims.generateFrameNumbers(character._id, { frames: [48, 49, 50, 51, 52, 53] }),
+            frames: this.anims.generateFrameNumbers(character.fileId, { frames: [48, 49, 50, 51, 52, 53] }),
             frameRate: 10,
             repeat: -1,
           });
@@ -123,7 +123,7 @@ BootScene = new Phaser.Class({
         if (!animExist('up')) {
           this.anims.create({
             key: `${character._id}up`,
-            frames: this.anims.generateFrameNumbers(character._id, { frames: [54, 55, 56, 57, 58, 59] }),
+            frames: this.anims.generateFrameNumbers(character.fileId, { frames: [54, 55, 56, 57, 58, 59] }),
             frameRate: 10,
             repeat: -1,
           });
@@ -131,7 +131,7 @@ BootScene = new Phaser.Class({
         if (!animExist('left')) {
           this.anims.create({
             key: `${character._id}left`,
-            frames: this.anims.generateFrameNumbers(character._id, { frames: [60, 61, 62, 63, 64, 65] }),
+            frames: this.anims.generateFrameNumbers(character.fileId, { frames: [60, 61, 62, 63, 64, 65] }),
             frameRate: 10,
             repeat: -1,
           });
@@ -139,7 +139,7 @@ BootScene = new Phaser.Class({
         if (!animExist('down')) {
           this.anims.create({
             key: `${character._id}down`,
-            frames: this.anims.generateFrameNumbers(character._id, { frames: [66, 67, 68, 69, 70, 71] }),
+            frames: this.anims.generateFrameNumbers(character.fileId, { frames: [66, 67, 68, 69, 70, 71] }),
             frameRate: 10,
             repeat: -1,
           });
@@ -157,10 +157,10 @@ BootScene = new Phaser.Class({
   loadTilesetsAtRuntime(tilesets, onComplete) {
     let imageLoadedCount = 0;
     _.each(tilesets, tileset => {
-      if (this.textures.exists(tileset._id)) return;
+      if (this.textures.exists(tileset.fileId)) return;
 
       imageLoadedCount++;
-      this.load.image(tileset._id, `/api/files/${tileset.fileId}`);
+      this.load.image(tileset.fileId, `/api/files/${tileset.fileId}`);
     });
 
     if (!imageLoadedCount) onComplete(tilesets);

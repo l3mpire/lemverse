@@ -40,7 +40,7 @@ const onSubmit = template => {
       }
 
       hotkeys.setScope(scopes.player);
-      userManager.update(Meteor.user());
+      userManager.updateUser(Meteor.user());
     });
   }
 };
@@ -75,4 +75,7 @@ Template.formSignIn.helpers({
   nickname() { return Template.instance().nickname; },
   password() { return Template.instance().password; },
   getStep() { return Template.instance().step.get(); },
+  termsLink() { return Meteor.settings.public.tos.terms; },
+  cookiesLink() { return Meteor.settings.public.tos.cookies; },
+  privacyLink() { return Meteor.settings.public.tos.privacy; },
 });

@@ -30,6 +30,7 @@ services:
                 {
                     "public": {
                         "lp": {
+                            "website": "https://app.lemverse.com",
                             "product": "lemverse",
                             "process": "main",
                             "gods": [""],
@@ -53,7 +54,9 @@ services:
                         },
                         "character": {
                             "walkSpeed": 180,
-                            "runSpeed": 720
+                            "runSpeed": 720,
+                            "sensorNearDistance": 75,
+                            "sensorFarDistance": 85
                         },
                         "characterNames": ["Basic", "Ghost"],
                         "skins": {
@@ -94,7 +97,7 @@ services:
         restart: unless-stopped
         networks:
             - net_lemverse
-        command: [ "--port", "9000", "--path", "/peer" ]]
+        command: [ "--port", "9000", "--path", "/peer" ]
     caddy:
         image: caddy/caddy:alpine
         restart: unless-stopped

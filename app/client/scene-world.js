@@ -8,10 +8,17 @@ viewportModes = Object.freeze({
   splitScreen: 'split-screen',
 });
 
+const zoomConfig = Object.freeze({
+  min: 0.8,
+  max: 1.5,
+  delta: 450,
+});
+
 const onZoneEntered = e => {
   const { guest } = Meteor.user().profile;
   const { zone } = e.detail;
   const { targetedLevelId, inlineURL, roomName, url, fullscreen, disableCommunications } = zone;
+  sendEvent('zone-entered', { zone });
 
   if (targetedLevelId) levelManager.loadLevel(targetedLevelId);
   else if (inlineURL) characterPopIns.initFromZone(zone);
@@ -31,6 +38,8 @@ const onZoneEntered = e => {
 const onZoneLeaved = e => {
   const { zone } = e.detail;
   const { popInConfiguration, roomName, url, disableCommunications } = zone;
+  sendEvent('zone-leaved', { zone });
+
   if (!popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(Meteor.userId(), zone._id);
 
   if (roomName || url) game.scene.keys.WorldScene.updateViewport(viewportModes.fullscreen);
@@ -65,6 +74,14 @@ WorldScene = new Phaser.Class({
     this.events.on('sleep', this.sleepMethod, this);
     this.scale.on('resize', this.updateViewportMethod, this);
     Session.set('sceneWorldReady', true);
+
+    // In beta for the moment: fix the problem of blurred fonts (SDF rendering required?), tilesets with extrusion are required to avoid black lines between tiles
+    if (lp.isLemverseBeta('zoom')) {
+      this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY) => {
+        const zoom = Math.min(Math.max(this.cameras.main.zoom + (deltaY / zoomConfig.delta), zoomConfig.min), zoomConfig.max);
+        this.cameras.main.setZoom(zoom);
+      });
+    }
   },
 
   create() {
@@ -134,8 +151,7 @@ WorldScene = new Phaser.Class({
   },
 
   update() {
-    userManager.interpolatePlayerPositions();
-    userManager.handleUserInputs(this.keys, this.nippleMoving, this.nippleData);
+    userManager.update();
   },
 
   postUpdate(time, delta) {
@@ -149,6 +165,16 @@ WorldScene = new Phaser.Class({
     keyboard.enabled = value;
     if (globalCapture) keyboard.enableGlobalCapture();
     else keyboard.disableGlobalCapture();
+  },
+
+  enableMouse(value) {
+    const { mouse } = this.input;
+    if (!mouse) return;
+    mouse.enabled = value;
+  },
+
+  resetZoom() {
+    this.cameras.main.setZoom(zoomConfig.default);
   },
 
   updateViewport(mode) {

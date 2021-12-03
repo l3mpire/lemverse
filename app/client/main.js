@@ -14,12 +14,11 @@ Template.layout.onRendered(() => {
 let retryTimeDurationInterval;
 Tracker.autorun(() => {
   const { status } = Meteor.status();
-  Meteor.subscribe('selfUser', this.userId);
+  if (FlowRouter.current()?.path === '/editor') Meteor.subscribe('selfUser', this.userId);
 
   Meteor.clearInterval(retryTimeDurationInterval);
-  if (status !== 'waiting') {
-    Session.set('retryTimeDuration', 0);
-  } else {
+  if (status !== 'waiting') Session.set('retryTimeDuration', 0);
+  else {
     updateRetryTimeDuration();
     retryTimeDurationInterval = Meteor.setInterval(updateRetryTimeDuration, 1000);
   }

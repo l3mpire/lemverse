@@ -27,8 +27,10 @@ button:focus {
     margin: 0;
     padding: 0;
     flex-basis: 100%;
+    -webkit-app-region: drag;
 
     &.edit {
+      -webkit-app-region: no-drag;
 
       .user-panel,
       .reactions-toolbox,

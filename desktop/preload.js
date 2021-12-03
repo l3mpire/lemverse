@@ -1,8 +1,12 @@
-const { desktopCapturer, ipcRenderer } = require('electron');
+const { ipcRenderer } = require('electron');
 const jitsiMeetElectronUtils = require('@jitsi/electron-sdk');
 
 const { readFileSync } = require('fs');
 const { join } = require('path');
+
+const desktopCapturer = {
+  getSources: opts => ipcRenderer.invoke('DESKTOP_CAPTURER_GET_SOURCES', opts),
+};
 
 window.addEventListener('message', e => {
   const { data } = e;
@@ -23,7 +27,7 @@ window.electron = {
       types: ['window', 'screen'],
     });
 
-    return sources[0];
+    return sources;
   },
   jitsiMeetElectronUtils,
 };

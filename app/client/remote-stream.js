@@ -3,6 +3,17 @@ const delayBetweenAttempt = 2000; // in ms
 
 const isRemoteUserSharingMedia = (user, type) => (type === streamTypes.screen ? user.shareScreen : user.shareAudio || user.shareVideo);
 
+const removeAllFullScreenElement = ignoredElement => {
+  document.querySelectorAll('.stream .fullscreen').forEach(stream => {
+    if (stream.parentElement !== ignoredElement) stream.classList.remove('fullscreen');
+  });
+};
+
+const updatePhaserMouseInputState = () => {
+  const hasStreamInFullScreen = document.querySelectorAll('.stream .fullscreen').length;
+  game.scene.getScene('WorldScene')?.enableMouse(!hasStreamInFullScreen);
+};
+
 const checkMediaAvailable = (template, type) => {
   const { remoteUser } = template.data;
   if (!remoteUser._id) {
@@ -59,6 +70,10 @@ Template.remoteStream.onCreated(function () {
   this.talking = new ReactiveVar(false);
 });
 
+Template.remoteStream.onDestroyed(() => {
+  if (!isModalOpen()) game.scene.getScene('WorldScene')?.enableMouse(true);
+});
+
 Template.remoteStream.helpers({
   mediaState() { return Meteor.users.findOne({ _id: this.remoteUser._id })?.profile; },
   hasMainStream() { return this.remoteUser.main?.srcObject; },
@@ -77,16 +92,20 @@ Template.remoteStream.helpers({
 });
 
 Template.remoteStream.events({
-  'click .js-webcam'(e) {
+  'click .stream video, click .stream img'(e) {
     e.preventDefault();
-    const full = $(e.target).hasClass('fullscreen');
-    $('.fullscreen').removeClass('fullscreen');
-    if (!full) $(e.target).addClass('fullscreen');
+    removeAllFullScreenElement(e.target);
+    e.target.classList.toggle('fullscreen');
+
+    updatePhaserMouseInputState();
   },
-  'click .js-screenshare'(e) {
+  'click .js-webcam, click .js-screenshare'(e) {
     e.preventDefault();
-    const full = $(e.target).hasClass('fullscreen');
-    $('.fullscreen').removeClass('fullscreen');
-    if (!full) $(e.target).addClass('fullscreen');
+    removeAllFullScreenElement(e.target);
+
+    const child = e.target.querySelector('video, img');
+    child?.classList.toggle('fullscreen');
+
+    updatePhaserMouseInputState();
   },
 });

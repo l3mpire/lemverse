@@ -1,6 +1,7 @@
 .radial-menu-container {
   position: absolute;
   z-index: 9999;
+  pointer-events: none;
 }
 
 .radial-menu {
@@ -11,10 +12,12 @@
   transition: all .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   transform-origin: top left;
   opacity: 0;
+  pointer-events: none;
 
   &.show {
     transform: scale(1.0) translate(-50%, -65%);
     opacity: 1;
+    pointer-events: all;
 
     ul {
       transform: translate(-50%, -50%);
