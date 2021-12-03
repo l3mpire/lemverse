@@ -45,6 +45,34 @@ $text-color: #4f4f4f;
           padding-left: 20px;
           padding-right: 20px;
         }
+
+        button.button {
+          box-sizing: border-box;
+          cursor: pointer;
+          display: inline-block;
+          line-height: normal;
+          user-select: none;
+          vertical-align: middle;
+          background-color: #b5bed0;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          color: #4e576a;
+          font-size: 100%;
+          padding: .5em 1em;
+          text-decoration: none;
+          margin-top: 7px;
+          width: 100%;
+          transition: all 0.25s;
+
+          &:hover {
+            background-color: darken(hsl(220, 22%, 76%), 15%);
+            color: #fff;
+          }
+
+          &.js-go-back {
+            margin-bottom: 20px;
+          }
+        }
       }
 
       .js-modal-close {

@@ -5,6 +5,7 @@ if (Meteor.settings.peer.server.start) {
   PeerServer({ ...Meteor.settings.peer.server, path: Meteor.settings.peer.path });
 }
 
+Accounts.emailTemplates.from = Meteor.settings.email.from;
 AccountsGuest.enabled = true;
 AccountsGuest.forced = true;
 AccountsGuest.name = true;
@@ -76,6 +77,7 @@ deleteLevel = levelId => {
     throw new Meteor.Error('not-allowed', 'Can not delete last level');
   }
 
+  Entities.remove({ levelId });
   Zones.remove({ levelId });
   Tiles.remove({ levelId });
   Levels.remove({ _id: levelId });

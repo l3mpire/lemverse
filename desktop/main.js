@@ -1,4 +1,4 @@
-const { ipcMain, app, dialog, globalShortcut, BrowserWindow, Menu, Tray } = require('electron');
+const { ipcMain, app, dialog, globalShortcut, shell, desktopCapturer, BrowserWindow, Menu, Tray } = require('electron');
 const log = require('electron-log');
 const { autoUpdater } = require('electron-updater');
 const { setupScreenSharingMain } = require('@jitsi/electron-sdk');
@@ -13,6 +13,7 @@ const iconPath = `${__dirname}/assets/icon-tray.png`;
 let autoCloseCallback;
 let tray;
 let mainWindow;
+let wasFullscreen = false;
 
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
@@ -74,19 +75,25 @@ const createWindow = () => {
       contextIsolation: false,
       nativeWindowOpen: true,
       nodeIntegration: false,
-      webSecurity: !isDev,
+      webSecurity: false,
       devTools: true,
       preload: path.join(__dirname, 'preload.js'),
     },
   });
 
   mainWindow.loadURL(appURL);
-  mainWindow.setAlwaysOnTop(true, 'screen-saver');
+  mainWindow.setAlwaysOnTop(true, 'normal');
   mainWindow.setSkipTaskbar(true);
   mainWindow.setVisibleOnAllWorkspaces(true);
   mainWindow.on('focus', () => cancelWindowAutoClose());
   mainWindow.on('closed', () => { mainWindow = null; });
   mainWindow.once('ready-to-show', () => showWindow(true));
+
+  // open target="_blank" links in the default browser
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' };
+  });
 };
 
 const toggleWindow = (value, autoFocus = false) => {
@@ -97,21 +104,11 @@ const toggleWindow = (value, autoFocus = false) => {
   else showWindow(autoFocus);
 };
 
-const toggleFullScreen = () => {
+const toggleFullScreen = value => {
   if (!mainWindow) return;
-  mainWindow.setFullScreen(!mainWindow.isFullScreen());
-};
-
-const showAboutMenu = () => {
-  const dialogOpts = {
-    type: 'info',
-    buttons: [],
-    title: 'About',
-    message: '',
-    detail: `An application made by lempire (v${app.getVersion()}).`,
-  };
-
-  dialog.showMessageBox(dialogOpts);
+  wasFullscreen = false;
+  if (value !== undefined) mainWindow.setFullScreen(value);
+  else mainWindow.setFullScreen(!mainWindow.isFullScreen());
 };
 
 const createTrayMenu = () => {
@@ -120,7 +117,7 @@ const createTrayMenu = () => {
   tray.setIgnoreDoubleClickEvents(true);
 
   const menu = Menu.buildFromTemplate([{
-    label: 'About', click() { showAboutMenu(); },
+    label: `lemverse (v${app.getVersion()})`, click() { autoUpdater.checkForUpdates(); },
   }, {
     label: 'Debug', click() { mainWindow?.openDevTools(); },
   }, {
@@ -144,13 +141,35 @@ app.whenReady().then(() => {
   if (process.platform === 'darwin') app.dock.hide();
 
   // Shortcut
-  globalShortcut.register('Alt+Cmd+v', () => toggleWindow(undefined, true));
+  globalShortcut.register('Alt+Cmd+v', () => {
+    // the user wants to hide the app currently in fullscreen
+    if (mainWindow.isFullScreen() && mainWindow.isVisible()) {
+      mainWindow.once('leave-full-screen', () => {
+        wasFullscreen = true;
+        toggleWindow(false, true);
+      });
+      toggleFullScreen(false);
+      return;
+    }
+
+    // the user wants to show the app previously in fullscreen
+    if (!mainWindow.isVisible() && wasFullscreen) {
+      mainWindow.once('enter-full-screen', () => toggleWindow(true, true));
+      toggleFullScreen(true);
+      return;
+    }
+
+    toggleWindow(undefined, true);
+  });
 
   // Set the window under the tray icon on first load
   const position = calculateWindowPositionUnderTrayIcon();
   mainWindow.setPosition(position.x, position.y, false);
 
-  if (!isDev) setInterval(() => autoUpdater.checkForUpdates(), settings.checkUpdateInterval);
+  if (!isDev) {
+    autoUpdater.checkForUpdates();
+    setInterval(() => autoUpdater.checkForUpdates(), settings.checkUpdateInterval);
+  }
 });
 
 ipcMain.on('asynchronous-message', (event, data) => {
@@ -184,3 +203,8 @@ autoUpdater.on('error', message => {
   console.error('There was a problem updating the application');
   console.error(message);
 });
+
+ipcMain.handle(
+  'DESKTOP_CAPTURER_GET_SOURCES',
+  (event, opts) => desktopCapturer.getSources(opts),
+);
