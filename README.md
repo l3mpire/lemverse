@@ -278,6 +278,12 @@ Please note, that as stated in section `Deploy in production`, there is an addit
           "body": "chr_H2ARGyiKd8wQ4hQcr"
         },
         "default": "Basic"
+      },
+
+      "tos": {
+        "terms": "",
+        "cookies": "",
+        "privacy": ""
       }
     },
 

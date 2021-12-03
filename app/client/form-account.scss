@@ -28,6 +28,16 @@
 
   p {
     line-height: 25px;
+
+    &.tos {
+      font-size: 9pt;
+      margin: 0;
+      line-height: 20px;
+
+      a {
+        color: #8d7865;
+      }
+    }
   }
 
   form {
