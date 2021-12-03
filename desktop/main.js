@@ -82,7 +82,7 @@ const createWindow = () => {
   });
 
   mainWindow.loadURL(appURL);
-  mainWindow.setAlwaysOnTop(true, 'screen-saver');
+  mainWindow.setAlwaysOnTop(true, 'normal');
   mainWindow.setSkipTaskbar(true);
   mainWindow.setVisibleOnAllWorkspaces(true);
   mainWindow.on('focus', () => cancelWindowAutoClose());
