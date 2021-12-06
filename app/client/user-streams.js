@@ -235,6 +235,7 @@ userStreams = {
   },
 
   refreshVideoElementAvatar(videoElement) {
+    if (!videoElement) return;
     videoElement.parentElement.dataset.avatar = getRandomAvatarForUser(Meteor.user());
     if (this.streams.main.instance) videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
   },
