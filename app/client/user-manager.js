@@ -12,6 +12,10 @@ const characterInteractionConfiguration = {
   hitAreaCallback: Phaser.Geom.Circle.Contains,
   cursor: 'pointer',
 };
+const characterAnimations = Object.freeze({
+  idle: 'idle',
+  run: 'run',
+});
 const unavailablePlayerColor = 0x888888;
 
 const getRelativePositionToCanvas = (gameObject, camera) => ({
@@ -211,7 +215,7 @@ userManager = {
 
     if (hasUpdatedSkin || user.profile.direction !== oldUser?.profile.direction) {
       delete player.lastDirection;
-      this.updateAnimation(player);
+      this.updateAnimation(characterAnimations.run, player);
       this.pauseAnimation(player, true, true);
     }
 
@@ -298,7 +302,7 @@ userManager = {
     });
   },
 
-  updateAnimation(player, direction) {
+  updateAnimation(animation, player, direction) {
     let user = Meteor.users.findOne(player.userId);
     if (!user) return;
     direction = direction ?? (user.profile.direction || defaultCharacterDirection);
@@ -309,7 +313,7 @@ userManager = {
     const playerBodyParts = player.getByName('body');
     playerBodyParts.list.forEach(bodyPart => {
       const element = user.profile[bodyPart.name];
-      if (element) bodyPart.anims.play(`${element}${direction}`, true);
+      if (element) bodyPart.anims.play(`${animation}-${direction}-${element}`, true);
     });
   },
 
@@ -402,7 +406,7 @@ userManager = {
       }
 
       this.pauseAnimation(player, false);
-      this.updateAnimation(player);
+      this.updateAnimation(characterAnimations.run, player);
 
       if (player.lwTargetDate <= moment()) {
         player.x = player.lwTargetX;
@@ -501,7 +505,7 @@ userManager = {
     if (direction) {
       this.player.direction = direction;
       this.pauseAnimation(this.player, false);
-      this.updateAnimation(this.player, direction);
+      this.updateAnimation(characterAnimations.run, this.player, direction);
     } else this.pauseAnimation(this.player, true);
 
     const moving = !!direction;

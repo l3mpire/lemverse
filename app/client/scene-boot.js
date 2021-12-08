@@ -89,10 +89,10 @@ BootScene = new Phaser.Class({
       if (!character.category) return;
 
       const animations = characterAnimations[`w-${character.width}`];
-      _.each(animations, animation => {
+      _.each(animations, (animation, animationName) => {
         _.each(animation, (direction, key) => {
           this.anims.create({
-            key: `${character._id}${key}`,
+            key: `${animationName}-${key}-${character._id}`,
             frames: this.anims.generateFrameNumbers(character.fileId, { frames: direction.frames }),
             frameRate: direction.frameRate,
             repeat: direction.repeat,
