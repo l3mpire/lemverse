@@ -3,6 +3,7 @@
     display: flex;
     flex-wrap: wrap;
     margin-top: 15px;
+    margin-bottom: 60px;
 
     .js-screen-source {
       display: flex;
@@ -14,8 +15,9 @@
       border: 2px solid transparent;
 
       img {
-        width: 206px;
-        height: 130px;
+        width: 100%;
+        height: auto;
+        max-height: 140px;
         margin-bottom: 5px;
       }
 
@@ -23,5 +25,11 @@
         border: 2px solid darken(hsl(220, 22%, 76%), 15%);
       }
     }
+  }
+
+  button {
+    position: fixed;
+    bottom: 10px;
+    max-width: 460px;
   }
 }
