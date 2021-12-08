@@ -475,7 +475,7 @@ Template.lemverse.onCreated(function () {
     });
   });
 
-  hotkeys('shift+1', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
+  hotkeys('shift+1, space', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
   hotkeys('shift+2', { scope: scopes.player }, () => toggleUserProperty('shareVideo'));
   hotkeys('shift+3', { scope: scopes.player }, () => toggleUserProperty('shareScreen'));
   hotkeys('shift+4', { scope: scopes.player }, () => toggleModal('settingsMain'));
