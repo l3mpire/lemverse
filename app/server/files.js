@@ -60,12 +60,6 @@ const filesAfterUploadEditorCharacter = (user, fileRef) => {
   const size = lp.syncApi(image.size, image);
   const { width, height } = size;
 
-  if (width !== 384 || (height !== 128 && height !== 96)) {
-    Files.remove({ _id: fileRef._id });
-    error('filesAfterUploadEditorCharacter: image in wrong format (Not 384x128 or 384x96)', { userId: user._id, fileRef, width, height });
-    return;
-  }
-
   const existingCharacters = Characters.findOne({ fileName: fileRef.name });
 
   if (existingCharacters?._id) {
