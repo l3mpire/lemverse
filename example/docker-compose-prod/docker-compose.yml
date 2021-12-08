@@ -55,10 +55,9 @@ services:
                             "walkSpeed": 180,
                             "runSpeed": 720
                         },
-                        "characterNames": ["Basic", "Ghost"],
                         "skins": {
-                            "guest": "Ghost",
-                            "default": "Basic"
+                            "guest": {},
+                            "default": {}
                         },
                         "templateLevelId": "lvl_iLOVEaLOTlemverse"
                     },

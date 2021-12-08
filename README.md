@@ -270,14 +270,13 @@ Please note, that as stated in section `Deploy in production`, there is an addit
         "sensorFarDistance": 85  // Distance required before closing a call with an user
       },
 
-      "characterNames": ["Basic", "Ghost"], // List of in repository characters (should not change since you can upload new ones)
-
       "skins": {  // Default skins (can be defined at level)
-        "guest": "Ghost", // Simple format
-        "guest": { // Layered format
+        "guest": {
           "body": "chr_H2ARGyiKd8wQ4hQcr"
         },
-        "default": "Basic"
+        "default":  {
+          "body": "chr_2HARGyiKf8wQ8hQcr"
+        },
       },
 
       "tos": {
@@ -543,6 +542,8 @@ Website with images API :
 # Assets
 
 We use paid assets from [limezu](https://limezu.itch.io/) on [itch.io](https://limezu.itch.io/moderninteriors) in the *version 35*. Please keep in mind than lemverse doesn't support the new character format for the moment.
+
+By default lemverse appears in black because you have no textures in the project, you must go to the editor to upload the different textures.
 
 # License
 

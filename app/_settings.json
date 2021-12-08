@@ -36,11 +36,9 @@
       "sensorFarDistance": 85
     },
 
-    "characterNames": ["Basic", "Ghost"],
-
     "skins": {
-      "guest": "Ghost",
-      "default": "Basic"
+      "guest": {},
+      "default": {}
     },
 
     "templateLevelId": "lvl_iLOVEaLOTlemverse",

@@ -19,10 +19,6 @@ BootScene = new Phaser.Class({
       this.load.image(tileset.fileId, `/api/files/${tileset.fileId}`);
     });
 
-    Meteor.settings.public.characterNames.forEach(characterName => {
-      this.load.spritesheet(characterName, `/assets/lemverse/characters/${characterName}_run_16x16.png`, { frameWidth: 16, frameHeight: 32 });
-    });
-
     Characters.find().forEach(character => {
       this.load.spritesheet(character.fileId, `/api/files/${character.fileId}`, { frameWidth: 16, frameHeight: 32 });
     });
@@ -64,34 +60,6 @@ BootScene = new Phaser.Class({
       this.anims.create({
         key: `${character._id}down`,
         frames: this.anims.generateFrameNumbers(character.fileId, { frames: [66, 67, 68, 69, 70, 71] }),
-        frameRate: 10,
-        repeat: -1,
-      });
-    });
-
-    // load default animations
-    Meteor.settings.public.characterNames.forEach(characterName => {
-      this.anims.create({
-        key: `${characterName}right`,
-        frames: this.anims.generateFrameNumbers(characterName, { frames: [0, 1, 2, 3, 4, 5] }),
-        frameRate: 10,
-        repeat: -1,
-      });
-      this.anims.create({
-        key: `${characterName}up`,
-        frames: this.anims.generateFrameNumbers(characterName, { frames: [6, 7, 8, 9, 10, 11] }),
-        frameRate: 10,
-        repeat: -1,
-      });
-      this.anims.create({
-        key: `${characterName}left`,
-        frames: this.anims.generateFrameNumbers(characterName, { frames: [12, 13, 14, 15, 16, 17] }),
-        frameRate: 10,
-        repeat: -1,
-      });
-      this.anims.create({
-        key: `${characterName}down`,
-        frames: this.anims.generateFrameNumbers(characterName, { frames: [18, 19, 20, 21, 22, 23] }),
         frameRate: 10,
         repeat: -1,
       });

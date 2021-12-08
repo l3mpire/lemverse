@@ -80,25 +80,30 @@ userManager = {
     if (meet.api) meet.api.executeCommand('displayName', name);
   },
 
+  computeGuestSkin(user) {
+    if (!user.profile.guest) return user;
+
+    if (_.isObject(Meteor.settings.public.skins.guest)) {
+      user.profile = {
+        ...user.profile,
+        ...Meteor.settings.public.skins.guest,
+      };
+    }
+
+    const currentLevel = Levels.findOne({ _id: user.profile.levelId });
+    if (currentLevel?.skins?.guest) {
+      user.profile = {
+        ...user.profile,
+        ...currentLevel.skins?.guest,
+      };
+    }
+
+    return user;
+  },
+
   createUser(user) {
     if (this.players[user._id]) return null;
-
-    if (user.profile.guest) {
-      if (_.isObject(Meteor.settings.public.skins.guest)) {
-        user.profile = {
-          ...user.profile,
-          ...Meteor.settings.public.skins.guest,
-        };
-      }
-
-      const currentLevel = Levels.findOne({ _id: user.profile.levelId });
-      if (currentLevel?.skins?.guest) {
-        user.profile = {
-          ...user.profile,
-          ...currentLevel.skins?.guest,
-        };
-      }
-    }
+    if (user.profile.guest) user = this.computeGuestSkin(user);
 
     const { x, y, shareAudio, guest, body, direction } = user.profile;
     this.players[user._id] = this.scene.add.container(x, y);
@@ -133,7 +138,7 @@ userManager = {
     shadow.setOrigin(characterSpritesOrigin.x, characterSpritesOrigin.y);
     this.players[user._id].add(shadow);
 
-    const bodyPlayer = this.scene.add.sprite(0, 0, body || guest ? Meteor.settings.public.skins.guest : Meteor.settings.public.skins.default);
+    const bodyPlayer = this.scene.add.sprite(0, 0, body || 'missing_texture');
     bodyPlayer.setOrigin(characterSpritesOrigin.x, characterSpritesOrigin.y);
     bodyPlayer.name = 'body';
     playerParts.add(bodyPlayer);
@@ -294,28 +299,12 @@ userManager = {
   },
 
   updateAnimation(player, direction) {
-    const user = Meteor.users.findOne(player.userId);
+    let user = Meteor.users.findOne(player.userId);
     if (!user) return;
     direction = direction ?? (user.profile.direction || defaultCharacterDirection);
     if (player.lastDirection === direction) return;
     player.lastDirection = direction;
-
-    if (user.profile.guest) {
-      if (_.isObject(Meteor.settings.public.skins.guest)) {
-        user.profile = {
-          ...user.profile,
-          ...Meteor.settings.public.skins.guest,
-        };
-      }
-
-      const currentLevel = Levels.findOne({ _id: user.profile.levelId });
-      if (currentLevel?.skins?.guest) {
-        user.profile = {
-          ...user.profile,
-          ...currentLevel.skins?.guest,
-        };
-      }
-    }
+    if (user.profile.guest) user = this.computeGuestSkin(user);
 
     const playerBodyParts = player.getByName('body');
     playerBodyParts.list.forEach(bodyPart => {
