@@ -2,7 +2,6 @@ const Phaser = require('phaser');
 
 const defaultCharacterDirection = 'down';
 const defaultUserMediaColorError = '0xd21404';
-const characterReactionOffset = { x: 0, y: -85 };
 const characterSpritesOrigin = { x: 0.5, y: 1 };
 const characterInteractionDistance = { x: 32, y: 32 };
 const characterFootOffset = { x: -20, y: -10 };
@@ -61,6 +60,7 @@ userManager = {
     this.playerVelocity = new Phaser.Math.Vector2();
     this.players = {};
     this.scene = scene;
+    this.reactionPool = this.scene.add.group({ classType: CharacterReaction });
   },
 
   destroy() {
@@ -382,15 +382,16 @@ userManager = {
   },
 
   spawnReaction(player, content, animation, options) {
-    const ReactionDiff = animation === 'zigzag' ? 10 : 0;
-    const positionX = player.x - ReactionDiff + _.random(-options.randomOffset, options.randomOffset);
-    const positionY = player.y + characterReactionOffset.y + _.random(-options.randomOffset, options.randomOffset);
-    const reaction = this.scene.add.text(positionX, positionY, content, { font: '32px Sans Open' }).setDepth(99997).setOrigin(0.5, 1);
+    const reaction = this.reactionPool.get(this.scene);
+    const computedAnimation = reaction.prepare(content, player.x, player.y, animation, options);
 
     this.scene.tweens.add({
       targets: reaction,
-      ...reactionsAnimations[animation](positionX, positionY, ReactionDiff),
-      onComplete: () => reaction.destroy(),
+      ...computedAnimation,
+      onComplete: () => {
+        this.reactionPool.killAndHide(reaction);
+        this.scene.tweens.killTweensOf(reaction);
+      },
     });
   },
 
