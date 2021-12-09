@@ -84,7 +84,7 @@ userStreams = {
   requestUserMedia(constraints = {}) {
     if (constraints.forceNew) this.destroyStream(streamTypes.main);
     const { instance: currentStream, loading } = this.streams.main;
-    if (currentStream) return new Promise(resolve => resolve(currentStream));
+    if (currentStream) return new Promise(resolve => { resolve(currentStream); });
     if (!currentStream && loading) return waitFor(() => this.streams.main.instance !== undefined, 15, 500).then(() => this.streams.main.instance);
 
     this.streams.main.loading = true;
@@ -134,7 +134,7 @@ userStreams = {
 
   requestDisplayMedia() {
     const { instance: currentStream, loading } = this.streams.screen;
-    if (currentStream) return new Promise(resolve => resolve(currentStream));
+    if (currentStream) return new Promise(resolve => { resolve(currentStream); });
     if (!currentStream && loading) return waitFor(() => this.streams.screen.instance !== undefined, 20, 1000).then(() => this.streams.screen.instance);
 
     this.streams.screen.loading = true;
@@ -235,6 +235,7 @@ userStreams = {
   },
 
   refreshVideoElementAvatar(videoElement) {
+    if (!videoElement) return;
     videoElement.parentElement.dataset.avatar = getRandomAvatarForUser(Meteor.user());
     if (this.streams.main.instance) videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
   },

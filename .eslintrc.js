@@ -126,10 +126,11 @@ module.exports = {
     userManager: 'writable',
     entityManager: 'writable',
     stringToColor: 'writable',
-    reactionsAnimations: 'writable',
     viewportModes: 'writable',
     teleportUserInLevel: 'writable',
     sendEvent: 'writable',
+    CharacterNameText: 'writable',
+    CharacterReaction: 'writable',
 
     tileGlobalIndex: 'writable',
     tileLayer: 'writable',

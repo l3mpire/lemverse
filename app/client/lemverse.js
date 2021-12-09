@@ -78,7 +78,7 @@ Template.lemverse.onCreated(function () {
   window.addEventListener('dblclick', () => sendEvent('toggle-fullscreen'));
   window.addEventListener('beforeunload', () => Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } }));
 
-  this.hasLevelLoaded = false;
+  this.currentLevelId = undefined;
   this.subscribe('characters');
   this.subscribe('levels');
   this.subscribe('notifications');
@@ -235,7 +235,9 @@ Template.lemverse.onCreated(function () {
 
     const loggedUser = Meteor.user({ fields: { 'profile.levelId': 1 } });
     if (!loggedUser) return;
+
     const { levelId } = loggedUser.profile;
+    if (levelId === this.currentLevelId) return;
 
     Tracker.nonreactive(() => {
       if (this.handleEntitiesSubscribe) this.handleEntitiesSubscribe.stop();
@@ -259,10 +261,10 @@ Template.lemverse.onCreated(function () {
       if (levelName) titleParts.push(levelName);
       document.title = titleParts.reverse().join(' - ');
 
-      if (this.hasLevelLoaded) {
+      if (this.currentLevelId) {
         log(`unloading current level…`);
         worldScene.scene.restart();
-        this.hasLevelLoaded = false;
+        this.currentLevelId = undefined;
         return;
       }
 
@@ -353,7 +355,7 @@ Template.lemverse.onCreated(function () {
         levelManager.onLevelLoaded();
       });
 
-      this.hasLevelLoaded = true;
+      this.currentLevelId = levelId;
       Session.set('menu', undefined);
       game.scene.getScene('EditorScene')?.init();
     });
@@ -473,7 +475,7 @@ Template.lemverse.onCreated(function () {
     });
   });
 
-  hotkeys('shift+1', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
+  hotkeys('shift+1, space', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
   hotkeys('shift+2', { scope: scopes.player }, () => toggleUserProperty('shareVideo'));
   hotkeys('shift+3', { scope: scopes.player }, () => toggleUserProperty('shareScreen'));
   hotkeys('shift+4', { scope: scopes.player }, () => toggleModal('settingsMain'));

@@ -14,17 +14,14 @@ BootScene = new Phaser.Class({
   },
 
   preload() {
-    // load the resources here
-    Tilesets.find().forEach(tileset => {
-      this.load.image(tileset.fileId, `/api/files/${tileset.fileId}`);
-    });
+    Tilesets.find().forEach(tileset => this.load.image(tileset.fileId, `/api/files/${tileset.fileId}`));
 
-    Meteor.settings.public.characterNames.forEach(characterName => {
-      this.load.spritesheet(characterName, `/assets/lemverse/characters/${characterName}_run_16x16.png`, { frameWidth: 16, frameHeight: 32 });
-    });
-
+    const { frameHeight, frameWidth } = Meteor.settings.public.assets.character;
     Characters.find().forEach(character => {
-      this.load.spritesheet(character.fileId, `/api/files/${character.fileId}`, { frameWidth: 16, frameHeight: 32 });
+      this.load.spritesheet(character.fileId, `/api/files/${character.fileId}`, {
+        frameWidth: frameWidth || 16,
+        frameHeight: frameHeight || 32,
+      });
     });
   },
 
@@ -37,119 +34,44 @@ BootScene = new Phaser.Class({
     this.scene.add('EditorScene', EditorScene, true);
     this.scene.bringToTop('LoadingScene');
 
-    this.loadAnimations();
+    this.loadCharacterAnimations(Characters.find().fetch());
   },
 
-  loadAnimations() {
-    // load animations
-    Characters.find({}).forEach(character => {
-      this.anims.create({
-        key: `${character._id}right`,
-        frames: this.anims.generateFrameNumbers(character.fileId, { frames: [48, 49, 50, 51, 52, 53] }),
-        frameRate: 10,
-        repeat: -1,
-      });
-      this.anims.create({
-        key: `${character._id}up`,
-        frames: this.anims.generateFrameNumbers(character.fileId, { frames: [54, 55, 56, 57, 58, 59] }),
-        frameRate: 10,
-        repeat: -1,
-      });
-      this.anims.create({
-        key: `${character._id}left`,
-        frames: this.anims.generateFrameNumbers(character.fileId, { frames: [60, 61, 62, 63, 64, 65] }),
-        frameRate: 10,
-        repeat: -1,
-      });
-      this.anims.create({
-        key: `${character._id}down`,
-        frames: this.anims.generateFrameNumbers(character.fileId, { frames: [66, 67, 68, 69, 70, 71] }),
-        frameRate: 10,
-        repeat: -1,
-      });
-    });
+  loadCharacterAnimations(characters) {
+    const { formats } = Meteor.settings.public.assets.character;
+    characters.forEach(character => {
+      if (!character.category) return;
 
-    // load default animations
-    Meteor.settings.public.characterNames.forEach(characterName => {
-      this.anims.create({
-        key: `${characterName}right`,
-        frames: this.anims.generateFrameNumbers(characterName, { frames: [0, 1, 2, 3, 4, 5] }),
-        frameRate: 10,
-        repeat: -1,
-      });
-      this.anims.create({
-        key: `${characterName}up`,
-        frames: this.anims.generateFrameNumbers(characterName, { frames: [6, 7, 8, 9, 10, 11] }),
-        frameRate: 10,
-        repeat: -1,
-      });
-      this.anims.create({
-        key: `${characterName}left`,
-        frames: this.anims.generateFrameNumbers(characterName, { frames: [12, 13, 14, 15, 16, 17] }),
-        frameRate: 10,
-        repeat: -1,
-      });
-      this.anims.create({
-        key: `${characterName}down`,
-        frames: this.anims.generateFrameNumbers(characterName, { frames: [18, 19, 20, 21, 22, 23] }),
-        frameRate: 10,
-        repeat: -1,
+      const { animations } = formats[`w-${character.width}`];
+      _.each(animations, (animation, animationName) => {
+        _.each(animation, (direction, key) => {
+          this.anims.create({
+            key: `${animationName}-${key}-${character._id}`,
+            frames: this.anims.generateFrameNumbers(character.fileId, { frames: direction.frames }),
+            frameRate: direction.frameRate,
+            repeat: direction.repeat,
+          });
+        });
       });
     });
   },
 
   loadCharactersAtRuntime(characters) {
+    const { frameHeight, frameWidth } = Meteor.settings.public.assets.character;
+
     let imageLoadedCount = 0;
     _.each(characters, character => {
       if (this.textures.exists(character.fileId)) return;
-
       imageLoadedCount++;
-      this.load.spritesheet(character.fileId, `/api/files/${character.fileId}`, { frameWidth: 16, frameHeight: 32 });
+      this.load.spritesheet(character.fileId, `/api/files/${character.fileId}`, {
+        frameWidth: frameWidth || 16,
+        frameHeight: frameHeight || 32,
+      });
     });
 
-    const addCharacters = () => {
-      const animExist = (character, orientation) => this.anims[`${character._id}${character.category}${orientation}`];
-      _.each(characters, character => {
-        if (!character.category) return;
-
-        if (!animExist('right')) {
-          this.anims.create({
-            key: `${character._id}right`,
-            frames: this.anims.generateFrameNumbers(character.fileId, { frames: [48, 49, 50, 51, 52, 53] }),
-            frameRate: 10,
-            repeat: -1,
-          });
-        }
-        if (!animExist('up')) {
-          this.anims.create({
-            key: `${character._id}up`,
-            frames: this.anims.generateFrameNumbers(character.fileId, { frames: [54, 55, 56, 57, 58, 59] }),
-            frameRate: 10,
-            repeat: -1,
-          });
-        }
-        if (!animExist('left')) {
-          this.anims.create({
-            key: `${character._id}left`,
-            frames: this.anims.generateFrameNumbers(character.fileId, { frames: [60, 61, 62, 63, 64, 65] }),
-            frameRate: 10,
-            repeat: -1,
-          });
-        }
-        if (!animExist('down')) {
-          this.anims.create({
-            key: `${character._id}down`,
-            frames: this.anims.generateFrameNumbers(character.fileId, { frames: [66, 67, 68, 69, 70, 71] }),
-            frameRate: 10,
-            repeat: -1,
-          });
-        }
-      });
-    };
-
-    if (!imageLoadedCount) addCharacters();
+    if (!imageLoadedCount) this.loadCharacterAnimations(characters);
     else {
-      this.load.on(`complete`, () => addCharacters());
+      this.load.on(`complete`, () => this.loadCharacterAnimations(characters));
       this.load.start();
     }
   },

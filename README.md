@@ -280,14 +280,74 @@ Please note, that as stated in section `Deploy in production`, there is an addit
         "sensorFarDistance": 85  // Distance required before closing a call with an user
       },
 
-      "characterNames": ["Basic", "Ghost"], // List of in repository characters (should not change since you can upload new ones)
+      "assets": { // Assets configuration
+        "character": {
+          "frameWidth": 16,
+          "frameHeight": 32,
+          "formats": {
+            "w-384": { // Modern interiors: old format
+              "animations": {
+                "run": {
+                  "up": {
+                    "frames": [54, 55, 56, 57, 58, 59],
+                    "frameRate": 10,
+                    "repeat": -1
+                  },
+                  "down": {
+                    "frames": [66, 67, 68, 69, 70, 71],
+                    "frameRate": 10,
+                    "repeat": -1
+                  },
+                  "left": {
+                    "frames": [60, 61, 62, 63, 64, 65],
+                    "frameRate": 10,
+                    "repeat": -1
+                  },
+                  "right": {
+                    "frames": [48, 49, 50, 51, 52, 53],
+                    "frameRate": 10,
+                    "repeat": -1
+                  }
+                }
+              }
+            },
+            "w-927": { // Modern interiors: new format
+              "animations": {
+                "run": {
+                  "up": {
+                    "frames": [120, 121, 122, 123, 124, 125],
+                    "frameRate": 10,
+                    "repeat": -1
+                  },
+                  "down": {
+                    "frames": [132, 133, 134, 135, 136, 137],
+                    "frameRate": 10,
+                    "repeat": -1
+                  },
+                  "left": {
+                    "frames": [126, 127, 128, 129, 130, 131],
+                    "frameRate": 10,
+                    "repeat": -1
+                  },
+                  "right": {
+                    "frames": [114, 115, 116, 117, 118, 119],
+                    "frameRate": 10,
+                    "repeat": -1
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
 
       "skins": {  // Default skins (can be defined at level)
-        "guest": "Ghost", // Simple format
-        "guest": { // Layered format
+        "guest": {
           "body": "chr_H2ARGyiKd8wQ4hQcr"
         },
-        "default": "Basic"
+        "default":  {
+          "body": "chr_2HARGyiKf8wQ8hQcr"
+        },
       },
 
       "tos": {
@@ -555,6 +615,8 @@ Website with images API :
 # Assets
 
 We use paid assets from [limezu](https://limezu.itch.io/) on [itch.io](https://limezu.itch.io/moderninteriors) in the *version 35*. Please keep in mind than lemverse doesn't support the new character format for the moment.
+
+By default lemverse appears in black because you have no textures in the project, you must go to the editor to upload the different textures.
 
 # License
 
