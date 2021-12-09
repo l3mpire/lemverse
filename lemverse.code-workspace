@@ -70,6 +70,8 @@
 			"Roki",
 			"spritesheet",
 			"tilemap",
+			"tileset",
+			"anims",
 			"usemap"
 		],
 	}
