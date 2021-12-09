@@ -61,13 +61,14 @@ const filesAfterUploadEditorCharacter = (user, fileRef) => {
   const { formats, frameHeight, frameWidth } = Meteor.settings.public.assets.character;
   const { width, height } = size;
 
-  if (width % frameWidth !== 0 || !formats[`w-${width}`]) {
+  if (!formats[`w-${width}`]) {
     Files.remove({ _id: fileRef._id });
-    error('filesAfterUploadEditorCharacter: image in wrong format nor a multiple of frameWidth', { userId: user._id, fileRef, width, height, frameHeight, frameWidth, formats: Object.keys(formats) });
+    error('filesAfterUploadEditorCharacter: image in wrong format', { userId: user._id, fileRef, width, height, frameHeight, frameWidth, formats: Object.keys(formats) });
     return;
   }
 
   if (height % frameHeight !== 0) log(`filesAfterUploadEditorCharacter: image height is invalid, last frames couldn't appear`, { userId: user._id, fileRef, width, height, frameHeight, frameWidth, formats: Object.keys(formats) });
+  if (width % frameWidth !== 0) log(`filesAfterUploadEditorCharacter: image width is invalid, last frames couldn't appear`, { userId: user._id, fileRef, width, height, frameHeight, frameWidth, formats: Object.keys(formats) });
 
   const existingCharacters = Characters.findOne({ fileName: fileRef.name });
 
