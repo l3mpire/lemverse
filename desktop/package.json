@@ -1,6 +1,6 @@
 {
   "name": "lemverse",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Desktop version of lemverse",
   "main": "main.js",
   "scripts": {
