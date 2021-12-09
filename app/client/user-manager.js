@@ -2,7 +2,7 @@ const Phaser = require('phaser');
 
 const defaultCharacterDirection = 'down';
 const defaultUserMediaColorError = '0xd21404';
-const characterNameOffset = { x: 0, y: -85 };
+const characterReactionOffset = { x: 0, y: -85 };
 const characterSpritesOrigin = { x: 0.5, y: 1 };
 const characterInteractionDistance = { x: 32, y: 32 };
 const characterFootOffset = { x: -20, y: -10 };
@@ -375,16 +375,16 @@ userManager = {
 
   destroyUserName(userId) {
     const nameObject = this.characterNamesObjects[userId];
-    if (!nameObject) { return; }
-    nameObject?.destroy();
+    if (!nameObject) return;
 
-    this.characterNamesObjects[userId] = undefined;
+    nameObject.destroy();
+    delete this.characterNamesObjects[userId];
   },
 
   spawnReaction(player, content, animation, options) {
     const ReactionDiff = animation === 'zigzag' ? 10 : 0;
     const positionX = player.x - ReactionDiff + _.random(-options.randomOffset, options.randomOffset);
-    const positionY = player.y + characterNameOffset.y + _.random(-options.randomOffset, options.randomOffset);
+    const positionY = player.y + characterReactionOffset.y + _.random(-options.randomOffset, options.randomOffset);
     const reaction = this.scene.add.text(positionX, positionY, content, { font: '32px Sans Open' }).setDepth(99997).setOrigin(0.5, 1);
 
     this.scene.tweens.add({
@@ -457,7 +457,7 @@ userManager = {
   },
 
   postUpdate(time, delta) {
-    this.updateCharacterNamesPositions();
+    _.each(this.characterNamesObjects, text => text.updatePosition());
     if (!this.player) return;
 
     characterPopIns.update(this.player, this.players);
@@ -516,34 +516,13 @@ userManager = {
     this.playerWasMoving = moving;
   },
 
-  updateCharacterNamesPositions() {
-    _.each(this.characterNamesObjects, (value, key) => {
-      if (!value) return;
-
-      const player = this.players[key];
-      if (!player) {
-        this.destroyUserName(key);
-        return;
-      }
-
-      value.setPosition(
-        player.x + characterNameOffset.x,
-        player.y + characterNameOffset.y,
-      );
-    });
-  },
-
   updateUserName(userId, name) {
     let textInstance = this.characterNamesObjects[userId];
-    if (!this.characterNamesObjects[userId]) {
-      textInstance = this.scene.add.text(0, -40, name, {
-        fontFamily: 'Verdana, "Times New Roman", Tahoma, serif',
-        fontSize: 18,
-        stroke: '#000',
-        strokeThickness: 3,
-      });
-      textInstance.setOrigin(0.5);
-      textInstance.setDepth(99999);
+    if (!textInstance) {
+      const player = userManager.players[userId];
+      if (!player) return;
+
+      textInstance = new CharacterNameText(this.scene, player, name);
       this.characterNamesObjects[userId] = textInstance;
     } else if (textInstance) textInstance.text = name;
   },
