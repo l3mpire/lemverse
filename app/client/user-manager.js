@@ -2,7 +2,6 @@ const Phaser = require('phaser');
 
 const defaultCharacterDirection = 'down';
 const defaultUserMediaColorError = '0xd21404';
-const characterNameOffset = { x: 0, y: -85 };
 const characterSpritesOrigin = { x: 0.5, y: 1 };
 const characterInteractionDistance = { x: 32, y: 32 };
 const characterFootOffset = { x: -20, y: -10 };
@@ -12,6 +11,10 @@ const characterInteractionConfiguration = {
   hitAreaCallback: Phaser.Geom.Circle.Contains,
   cursor: 'pointer',
 };
+const characterAnimations = Object.freeze({
+  idle: 'idle',
+  run: 'run',
+});
 const unavailablePlayerColor = 0x888888;
 
 const getRelativePositionToCanvas = (gameObject, camera) => ({
@@ -57,6 +60,7 @@ userManager = {
     this.playerVelocity = new Phaser.Math.Vector2();
     this.players = {};
     this.scene = scene;
+    this.reactionPool = this.scene.add.group({ classType: CharacterReaction });
   },
 
   destroy() {
@@ -80,25 +84,30 @@ userManager = {
     if (meet.api) meet.api.executeCommand('displayName', name);
   },
 
+  computeGuestSkin(user) {
+    if (!user.profile.guest) return user;
+
+    if (_.isObject(Meteor.settings.public.skins.guest)) {
+      user.profile = {
+        ...user.profile,
+        ...Meteor.settings.public.skins.guest,
+      };
+    }
+
+    const currentLevel = Levels.findOne({ _id: user.profile.levelId });
+    if (currentLevel?.skins?.guest) {
+      user.profile = {
+        ...user.profile,
+        ...currentLevel.skins?.guest,
+      };
+    }
+
+    return user;
+  },
+
   createUser(user) {
     if (this.players[user._id]) return null;
-
-    if (user.profile.guest) {
-      if (_.isObject(Meteor.settings.public.skins.guest)) {
-        user.profile = {
-          ...user.profile,
-          ...Meteor.settings.public.skins.guest,
-        };
-      }
-
-      const currentLevel = Levels.findOne({ _id: user.profile.levelId });
-      if (currentLevel?.skins?.guest) {
-        user.profile = {
-          ...user.profile,
-          ...currentLevel.skins?.guest,
-        };
-      }
-    }
+    if (user.profile.guest) user = this.computeGuestSkin(user);
 
     const { x, y, shareAudio, guest, body, direction } = user.profile;
     this.players[user._id] = this.scene.add.container(x, y);
@@ -133,7 +142,7 @@ userManager = {
     shadow.setOrigin(characterSpritesOrigin.x, characterSpritesOrigin.y);
     this.players[user._id].add(shadow);
 
-    const bodyPlayer = this.scene.add.sprite(0, 0, body || guest ? Meteor.settings.public.skins.guest : Meteor.settings.public.skins.default);
+    const bodyPlayer = this.scene.add.sprite(0, 0, body || 'missing_texture');
     bodyPlayer.setOrigin(characterSpritesOrigin.x, characterSpritesOrigin.y);
     bodyPlayer.name = 'body';
     playerParts.add(bodyPlayer);
@@ -206,7 +215,7 @@ userManager = {
 
     if (hasUpdatedSkin || user.profile.direction !== oldUser?.profile.direction) {
       delete player.lastDirection;
-      this.updateAnimation(player);
+      this.updateAnimation(characterAnimations.run, player);
       this.pauseAnimation(player, true, true);
     }
 
@@ -293,34 +302,18 @@ userManager = {
     });
   },
 
-  updateAnimation(player, direction) {
-    const user = Meteor.users.findOne(player.userId);
+  updateAnimation(animation, player, direction) {
+    let user = Meteor.users.findOne(player.userId);
     if (!user) return;
     direction = direction ?? (user.profile.direction || defaultCharacterDirection);
     if (player.lastDirection === direction) return;
     player.lastDirection = direction;
-
-    if (user.profile.guest) {
-      if (_.isObject(Meteor.settings.public.skins.guest)) {
-        user.profile = {
-          ...user.profile,
-          ...Meteor.settings.public.skins.guest,
-        };
-      }
-
-      const currentLevel = Levels.findOne({ _id: user.profile.levelId });
-      if (currentLevel?.skins?.guest) {
-        user.profile = {
-          ...user.profile,
-          ...currentLevel.skins?.guest,
-        };
-      }
-    }
+    if (user.profile.guest) user = this.computeGuestSkin(user);
 
     const playerBodyParts = player.getByName('body');
     playerBodyParts.list.forEach(bodyPart => {
       const element = user.profile[bodyPart.name];
-      if (element) bodyPart.anims.play(`${element}${direction}`, true);
+      if (element) bodyPart.anims.play(`${animation}-${direction}-${element}`, true);
     });
   },
 
@@ -382,22 +375,23 @@ userManager = {
 
   destroyUserName(userId) {
     const nameObject = this.characterNamesObjects[userId];
-    if (!nameObject) { return; }
-    nameObject?.destroy();
+    if (!nameObject) return;
 
-    this.characterNamesObjects[userId] = undefined;
+    nameObject.destroy();
+    delete this.characterNamesObjects[userId];
   },
 
   spawnReaction(player, content, animation, options) {
-    const ReactionDiff = animation === 'zigzag' ? 10 : 0;
-    const positionX = player.x - ReactionDiff + _.random(-options.randomOffset, options.randomOffset);
-    const positionY = player.y + characterNameOffset.y + _.random(-options.randomOffset, options.randomOffset);
-    const reaction = this.scene.add.text(positionX, positionY, content, { font: '32px Sans Open' }).setDepth(99997).setOrigin(0.5, 1);
+    const reaction = this.reactionPool.get(this.scene);
+    const computedAnimation = reaction.prepare(content, player.x, player.y, animation, options);
 
     this.scene.tweens.add({
       targets: reaction,
-      ...reactionsAnimations[animation](positionX, positionY, ReactionDiff),
-      onComplete: () => reaction.destroy(),
+      ...computedAnimation,
+      onComplete: () => {
+        this.reactionPool.killAndHide(reaction);
+        this.scene.tweens.killTweensOf(reaction);
+      },
     });
   },
 
@@ -413,7 +407,7 @@ userManager = {
       }
 
       this.pauseAnimation(player, false);
-      this.updateAnimation(player);
+      this.updateAnimation(characterAnimations.run, player);
 
       if (player.lwTargetDate <= moment()) {
         player.x = player.lwTargetX;
@@ -464,7 +458,7 @@ userManager = {
   },
 
   postUpdate(time, delta) {
-    this.updateCharacterNamesPositions();
+    _.each(this.characterNamesObjects, text => text.updatePosition());
     if (!this.player) return;
 
     characterPopIns.update(this.player, this.players);
@@ -512,7 +506,7 @@ userManager = {
     if (direction) {
       this.player.direction = direction;
       this.pauseAnimation(this.player, false);
-      this.updateAnimation(this.player, direction);
+      this.updateAnimation(characterAnimations.run, this.player, direction);
     } else this.pauseAnimation(this.player, true);
 
     const moving = !!direction;
@@ -523,34 +517,13 @@ userManager = {
     this.playerWasMoving = moving;
   },
 
-  updateCharacterNamesPositions() {
-    _.each(this.characterNamesObjects, (value, key) => {
-      if (!value) return;
-
-      const player = this.players[key];
-      if (!player) {
-        this.destroyUserName(key);
-        return;
-      }
-
-      value.setPosition(
-        player.x + characterNameOffset.x,
-        player.y + characterNameOffset.y,
-      );
-    });
-  },
-
   updateUserName(userId, name) {
     let textInstance = this.characterNamesObjects[userId];
-    if (!this.characterNamesObjects[userId]) {
-      textInstance = this.scene.add.text(0, -40, name, {
-        fontFamily: 'Verdana, "Times New Roman", Tahoma, serif',
-        fontSize: 18,
-        stroke: '#000',
-        strokeThickness: 3,
-      });
-      textInstance.setOrigin(0.5);
-      textInstance.setDepth(99999);
+    if (!textInstance) {
+      const player = userManager.players[userId];
+      if (!player) return;
+
+      textInstance = new CharacterNameText(this.scene, player, name);
       this.characterNamesObjects[userId] = textInstance;
     } else if (textInstance) textInstance.text = name;
   },

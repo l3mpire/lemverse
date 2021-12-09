@@ -20,7 +20,9 @@
       </div>
       {{#with selectedCharactersPart}}
         {{#if _id}}
-          <img style="width:{{zoom width 1}}px; height:{{zoom height 1}}px; {{#if eq height 96}}margin-bottom: {{zoom 32 1}}px;{{/if}}" src="/api/files/{{fileId}}" alt="" />
+          <div class="image-container">
+            <img style="width:{{zoom width 1}}px; height:{{zoom height 1}}px; {{#if eq height 96}}margin-bottom: {{zoom 32 1}}px;{{/if}}" src="/api/files/{{fileId}}" alt="" />
+          </div>
         {{else}}
           <div class="placeholder" style="width:{{zoom 384 1}}px; height:{{zoom 128 1}}px;">
             <span>Please select a part or change your filter...</span>

@@ -119,6 +119,8 @@ const createTrayMenu = () => {
   const menu = Menu.buildFromTemplate([{
     label: `lemverse (v${app.getVersion()})`, click() { autoUpdater.checkForUpdates(); },
   }, {
+    label: `Maximize`, click() { mainWindow.maximize(); },
+  }, {
     label: 'Debug', click() { mainWindow?.openDevTools(); },
   }, {
     role: 'quit',

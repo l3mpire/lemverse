@@ -46,25 +46,23 @@ EditorScene = new Phaser.Class({
     Session.set('pointerX', worldPoint.x | 0);
     Session.set('pointerY', worldPoint.y | 0);
 
+    const zoneId = Session.get('selectedZoneId');
     if (Session.get('editorSelectedMenu') === 2) {
       if (this.input.manager.activePointer.isDown && this.input.manager.activePointer.downElement.nodeName === 'CANVAS') this.isMouseDown = true;
 
       if (this.isMouseDown && !this.input.manager.activePointer.isDown) {
         this.isMouseDown = false;
-        const zoneId = Session.get('selectedZoneId');
         if (zoneId) {
-          let { x, y } = worldPoint;
-          const point = Session.get('selectedZonePoint');
-          if (altIsDown) {
-            const { tileHeight, tileWidth } = levelManager.map;
-            const snappedStartPosition = this.snapToTile(x, y);
-            x = snappedStartPosition.x + ((point - 1) * tileWidth);
-            y = snappedStartPosition.y + ((point - 1) * tileHeight);
-          }
-
-          Zones.update(zoneId, { $set: { [`x${point}`]: x | 0, [`y${point}`]: y | 0 } });
-
           const zone = Zones.findOne(zoneId);
+          const { startPosition, endPosition } = this.computePositions(zone, worldPoint, Session.get('selectedZonePoint'), altIsDown);
+
+          Zones.update(zoneId, { $set: {
+            x1: startPosition.x | 0,
+            y1: startPosition.y | 0,
+            x2: endPosition.x | 0,
+            y2: endPosition.y | 0,
+          } });
+
           if (!zone?.x2) {
             Session.set('selectedZonePoint', 2);
           } else {
@@ -75,27 +73,14 @@ EditorScene = new Phaser.Class({
         }
       }
 
-      if (Session.get('selectedZoneId')) {
-        const zoneId = Session.get('selectedZoneId');
+      if (zoneId) {
         const zone = Zones.findOne(zoneId);
-        let startPosition = { x: 0, y: 0 };
-        let size = { x: 0, y: 0 };
 
-        if (Session.get('selectedZonePoint') === 2) {
-          startPosition = { x: zone.x1, y: zone.y1 };
-          size = { x: worldPoint.x - startPosition.x, y: worldPoint.y - startPosition.y };
-        } else {
-          startPosition = { x: worldPoint.x, y: worldPoint.y };
-          size = { x: (zone.x2 || worldPoint.x) - startPosition.x, y: (zone.y2 || worldPoint.y) - startPosition.y };
-        }
-
-        if (altIsDown) {
-          const { tileHeight, tileWidth } = levelManager.map;
-          const snappedStartPosition = this.snapToTile(startPosition.x, startPosition.y);
-          const snappedSize = this.snapToTile(worldPoint.x - startPosition.x, worldPoint.y - startPosition.y);
-          size.x = snappedSize.x + (snappedStartPosition.x - startPosition.x) + tileWidth;
-          size.y = snappedSize.y + (snappedStartPosition.y - startPosition.y) + tileHeight;
-        }
+        const { startPosition, endPosition } = this.computePositions(zone, worldPoint, Session.get('selectedZonePoint'), altIsDown);
+        const size = {
+          x: endPosition.x - startPosition.x,
+          y: endPosition.y - startPosition.y,
+        };
 
         this.showSelection(startPosition.x, startPosition.y, size.x, size.y);
       }
@@ -221,6 +206,39 @@ EditorScene = new Phaser.Class({
     this.areaSelector.clear();
     this.areaSelector.strokeRect(x, y, width, height);
     this.areaSelector.fillRect(x, y, width, height);
+  },
+
+  computePositions(zone, mousePosition, editedPoint, snapPositions = false) {
+    let startPosition = { x: 0, y: 0 };
+    let endPosition = { x: 0, y: 0 };
+
+    // snap
+    if (snapPositions) mousePosition = this.snapToTile(mousePosition.x, mousePosition.y);
+
+    startPosition = { x: zone.x1 || mousePosition.x, y: zone.y1 || mousePosition.y };
+    endPosition = { x: zone.x2 || mousePosition.x, y: zone.y2 || mousePosition.y };
+
+    // edit start or end
+    if (editedPoint === 2) endPosition = mousePosition;
+    else startPosition = mousePosition;
+
+    // swap
+    if (startPosition.x > endPosition.x) {
+      const a = startPosition.x;
+      startPosition.x = endPosition.x;
+      endPosition.x = a;
+    }
+
+    if (startPosition.y > endPosition.y) {
+      const a = startPosition.y;
+      startPosition.y = endPosition.y;
+      endPosition.y = a;
+    }
+
+    return {
+      startPosition,
+      endPosition,
+    };
   },
 
   snapToTile(x, y) {
