@@ -43,11 +43,11 @@ CharacterReaction = new Phaser.Class({
     this.setVisible(true).setActive(true).setAlpha(1).setScale(1);
     this.setText(text);
 
-    const ReactionDiff = animation === 'zigzag' ? 10 : 0;
-    const positionX = x - ReactionDiff + _.random(-options.randomOffset, options.randomOffset);
+    const reactionDiff = animation === 'zigzag' ? 10 : 0;
+    const positionX = x - reactionDiff + _.random(-options.randomOffset, options.randomOffset);
     const positionY = y + offset + _.random(-options.randomOffset, options.randomOffset);
     this.setPosition(positionX, positionY);
 
-    return reactionsAnimations[animation](positionX, positionY, ReactionDiff);
+    return reactionsAnimations[animation](positionX, positionY, reactionDiff);
   },
 });
