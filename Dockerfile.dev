@@ -12,7 +12,8 @@ RUN apt update && apt install -y \
 		bash \
 		ca-certificates \
         imagemagick \
-        graphicsmagick
+        graphicsmagick \
+        python make g++
 
 
 WORKDIR $APP_SOURCE_FOLDER
