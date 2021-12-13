@@ -87,6 +87,8 @@ Template.tilesetToolbox.onDestroyed(() => {
 
 Template.tileData.helpers({
   hasCollision(tilesetId, index) {
+    if (!tilesetId) return false;
+
     const tileset = Tilesets.findOne(tilesetId);
     return tileset.collisionTileIndexes?.includes(index);
   },
