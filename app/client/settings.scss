@@ -25,10 +25,6 @@ div.settings {
     padding-bottom: 25px;
 
     >* {
-      width: calc(50% - 10px);
-      margin: 0 5px;
-      box-sizing: border-box;
-
       &:last-child {
         margin-top: 17px;
         width: 100%;

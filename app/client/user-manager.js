@@ -79,8 +79,8 @@ userManager = {
     throttledSavePlayer.cancel();
   },
 
-  rename(name) {
-    this.updateUserName(this.player.userId, name);
+  rename(name, color) {
+    this.updateUserName(this.player.userId, name, color);
     if (meet.api) meet.api.executeCommand('displayName', name);
   },
 
@@ -178,7 +178,7 @@ userManager = {
     const isMe = user._id === Meteor.userId();
     const player = this.players[user._id];
     if (!player) return;
-    const { x, y, reaction, shareAudio, guest, userMediaError, name } = user.profile;
+    const { x, y, reaction, shareAudio, guest, userMediaError, name, nameColor } = user.profile;
 
     // show reactions
     if (reaction && !player.reactionHandler) {
@@ -226,7 +226,7 @@ userManager = {
     }
     characterBodyContainer.alpha = guest ? 0.7 : 1.0;
 
-    if (!guest && name !== oldUser?.profile?.name) this.updateUserName(user._id, name);
+    if (!guest && name !== oldUser?.profile?.name) this.updateUserName(user._id, name, nameColor);
 
     let hasMoved = false;
     if (oldUser) {
@@ -517,15 +517,16 @@ userManager = {
     this.playerWasMoving = moving;
   },
 
-  updateUserName(userId, name) {
+  updateUserName(userId, name, colorName) {
     let textInstance = this.characterNamesObjects[userId];
+
     if (!textInstance) {
       const player = userManager.players[userId];
       if (!player) return;
 
-      textInstance = new CharacterNameText(this.scene, player, name);
+      textInstance = new CharacterNameText(this.scene, player, name, colorName);
       this.characterNamesObjects[userId] = textInstance;
-    } else if (textInstance) textInstance.text = name;
+    } else if (textInstance) textInstance.setColorFromName(colorName).setText(name);
   },
 
   teleportMainUser(x, y) {

@@ -1,0 +1,17 @@
+div.settings {
+  .name-section {
+    width: 70%;
+
+    input.js-name {
+      width: 65%;
+    }
+
+    select.js-name-color {
+      width: 30%;
+    }
+  }
+
+  .reaction-section {
+    width: 30%;
+  }
+}

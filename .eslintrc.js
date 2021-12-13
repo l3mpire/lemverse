@@ -130,6 +130,7 @@ module.exports = {
     viewportModes: 'writable',
     teleportUserInLevel: 'writable',
     sendEvent: 'writable',
+    characterNameColors: 'writable',
     CharacterNameText: 'writable',
     CharacterReaction: 'writable',
 

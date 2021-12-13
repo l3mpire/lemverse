@@ -1,13 +1,26 @@
+<template name="characterNameColorSelector">
+    <select name="name-color" class="js-name-color">
+      {{#each value in nameColors}}
+       {{#if isSelected value}}
+        <option selected="selected" value="{{value}}">{{value}}</option>
+       {{else}}
+        <option value="{{value}}">{{value}}</option>
+       {{/if}}
+      {{/each}}
+    </select>
+</template>
+
 <template name="settingsMain">
   {{#modal title="Settings"}}
     <div class="settings">
       <div class="options container">
-        <div>
+        <div class="name-section">
           <label for="name">Name</label>
           <input type="text" name="name" id="name" class="js-name" value={{currentUser.profile.name}}>
+          {{> characterNameColorSelector}}
         </div>
         
-        <div>
+        <div class="reaction-section">
           <label for="reaction">Custom reaction</label>
           <input type="text" name="reaction" id="reaction" class="js-reaction" value={{#if currentUser.profile.defaultReaction}}{{currentUser.profile.defaultReaction}}{{else}}❤️{{/if}}>
         </div>

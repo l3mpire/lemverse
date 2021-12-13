@@ -1,3 +1,8 @@
+Template.characterNameColorSelector.helpers({
+  nameColors() { return Object.keys(characterNameColors); },
+  isSelected(value) { return Meteor.user().profile.nameColor === value; },
+});
+
 Template.settingsMain.events({
   'input .js-name'(event) {
     event.preventDefault();
@@ -6,7 +11,17 @@ Template.settingsMain.events({
     if (!name) return false;
 
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.name': name } });
-    userManager.rename(name);
+    userManager.rename(name, Meteor.user().profile.nameColor);
+    return false;
+  },
+  'input .js-name-color'(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const color = event.target.value;
+    if (!color) return false;
+
+    Meteor.users.update(Meteor.userId(), { $set: { 'profile.nameColor': color } });
+    userManager.rename(Meteor.user().profile.name, color);
     return false;
   },
   'input .js-reaction'(event) {
