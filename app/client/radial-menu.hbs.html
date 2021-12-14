@@ -1,10 +1,6 @@
 <template name="radialMenuItem">
   <li style="top: {{x}}px; left: {{y}}px;">
-    {{#if toggle}}
-      <button type="button" class="js-toggle {{#if isActive toggle}}on{{else}}off{{/if}}">{{icon}}</button>
-    {{else}}
-      <button type="button" class="js-button">{{icon}}</button>
-    {{/if}}
+    <button type="button" class="js-menu-item {{#if state}}{{#if isActive state}}on{{else}}off{{/if}}{{/if}}">{{icon}}</button>
   </li>
 </template>
 

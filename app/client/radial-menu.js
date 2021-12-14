@@ -1,22 +1,28 @@
-const mainMenuItems = [
-  { icon: '🎤', toggle: 'shareAudio' },
-  { icon: '🎥', toggle: 'shareVideo' },
-  { icon: '📺', toggle: 'shareScreen' },
-  { icon: '⚙️', modal: 'settingsMain' },
-  { icon: '🔔', modal: 'notifications' },
-  { icon: '😃', menu: 'reactions' },
+/* eslint-disable no-use-before-define */
+const reactionMenuItems = [
+  { icon: '❤️', index: 1, action: () => setReaction('❤️'), cancel: () => setReaction() },
+  { icon: '↩️', index: 8, action: template => buildMenu(mainMenuItems, template.items) },
+  { icon: '😲', index: 2, action: () => setReaction('😲'), cancel: () => setReaction() },
+  { icon: '😢', index: 3, action: () => setReaction('😢'), cancel: () => setReaction() },
+  { icon: '🤣', index: 4, action: () => setReaction('🤣'), cancel: () => setReaction() },
+  { icon: '😡', index: 5, action: () => setReaction('😡'), cancel: () => setReaction() },
+  { icon: '👍', index: 6, action: () => setReaction('👍'), cancel: () => setReaction() },
+  { icon: '👎', index: 7, action: () => setReaction('👎'), cancel: () => setReaction() },
 ];
 
-const reactionMenuItems = [
-  { icon: '❤️', reaction: true },
-  { icon: '↩️', menu: 'main' },
-  { icon: '😲', reaction: true },
-  { icon: '😢', reaction: true },
-  { icon: '🤣', reaction: true },
-  { icon: '😡', reaction: true },
-  { icon: '👍', reaction: true },
-  { icon: '👎', reaction: true },
+const mainMenuItems = [
+  { icon: '🎤', index: 1, state: 'shareAudio', action: () => toggleUserProperty('shareAudio') },
+  { icon: '🎥', index: 2, state: 'shareVideo', action: () => toggleUserProperty('shareVideo') },
+  { icon: '📺', index: 3, state: 'shareScreen', action: () => toggleUserProperty('shareScreen') },
+  { icon: '⚙️', index: 4, action: () => { toggleModal('settingsMain'); Session.set('menu', false); } },
+  { icon: '🔔', index: 5, action: () => { toggleModal('notifications'); Session.set('menu', false); } },
+  { icon: '😃', index: 6, action: template => buildMenu(reactionMenuItems, template.items) },
 ];
+
+const setReaction = reaction => {
+  if (reaction) Meteor.users.update(Meteor.userId(), { $set: { 'profile.reaction': reaction } });
+  else Meteor.users.update(Meteor.userId(), { $unset: { 'profile.reaction': 1 } });
+};
 
 const buildMenu = (menuItems, reactiveVar) => {
   const radius = 73;
@@ -48,54 +54,40 @@ Template.radialMenuItem.helpers({
 });
 
 Template.radialMenu.onCreated(function () {
-  this.items = new ReactiveVar([]);
+  this.items = new ReactiveVar(mainMenuItems);
   document.addEventListener('mousemove', onMouseMove);
   Session.set('menu-position', { x: 0, y: 0 });
 
-  hotkeys('shift+1, space', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
-  hotkeys('shift+2', { scope: scopes.player }, () => toggleUserProperty('shareVideo'));
-  hotkeys('shift+3', { scope: scopes.player }, () => toggleUserProperty('shareScreen'));
-  hotkeys('shift+4', { scope: scopes.player }, () => toggleModal('settingsMain'));
-  hotkeys('shift+5', { scope: scopes.player }, () => toggleModal('notifications'));
+  hotkeys('space', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
+  hotkeys('*', { keyup: true, scope: scopes.player }, e => {
+    if (e.repeat || !hotkeys.shift) return;
+    const menuItems = this.items.get() || mainMenuItems;
+    const menuEntry = menuItems.find(menuItem => menuItem.index === parseInt(e.key, 10));
+    if (!menuEntry) return;
+
+    if (e.type === 'keyup' && menuEntry.cancel) menuEntry.cancel(this);
+    else if (e.type === 'keydown' && menuEntry.action) menuEntry.action(this);
+  });
 
   this.autorun(() => {
     const open = Session.get('menu');
 
     if (open) buildMenu(mainMenuItems, this.items);
-    else Meteor.users.update(Meteor.userId(), { $unset: { 'profile.reaction': 1 } });
+    else {
+      setReaction();
+      this.items.set(mainMenuItems);
+    }
   });
 });
 
 Template.radialMenu.onDestroyed(() => {
-  hotkeys.unbind('shift+1', scopes.player);
-  hotkeys.unbind('shift+2', scopes.player);
-  hotkeys.unbind('shift+3', scopes.player);
-  hotkeys.unbind('shift+4', scopes.player);
-  hotkeys.unbind('shift+5', scopes.player);
+  hotkeys.unbind('*', scopes.player);
+  hotkeys.unbind('space', scopes.player);
 });
 
 Template.radialMenu.events({
-  'click .js-menu'() {
-    buildMenu(reactionMenuItems, Template.instance().items);
-  },
-  'click .js-button'() {
-    if (this.modal) {
-      toggleModal(this.modal);
-      Session.set('menu', false);
-    } else if (this.menu) {
-      const menuItems = this.menu === 'reactions' ? reactionMenuItems : mainMenuItems;
-      buildMenu(menuItems, Template.instance().items);
-    }
-  },
-  'click .js-toggle'() {
-    toggleUserProperty(this.toggle);
-  },
-  'touchstart .js-button, mousedown .js-button'() {
-    if (this.reaction) Meteor.users.update(Meteor.userId(), { $set: { 'profile.reaction': this.icon } });
-  },
-  'touchend .js-button, mouseup .js-button'() {
-    if (this.reaction) Meteor.users.update(Meteor.userId(), { $unset: { 'profile.reaction': 1 } });
-  },
+  'mousedown .js-menu-item'() { if (this.action) this.action(Template.instance()); },
+  'mouseup .js-menu-item'() { if (this.cancel) this.cancel(); },
 });
 
 Template.radialMenu.helpers({
