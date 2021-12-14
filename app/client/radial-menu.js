@@ -52,12 +52,26 @@ Template.radialMenu.onCreated(function () {
   document.addEventListener('mousemove', onMouseMove);
   Session.set('menu-position', { x: 0, y: 0 });
 
+  hotkeys('shift+1, space', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
+  hotkeys('shift+2', { scope: scopes.player }, () => toggleUserProperty('shareVideo'));
+  hotkeys('shift+3', { scope: scopes.player }, () => toggleUserProperty('shareScreen'));
+  hotkeys('shift+4', { scope: scopes.player }, () => toggleModal('settingsMain'));
+  hotkeys('shift+5', { scope: scopes.player }, () => toggleModal('notifications'));
+
   this.autorun(() => {
     const open = Session.get('menu');
 
     if (open) buildMenu(mainMenuItems, this.items);
     else Meteor.users.update(Meteor.userId(), { $unset: { 'profile.reaction': 1 } });
   });
+});
+
+Template.radialMenu.onDestroyed(() => {
+  hotkeys.unbind('shift+1', scopes.player);
+  hotkeys.unbind('shift+2', scopes.player);
+  hotkeys.unbind('shift+3', scopes.player);
+  hotkeys.unbind('shift+4', scopes.player);
+  hotkeys.unbind('shift+5', scopes.player);
 });
 
 Template.radialMenu.events({
