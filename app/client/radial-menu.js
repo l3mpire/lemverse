@@ -19,6 +19,11 @@ const mainMenuItems = [
   { icon: '😃', index: 6, action: template => buildMenu(reactionMenuItems, template.items) },
 ];
 
+const otherUserMenuItems = [
+  { icon: '👤', index: 1, action: () => Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId }) },
+  { icon: '👣', index: 2, action: () => userManager.follow(userProximitySensor.nearestUser(Meteor.user())) },
+];
+
 const setReaction = reaction => {
   if (reaction) Meteor.users.update(Meteor.userId(), { $set: { 'profile.reaction': reaction } });
   else Meteor.users.update(Meteor.userId(), { $unset: { 'profile.reaction': 1 } });
@@ -70,10 +75,12 @@ Template.radialMenu.onCreated(function () {
   });
 
   this.autorun(() => {
-    const open = Session.get('menu');
+    const menu = Session.get('menu');
 
-    if (open) buildMenu(mainMenuItems, this.items);
-    else {
+    if (menu?.userId) {
+      const menuItems = menu.userId === Meteor.userId() ? mainMenuItems : otherUserMenuItems;
+      buildMenu(menuItems, this.items);
+    } else {
       setReaction();
       this.items.set(mainMenuItems);
     }

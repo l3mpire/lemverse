@@ -122,16 +122,15 @@ userManager = {
       playerParts.on('pointerover', () => {
         if (Session.get('editor')) return;
 
-        if (user._id === Meteor.userId()) {
-          Session.set('menu', true);
-          Session.set('menu-position', getRelativePositionToCanvas(this.players[user._id], this.scene.cameras.main));
-        } else this.setTint(this.players[user._id], 0xFFAAFF);
+        this.setTint(this.players[user._id], 0xFFAAFF);
+        Session.set('menu', { userId: user._id });
+        Session.set('menu-position', getRelativePositionToCanvas(this.players[user._id], this.scene.cameras.main));
       });
 
       playerParts.on('pointerout', () => this.setTintFromState(this.players[user._id]));
       playerParts.on('pointerup', () => {
-        if (user._id === Meteor.userId()) Session.set('menu', !Session.get('menu'));
-        else if (!Session.get('menu')) Session.set('modal', { template: 'profile', userId: user._id });
+        if (Session.get('menu')) Session.set('menu', undefined);
+        else Session.set('menu', { userId: user._id });
       });
     }
 
@@ -181,11 +180,14 @@ userManager = {
     const { x, y, reaction, shareAudio, guest, userMediaError, name, nameColor } = user.profile;
 
     // show reactions
-    if (reaction && !player.reactionHandler) {
+    if (reaction) {
+      clearInterval(player.reactionHandler);
+      delete player.reactionHandler;
+
       const animation = reaction === '❤️' ? 'zigzag' : 'linearUpScaleDown';
       this.spawnReaction(player, reaction, animation, { randomOffset: 10 });
       player.reactionHandler = setInterval(() => this.spawnReaction(player, reaction, animation, { randomOffset: 10 }), 250);
-    } else if (!reaction && player.reactionHandler) {
+    } else {
       clearInterval(player.reactionHandler);
       delete player.reactionHandler;
     }
