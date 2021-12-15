@@ -5,8 +5,8 @@
 }
 
 .radial-menu {
-  width: 200px;
-  height: 200px;
+  width: 185px;
+  height: 185px;
   transform: scale(0.0) translate(-50%, -65%);
   transition: all .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   transform-origin: top left;
@@ -20,6 +20,22 @@
 
     ul {
       transform: translate(-50%, -50%);
+    }
+  }
+
+  &.show-shortcuts {
+    li:before {
+      content: attr(data-index);
+      position: relative;
+      z-index: 2;
+      padding: 1px 3px;
+      font-size: 8pt;
+      z-index: 10;
+      top: 25px;
+      right: -26px;
+      background-color: white;
+      color: black;
+      border: 1px solid black;
     }
   }
 
@@ -74,6 +90,10 @@
         height: 100%;
         border-radius: 50%;
         background-color: #1b1b1ba6;
+
+        &:active {
+          background-color: green;
+        }
 
         &.off {
           background-color: #f26362;

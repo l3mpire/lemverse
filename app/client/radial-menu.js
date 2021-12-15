@@ -1,27 +1,27 @@
 /* eslint-disable no-use-before-define */
 const reactionMenuItems = [
-  { icon: '❤️', index: 1, action: () => setReaction('❤️'), cancel: () => setReaction() },
-  { icon: '↩️', index: 8, action: template => buildMenu(mainMenuItems, template.items) },
-  { icon: '😲', index: 2, action: () => setReaction('😲'), cancel: () => setReaction() },
-  { icon: '😢', index: 3, action: () => setReaction('😢'), cancel: () => setReaction() },
-  { icon: '🤣', index: 4, action: () => setReaction('🤣'), cancel: () => setReaction() },
+  { icon: '❤️', index: 2, action: () => setReaction('❤️'), cancel: () => setReaction() },
+  { icon: '↩️', index: 1, action: template => buildMenu(mainMenuItems, template.items) },
+  { icon: '😲', index: 8, action: () => setReaction('😲'), cancel: () => setReaction() },
+  { icon: '😢', index: 7, action: () => setReaction('😢'), cancel: () => setReaction() },
+  { icon: '🤣', index: 6, action: () => setReaction('🤣'), cancel: () => setReaction() },
   { icon: '😡', index: 5, action: () => setReaction('😡'), cancel: () => setReaction() },
-  { icon: '👍', index: 6, action: () => setReaction('👍'), cancel: () => setReaction() },
-  { icon: '👎', index: 7, action: () => setReaction('👎'), cancel: () => setReaction() },
+  { icon: '👍', index: 4, action: () => setReaction('👍'), cancel: () => setReaction() },
+  { icon: '👎', index: 3, action: () => setReaction('👎'), cancel: () => setReaction() },
 ];
 
 const mainMenuItems = [
-  { icon: '🎤', index: 1, state: 'shareAudio', action: () => toggleUserProperty('shareAudio') },
-  { icon: '🎥', index: 2, state: 'shareVideo', action: () => toggleUserProperty('shareVideo') },
   { icon: '📺', index: 3, state: 'shareScreen', action: () => toggleUserProperty('shareScreen') },
-  { icon: '⚙️', index: 4, action: () => { toggleModal('settingsMain'); Session.set('menu', false); } },
-  { icon: '🔔', index: 5, action: () => { toggleModal('notifications'); Session.set('menu', false); } },
+  { icon: '🎥', index: 2, state: 'shareVideo', action: () => toggleUserProperty('shareVideo') },
+  { icon: '🎤', index: 1, state: 'shareAudio', action: () => toggleUserProperty('shareAudio') },
   { icon: '😃', index: 6, action: template => buildMenu(reactionMenuItems, template.items) },
+  { icon: '🔔', index: 5, action: () => { toggleModal('notifications'); Session.set('menu', false); } },
+  { icon: '⚙️', index: 4, action: () => { toggleModal('settingsMain'); Session.set('menu', false); } },
 ];
 
 const otherUserMenuItems = [
   { icon: '👤', index: 1, action: () => Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId }) },
-  { icon: '👣',
+  { icon: '🏃',
     index: 2,
     action: () => {
       const userId = Session.get('menu')?.userId;
@@ -34,9 +34,13 @@ const otherUserMenuItems = [
       }
 
       userManager.follow(user);
+      Session.set('menu', false);
     } },
 ];
 
+const horizontalMenuItemDistance = { x: 45, y: -90 };
+const radialMenuRadius = 68;
+const mouseDistanceToCloseMenu = 120;
 const itemAmountRequiredForBackground = 4;
 
 const setReaction = reaction => {
@@ -48,22 +52,18 @@ const buildMenu = (menuItems, reactiveVar) => {
   const items = [];
 
   if (menuItems.length <= itemAmountRequiredForBackground) {
-    const radius = 45;
-    const y = -90;
-
     for (let i = 0; i < menuItems.length; i++) {
-      const x = radius * (i - (menuItems.length - 1) / 2);
-      items.push({ ...menuItems[i], x, y });
+      const x = horizontalMenuItemDistance.x * (i - (menuItems.length - 1) / 2);
+      items.push({ ...menuItems[i], x, y: horizontalMenuItemDistance.y });
     }
   } else {
-    const radius = 73;
     const theta = 2 * Math.PI / menuItems.length;
-    const offset = Math.PI / 2 - theta - 1.5708;
+    const offset = Math.PI / 2 - theta;
 
     for (let i = 0; i < menuItems.length; i++) {
       const currentAngle = i * theta + offset;
-      const x = radius * Math.cos(currentAngle);
-      const y = radius * Math.sin(currentAngle);
+      const x = radialMenuRadius * Math.cos(currentAngle);
+      const y = radialMenuRadius * Math.sin(currentAngle);
       items.push({ ...menuItems[i], x, y });
     }
   }
@@ -77,7 +77,7 @@ const onMouseMove = event => {
   const mousePosition = { x: event.clientX, y: event.clientY };
   const offsetY = 38;
   const distance = Math.sqrt((menuPosition.x - mousePosition.x) ** 2 + ((menuPosition.y - offsetY) - mousePosition.y) ** 2);
-  if (distance >= 120) Session.set('menu', false);
+  if (distance >= mouseDistanceToCloseMenu) Session.set('menu', false);
 };
 
 Template.radialMenuItem.helpers({
@@ -86,11 +86,16 @@ Template.radialMenuItem.helpers({
 
 Template.radialMenu.onCreated(function () {
   this.items = new ReactiveVar(mainMenuItems);
+  this.showShortcuts = new ReactiveVar(false);
   document.addEventListener('mousemove', onMouseMove);
   Session.set('menu-position', { x: 0, y: 0 });
 
   hotkeys('space', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
   hotkeys('*', { keyup: true, scope: scopes.player }, e => {
+    if (e.key === 'Shift') {
+      this.showShortcuts.set(e.type === 'keydown');
+    }
+
     if (e.repeat || !hotkeys.shift) return;
     const menuItems = this.items.get() || mainMenuItems;
     const menuEntry = menuItems.find(menuItem => menuItem.index === parseInt(e.key, 10));
@@ -125,4 +130,5 @@ Template.radialMenu.helpers({
   open() { return Session.get('menu'); },
   position() { return Session.get('menu-position'); },
   showBackground() { return Template.instance().items.get().length > itemAmountRequiredForBackground; },
+  showShortcuts() { return Template.instance().showShortcuts.get(); },
 });
