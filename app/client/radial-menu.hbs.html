@@ -1,5 +1,5 @@
 <template name="radialMenuItem">
-  <li style="top: {{x}}px; left: {{y}}px;">
+  <li style="top: {{y}}px; left: {{x}}px;">
     <button type="button" class="js-menu-item {{#if state}}{{#if isActive state}}on{{else}}off{{/if}}{{/if}}">{{icon}}</button>
   </li>
 </template>
@@ -12,7 +12,7 @@
           {{> radialMenuItem item}}
         {{/each}}
       </ul>
-      <div class="background"></div>
+      {{#if showBackground}}<div class="background"></div>{{/if}}
     </div>
   </div>
 </template>

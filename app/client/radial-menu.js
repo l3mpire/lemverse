@@ -21,8 +21,23 @@ const mainMenuItems = [
 
 const otherUserMenuItems = [
   { icon: '👤', index: 1, action: () => Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId }) },
-  { icon: '👣', index: 2, action: () => userManager.follow(userProximitySensor.nearestUser(Meteor.user())) },
+  { icon: '👣',
+    index: 2,
+    action: () => {
+      const userId = Session.get('menu')?.userId;
+      if (!userId) return;
+
+      const user = Meteor.users.findOne(userId);
+      if (!user) {
+        lp.notif.warning('Unable to follow this user');
+        return;
+      }
+
+      userManager.follow(user);
+    } },
 ];
+
+const itemAmountRequiredForBackground = 4;
 
 const setReaction = reaction => {
   if (reaction) Meteor.users.update(Meteor.userId(), { $set: { 'profile.reaction': reaction } });
@@ -30,16 +45,27 @@ const setReaction = reaction => {
 };
 
 const buildMenu = (menuItems, reactiveVar) => {
-  const radius = 73;
-  const theta = 2 * Math.PI / menuItems.length;
-  const offset = Math.PI / 2 - theta - 1.5708;
-
   const items = [];
-  for (let i = 0; i < menuItems.length; i++) {
-    const currentAngle = i * theta + offset;
-    const x = radius * Math.cos(currentAngle);
-    const y = radius * Math.sin(currentAngle);
-    items.push({ ...menuItems[i], x, y });
+
+  if (menuItems.length <= itemAmountRequiredForBackground) {
+    const radius = 45;
+    const y = -90;
+
+    for (let i = 0; i < menuItems.length; i++) {
+      const x = radius * (i - (menuItems.length - 1) / 2);
+      items.push({ ...menuItems[i], x, y });
+    }
+  } else {
+    const radius = 73;
+    const theta = 2 * Math.PI / menuItems.length;
+    const offset = Math.PI / 2 - theta - 1.5708;
+
+    for (let i = 0; i < menuItems.length; i++) {
+      const currentAngle = i * theta + offset;
+      const x = radius * Math.cos(currentAngle);
+      const y = radius * Math.sin(currentAngle);
+      items.push({ ...menuItems[i], x, y });
+    }
   }
 
   reactiveVar.set(items);
@@ -80,10 +106,7 @@ Template.radialMenu.onCreated(function () {
     if (menu?.userId) {
       const menuItems = menu.userId === Meteor.userId() ? mainMenuItems : otherUserMenuItems;
       buildMenu(menuItems, this.items);
-    } else {
-      setReaction();
-      this.items.set(mainMenuItems);
-    }
+    } else setReaction();
   });
 });
 
@@ -101,4 +124,5 @@ Template.radialMenu.helpers({
   items() { return Template.instance().items.get(); },
   open() { return Session.get('menu'); },
   position() { return Session.get('menu-position'); },
+  showBackground() { return Template.instance().items.get().length > itemAmountRequiredForBackground; },
 });
