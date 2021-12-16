@@ -35,7 +35,7 @@ userStreams = {
 
   video(enabled) {
     const { instance: mainStream } = this.streams.main;
-    this.getVideoElement().parentElement.classList.toggle('active', mainStream && enabled);
+    this.getVideoElement().parentElement.classList.toggle('active-video', mainStream && enabled);
     if (mainStream?.getVideoTracks().length) _.each(mainStream.getVideoTracks(), track => { track.enabled = enabled; });
   },
 
@@ -168,6 +168,7 @@ userStreams = {
           const videoElement = this.getVideoElement();
           if (stream.id !== videoElement.srcObject?.id) videoElement.srcObject = stream;
           videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
+          videoElement.parentElement.classList.toggle('active', true);
 
           // ensures tracks are up-to-date
           this.audio(shareAudio);
