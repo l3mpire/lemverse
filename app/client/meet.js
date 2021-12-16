@@ -25,30 +25,9 @@ meet = {
       width: '100%',
       height: '100%',
       parentNode: document.querySelector('#meet'),
-      configOverwrite: {
-        prejoinPageEnabled: false,
-      },
       userInfo: {
         email: Meteor.user().emails[0].address,
         displayName: Meteor.user().profile.name,
-      },
-      interfaceConfigOverwrite: {
-        SHOW_CHROME_EXTENSION_BANNER: false,
-        MOBILE_APP_PROMO: false,
-        HIDE_INVITE_MORE_HEADER: true,
-        SHOW_BRAND_WATERMARK: false,
-        SHOW_JITSI_WATERMARK: false,
-        SHOW_POWERED_BY: false,
-        SHOW_PROMOTIONAL_CLOSE_PAGE: false,
-        SHOW_WATERMARK_FOR_GUESTS: false,
-
-        TOOLBAR_BUTTONS: [
-          'microphone', 'camera', 'closedcaptions', 'desktop', /* 'embedmeeting', */ 'fullscreen',
-          'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
-          'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand',
-          'videoquality', 'filmstrip', /* 'invite', */ 'feedback', 'stats', 'shortcuts',
-          'tileview', 'videobackgroundblur', 'download', 'help', 'mute-everyone', /* 'security' */
-        ],
       },
     };
 
