@@ -72,7 +72,7 @@ const otherUserMenuItems = [
     shortcut: '4',
     action: () => {
       const user = getMenuActiveUser();
-      if (!userProximitySensor.isUserNear(user._id)) {
+      if (!userProximitySensor.isUserNear(user)) {
         lp.notif.error(`${user.profile.name} must be near you`);
         return;
       }
