@@ -136,7 +136,7 @@ Template.radialMenu.onCreated(function () {
 
     // execute shortcut actions
     if (e.repeat || !hotkeys.shift) return;
-    const menuItems = this.items.get() || mainMenuItems;
+    const menuItems = !Session.get('menu') ? mainMenuItems : this.items.get();
     const menuEntry = menuItems.find(menuItem => menuItem.shortcut === e.key.toLowerCase());
     if (!menuEntry) return;
 
