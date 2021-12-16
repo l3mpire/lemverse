@@ -152,4 +152,16 @@ userVoiceRecorderAbility = {
 
     return supportedType;
   },
+
+  recordVoice(start, callback) {
+    this.onSoundRecorded = callback;
+
+    if (start && !this.isRecording()) {
+      userStreams.audio(false);
+      this.start();
+    } else {
+      userStreams.audio(Meteor.user()?.profile.shareAudio);
+      this.stop();
+    }
+  },
 };
