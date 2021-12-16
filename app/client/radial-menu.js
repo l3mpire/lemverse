@@ -121,8 +121,16 @@ Template.radialMenu.onDestroyed(() => {
 });
 
 Template.radialMenu.events({
-  'mousedown .js-menu-item'() { if (this.action) this.action(Template.instance()); },
-  'mouseup .js-menu-item'() { if (this.cancel) this.cancel(); },
+  'mousedown .js-menu-item'(e) {
+    if (this.action) this.action(Template.instance());
+    e.preventDefault();
+    e.stopPropagation();
+  },
+  'mouseup .js-menu-item'(e) {
+    if (this.cancel) this.cancel();
+    e.preventDefault();
+    e.stopPropagation();
+  },
 });
 
 Template.radialMenu.helpers({
