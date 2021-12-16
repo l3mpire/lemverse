@@ -15,36 +15,36 @@ const lovePhrases = userName => [
 ];
 
 const reactionMenuItems = [
-  { icon: '❤️', shortcut: '2', action: () => setReaction('❤️'), cancel: () => setReaction() },
-  { icon: '↩️', shortcut: '1', action: template => buildMenu(mainMenuItems, template.items) },
-  { icon: '🎉', shortcut: '9', action: () => setReaction('🎉'), cancel: () => setReaction() },
-  { icon: '😲', shortcut: '8', action: () => setReaction('😲'), cancel: () => setReaction() },
-  { icon: '😢', shortcut: '7', action: () => setReaction('😢'), cancel: () => setReaction() },
-  { icon: '🤣', shortcut: '6', action: () => setReaction('🤣'), cancel: () => setReaction() },
-  { icon: '😡', shortcut: '5', action: () => setReaction('😡'), cancel: () => setReaction() },
-  { icon: '👍', shortcut: '4', action: () => setReaction('👍'), cancel: () => setReaction() },
-  { icon: '👎', shortcut: '3', action: () => setReaction('👎'), cancel: () => setReaction() },
+  { icon: '❤️', shortcut: 50, action: () => setReaction('❤️'), cancel: () => setReaction() },
+  { icon: '↩️', shortcut: 49, action: template => buildMenu(mainMenuItems, template.items) },
+  { icon: '🎉', shortcut: 57, action: () => setReaction('🎉'), cancel: () => setReaction() },
+  { icon: '😲', shortcut: 56, action: () => setReaction('😲'), cancel: () => setReaction() },
+  { icon: '😢', shortcut: 55, action: () => setReaction('😢'), cancel: () => setReaction() },
+  { icon: '🤣', shortcut: 54, action: () => setReaction('🤣'), cancel: () => setReaction() },
+  { icon: '😡', shortcut: 53, action: () => setReaction('😡'), cancel: () => setReaction() },
+  { icon: '👍', shortcut: 52, action: () => setReaction('👍'), cancel: () => setReaction() },
+  { icon: '👎', shortcut: 51, action: () => setReaction('👎'), cancel: () => setReaction() },
 ];
 
 const mainMenuItems = [
-  { icon: '📺', shortcut: '3', label: 'Screen', state: 'shareScreen', action: () => toggleUserProperty('shareScreen') },
-  { icon: '🎥', shortcut: '2', label: 'Camera', state: 'shareVideo', action: () => toggleUserProperty('shareVideo') },
-  { icon: '🎤', shortcut: '1', label: 'Audio', state: 'shareAudio', action: () => toggleUserProperty('shareAudio') },
-  { icon: '😃', shortcut: '7', label: 'Reactions', action: template => buildMenu(reactionMenuItems, template.items) },
-  { icon: '🔔', shortcut: '6', label: 'Voice mail', action: () => { toggleModal('notifications'); Session.set('menu', false); } },
+  { icon: '📺', shortcut: 51, label: 'Screen', state: 'shareScreen', action: () => toggleUserProperty('shareScreen') },
+  { icon: '🎥', shortcut: 50, label: 'Camera', state: 'shareVideo', action: () => toggleUserProperty('shareVideo') },
+  { icon: '🎤', shortcut: 49, label: 'Audio', state: 'shareAudio', action: () => toggleUserProperty('shareAudio') },
+  { icon: '😃', shortcut: 55, label: 'Reactions', action: template => buildMenu(reactionMenuItems, template.items) },
+  { icon: '🔔', shortcut: 54, label: 'Voice mail', action: () => { toggleModal('notifications'); Session.set('menu', false); } },
   { icon: '📢',
     label: 'Shout',
-    shortcut: '5',
+    shortcut: 53,
     action: () => userVoiceRecorderAbility.recordVoice(true, sendAudioChunksToUsersInZone),
     cancel: () => userVoiceRecorderAbility.recordVoice(false, sendAudioChunksToUsersInZone),
   },
-  { icon: '⚙️', shortcut: '4', label: 'Settings', action: () => { toggleModal('settingsMain'); Session.set('menu', false); } },
+  { icon: '⚙️', shortcut: 52, label: 'Settings', action: () => { toggleModal('settingsMain'); Session.set('menu', false); } },
 ];
 
 const otherUserMenuItems = [
   {
     icon: '❤️',
-    shortcut: '2',
+    shortcut: 50,
     label: 'Send love',
     action: () => {
       const user = getMenuActiveUser();
@@ -54,7 +54,7 @@ const otherUserMenuItems = [
   },
   {
     icon: '🏃',
-    shortcut: '1',
+    shortcut: 49,
     label: 'Follow',
     action: () => {
       const user = getMenuActiveUser();
@@ -69,7 +69,7 @@ const otherUserMenuItems = [
   },
   { icon: '🎙️',
     label: 'Send vocal',
-    shortcut: '4',
+    shortcut: 52,
     action: () => {
       const user = getMenuActiveUser();
       if (!userProximitySensor.isUserNear(user)) {
@@ -81,7 +81,7 @@ const otherUserMenuItems = [
     },
     cancel: () => userVoiceRecorderAbility.recordVoice(false, sendAudioChunksToNearUsers),
   },
-  { icon: '👤', label: 'Profile', shortcut: '3', action: () => Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId }) },
+  { icon: '👤', label: 'Profile', shortcut: 51, action: () => Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId }) },
 ];
 
 const menuOffset = { x: 0, y: -6 };
@@ -134,6 +134,7 @@ const onMouseMove = event => {
 
 Template.radialMenuItem.helpers({
   isActive(value) { return Meteor.user().profile[value]; },
+  shortcutLabel() { return String.fromCharCode(this.shortcut); },
 });
 
 Template.radialMenu.onCreated(function () {
@@ -151,7 +152,7 @@ Template.radialMenu.onCreated(function () {
     // execute shortcut actions
     if (e.repeat || !hotkeys.shift) return;
     const menuItems = !Session.get('menu') ? mainMenuItems : this.items.get();
-    const menuEntry = menuItems.find(menuItem => menuItem.shortcut === e.key.toLowerCase());
+    const menuEntry = menuItems.find(menuItem => menuItem.shortcut === e.keyCode);
     if (!menuEntry) return;
 
     if (e.type === 'keyup' && menuEntry.cancel) menuEntry.cancel(this);
