@@ -11,18 +11,20 @@ const reactionMenuItems = [
 ];
 
 const mainMenuItems = [
-  { icon: '📺', shortcut: '3', state: 'shareScreen', action: () => toggleUserProperty('shareScreen') },
-  { icon: '🎥', shortcut: '2', state: 'shareVideo', action: () => toggleUserProperty('shareVideo') },
-  { icon: '🎤', shortcut: '1', state: 'shareAudio', action: () => toggleUserProperty('shareAudio') },
-  { icon: '😃', shortcut: '6', action: template => buildMenu(reactionMenuItems, template.items) },
-  { icon: '🔔', shortcut: '5', action: () => { toggleModal('notifications'); Session.set('menu', false); } },
-  { icon: '⚙️', shortcut: '4', action: () => { toggleModal('settingsMain'); Session.set('menu', false); } },
+  { icon: '📺', shortcut: '3', label: 'Screen', state: 'shareScreen', action: () => toggleUserProperty('shareScreen') },
+  { icon: '🎥', shortcut: '2', label: 'Camera', state: 'shareVideo', action: () => toggleUserProperty('shareVideo') },
+  { icon: '🎤', shortcut: '1', label: 'Audio', state: 'shareAudio', action: () => toggleUserProperty('shareAudio') },
+  { icon: '😃', shortcut: '6', label: 'Reactions', action: template => buildMenu(reactionMenuItems, template.items) },
+  { icon: '🔔', shortcut: '5', label: 'Voice mail', action: () => { toggleModal('notifications'); Session.set('menu', false); } },
+  { icon: '⚙️', shortcut: '4', label: 'Settings', action: () => { toggleModal('settingsMain'); Session.set('menu', false); } },
 ];
 
 const otherUserMenuItems = [
-  { icon: '👤', shortcut: '1', action: () => Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId }) },
-  { icon: '🏃',
+  { icon: '👤', label: 'Profile', shortcut: '1', action: () => Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId }) },
+  {
+    icon: '🏃',
     shortcut: '2',
+    label: 'Follow',
     action: () => {
       const userId = Session.get('menu')?.userId;
       if (!userId) return;
@@ -35,7 +37,8 @@ const otherUserMenuItems = [
 
       userManager.follow(user);
       Session.set('menu', false);
-    } },
+    },
+  },
 ];
 
 const horizontalMenuItemDistance = { x: 45, y: -90 };
@@ -86,6 +89,7 @@ Template.radialMenuItem.helpers({
 
 Template.radialMenu.onCreated(function () {
   this.items = new ReactiveVar(mainMenuItems);
+  this.label = new ReactiveVar('Settings');
   this.showShortcuts = new ReactiveVar(false);
   document.addEventListener('mousemove', onMouseMove);
   Session.set('menu-position', { x: 0, y: 0 });
@@ -131,10 +135,13 @@ Template.radialMenu.events({
     e.preventDefault();
     e.stopPropagation();
   },
+  'mouseenter .js-menu-item'() { Template.instance().label.set(this.label); },
+  'mouseleave .js-menu-item'() { Template.instance().label.set(undefined); },
 });
 
 Template.radialMenu.helpers({
   items() { return Template.instance().items.get(); },
+  label() { return Template.instance().label.get(); },
   open() { return Session.get('menu'); },
   position() { return Session.get('menu-position'); },
   showBackground() { return Template.instance().items.get().length > itemAmountRequiredForBackground; },

@@ -4,6 +4,20 @@
   position: absolute;
   z-index: 9999;
   pointer-events: none;
+
+  .label {
+    color: white;
+    position: absolute;
+    bottom: -45px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-weight: bold;
+    font-size: 11pt;
+    padding: 3px 5px;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.6);
+  }
 }
 
 .radial-menu {
