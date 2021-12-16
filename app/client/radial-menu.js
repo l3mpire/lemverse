@@ -1,28 +1,28 @@
 /* eslint-disable no-use-before-define */
 const reactionMenuItems = [
-  { icon: '❤️', index: 2, action: () => setReaction('❤️'), cancel: () => setReaction() },
-  { icon: '↩️', index: 1, action: template => buildMenu(mainMenuItems, template.items) },
-  { icon: '😲', index: 8, action: () => setReaction('😲'), cancel: () => setReaction() },
-  { icon: '😢', index: 7, action: () => setReaction('😢'), cancel: () => setReaction() },
-  { icon: '🤣', index: 6, action: () => setReaction('🤣'), cancel: () => setReaction() },
-  { icon: '😡', index: 5, action: () => setReaction('😡'), cancel: () => setReaction() },
-  { icon: '👍', index: 4, action: () => setReaction('👍'), cancel: () => setReaction() },
-  { icon: '👎', index: 3, action: () => setReaction('👎'), cancel: () => setReaction() },
+  { icon: '❤️', shortcut: '2', action: () => setReaction('❤️'), cancel: () => setReaction() },
+  { icon: '↩️', shortcut: '1', action: template => buildMenu(mainMenuItems, template.items) },
+  { icon: '😲', shortcut: '8', action: () => setReaction('😲'), cancel: () => setReaction() },
+  { icon: '😢', shortcut: '7', action: () => setReaction('😢'), cancel: () => setReaction() },
+  { icon: '🤣', shortcut: '6', action: () => setReaction('🤣'), cancel: () => setReaction() },
+  { icon: '😡', shortcut: '5', action: () => setReaction('😡'), cancel: () => setReaction() },
+  { icon: '👍', shortcut: '4', action: () => setReaction('👍'), cancel: () => setReaction() },
+  { icon: '👎', shortcut: '3', action: () => setReaction('👎'), cancel: () => setReaction() },
 ];
 
 const mainMenuItems = [
-  { icon: '📺', index: 3, state: 'shareScreen', action: () => toggleUserProperty('shareScreen') },
-  { icon: '🎥', index: 2, state: 'shareVideo', action: () => toggleUserProperty('shareVideo') },
-  { icon: '🎤', index: 1, state: 'shareAudio', action: () => toggleUserProperty('shareAudio') },
-  { icon: '😃', index: 6, action: template => buildMenu(reactionMenuItems, template.items) },
-  { icon: '🔔', index: 5, action: () => { toggleModal('notifications'); Session.set('menu', false); } },
-  { icon: '⚙️', index: 4, action: () => { toggleModal('settingsMain'); Session.set('menu', false); } },
+  { icon: '📺', shortcut: '3', state: 'shareScreen', action: () => toggleUserProperty('shareScreen') },
+  { icon: '🎥', shortcut: '2', state: 'shareVideo', action: () => toggleUserProperty('shareVideo') },
+  { icon: '🎤', shortcut: '1', state: 'shareAudio', action: () => toggleUserProperty('shareAudio') },
+  { icon: '😃', shortcut: '6', action: template => buildMenu(reactionMenuItems, template.items) },
+  { icon: '🔔', shortcut: '5', action: () => { toggleModal('notifications'); Session.set('menu', false); } },
+  { icon: '⚙️', shortcut: '4', action: () => { toggleModal('settingsMain'); Session.set('menu', false); } },
 ];
 
 const otherUserMenuItems = [
-  { icon: '👤', index: 1, action: () => Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId }) },
+  { icon: '👤', shortcut: '1', action: () => Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId }) },
   { icon: '🏃',
-    index: 2,
+    shortcut: '2',
     action: () => {
       const userId = Session.get('menu')?.userId;
       if (!userId) return;
@@ -92,13 +92,13 @@ Template.radialMenu.onCreated(function () {
 
   hotkeys('space', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
   hotkeys('*', { keyup: true, scope: scopes.player }, e => {
-    if (e.key === 'Shift') {
-      this.showShortcuts.set(e.type === 'keydown');
-    }
+    // show/hide shortcuts
+    if (e.key === 'Shift') this.showShortcuts.set(e.type === 'keydown');
 
+    // execute shortcut actions
     if (e.repeat || !hotkeys.shift) return;
     const menuItems = this.items.get() || mainMenuItems;
-    const menuEntry = menuItems.find(menuItem => menuItem.index === parseInt(e.key, 10));
+    const menuEntry = menuItems.find(menuItem => menuItem.shortcut === e.key.toLowerCase());
     if (!menuEntry) return;
 
     if (e.type === 'keyup' && menuEntry.cancel) menuEntry.cancel(this);
