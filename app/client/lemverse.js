@@ -421,14 +421,7 @@ Template.lemverse.onCreated(function () {
 
   hotkeys('r', { keyup: true, scope: scopes.player }, event => {
     if (event.repeat) return;
-
-    userVoiceRecorderAbility.recordVoice(event.type === 'keydown', chunks => {
-      const user = Meteor.user();
-      const usersInZone = zones.usersInZone(zones.currentZone(user));
-      peer.sendData(usersInZone, { type: 'audio', emitter: user._id, data: chunks }).then(() => {
-        lp.notif.success(`📣 Everyone has heard your powerful voice`);
-      }).catch(() => lp.notif.warning('❌ No one is there to hear you'));
-    });
+    userVoiceRecorderAbility.recordVoice(event.type === 'keydown', sendAudioChunksToUsersInZone);
   });
 
   hotkeys('p', { keyup: true, scope: scopes.player }, event => {
@@ -438,29 +431,7 @@ Template.lemverse.onCreated(function () {
     if (!user.roles?.admin) return;
     if (!userProximitySensor.nearUsersCount() && event.type === 'keydown') { lp.notif.error(`You need someone near you to whisper`); return; }
 
-    userVoiceRecorderAbility.recordVoice(event.type === 'keydown', chunks => {
-      const { nearUsers } = userProximitySensor;
-      let targets = [...new Set(_.keys(nearUsers))];
-      targets = targets.filter(target => target !== Meteor.userId());
-      if (!targets.length) { lp.notif.error(`You need someone near you to whisper`); return; }
-
-      lp.notif.success('✉️ Your voice message has been sent!');
-
-      // Upload
-      const blob = userVoiceRecorderAbility.generateBlob(chunks);
-      const file = new File([blob], `audio-record.${userVoiceRecorderAbility.getExtension()}`, { type: blob.type });
-      const uploadInstance = Files.insert({
-        file,
-        chunkSize: 'dynamic',
-        meta: { source: 'voice-recorder', targets },
-      }, false);
-
-      uploadInstance.on('end', error => {
-        if (error) lp.notif.error(`Error during upload: ${error.reason}`);
-      });
-
-      uploadInstance.start();
-    });
+    userVoiceRecorderAbility.recordVoice(event.type === 'keydown', sendAudioChunksToNearUsers);
   });
 
   hotkeys('tab', { scope: scopes.player }, e => {

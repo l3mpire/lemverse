@@ -133,6 +133,8 @@ module.exports = {
     characterNameColors: 'writable',
     CharacterNameText: 'writable',
     CharacterReaction: 'writable',
+    sendAudioChunksToNearUsers: 'writable',
+    sendAudioChunksToUsersInZone: 'writable',
 
     tileGlobalIndex: 'writable',
     tileLayer: 'writable',

@@ -1,4 +1,19 @@
 /* eslint-disable no-use-before-define */
+
+const getMenuActiveUser = () => {
+  const { userId } = Session.get('menu');
+  if (!userId) return undefined;
+
+  return Meteor.users.findOne(userId);
+};
+
+const lovePhrases = userName => [
+  `You are the best ${userName}`,
+  `You are gorgeous ${userName}`,
+  `Have a good day ${userName}!`,
+  `I hope your day is great ${userName}`,
+];
+
 const reactionMenuItems = [
   { icon: '❤️', shortcut: '2', action: () => setReaction('❤️'), cancel: () => setReaction() },
   { icon: '↩️', shortcut: '1', action: template => buildMenu(mainMenuItems, template.items) },
@@ -15,22 +30,34 @@ const mainMenuItems = [
   { icon: '📺', shortcut: '3', label: 'Screen', state: 'shareScreen', action: () => toggleUserProperty('shareScreen') },
   { icon: '🎥', shortcut: '2', label: 'Camera', state: 'shareVideo', action: () => toggleUserProperty('shareVideo') },
   { icon: '🎤', shortcut: '1', label: 'Audio', state: 'shareAudio', action: () => toggleUserProperty('shareAudio') },
-  { icon: '😃', shortcut: '6', label: 'Reactions', action: template => buildMenu(reactionMenuItems, template.items) },
-  { icon: '🔔', shortcut: '5', label: 'Voice mail', action: () => { toggleModal('notifications'); Session.set('menu', false); } },
+  { icon: '😃', shortcut: '7', label: 'Reactions', action: template => buildMenu(reactionMenuItems, template.items) },
+  { icon: '🔔', shortcut: '6', label: 'Voice mail', action: () => { toggleModal('notifications'); Session.set('menu', false); } },
+  { icon: '📢',
+    label: 'Shout',
+    shortcut: '5',
+    action: () => userVoiceRecorderAbility.recordVoice(true, sendAudioChunksToUsersInZone),
+    cancel: () => userVoiceRecorderAbility.recordVoice(false, sendAudioChunksToUsersInZone),
+  },
   { icon: '⚙️', shortcut: '4', label: 'Settings', action: () => { toggleModal('settingsMain'); Session.set('menu', false); } },
 ];
 
 const otherUserMenuItems = [
-  { icon: '👤', label: 'Profile', shortcut: '1', action: () => Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId }) },
+  {
+    icon: '❤️',
+    shortcut: '2',
+    label: 'Send love',
+    action: () => {
+      const user = getMenuActiveUser();
+      if (user) setReaction(Random.choice(lovePhrases(user.profile.name)));
+    },
+    cancel: () => setReaction(),
+  },
   {
     icon: '🏃',
-    shortcut: '2',
+    shortcut: '1',
     label: 'Follow',
     action: () => {
-      const userId = Session.get('menu')?.userId;
-      if (!userId) return;
-
-      const user = Meteor.users.findOne(userId);
+      const user = getMenuActiveUser();
       if (!user) {
         lp.notif.warning('Unable to follow this user');
         return;
@@ -40,12 +67,19 @@ const otherUserMenuItems = [
       Session.set('menu', false);
     },
   },
+  { icon: '🎙️',
+    label: 'Send vocal',
+    shortcut: '4',
+    action: () => userVoiceRecorderAbility.recordVoice(true, sendAudioChunksToNearUsers),
+    cancel: () => userVoiceRecorderAbility.recordVoice(false, sendAudioChunksToNearUsers),
+  },
+  { icon: '👤', label: 'Profile', shortcut: '3', action: () => Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId }) },
 ];
 
 const horizontalMenuItemDistance = { x: 45, y: -90 };
 const radialMenuRadius = 68;
 const mouseDistanceToCloseMenu = 120;
-const itemAmountRequiredForBackground = 4;
+const itemAmountRequiredForBackground = 2;
 
 const setReaction = reaction => {
   if (reaction) Meteor.users.update(Meteor.userId(), { $set: { 'profile.reaction': reaction } });

@@ -165,3 +165,38 @@ userVoiceRecorderAbility = {
     }
   },
 };
+
+const sendAudioChunksToTargets = (chunks, targets) => {
+  // Upload
+  const blob = userVoiceRecorderAbility.generateBlob(chunks);
+  const file = new File([blob], `audio-record.${userVoiceRecorderAbility.getExtension()}`, { type: blob.type });
+  const uploadInstance = Files.insert({
+    file,
+    chunkSize: 'dynamic',
+    meta: { source: 'voice-recorder', targets },
+  }, false);
+
+  uploadInstance.on('end', error => {
+    if (error) lp.notif.error(`Error during upload: ${error.reason}`);
+  });
+
+  uploadInstance.start();
+};
+
+sendAudioChunksToUsersInZone = chunks => {
+  const user = Meteor.user();
+  const usersInZone = zones.usersInZone(zones.currentZone(user));
+  peer.sendData(usersInZone, { type: 'audio', emitter: user._id, data: chunks }).then(() => {
+    lp.notif.success(`📣 Everyone has heard your powerful voice`);
+  }).catch(() => lp.notif.warning('❌ No one is there to hear you'));
+};
+
+sendAudioChunksToNearUsers = chunks => {
+  const { nearUsers } = userProximitySensor;
+  let targets = [...new Set(_.keys(nearUsers))];
+  targets = targets.filter(target => target !== Meteor.userId());
+  if (!targets.length) { lp.notif.error(`You need someone near you to whisper`); return; }
+
+  lp.notif.success('✉️ Your voice message has been sent!');
+  sendAudioChunksToTargets(chunks, targets);
+};
