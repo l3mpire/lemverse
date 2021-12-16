@@ -2,6 +2,7 @@
 const reactionMenuItems = [
   { icon: '❤️', shortcut: '2', action: () => setReaction('❤️'), cancel: () => setReaction() },
   { icon: '↩️', shortcut: '1', action: template => buildMenu(mainMenuItems, template.items) },
+  { icon: '🎉', shortcut: '9', action: () => setReaction('🎉'), cancel: () => setReaction() },
   { icon: '😲', shortcut: '8', action: () => setReaction('😲'), cancel: () => setReaction() },
   { icon: '😢', shortcut: '7', action: () => setReaction('😢'), cancel: () => setReaction() },
   { icon: '🤣', shortcut: '6', action: () => setReaction('🤣'), cancel: () => setReaction() },
