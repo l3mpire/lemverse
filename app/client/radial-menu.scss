@@ -1,3 +1,5 @@
+@import "_variables";
+
 .radial-menu-container {
   position: absolute;
   z-index: 9999;
@@ -25,17 +27,7 @@
 
   &.show-shortcuts {
     li:before {
-      content: attr(data-index);
-      position: relative;
-      z-index: 2;
-      padding: 1px 3px;
-      font-size: 8pt;
-      z-index: 10;
-      top: 25px;
-      right: -26px;
-      background-color: white;
-      color: black;
-      border: 1px solid black;
+      opacity: 1;
     }
   }
 
@@ -78,8 +70,19 @@
       color: white;
       transform: translate(-50%, -50%);
 
-      &:hover {
-        background-color: #8694b1;
+      &:before {
+        content: attr(data-shortcut);
+        position: relative;
+        z-index: 2;
+        padding: 1px 3px;
+        font-size: 8pt;
+        top: 25px;
+        right: -26px;
+        background-color: white;
+        color: black;
+        border: 1px solid black;
+        opacity: 0;
+        transition: opacity 0.1s linear;
       }
 
       button {
@@ -90,9 +93,14 @@
         height: 100%;
         border-radius: 50%;
         background-color: #1b1b1ba6;
+        transition: background-color 0.1s linear;
+
+        &:hover {
+          background-color: #8694b1;
+        }
 
         &:active {
-          background-color: green;
+          background-color: $lem-color-5;
         }
 
         &.off {
