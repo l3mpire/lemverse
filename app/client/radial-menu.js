@@ -70,7 +70,15 @@ const otherUserMenuItems = [
   { icon: '🎙️',
     label: 'Send vocal',
     shortcut: '4',
-    action: () => userVoiceRecorderAbility.recordVoice(true, sendAudioChunksToNearUsers),
+    action: () => {
+      const user = getMenuActiveUser();
+      if (!userProximitySensor.isUserNear(user._id)) {
+        lp.notif.error(`${user.profile.name} must be near you`);
+        return;
+      }
+
+      userVoiceRecorderAbility.recordVoice(true, sendAudioChunksToNearUsers);
+    },
     cancel: () => userVoiceRecorderAbility.recordVoice(false, sendAudioChunksToNearUsers),
   },
   { icon: '👤', label: 'Profile', shortcut: '3', action: () => Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId }) },
