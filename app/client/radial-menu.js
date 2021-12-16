@@ -84,10 +84,16 @@ const otherUserMenuItems = [
   { icon: '👤', label: 'Profile', shortcut: '3', action: () => Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId }) },
 ];
 
+const menuOffset = { x: 0, y: -6 };
 const horizontalMenuItemDistance = { x: 45, y: -90 };
 const radialMenuRadius = 68;
-const mouseDistanceToCloseMenu = 120;
+const mouseDistanceToCloseMenu = 105;
 const itemAmountRequiredForBackground = 2;
+
+const computeMenuPosition = () => {
+  const position = Session.get('menu-position');
+  return { x: (position?.x || 0) + menuOffset.x, y: (position.y || 0) + menuOffset.y };
+};
 
 const setReaction = reaction => {
   if (reaction) Meteor.users.update(Meteor.userId(), { $set: { 'profile.reaction': reaction } });
@@ -119,7 +125,7 @@ const buildMenu = (menuItems, reactiveVar) => {
 
 const onMouseMove = event => {
   if (!Session.get('menu')) return;
-  const menuPosition = Session.get('menu-position');
+  const menuPosition = computeMenuPosition();
   const mousePosition = { x: event.clientX, y: event.clientY };
   const offsetY = 38;
   const distance = Math.sqrt((menuPosition.x - mousePosition.x) ** 2 + ((menuPosition.y - offsetY) - mousePosition.y) ** 2);
@@ -186,7 +192,7 @@ Template.radialMenu.helpers({
   items() { return Template.instance().items.get(); },
   label() { return Template.instance().label.get(); },
   open() { return Session.get('menu'); },
-  position() { return Session.get('menu-position'); },
+  position() { return computeMenuPosition(); },
   showBackground() { return Template.instance().items.get().length > itemAmountRequiredForBackground; },
   showShortcuts() { return Template.instance().showShortcuts.get(); },
 });
