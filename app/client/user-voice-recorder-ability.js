@@ -186,7 +186,8 @@ const sendAudioChunksToTargets = (chunks, targets) => {
 sendAudioChunksToUsersInZone = chunks => {
   const user = Meteor.user();
   const usersInZone = zones.usersInZone(zones.currentZone(user));
-  peer.sendData(usersInZone, { type: 'audio', emitter: user._id, data: chunks }).then(() => {
+  const userInZoneIds = usersInZone.map(u => u._id);
+  peer.sendData(userInZoneIds, { type: 'audio', emitter: user._id, data: chunks }).then(() => {
     lp.notif.success(`📣 Everyone has heard your powerful voice`);
   }).catch(() => lp.notif.warning('❌ No one is there to hear you'));
 };

@@ -218,14 +218,14 @@ peer = {
     delete this.callsOpening[userId];
   },
 
-  sendData(users, data) {
-    users = users.filter(Boolean); // remove falsy values
-    if (!users.length) return Promise.reject(new Error(`no users targeted`));
+  sendData(userIds, data) {
+    userIds = userIds.filter(Boolean); // remove falsy values
+    if (!userIds.length) return Promise.reject(new Error(`no users targeted`));
 
     return this.getPeer().then(peer => {
-      users.forEach(user => {
+      userIds.forEach(userId => {
         try {
-          const connection = peer.connect(user._id);
+          const connection = peer.connect(userId);
 
           connection.on('open', () => {
             connection.send(data);
@@ -234,11 +234,18 @@ peer = {
             setTimeout(() => connection.close(), 500);
           });
 
-          connection.on('error', () => lp.notif.warning(`${user.profile.name || user._id} was unavailable`));
-        } catch (err) { lp.notif.error(`an error has occured during connection with ${user.profile.name || user._id}`); }
+          connection.on('error', () => {
+            const user = Meteor.users.findOne(userId);
+            if (user) lp.notif.warning(`${user.profile.name} was unavailable`);
+            else lp.notif.warning(`${userId} is offline`);
+          });
+        } catch (err) {
+          const user = Meteor.users.findOne(userId);
+          lp.notif.error(`An error has occured during connection with ${user?.profile.name || userId}`);
+        }
       });
 
-      return users.length;
+      return userIds.length;
     });
   },
 
@@ -404,11 +411,13 @@ peer = {
             if (dataReceived.type === 'audio') userVoiceRecorderAbility.playSound(dataReceived.data);
             else if (dataReceived.type === 'followed') {
               const user = Meteor.users.findOne(dataReceived.emitter);
-              this.lockCall(user);
+              if (!user) return;
+              this.lockCall(dataReceived.emitter);
               lp.notif.warning(`${user.profile.name} is following you 👀`);
             } else if (dataReceived.type === 'unfollowed') {
               const user = Meteor.users.findOne(dataReceived.emitter);
-              this.unlockCall(user);
+              if (!user) return;
+              this.unlockCall(dataReceived.emitter);
               lp.notif.warning(`${user.profile.name} has finally stopped following you 🎉`);
             }
           });
@@ -443,18 +452,18 @@ peer = {
     });
   },
 
-  lockCall(user, notify = false) {
-    if (notify && !this.lockedCalls[user._id]) this.sendData([user], { type: 'followed', emitter: Meteor.userId() });
-    this.lockedCalls[user._id] = true;
+  lockCall(userId, notify = false) {
+    if (notify && !this.lockedCalls[userId]) this.sendData([userId], { type: 'followed', emitter: Meteor.userId() });
+    this.lockedCalls[userId] = true;
   },
 
-  unlockCall(user, notify = false) {
-    if (notify && this.lockedCalls[user._id]) this.sendData([user], { type: 'unfollowed', emitter: Meteor.userId() });
-    delete this.lockedCalls[user._id];
+  unlockCall(userId, notify = false) {
+    if (notify && this.lockedCalls[userId]) this.sendData([userId], { type: 'unfollowed', emitter: Meteor.userId() });
+    delete this.lockedCalls[userId];
   },
 
   unlockCalls() {
-    _.each(this.lockedCalls, (value, userId) => this.unlockCall(Meteor.users.findOne(userId), true));
+    _.each(this.lockedCalls, (value, userId) => this.unlockCall(userId, true));
   },
 
   hasActiveStreams() {
