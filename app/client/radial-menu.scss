@@ -88,7 +88,7 @@
         content: attr(data-shortcut);
         position: relative;
         z-index: 2;
-        padding: 1px 3px;
+        padding: 1px 5px;
         font-size: 8pt;
         top: 25px;
         right: -26px;
@@ -97,6 +97,7 @@
         border: 1px solid black;
         opacity: 0;
         transition: opacity 0.1s linear;
+        border-radius: 50%;
       }
 
       button {
