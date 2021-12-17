@@ -212,4 +212,11 @@ WorldScene = new Phaser.Class({
     Session.set('showScoreInterface', false);
     Session.set('sceneWorldReady', false);
   },
+
+  getRelativePositionToCanvas(gameObject, camera) {
+    return {
+      x: (gameObject.x - camera.worldView.x) * camera.zoom,
+      y: (gameObject.y - camera.worldView.y) * camera.zoom,
+    };
+  },
 });

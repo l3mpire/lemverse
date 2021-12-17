@@ -17,11 +17,6 @@ const characterAnimations = Object.freeze({
 });
 const unavailablePlayerColor = 0x888888;
 
-const getRelativePositionToCanvas = (gameObject, camera) => ({
-  x: (gameObject.x - camera.worldView.x) * camera.zoom,
-  y: (gameObject.y - camera.worldView.y) * camera.zoom,
-});
-
 charactersParts = Object.freeze({
   body: 0,
   outfit: 1,
@@ -124,7 +119,7 @@ userManager = {
 
         this.setTint(this.players[user._id], 0xFFAAFF);
         Session.set('menu', { userId: user._id });
-        Session.set('menu-position', getRelativePositionToCanvas(this.players[user._id], this.scene.cameras.main));
+        Session.set('menu-position', this.scene.getRelativePositionToCanvas(this.players[user._id], this.scene.cameras.main));
       });
 
       playerParts.on('pointerout', () => this.setTintFromState(this.players[user._id]));
