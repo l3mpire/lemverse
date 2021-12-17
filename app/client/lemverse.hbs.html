@@ -31,7 +31,7 @@
           {{> reactionsToolbox}}
         {{/unless}}
         {{#if isBeta "radial-menu"}}
-          <button type="button" class="button js-notifications {{#if hasNotifications}}visible{{/if}} has-radial-menu" data-count="{{ pendingNotificationsCount }}">🔔</button>
+          <button type="button" class="button js-notifications {{#if pendingNotificationsCount}}visible{{/if}} has-radial-menu" data-count="{{ pendingNotificationsCount }}">🔔</button>
         {{/if}}
       {{/if}}
       <div id="game" class="{{#if neq (Session 'editor') 0}}edit{{/if}} {{#if isLoading}}loading{{/if}}"></div>

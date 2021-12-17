@@ -252,7 +252,26 @@ button:focus {
   }
 }
 
-.js-notifications {
+.button {
+  display: inline-block;
+  cursor: pointer;
+  border: 1px solid #4C566A;
+  color: #4C566A;
+  background-color: white;
+  border-radius: 4px;
+  margin: 5px 1px;
+  padding: 0 4px;
+
+  &:hover {
+    background-color: #E5E9F0;
+  }
+
+  &.active {
+    background-color: #D8DEE9;
+  }
+}
+
+button.js-notifications {
   position: absolute;
   right: 200px;
   bottom: 0;
@@ -287,24 +306,5 @@ button:focus {
 
   &[data-count="0"]:after {
     display: none;
-  }
-}
-
-.button {
-  display: inline-block;
-  cursor: pointer;
-  border: 1px solid #4C566A;
-  color: #4C566A;
-  background-color: white;
-  border-radius: 4px;
-  margin: 5px 1px;
-  padding: 0 4px;
-
-  &:hover {
-    background-color: #E5E9F0;
-  }
-
-  &.active {
-    background-color: #D8DEE9;
   }
 }
