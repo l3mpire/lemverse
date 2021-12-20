@@ -395,6 +395,7 @@ userManager = {
   interpolatePlayerPositions() {
     const currentUser = Meteor.user();
 
+    const now = moment();
     _.each(this.players, (player, userId) => {
       if (userId === currentUser?._id) return;
 
@@ -406,14 +407,15 @@ userManager = {
       this.pauseAnimation(player, false);
       this.updateAnimation(characterAnimations.run, player);
 
-      if (player.lwTargetDate <= moment()) {
+      if (player.lwTargetDate <= now) {
         player.x = player.lwTargetX;
         player.y = player.lwTargetY;
+        player.setDepth(player.y);
         delete player.lwTargetDate;
         return;
       }
 
-      const elapsedTime = ((moment() - player.lwOriginDate) / (player.lwTargetDate - player.lwOriginDate));
+      const elapsedTime = ((now - player.lwOriginDate) / (player.lwTargetDate - player.lwOriginDate));
       player.x = player.lwOriginX + (player.lwTargetX - player.lwOriginX) * elapsedTime;
       player.y = player.lwOriginY + (player.lwTargetY - player.lwOriginY) * elapsedTime;
       player.setDepth(player.y);
