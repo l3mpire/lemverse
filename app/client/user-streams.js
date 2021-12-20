@@ -69,13 +69,11 @@ userStreams = {
     if (debug) log('destroy stream: start', stream.id);
     this.stopTracks(stream);
 
-    const userVideo = this.getVideoElement();
-    destroyVideoSource(userVideo);
+    destroyVideoSource(this.getVideoElement());
 
     if (stream === this.streams.main.instance) {
       this.streams.main.instance = undefined;
-      userVideo.parentElement.classList.toggle('active', false);
-      userVideo.parentElement.style.backgroundImage = '';
+      this.hideUserPanel();
     } else if (stream === this.streams.screen.instance) this.streams.screen.instance = undefined;
 
     if (debug) log('destroy stream: done');
@@ -167,8 +165,7 @@ userStreams = {
           // sync video element with the stream
           const videoElement = this.getVideoElement();
           if (stream.id !== videoElement.srcObject?.id) videoElement.srcObject = stream;
-          videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
-          videoElement.parentElement.classList.toggle('active', true);
+          this.showUserPanel();
 
           // ensures tracks are up-to-date
           this.audio(shareAudio);
@@ -233,6 +230,20 @@ userStreams = {
     }
 
     return this.streams.main.domElement;
+  },
+
+  showUserPanel() {
+    const videoElement = this.getVideoElement();
+    if (!videoElement) return;
+    videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
+    videoElement.parentElement.classList.toggle('active', true);
+  },
+
+  hideUserPanel() {
+    const videoElement = this.getVideoElement();
+    if (!videoElement) return;
+    videoElement.parentElement.classList.toggle('active', false);
+    videoElement.parentElement.style.backgroundImage = '';
   },
 
   refreshVideoElementAvatar(videoElement) {

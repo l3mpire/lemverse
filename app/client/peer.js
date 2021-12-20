@@ -73,7 +73,10 @@ peer = {
     streamsByUsers = streamsByUsers.filter(usr => usr.main.srcObject !== undefined || usr.screen.srcObject !== undefined || usr.waitingCallAnswer);
     this.remoteStreamsByUsers.set(streamsByUsers);
 
-    if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
+    if (userProximitySensor.nearUsersCount() === 0) {
+      userStreams.destroyStream(streamTypes.main);
+      userStreams.hideUserPanel();
+    }
 
     $(`.js-video-${userId}-user`).remove();
 
@@ -196,6 +199,8 @@ peer = {
     this.cancelCallOpening(user._id);
 
     if (meet.api || Meteor.user()?.profile.guest) return;
+
+    userStreams.showUserPanel();
     this.callsOpening[user._id] = setTimeout(() => this.createPeerCalls(user), Meteor.settings.public.peer.callDelay);
   },
 
