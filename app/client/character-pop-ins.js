@@ -74,7 +74,7 @@ characterPopIns = {
   },
 
   createIframeFromURL(url) {
-    return `<div class="toggle-full-screen"></div><iframe loading="lazy" frameBorder="0" src="${url}"></iframe>`;
+    return `<div class="toggle-full-screen"></div><iframe loading="lazy" frameBorder="0" src="${url}" allow="accelerometer; autoplay; encrypted-media; gyroscope;"></iframe>`;
   },
 
   destroyPopIn(popInIdentifier) {
