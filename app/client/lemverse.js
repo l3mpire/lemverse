@@ -253,6 +253,7 @@ Template.lemverse.onCreated(function () {
       const levelName = Levels.findOne(levelId)?.name;
       const loadingScene = game.scene.getScene('LoadingScene');
       const worldScene = game.scene.getScene('WorldScene');
+      const uiScene = game.scene.getScene('UIScene');
       loadingScene.setText(levelName);
       loadingScene.show();
 
@@ -264,6 +265,7 @@ Template.lemverse.onCreated(function () {
       if (this.currentLevelId) {
         log(`unloading current level…`);
         worldScene.scene.restart();
+        uiScene.onLevelUnloaded();
         this.currentLevelId = undefined;
         return;
       }

@@ -62,19 +62,25 @@ UIScene = new Phaser.Class({
     userVoiceRecorderAbility.setPosition(relativePlayerPosition.x, relativePlayerPosition.y);
   },
 
-  shutdown() {
-    this.events.removeListener('prerender');
-    this.events.off('prerender', this.preRenderMethod, this);
-
+  onLevelUnloaded() {
     characterPopIns.destroy();
-    userChatCircle.destroy();
-    userVoiceRecorderAbility.destroy();
 
+    _.each(this.characterNamesObjects, text => text?.destroy());
     this.characterNamesObjects = {};
+
     _.each(userManager.players, player => {
       clearInterval(player.reactionHandler);
       delete player.reactionHandler;
     });
+  },
+
+  shutdown() {
+    this.events.removeListener('prerender');
+    this.events.off('prerender', this.preRenderMethod, this);
+
+    userChatCircle.destroy();
+    userVoiceRecorderAbility.destroy();
+    this.onLevelUnloaded();
   },
 
   relativePositionToCamera(position) {
