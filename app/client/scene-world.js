@@ -87,7 +87,6 @@ WorldScene = new Phaser.Class({
     entityManager.init(this);
     levelManager.init(this);
     userManager.init(this);
-    characterPopIns.init(this);
 
     levelManager.createMap();
 
@@ -131,13 +130,6 @@ WorldScene = new Phaser.Class({
           .on('removed', () => nipple.off('start move end dir plain'));
       });
     }
-
-    characterPopIns.onPopInEvent = e => {
-      const { detail: data } = e;
-      if (data.userId !== Meteor.userId()) return;
-
-      if (data.type === 'load-level') levelManager.loadLevel(data.levelId);
-    };
 
     // events
     this.events.on('postupdate', this.postUpdateMethod, this);
@@ -197,7 +189,6 @@ WorldScene = new Phaser.Class({
     window.removeEventListener('onZoneEntered', onZoneEntered);
     window.removeEventListener('onZoneLeaved', onZoneLeaved);
 
-    characterPopIns.destroy();
     levelManager.destroy();
     userManager.destroy();
     userProximitySensor.callProximityEndedForAllNearUsers();

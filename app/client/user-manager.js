@@ -429,8 +429,6 @@ userManager = {
   postUpdate(time, delta) {
     if (!this.player) return;
 
-    characterPopIns.update();
-
     // todo: remove this old code
     const user = Meteor.user();
     if (user.profile.freeze) {

@@ -94,10 +94,12 @@ characterPopIns = {
       if (!target) return;
 
       const offset = target.type ? popInWithGameObjectTargetOffset : 0;
-      const y = target.y + offset - popIn.displayHeight / 2 - characterPopIns.arrowHeight;
+      const x = Math.max(target.x, popIn.displayWidth / 2);
+      const y = Math.max(target.y + offset, popIn.displayHeight / 2);
 
-      popIn.x = Math.max(target.x, popIn.displayWidth / 2);
-      popIn.y = Math.max(y, popIn.displayHeight / 2);
+      const position = this.scene.relativePositionToCamera({ x, y });
+      popIn.x = position.x;
+      popIn.y = position.y - popIn.displayHeight / 2 - characterPopIns.arrowHeight;
     });
   },
 };
