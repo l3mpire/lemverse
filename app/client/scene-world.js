@@ -87,7 +87,6 @@ WorldScene = new Phaser.Class({
     entityManager.init(this);
     levelManager.init(this);
     userManager.init(this);
-    userVoiceRecorderAbility.init(this);
     characterPopIns.init(this);
 
     levelManager.createMap();
@@ -114,9 +113,6 @@ WorldScene = new Phaser.Class({
     // cameras
     this.cameras.main.setBounds(0, 0, levelManager.map.widthInPixels, levelManager.map.heightInPixels);
     this.cameras.main.setRoundPixels(true);
-
-    // plugins
-    userChatCircle.init(this);
 
     if (window.matchMedia('(pointer: coarse)').matches) {
       this.nippleManager = nipplejs.create({
@@ -203,9 +199,7 @@ WorldScene = new Phaser.Class({
 
     characterPopIns.destroy();
     levelManager.destroy();
-    userChatCircle.destroy();
     userManager.destroy();
-    userVoiceRecorderAbility.destroy();
     userProximitySensor.callProximityEndedForAllNearUsers();
     peer.destroy();
 

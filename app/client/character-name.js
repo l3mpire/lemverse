@@ -50,7 +50,7 @@ CharacterNameText = new Phaser.Class({
     return this.setColor(characterNameColors[colorName] || characterNameColors.white);
   },
 
-  updatePosition() {
-    this.setPosition(this.player.x, this.player.y + offset);
+  updatePosition(x, y) {
+    this.setPosition(x, y + offset);
   },
 });

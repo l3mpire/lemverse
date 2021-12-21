@@ -144,5 +144,6 @@ module.exports = {
     EditorScene: 'writable',
     LoadingScene: 'writable',
     WorldScene: 'writable',
+    UIScene: 'writable',
   },
 };

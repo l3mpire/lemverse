@@ -31,7 +31,10 @@ BootScene = new Phaser.Class({
 
     this.scene.add('LoadingScene', LoadingScene, true);
     this.scene.add('WorldScene', WorldScene, true);
+    this.scene.add('UIScene', UIScene, true);
     this.scene.add('EditorScene', EditorScene, true);
+    this.scene.moveAbove('WorldScene', 'EditorScene');
+    this.scene.moveAbove('WorldScene', 'UIScene');
     this.scene.bringToTop('LoadingScene');
 
     this.loadCharacterAnimations(Characters.find().fetch());

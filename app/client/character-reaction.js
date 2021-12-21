@@ -22,8 +22,6 @@ const reactionsAnimations = {
   }),
 };
 
-const offset = -85;
-
 const style = {
   font: 'Sans Open',
   fontSize: 32,
@@ -45,7 +43,7 @@ CharacterReaction = new Phaser.Class({
 
     const reactionDiff = animation === 'zigzag' ? 10 : 0;
     const positionX = x - reactionDiff + _.random(-options.randomOffset, options.randomOffset);
-    const positionY = y + offset + _.random(-options.randomOffset, options.randomOffset);
+    const positionY = y + _.random(-options.randomOffset, options.randomOffset);
     this.setPosition(positionX, positionY);
 
     return reactionsAnimations[animation](positionX, positionY, reactionDiff);

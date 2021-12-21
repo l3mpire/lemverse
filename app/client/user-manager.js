@@ -38,7 +38,6 @@ savePlayer = player => {
 const throttledSavePlayer = throttle(savePlayer, 100, { leading: false });
 
 userManager = {
-  characterNamesObjects: {},
   entityFollowed: undefined,
   inputVector: new Phaser.Math.Vector2(),
   player: undefined,
@@ -48,26 +47,18 @@ userManager = {
   scene: undefined,
 
   init(scene) {
-    this.characterNamesObjects = {};
     this.entityFollowed = undefined;
     this.inputVector = new Phaser.Math.Vector2();
     this.player = undefined;
     this.playerVelocity = new Phaser.Math.Vector2();
     this.players = {};
     this.scene = scene;
-    this.reactionPool = this.scene.add.group({ classType: CharacterReaction });
   },
 
   destroy() {
     this.onSleep();
-    _.each(this.players, player => {
-      clearInterval(player.reactionHandler);
-      delete player.reactionHandler;
-    });
-
     this.player = undefined;
     this.players = {};
-    this.characterNamesObjects = {};
   },
 
   onSleep() {
@@ -75,7 +66,7 @@ userManager = {
   },
 
   rename(name, color) {
-    this.updateUserName(this.player.userId, name, color);
+    game.scene.getScene('UIScene')?.updateUserName(this.player.userId, name, color);
     if (meet.api) meet.api.executeCommand('displayName', name);
   },
 
@@ -180,8 +171,9 @@ userManager = {
       delete player.reactionHandler;
 
       const animation = reaction === '❤️' ? 'zigzag' : 'linearUpScaleDown';
-      this.spawnReaction(player, reaction, animation, { randomOffset: 10 });
-      player.reactionHandler = setInterval(() => this.spawnReaction(player, reaction, animation, { randomOffset: 10 }), 250);
+      const UIScene = game.scene.getScene('UIScene');
+      UIScene.spawnReaction(player, reaction, animation, { randomOffset: 10 });
+      player.reactionHandler = setInterval(() => UIScene.spawnReaction(player, reaction, animation, { randomOffset: 10 }), 250);
     } else {
       clearInterval(player.reactionHandler);
       delete player.reactionHandler;
@@ -223,7 +215,7 @@ userManager = {
     }
     characterBodyContainer.alpha = guest ? 0.7 : 1.0;
 
-    if (!guest && name !== oldUser?.profile?.name) this.updateUserName(user._id, name, nameColor);
+    if (!guest && name !== oldUser?.profile?.name) game.scene.getScene('UIScene')?.updateUserName(user._id, name, nameColor);
 
     let hasMoved = false;
     if (oldUser) {
@@ -277,7 +269,7 @@ userManager = {
     delete this.players[user._id].reactionHandler;
 
     this.players[user._id].destroy();
-    this.destroyUserName(user._id);
+    game.scene.getScene('UIScene').destroyUserName(user._id);
 
     if (user._id === Meteor.userId()) this.unsetMainPlayer();
 
@@ -370,28 +362,6 @@ userManager = {
     return userStateIndicatorContainer;
   },
 
-  destroyUserName(userId) {
-    const nameObject = this.characterNamesObjects[userId];
-    if (!nameObject) return;
-
-    nameObject.destroy();
-    delete this.characterNamesObjects[userId];
-  },
-
-  spawnReaction(player, content, animation, options) {
-    const reaction = this.reactionPool.get(this.scene);
-    const computedAnimation = reaction.prepare(content, player.x, player.y, animation, options);
-
-    this.scene.tweens.add({
-      targets: reaction,
-      ...computedAnimation,
-      onComplete: () => {
-        this.reactionPool.killAndHide(reaction);
-        this.scene.tweens.killTweensOf(reaction);
-      },
-    });
-  },
-
   interpolatePlayerPositions() {
     const currentUser = Meteor.user();
 
@@ -457,12 +427,9 @@ userManager = {
   },
 
   postUpdate(time, delta) {
-    _.each(this.characterNamesObjects, text => text.updatePosition());
     if (!this.player) return;
 
     characterPopIns.update(this.player, this.players);
-    userChatCircle.update(this.player.x, this.player.y);
-    userVoiceRecorderAbility.update(this.player.x, this.player.y, delta);
 
     // todo: remove this old code
     const user = Meteor.user();
@@ -514,18 +481,6 @@ userManager = {
       throttledSavePlayer(this.player);
     }
     this.playerWasMoving = moving;
-  },
-
-  updateUserName(userId, name, colorName) {
-    let textInstance = this.characterNamesObjects[userId];
-
-    if (!textInstance) {
-      const player = userManager.players[userId];
-      if (!player) return;
-
-      textInstance = new CharacterNameText(this.scene, player, name, colorName);
-      this.characterNamesObjects[userId] = textInstance;
-    } else if (textInstance) textInstance.setColorFromName(colorName).setText(name);
   },
 
   teleportMainUser(x, y) {

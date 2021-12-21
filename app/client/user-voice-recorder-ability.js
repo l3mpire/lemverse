@@ -92,7 +92,7 @@ userVoiceRecorderAbility = {
     }
   },
 
-  update(x, y, delta) {
+  update(delta) {
     if (!this.isRecording()) return;
 
     this.progress += delta / 1000;
@@ -105,7 +105,9 @@ userVoiceRecorderAbility = {
     // eslint-disable-next-line new-cap
     radialProgressBar.slice(0, 0, this.recordingIndicatorRadius, 0, Phaser.Math.DegToRad(progress), false);
     radialProgressBar.fillPath();
+  },
 
+  setPosition(x, y) {
     this.recordingIndicator.setPosition(x + this.recordingIndicatorOffset.x, y + this.recordingIndicatorOffset.y);
   },
 
