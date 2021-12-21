@@ -83,7 +83,7 @@ characterPopIns = {
   },
 
   destroy() {
-    Object.keys(this.popIns).forEach(popIn => popIn.destroy());
+    Object.keys(this.popIns).forEach(identifier => this.destroyPopIn(identifier));
     this.popIns = [];
   },
 
