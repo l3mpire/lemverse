@@ -24,12 +24,20 @@ UIScene = new Phaser.Class({
     this.cameras.main.setRoundPixels(false);
 
     // plugins
+    characterPopIns.init(this);
     userChatCircle.init(this);
     userVoiceRecorderAbility.init(this);
 
     // events
     this.events.on('prerender', this.preRenderMethod, this);
     this.events.once('shutdown', this.shutdownMethod, this);
+
+    characterPopIns.onPopInEvent = e => {
+      const { detail: data } = e;
+      if (data.userId !== Meteor.userId()) return;
+
+      if (data.type === 'load-level') levelManager.loadLevel(data.levelId);
+    };
   },
 
   update(time, delta) {
@@ -49,6 +57,7 @@ UIScene = new Phaser.Class({
     if (!player) return;
 
     const relativePlayerPosition = this.relativePositionToCamera(player);
+    characterPopIns.update();
     userChatCircle.update(relativePlayerPosition.x, relativePlayerPosition.y);
     userVoiceRecorderAbility.setPosition(relativePlayerPosition.x, relativePlayerPosition.y);
   },
@@ -56,8 +65,8 @@ UIScene = new Phaser.Class({
   shutdown() {
     this.events.removeListener('prerender');
     this.events.off('prerender', this.preRenderMethod, this);
-    this.scale.off('resize', this.updateViewportMethod);
 
+    characterPopIns.destroy();
     userChatCircle.destroy();
     userVoiceRecorderAbility.destroy();
 
