@@ -75,9 +75,8 @@ WorldScene = new Phaser.Class({
     this.scale.on('resize', this.updateViewportMethod, this);
     Session.set('sceneWorldReady', true);
 
-    // In beta for the moment: fix the problem of blurred fonts (SDF rendering required?), tilesets with extrusion are required to avoid black lines between tiles
+    // Notes: tilesets with extrusion are required to avoid potential black lines between tiles
     this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY) => {
-      if (!lp.isLemverseBeta('zoom')) return;
       const zoom = Math.min(Math.max(this.cameras.main.zoom + (deltaY / zoomConfig.delta), zoomConfig.min), zoomConfig.max);
       this.cameras.main.setZoom(zoom);
     });
