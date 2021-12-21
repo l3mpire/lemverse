@@ -429,7 +429,7 @@ userManager = {
   postUpdate(time, delta) {
     if (!this.player) return;
 
-    characterPopIns.update(this.player, this.players);
+    characterPopIns.update();
 
     // todo: remove this old code
     const user = Meteor.user();

@@ -69,7 +69,7 @@ const onZoneEntered = e => {
 const onZoneLeaved = e => {
   const { zone } = e.detail;
 
-  if (!zone.popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(Meteor.userId(), zone._id);
+  if (!zone.popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(`${Meteor.userId()}-${zone._id}`);
 
   game.scene.keys.WorldScene.cameras.main.resetPostPipeline();
   entityManager.enable_path_coloration = false;

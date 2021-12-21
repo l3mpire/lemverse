@@ -40,7 +40,7 @@ const onZoneLeaved = e => {
   const { popInConfiguration, roomName, url, disableCommunications } = zone;
   sendEvent('zone-leaved', { zone });
 
-  if (!popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(Meteor.userId(), zone._id);
+  if (!popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(`${Meteor.userId()}-${zone._id}`);
 
   if (roomName || url) game.scene.keys.WorldScene.updateViewport(viewportModes.fullscreen);
   if (disableCommunications) {

@@ -6,18 +6,19 @@ const dispatchPopInEvent = event => {
   if (characterPopIns.onPopInEvent) characterPopIns.onPopInEvent(event);
 };
 
+const popInWithGameObjectTargetOffset = -80;
+
 characterPopIns = {
   className: 'character-pop-in',
-  container: undefined,
-  offset: { x: 0, y: -35 }, // y = character's height / 2
+  scene: undefined,
   dimensions: { width: 350, height: 200 },
   arrowHeight: 12,
   onPopInEvent: undefined,
   popIns: [],
 
-  init(container) {
-    if (this.container) this.destroy();
-    this.container = container;
+  init(scene) {
+    if (this.scene) this.destroy();
+    this.scene = scene;
 
     window.document.removeEventListener('pop-in-event', dispatchPopInEvent);
     window.document.addEventListener('pop-in-event', dispatchPopInEvent, false);
@@ -38,79 +39,65 @@ characterPopIns = {
 
       config.x = position.x;
       config.y = position.y;
-    }
+    } else config.target = userManager.player;
 
-    this.createOrUpdate(Meteor.userId(), zone._id, zone.inlineURL, config);
+    this.createOrUpdate(`${Meteor.userId()}-${zone._id}`, zone.inlineURL, config);
   },
 
-  createOrUpdate(userId, popInIdentifier, popInContent, config = {}) {
+  createOrUpdate(popInIdentifier, popInContent, config = {}) {
     const content = isUrl(popInContent) ? this.createIframeFromURL(popInContent) : popInContent;
 
-    if (!this.popIns[userId]) this.popIns[userId] = [];
-    let characterPopIn = this.popIns[userId][popInIdentifier];
-    if (!characterPopIn) {
-      characterPopIn = this.container.add.dom(this.dimensions.width, this.dimensions.height).createFromHTML(content);
-      characterPopIn.visible = false;
-      characterPopIn.addListener('click');
-      characterPopIn.on('click', event => {
+    let popIn = this.popIns[popInIdentifier];
+    if (!popIn) {
+      popIn = this.scene.add.dom(this.dimensions.width, this.dimensions.height).createFromHTML(content);
+      popIn.addListener('click');
+      popIn.on('click', event => {
         if (!event.target.classList.contains('toggle-full-screen')) return;
-        characterPopIn.node.classList.toggle('full-screen');
+        popIn.node.classList.toggle('full-screen');
       });
-    } else if (content !== characterPopIn.node.innerHTML) characterPopIn.setHTML(content);
+    } else if (content !== popIn.node.innerHTML) popIn.setHTML(content);
 
-    const { style } = characterPopIn.node;
+    const { style } = popIn.node;
     const height = config.height || this.dimensions.height;
     style.width = `${config.width || this.dimensions.width}px`;
     style.height = `${height}px`;
-    characterPopIn.updateSize();
+    popIn.updateSize();
 
     const className = config.className ? [this.className, config.className].join(' ') : this.className;
-    characterPopIn.setClassName(className);
-    characterPopIn.static = config.position || false;
-    characterPopIn.x = config.x || 0;
-    characterPopIn.y = (config.y || 0) - height / 2 - characterPopIns.arrowHeight;
-    this.popIns[userId][popInIdentifier] = characterPopIn;
-  },
+    popIn.setClassName(className);
+    popIn.static = config.position || false;
 
-  getPopIn(userId, popInIdentifier) {
-    const characterPopIns = this.popIns[userId];
-    if (!characterPopIns) return false;
+    if (config.target) popIn.setData('target', config.target);
+    else popIn.setData('target', { x: config.x || 0, y: config.y || 0 });
 
-    const popIn = characterPopIns[popInIdentifier];
-    if (!popIn) return false;
-
-    return popIn;
+    this.popIns[popInIdentifier] = popIn;
   },
 
   createIframeFromURL(url) {
     return `<div class="toggle-full-screen"></div><iframe loading="lazy" frameBorder="0" src="${url}"></iframe>`;
   },
 
-  destroyPopIn(userId, popInIdentifier) {
-    const popIn = this.getPopIn(userId, popInIdentifier);
-    if (!popIn) return;
-    popIn.destroy();
-    delete this.popIns[userId][popInIdentifier];
+  destroyPopIn(popInIdentifier) {
+    this.popIns[popInIdentifier]?.destroy();
+    delete this.popIns[popInIdentifier];
   },
 
   destroy() {
-    Object.keys(this.popIns).forEach(userId => this.destroyPopIn(userId));
+    Object.keys(this.popIns).forEach(popIn => popIn.destroy());
     this.popIns = [];
   },
 
-  update(userPlayer, players) {
-    Object.keys(this.popIns).forEach(userId => {
-      const player = userId === Meteor.userId() ? userPlayer : players[userId];
-      if (!player) return;
+  update() {
+    Object.keys(this.popIns).forEach(identifier => {
+      const popIn = this.popIns[identifier];
+      const target = popIn.getData('target');
+      if (!target) return;
 
-      Object.keys(this.popIns[userId]).forEach(popInIdentifier => {
-        const characterPopIn = this.popIns[userId][popInIdentifier];
-        if (!characterPopIn.static) {
-          characterPopIn.x = Math.max(player.x + this.offset.x, characterPopIn.displayWidth / 2);
-          characterPopIn.y = Math.max(player.y + this.offset.y - characterPopIn.displayHeight / 2, characterPopIn.displayHeight / 2);
-        }
-        characterPopIn.visible = true;
-      });
+      const offset = target.type ? popInWithGameObjectTargetOffset : 0;
+      const y = target.y + offset - popIn.displayHeight / 2 - characterPopIns.arrowHeight;
+
+      popIn.x = Math.max(target.x, popIn.displayWidth / 2);
+      popIn.y = Math.max(y, popIn.displayHeight / 2);
     });
   },
 };
