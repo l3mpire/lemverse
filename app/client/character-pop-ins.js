@@ -75,6 +75,16 @@ characterPopIns = {
     return `<div class="toggle-full-screen"></div><iframe loading="lazy" frameBorder="0" src="${url}" allow="accelerometer; autoplay; encrypted-media; gyroscope;"></iframe>`;
   },
 
+  setContent(popInIdentifier, content) {
+    const popIn = this.popIns[popInIdentifier];
+    if (!popIn) {
+      lp.notif.warning(`Pop-in "${popInIdentifier}"not found`);
+      return;
+    }
+
+    popIn.setHTML(content);
+  },
+
   destroyPopIn(popInIdentifier) {
     this.popIns[popInIdentifier]?.destroy();
     delete this.popIns[popInIdentifier];
