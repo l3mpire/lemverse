@@ -49,7 +49,7 @@ characterPopIns = {
 
     let popIn = this.popIns[popInIdentifier];
     if (!popIn) {
-      popIn = this.scene.add.dom(this.dimensions.width, this.dimensions.height).createFromHTML(content);
+      popIn = this.scene.add.dom().createFromHTML(content);
       popIn.addListener('click');
       popIn.on('click', event => {
         if (!event.target.classList.contains('toggle-full-screen')) return;
@@ -58,10 +58,8 @@ characterPopIns = {
     } else if (content !== popIn.node.innerHTML) popIn.setHTML(content);
 
     const { style } = popIn.node;
-    const height = config.height || this.dimensions.height;
-    style.width = `${config.width || this.dimensions.width}px`;
-    style.height = `${height}px`;
-    popIn.updateSize();
+    if (config.width) style.width = `${config.width}px`;
+    if (config.height) style.height = `${config.height}px`;
 
     const className = config.className ? [this.className, config.className].join(' ') : this.className;
     popIn.setClassName(className);
