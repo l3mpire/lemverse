@@ -18,7 +18,7 @@ userChatCircle = {
     this.chatCircle.visible = false;
   },
 
-  update(playerX, playerY) {
+  update(playerX, playerY, camera) {
     const wasVisible = this.chatCircle.visible;
     this.chatCircle.visible = userProximitySensor.nearUsersCount() > 0 && !meet.api && peer.isEnabled() && !Session.get('menu');
     if (!this.chatCircle.visible) return;
@@ -32,6 +32,7 @@ userChatCircle = {
       }
 
       this.chatCircle.setPosition(x, y);
+      this.chatCircle.setRadius(userProximitySensor.nearDistance * camera.zoom);
     }
   },
 };
