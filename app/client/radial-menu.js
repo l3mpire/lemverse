@@ -157,7 +157,7 @@ Template.radialMenu.onCreated(function () {
         const worldScene = game.scene.getScene('WorldScene');
         const userId = Meteor.userId();
         Session.set('menu', { userId });
-        Session.set('menu-position', worldScene.getRelativePositionToCanvas(userManager.players[userId], worldScene.cameras.main));
+        Session.set('menu-position', relativePositionToCamera(userManager.players[userId], worldScene.cameras.main));
       } else if (e.type === 'keyup' && menuOpenUsingShift) {
         Session.set('menu', undefined);
         menuOpenUsingShift = false;

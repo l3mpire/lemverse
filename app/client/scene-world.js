@@ -2,12 +2,6 @@ import nipplejs from 'nipplejs';
 
 const Phaser = require('phaser');
 
-viewportModes = Object.freeze({
-  fullscreen: 'fullscreen',
-  small: 'small',
-  splitScreen: 'split-screen',
-});
-
 const zoomConfig = Object.freeze({
   min: 0.8,
   max: 1.5,
@@ -23,7 +17,7 @@ const onZoneEntered = e => {
   if (targetedLevelId) levelManager.loadLevel(targetedLevelId);
   else if (inlineURL) characterPopIns.initFromZone(zone);
 
-  if ((roomName && !guest) || url) game.scene.keys.WorldScene.updateViewport(fullscreen ? viewportModes.small : viewportModes.splitScreen);
+  if ((roomName && !guest) || url) updateViewport(game.scene.keys.WorldScene, fullscreen ? viewportModes.small : viewportModes.splitScreen);
   if (disableCommunications) {
     setTimeout(() => Meteor.users.update(Meteor.userId(), { $set: {
       'profile.shareVideo': false,
@@ -42,7 +36,7 @@ const onZoneLeaved = e => {
 
   if (!popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(`${Meteor.userId()}-${zone._id}`);
 
-  if (roomName || url) game.scene.keys.WorldScene.updateViewport(viewportModes.fullscreen);
+  if (roomName || url) updateViewport(game.scene.keys.WorldScene, viewportModes.fullscreen);
   if (disableCommunications) {
     peer.enable();
     if (userManager.player) userManager.setTintFromState(userManager.player);
@@ -64,7 +58,7 @@ WorldScene = new Phaser.Class({
     this.viewportMode = viewportModes.fullscreen;
     this.physics.disableUpdate();
     this.sleepMethod = this.sleep.bind(this);
-    this.updateViewportMethod = this.updateViewport.bind(this);
+    this.updateViewportMethod = mode => updateViewport(this, mode);
     this.postUpdateMethod = this.postUpdate.bind(this);
     this.shutdownMethod = this.shutdown.bind(this);
 
@@ -164,16 +158,6 @@ WorldScene = new Phaser.Class({
     this.cameras.main.setZoom(zoomConfig.default);
   },
 
-  updateViewport(mode) {
-    if (typeof mode !== 'string') mode = this.viewportMode;
-
-    if (mode === viewportModes.small) this.cameras.main.setViewport(0, 0, window.innerWidth / 3, window.innerHeight);
-    else if (mode === viewportModes.splitScreen) this.cameras.main.setViewport(0, 0, window.innerWidth / 2, window.innerHeight);
-    else this.cameras.main.setViewport(0, 0, window.innerWidth, window.innerHeight);
-
-    this.viewportMode = mode;
-  },
-
   sleep() {
     userManager.onSleep();
   },
@@ -195,12 +179,5 @@ WorldScene = new Phaser.Class({
 
     Session.set('showScoreInterface', false);
     Session.set('sceneWorldReady', false);
-  },
-
-  getRelativePositionToCanvas(gameObject, camera) {
-    return {
-      x: (gameObject.x - camera.worldView.x) * camera.zoom,
-      y: (gameObject.y - camera.worldView.y) * camera.zoom,
-    };
   },
 });

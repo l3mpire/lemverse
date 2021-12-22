@@ -110,7 +110,7 @@ userManager = {
 
         this.setTint(this.players[user._id], 0xFFAAFF);
         Session.set('menu', { userId: user._id });
-        Session.set('menu-position', this.scene.getRelativePositionToCanvas(this.players[user._id], this.scene.cameras.main));
+        Session.set('menu-position', relativePositionToCamera(this.players[user._id], this.scene.cameras.main));
       });
 
       playerParts.on('pointerout', () => this.setTintFromState(this.players[user._id]));

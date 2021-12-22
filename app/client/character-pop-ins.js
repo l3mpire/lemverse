@@ -87,7 +87,7 @@ characterPopIns = {
     this.popIns = [];
   },
 
-  update() {
+  update(camera) {
     Object.keys(this.popIns).forEach(identifier => {
       const popIn = this.popIns[identifier];
       const target = popIn.getData('target');
@@ -97,7 +97,7 @@ characterPopIns = {
       const x = Math.max(target.x, popIn.displayWidth / 2);
       const y = Math.max(target.y + offset, popIn.displayHeight / 2);
 
-      const position = this.scene.relativePositionToCamera({ x, y });
+      const position = relativePositionToCamera({ x, y }, camera);
       popIn.x = position.x;
       popIn.y = position.y - popIn.displayHeight / 2 - characterPopIns.arrowHeight;
     });

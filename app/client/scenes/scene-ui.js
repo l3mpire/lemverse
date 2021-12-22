@@ -13,6 +13,7 @@ UIScene = new Phaser.Class({
     this.characterNamesObjects = {};
     this.preRenderMethod = this.preRender.bind(this);
     this.shutdownMethod = this.shutdown.bind(this);
+    this.updateViewportMethod = mode => updateViewport(this, mode);
     this.physics.disableUpdate();
     this.reactionPool = this.add.group({ classType: CharacterReaction });
     this.UIElementsOffset = characterUIElementsOffset;
@@ -31,6 +32,7 @@ UIScene = new Phaser.Class({
     // events
     this.events.on('prerender', this.preRenderMethod, this);
     this.events.once('shutdown', this.shutdownMethod, this);
+    this.scale.on('resize', this.updateViewportMethod, this);
 
     characterPopIns.onPopInEvent = e => {
       const { detail: data } = e;
@@ -49,15 +51,15 @@ UIScene = new Phaser.Class({
     this.UIElementsOffset = characterUIElementsOffset * worldMainCamera.zoom;
 
     _.each(this.characterNamesObjects, text => {
-      const { x, y } = this.relativePositionToCamera(text.player);
+      const { x, y } = relativePositionToCamera(text.player, worldMainCamera);
       text.setPosition(x, y + this.UIElementsOffset);
     });
 
     const { player } = userManager;
     if (!player) return;
 
-    const relativePlayerPosition = this.relativePositionToCamera(player);
-    characterPopIns.update();
+    const relativePlayerPosition = relativePositionToCamera(player, worldMainCamera);
+    characterPopIns.update(worldMainCamera);
     userChatCircle.update(relativePlayerPosition.x, relativePlayerPosition.y);
     userVoiceRecorderAbility.setPosition(relativePlayerPosition.x, relativePlayerPosition.y);
   },
@@ -77,25 +79,17 @@ UIScene = new Phaser.Class({
   shutdown() {
     this.events.removeListener('prerender');
     this.events.off('prerender', this.preRenderMethod, this);
+    this.scale.off('resize', this.updateViewportMethod);
 
     userChatCircle.destroy();
     userVoiceRecorderAbility.destroy();
     this.onLevelUnloaded();
   },
 
-  relativePositionToCamera(position) {
-    const worldScene = game.scene.getScene('WorldScene');
-    if (!worldScene) return { x: 0, y: 0 };
-
-    const { zoom } = worldScene.cameras.main;
-    const { x, y } = worldScene.cameras.main.worldView;
-
-    return { x: (position.x - x) * zoom, y: (position.y - y) * zoom };
-  },
-
   spawnReaction(player, content, animation, options) {
+    const worldMainCamera = game.scene.getScene('WorldScene').cameras.main;
     const reaction = this.reactionPool.get(this);
-    const position = this.relativePositionToCamera(player);
+    const position = relativePositionToCamera(player, worldMainCamera);
     const computedAnimation = reaction.prepare(content, position.x, position.y + this.UIElementsOffset, animation, options);
 
     this.tweens.add({

@@ -136,6 +136,9 @@ module.exports = {
     sendAudioChunksToNearUsers: 'writable',
     sendAudioChunksToUsersInZone: 'writable',
 
+    relativePositionToCamera: 'writable',
+    updateViewport: 'writable',
+
     tileGlobalIndex: 'writable',
     tileLayer: 'writable',
     tileProperties: 'writable',
