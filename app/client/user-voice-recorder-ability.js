@@ -11,7 +11,7 @@ userVoiceRecorderAbility = {
   onSoundRecorded: undefined,
   progress: 0,
   recordingIndicator: undefined,
-  recordingIndicatorOffset: { x: 0, y: -125 },
+  recordingIndicatorOffset: -125,
   recordingIndicatorRadius: 30,
 
   init(container) {
@@ -107,8 +107,8 @@ userVoiceRecorderAbility = {
     radialProgressBar.fillPath();
   },
 
-  setPosition(x, y) {
-    this.recordingIndicator.setPosition(x + this.recordingIndicatorOffset.x, y + this.recordingIndicatorOffset.y);
+  setPosition(x, y, camera) {
+    this.recordingIndicator.setPosition(x, y + (this.recordingIndicatorOffset * camera.zoom));
   },
 
   isRecording() {

@@ -61,7 +61,7 @@ UIScene = new Phaser.Class({
     const relativePlayerPosition = relativePositionToCamera(player, worldMainCamera);
     characterPopIns.update(worldMainCamera);
     userChatCircle.update(relativePlayerPosition.x, relativePlayerPosition.y, worldMainCamera);
-    userVoiceRecorderAbility.setPosition(relativePlayerPosition.x, relativePlayerPosition.y);
+    userVoiceRecorderAbility.setPosition(relativePlayerPosition.x, relativePlayerPosition.y, worldMainCamera);
   },
 
   onLevelUnloaded() {
