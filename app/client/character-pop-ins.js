@@ -69,6 +69,8 @@ characterPopIns = {
     else popIn.setData('target', { x: config.x || 0, y: config.y || 0 });
 
     this.popIns[popInIdentifier] = popIn;
+
+    return popIn;
   },
 
   createIframeFromURL(url) {
