@@ -22,6 +22,13 @@ const roomFourPath = [
 
 const failTeleportTile = { x: 3721, y: 1908 };
 
+const entityTooltipConfig = {
+  identifier: 'nearest-entity',
+  proximityRequired: 150 ** 2, // Distance without using sqrt
+  text: 'Press the key <b>u</b> to use',
+  style: 'tooltip with-arrow fade-in',
+};
+
 entityManager = {
   entities: [],
   scene: undefined,
@@ -29,6 +36,7 @@ entityManager = {
   enable_path_coloration: false,
   current_cell: 0,
   previousTile: undefined,
+  previousNearestEntity: undefined,
   enable_sync_coloration: false,
 
   init(scene) {
@@ -81,6 +89,9 @@ entityManager = {
         this.previousTile = tiles[0];
       }
     }
+
+    const { player } = userManager;
+    if (player) this.handleNearestEntityTooltip(player);
   },
 
   onTileUnderPlayerChanged(tile) {
@@ -110,5 +121,46 @@ entityManager = {
 
     this.previousTile = undefined;
     userManager.teleportMainUser(failTeleportTile.x, failTeleportTile.y);
+  },
+
+  handleNearestEntityTooltip(position) {
+    let nearestEntity = this.nearestEntity(position);
+    if (nearestEntity && this.entityDistanceTo(nearestEntity, position) >= entityTooltipConfig.proximityRequired) nearestEntity = undefined;
+
+    if (nearestEntity) {
+      if (!this.previousNearestEntity) {
+        characterPopIns.createOrUpdate(
+          entityTooltipConfig.identifier,
+          entityTooltipConfig.text,
+          { target: nearestEntity, className: entityTooltipConfig.style },
+        );
+      }
+
+      characterPopIns.popIns[entityTooltipConfig.identifier].setData('target', nearestEntity);
+      this.previousNearestEntity = nearestEntity;
+    } else if (this.previousNearestEntity) {
+      characterPopIns.destroyPopIn(entityTooltipConfig.identifier);
+      this.previousNearestEntity = undefined;
+    }
+  },
+
+  nearestEntity(position) {
+    const entities = Entities.find().fetch();
+    let nearestEntity;
+    let previousDistance = Infinity;
+    for (let i = 0; i < entities.length; i++) {
+      const entity = entities[i];
+      const distance = this.entityDistanceTo(entity, position);
+      if (distance < previousDistance) {
+        nearestEntity = entity;
+        previousDistance = distance;
+      }
+    }
+
+    return nearestEntity;
+  },
+
+  entityDistanceTo(entity, position) {
+    return (position.x - entity.x) ** 2 + (position.y - entity.y) ** 2;
   },
 };
