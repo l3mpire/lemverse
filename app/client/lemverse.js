@@ -75,6 +75,7 @@ Template.lemverse.onCreated(function () {
   Session.set('editor', 0);
   Session.set('modal', undefined);
   Session.set('menu', undefined);
+  Session.set('console', false);
 
   window.addEventListener('dblclick', () => sendEvent('toggle-fullscreen'));
   window.addEventListener('beforeunload', () => Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } }));
