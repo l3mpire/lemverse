@@ -411,22 +411,7 @@ peer = {
 
         if (debug) log(`create peer: created (${this.peerInstance.id})`);
 
-        this.peerInstance.on('connection', connection => {
-          connection.on('data', dataReceived => {
-            if (dataReceived.type === 'audio') userVoiceRecorderAbility.playSound(dataReceived.data);
-            else if (dataReceived.type === 'followed') {
-              const user = Meteor.users.findOne(dataReceived.emitter);
-              if (!user) return;
-              this.lockCall(dataReceived.emitter);
-              lp.notif.warning(`${user.profile.name} is following you 👀`);
-            } else if (dataReceived.type === 'unfollowed') {
-              const user = Meteor.users.findOne(dataReceived.emitter);
-              if (!user) return;
-              this.unlockCall(dataReceived.emitter);
-              lp.notif.warning(`${user.profile.name} has finally stopped following you 🎉`);
-            }
-          });
-        });
+        this.peerInstance.on('connection', connection => connection.on('data', userManager.onPeerDataReceived));
 
         this.peerInstance.on('close', () => { log('peer closed and destroyed'); this.peerInstance = undefined; });
 

@@ -112,4 +112,13 @@ characterPopIns = {
       popIn.y = position.y - popIn.displayHeight / 2 - characterPopIns.arrowHeight;
     });
   },
+
+  formatText(text, allowEverything = false) {
+    let output = text;
+    const url = formatURL(text);
+    if (url) output = `🔗 <a href="${url}" target="_blank">${url.origin}</a>`;
+    else if (!allowEverything) throw new Error('not-link');
+
+    return `<p>${output}</p>`;
+  },
 };

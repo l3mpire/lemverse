@@ -605,4 +605,31 @@ userManager = {
       callbackScope: this,
     });
   },
+
+  onPeerDataReceived(dataReceived) {
+    const emitterUserId = dataReceived.emitter;
+    const userEmitter = Meteor.users.findOne(emitterUserId);
+    if (!userEmitter) return;
+
+    if (dataReceived.type === 'audio') userVoiceRecorderAbility.playSound(dataReceived.data);
+    else if (dataReceived.type === 'followed') {
+      peer.lockCall(emitterUserId);
+      lp.notif.warning(`${userEmitter.profile.name} is following you 👀`);
+    } else if (dataReceived.type === 'unfollowed') {
+      peer.unlockCall(emitterUserId);
+      lp.notif.warning(`${userEmitter.profile.name} has finally stopped following you 🎉`);
+    } else if (dataReceived.type === 'text') {
+      const emitterPlayer = userManager.players[emitterUserId];
+      if (!emitterPlayer) return;
+
+      const popInIdentifier = `${emitterUserId}-pop-in`;
+      characterPopIns.createOrUpdate(
+        popInIdentifier,
+        characterPopIns.formatText(dataReceived.data),
+        { target: emitterPlayer, className: 'tooltip with-arrow fade-in' },
+      );
+
+      window.setTimeout(() => characterPopIns.destroyPopIn(popInIdentifier), 4000);
+    }
+  },
 };
