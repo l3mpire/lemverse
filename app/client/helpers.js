@@ -29,3 +29,14 @@ formatURL = url => {
 
   return formattedURL;
 };
+
+sendDataToNearUsers = (type, data, emitterId) => new Promise((resolve, reject) => {
+  const { nearUsers } = userProximitySensor;
+  let targets = [...new Set(_.keys(nearUsers))];
+  targets = targets.filter(target => target !== Meteor.userId());
+  if (!targets.length) return reject(new Error('no-targets'));
+
+  return peer.sendData(targets, { type, emitter: emitterId, data })
+    .then(resolve)
+    .catch(reject);
+});
