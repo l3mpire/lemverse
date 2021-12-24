@@ -54,7 +54,6 @@
   }
 
   &.tooltip {
-    padding: 15px;
     color: white;
     background-color: rgba(25, 25, 25, 0.9);
 
@@ -62,6 +61,10 @@
       border-top: 9px solid rgba(25, 25, 25, 0.9);
       border-left: 10px solid transparent;
       border-right: 10px solid transparent;
+    }
+
+    a {
+      color: #02a3ff;
     }
   }
 

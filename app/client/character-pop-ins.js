@@ -6,7 +6,7 @@ const dispatchPopInEvent = event => {
   if (characterPopIns.onPopInEvent) characterPopIns.onPopInEvent(event);
 };
 
-const popInWithGameObjectTargetOffset = -80;
+const popInWithGameObjectTargetOffset = -65;
 
 characterPopIns = {
   className: 'character-pop-in',
