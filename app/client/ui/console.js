@@ -27,6 +27,7 @@ const onSubmit = () => {
     })
     .catch(e => {
       if (e.message === 'no-targets') lp.notif.error('You need someone near you to send text');
+      else if (e.message === 'not-link') lp.notif.error(`You can't send anything else than a link for now`);
       else lp.notif.error(e);
     });
 };
