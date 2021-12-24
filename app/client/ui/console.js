@@ -32,12 +32,12 @@ const onSubmit = () => {
 };
 
 Template.console.onCreated(() => {
-  hotkeys('enter', 'player', () => {
+  hotkeys('enter', scopes.player, () => {
     Session.set('console', true);
     clearAndFocusInputField();
   });
 
-  hotkeys('escape', 'player', () => closeAndFocusCanvas());
+  hotkeys('escape', scopes.player, () => closeAndFocusCanvas());
 });
 
 Template.console.onDestroyed(() => {
@@ -48,13 +48,9 @@ Template.console.onDestroyed(() => {
 Template.console.events({
   'focus .js-command-input'() { hotkeys.setScope(scopes.form); game.scene.keys.WorldScene.enableKeyboard(false, false); },
   'blur .js-command-input'() { hotkeys.setScope(scopes.player); game.scene.keys.WorldScene.enableKeyboard(true, false); },
-  'click .js-button-submit'(event) {
-    onSubmit();
-    event.preventDefault();
-  },
-  'submit .js-console-form'(event) {
-    onSubmit();
-    event.preventDefault();
-  },
   'keydown .js-command-input'(event) { if (event.which === 27) { closeAndFocusCanvas(); event.preventDefault(); } },
+  'click .js-button-submit, submit .js-console-form'(event) {
+    onSubmit();
+    event.preventDefault();
+  },
 });
