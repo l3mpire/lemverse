@@ -6,6 +6,7 @@ const Phaser = require('phaser');
 scopes = {
   player: 'player',
   editor: 'editor',
+  form: 'form',
 };
 
 hotkeys.filter = function (event) {
