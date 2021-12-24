@@ -138,6 +138,7 @@ module.exports = {
 
     relativePositionToCamera: 'writable',
     updateViewport: 'writable',
+    formatURL: 'writable',
 
     tileGlobalIndex: 'writable',
     tileLayer: 'writable',

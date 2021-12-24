@@ -1,18 +1,3 @@
-const formatURL = url => {
-  let formattedURL;
-  try {
-    formattedURL = new URL(url);
-  } catch (err) {
-    try {
-      formattedURL = new URL(`https://${url}`);
-    } catch (error) {
-      lp.notif.error('invalid website URL');
-    }
-  }
-
-  return formattedURL;
-};
-
 const getUser = template => Meteor.users.findOne(template.data.userId);
 
 Template.profile.onCreated(function () {
@@ -30,6 +15,11 @@ Template.profile.helpers({
     if (!website) return null;
 
     const url = formatURL(website);
+    if (!url) {
+      lp.notif.error('invalid website URL');
+      return null;
+    }
+
     return url.href;
   },
 });
@@ -60,6 +50,12 @@ Template.profile.events({
 
     if (value) {
       const url = formatURL(value);
+      if (!url) {
+        lp.notif.error('invalid website URL');
+        Meteor.users.update(Meteor.userId(), { $unset: { 'profile.website': 1 } });
+        return null;
+      }
+
       Meteor.users.update(Meteor.userId(), { $set: { 'profile.website': url.href } });
     } else Meteor.users.update(Meteor.userId(), { $unset: { 'profile.website': 1 } });
 

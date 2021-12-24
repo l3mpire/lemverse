@@ -18,3 +18,14 @@ updateViewport = (scene, mode) => {
 
   scene.viewportMode = mode;
 };
+
+formatURL = url => {
+  let formattedURL;
+  try {
+    formattedURL = new URL(url);
+  } catch (err) {
+    return undefined;
+  }
+
+  return formattedURL;
+};
