@@ -4,13 +4,10 @@
   left: 50%;
   transform: translateX(-50%);
   width: 450px;
-  border-radius: 10px;
-  background-color: #2b2d3df2;
   z-index: 100;
   opacity: 0;
   transition: opacity 0.25s linear;
   overflow: hidden;
-  box-shadow: 0px 0 15px #2b2d3d;
 
   &.show {
     opacity: 1;
@@ -19,6 +16,11 @@
   form {
     display: flex;
     flex-direction: row;
+    border-radius: 8px;
+    background-color: #2b2d3df2;
+    box-shadow: 0px 0 15px #2b2d3d;
+    width: 450px;
+    overflow: hidden;
 
     input,
     button {
@@ -43,5 +45,14 @@
       font-size: 13pt;
       width: 80px;
     }
+  }
+
+  .close-info {
+    text-align: center;
+    color: #fffefe;
+    font-size: 10pt;
+    margin-top: 10px;
+    box-shadow: 10px;
+    text-shadow: 1px 1px 5px black;
   }
 }
