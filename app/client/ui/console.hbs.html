@@ -1,0 +1,8 @@
+<template name="console">
+  <div class="console {{#if Session 'console'}}show{{/if}}">
+    <form class="js-console-form">
+      <input type="text" class="js-command-input" name="js-command-input" placeholder="https://example.com">
+      <button type="button" class="js-button-submit">Send</button>
+    </form>
+  </div>
+</template>

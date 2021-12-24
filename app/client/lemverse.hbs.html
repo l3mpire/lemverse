@@ -43,6 +43,9 @@
   </div>
   {{> zonesName}}
   {{> gameMod}}
+  {{#if isBeta "console"}}
+    {{> console}}
+  {{/if}}
   {{> modalContainer }}
   {{#if isBeta "radial-menu"}}
     {{> radialMenu }}
