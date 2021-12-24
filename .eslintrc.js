@@ -87,6 +87,7 @@ module.exports = {
     game: 'writable',
     createLevel: 'writable',
     escapeTransport: 'writable',
+    escapeA: 'writable',
     chest: 'writable',
     click: 'writable',
     beep: 'writable',
@@ -135,6 +136,7 @@ module.exports = {
     CharacterReaction: 'writable',
     sendAudioChunksToNearUsers: 'writable',
     sendAudioChunksToUsersInZone: 'writable',
+    switchEntityState: 'writable',
 
     relativePositionToCamera: 'writable',
     updateViewport: 'writable',

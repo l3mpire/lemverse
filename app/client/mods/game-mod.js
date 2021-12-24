@@ -59,10 +59,10 @@ const onZoneEntered = e => {
     }
   }
 
-  if (escape.paintTiles) entityManager.enable_sync_coloration = true;
+  if (escape.paintTiles) escapeA.enable_sync_coloration = true;
   else if (escape.enableDistortionEffect) {
     WorldScene.cameras.main.setPostPipeline(DizzyEffect);
-    entityManager.enable_path_coloration = true;
+    escapeA.enable_path_coloration = true;
   }
 };
 
@@ -72,8 +72,8 @@ const onZoneLeaved = e => {
   if (!zone.popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(`${Meteor.userId()}-${zone._id}`);
 
   game.scene.keys.WorldScene.cameras.main.resetPostPipeline();
-  entityManager.enable_path_coloration = false;
-  entityManager.enable_sync_coloration = false;
+  escapeA.enable_path_coloration = false;
+  escapeA.enable_sync_coloration = false;
 };
 
 const paintTile = (worldScene, tile, layer) => {
