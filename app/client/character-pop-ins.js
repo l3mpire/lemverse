@@ -68,6 +68,9 @@ characterPopIns = {
     if (config.target) popIn.setData('target', config.target);
     else popIn.setData('target', { x: config.x || 0, y: config.y || 0 });
 
+    clearTimeout(popIn.autoCloseHandler);
+    if (config.autoClose) popIn.autoCloseHandler = window.setTimeout(() => this.destroyPopIn(popInIdentifier), config.autoClose);
+
     this.popIns[popInIdentifier] = popIn;
 
     return popIn;
