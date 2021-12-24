@@ -1,4 +1,4 @@
-import DizzyEffect from '../public/assets/post-effects/DizzyEffect';
+import DizzyEffect from '../../public/assets/post-effects/DizzyEffect';
 
 const differMeteorCall = (...args) => setTimeout(() => { Meteor.call(...args); }, 0);
 
