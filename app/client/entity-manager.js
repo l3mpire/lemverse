@@ -25,7 +25,7 @@ const failTeleportTile = { x: 3721, y: 1908 };
 const entityTooltipConfig = {
   identifier: 'nearest-entity',
   proximityRequired: 150 ** 2, // Distance without using sqrt
-  text: 'Press the key <b>u</b> to use',
+  text: '<p>Press the key <b>u</b> to use</p>',
   style: 'tooltip with-arrow fade-in',
 };
 
