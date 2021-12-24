@@ -15,7 +15,11 @@ const characterAnimations = Object.freeze({
   idle: 'idle',
   run: 'run',
 });
-const unavailablePlayerColor = 0x888888;
+
+const messageReceived = {
+  duration: 5000,
+  style: 'tooltip with-arrow fade-in',
+};
 
 charactersParts = Object.freeze({
   body: 0,
@@ -626,10 +630,8 @@ userManager = {
       characterPopIns.createOrUpdate(
         popInIdentifier,
         characterPopIns.formatText(dataReceived.data),
-        { target: emitterPlayer, className: 'tooltip with-arrow fade-in' },
+        { target: emitterPlayer, className: messageReceived.style, autoClose: messageReceived.duration },
       );
-
-      window.setTimeout(() => characterPopIns.destroyPopIn(popInIdentifier), 4000);
     }
   },
 };
