@@ -1,12 +1,18 @@
 @import "../_variables";
 
+$menu-background-color: #2b2d3d;
+$menu-background-opacity: 0.8;
+$label-background-color: rgba(0, 0, 0, 0.6);
+$label-text-color: white;
+$item-background-color: rgba(0, 0, 0, 0.2);
+$item-pressed-color: #02a3ff;
+
 .radial-menu-container {
   position: absolute;
   z-index: 9999;
   pointer-events: none;
 
   .label {
-    color: white;
     position: absolute;
     bottom: -45px;
     left: 50%;
@@ -16,7 +22,8 @@
     font-size: 11pt;
     padding: 3px 5px;
     border-radius: 5px;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: $label-background-color;
+    color: $label-text-color;
   }
 }
 
@@ -53,8 +60,8 @@
     height: 100%;
     border-radius: 50%;
     z-index: 1;
-    opacity: 0.5;
-    background: -webkit-radial-gradient(50% 50%, circle, transparent 35%, #000 35%);
+    opacity: $menu-background-opacity;
+    background: -webkit-radial-gradient(50% 50%, circle, transparent 35%, $menu-background-color 35%);
   }
 
   ul {
@@ -107,7 +114,7 @@
         width: 90%;
         height: 90%;
         border-radius: 50%;
-        background-color: rgba(0, 0, 0, 0.3);
+        background-color: $item-background-color;
         transition: background-color 0.1s linear;
 
         &:hover {
@@ -115,7 +122,7 @@
         }
 
         &:active {
-          background-color: $lem-color-5;
+          background-color: $item-pressed-color;
         }
 
         &.off {
