@@ -1,6 +1,6 @@
 <template name="radialMenuItem">
-  <li style="top: {{y}}px; left: {{x}}px;" data-shortcut="{{shortcutLabel}}">
-    <button type="button" class="js-menu-item {{#if state}}{{#if isActive state}}on{{else}}off{{/if}}{{/if}}">{{icon}}</button>
+  <li style="top: {{y}}px; left: {{x}}px;" data-shortcut="{{shortcutLabel}}" class="{{#if state}}{{#if isActive state}}on{{else}}off{{/if}}{{/if}}">
+    <button type="button" class="js-menu-item">{{icon}}</button>
   </li>
 </template>
 
@@ -12,7 +12,7 @@
           {{> radialMenuItem item}}
         {{/each}}
       </ul>
-      {{#if label}}<div class="label">{{label}}</div>{{/if}}
+      <div class="label {{#if label}}show{{/if}}">{{label}}</div>
       {{#if showBackground}}<div class="background"></div>{{/if}}
     </div>
   </div>

@@ -87,7 +87,7 @@ const otherUserMenuItems = [
 let menuOpenUsingShift = false;
 const menuOffset = { x: 0, y: -6 };
 const horizontalMenuItemDistance = { x: 45, y: -90 };
-const radialMenuRadius = 68;
+const radialMenuRadius = 72;
 const mouseDistanceToCloseMenu = 105;
 const itemAmountRequiredForBackground = 2;
 

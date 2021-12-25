@@ -2,9 +2,9 @@
 
 $menu-background-color: #2b2d3d;
 $menu-background-opacity: 0.8;
-$label-background-color: rgba(0, 0, 0, 0.6);
+$label-background-color: #2b2d3d;
 $label-text-color: white;
-$item-background-color: rgba(0, 0, 0, 0.2);
+$item-background-color: #2b2d3de6;
 $item-pressed-color: #02a3ff;
 
 .radial-menu-container {
@@ -20,16 +20,21 @@ $item-pressed-color: #02a3ff;
     text-align: center;
     font-weight: bold;
     font-size: 11pt;
-    padding: 3px 5px;
+    padding: 3px 10px;
     border-radius: 5px;
     background-color: $label-background-color;
     color: $label-text-color;
+    opacity: 0;
+
+    &.show {
+      opacity: 1;
+    }
   }
 }
 
 .radial-menu {
-  width: 185px;
-  height: 185px;
+  width: 195px;
+  height: 195px;
   transform: scale(0.0) translate(-50%, -65%);
   transition: all .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   transform-origin: top left;
@@ -84,8 +89,8 @@ $item-pressed-color: #02a3ff;
       position: absolute;
       top: 0px;
       left: 0px;
-      width: 40px;
-      height: 40px;
+      width: 45px;
+      height: 45px;
       border-radius: 50px;
       margin: 0;
       color: white;
@@ -107,6 +112,39 @@ $item-pressed-color: #02a3ff;
         border-radius: 50%;
       }
 
+      &.off {
+        button {
+          background-color: #E58273;
+
+          &:hover {
+            background-color: darken(#E58273, 5%);
+          }
+        }
+
+        &:after {
+          content: '❌';
+          z-index: 1000;
+          position: absolute;
+          color: hsl(8deg, 70%, 47%);
+          font-weight: bold;
+          top: 50%;
+          left: 50%;
+          transform: translate(-43%, -51%);
+          font-size: 12pt;
+          pointer-events: none;
+        }
+      }
+
+      &.on {
+        button {
+          background-color: #00B38A;
+
+          &:hover {
+            background-color: darken(#00B38A, 5%);
+          }
+        }
+      }
+
       button {
         border: 0;
         background: none;
@@ -118,27 +156,11 @@ $item-pressed-color: #02a3ff;
         transition: background-color 0.1s linear;
 
         &:hover {
-          background-color: #8694b1;
+          background-color: #A9AABC;
         }
 
         &:active {
           background-color: $item-pressed-color;
-        }
-
-        &.off {
-          background-color: #f26362;
-
-          &:hover {
-            background-color: darken(#f26362, 5%);
-          }
-        }
-
-        &.on {
-          background-color: #48cf5e;
-
-          &:hover {
-            background-color: darken(#48cf5e, 5%);
-          }
         }
       }
 
