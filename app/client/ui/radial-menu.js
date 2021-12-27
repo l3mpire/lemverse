@@ -134,7 +134,7 @@ const onMouseMove = event => {
 };
 
 Template.radialMenuItem.helpers({
-  isActive(value) { return Meteor.user().profile[value]; },
+  isActive(value) { return Meteor.user()?.profile[value]; },
   shortcutLabel() { return String.fromCharCode(this.shortcut); },
 });
 
