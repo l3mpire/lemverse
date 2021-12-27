@@ -327,6 +327,32 @@ Please note, that as stated in section `Deploy in production`, there is an addit
                 }
               }
             }
+          },
+          "w-896": { // Modern interiors: new format (for hairs, eyes, outfits, …)
+            "animations": {
+              "run": {
+                "up": {
+                  "frames": [118, 119, 120, 121, 122, 123],
+                  "frameRate": 10,
+                  "repeat": -1
+                },
+                "down": {
+                  "frames": [130, 131, 132, 133, 134, 135],
+                  "frameRate": 10,
+                  "repeat": -1
+                },
+                "left": {
+                  "frames": [124, 125, 126, 127, 128, 129],
+                  "frameRate": 10,
+                  "repeat": -1
+                },
+                "right": {
+                  "frames": [112, 113, 114, 115, 116, 117],
+                  "frameRate": 10,
+                  "repeat": -1
+                }
+              }
+            }
           }
         }
       },
