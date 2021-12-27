@@ -308,7 +308,8 @@ Template.lemverse.onCreated(function () {
             if (meet.api) {
               meet.fullscreen(zone.fullscreen);
               const screenMode = zone.fullscreen ? viewportModes.small : viewportModes.splitScreen;
-              worldScene.updateViewport(screenMode);
+              updateViewport(worldScene, screenMode);
+              updateViewport(uiScene, screenMode);
             }
           },
         });
@@ -410,10 +411,10 @@ Template.lemverse.onCreated(function () {
 
     if (meet.api) {
       meet.close();
-      game.scene.keys.WorldScene.updateViewport(viewportModes.fullscreen);
+      updateViewport(game.scene.keys.WorldScene, viewportModes.fullscreen);
     } else {
       meet.open();
-      game.scene.keys.WorldScene.updateViewport(viewportModes.splitScreen);
+      updateViewport(game.scene.keys.WorldScene, viewportModes.splitScreen);
     }
   });
 
