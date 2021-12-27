@@ -1,6 +1,10 @@
-const isUrl = string => {
-  try { return Boolean(new URL(string)); } catch (e) { return false; }
-};
+const transformURL = text => text.replace(/(https?:\/\/[^\s]+)/g, url => {
+  const formatedURL = formatURL(url);
+  if (!formatedURL) return url;
+
+  const name = formatedURL.origin.replace(/(^\w+:|^)\/\//, '');
+  return `<a href="${formatedURL}" target="_blank">${name}</a>`;
+});
 
 const dispatchPopInEvent = event => {
   if (characterPopIns.onPopInEvent) characterPopIns.onPopInEvent(event);
@@ -45,7 +49,7 @@ characterPopIns = {
   },
 
   createOrUpdate(popInIdentifier, popInContent, config = {}) {
-    const content = isUrl(popInContent) ? this.createIframeFromURL(popInContent) : popInContent;
+    const content = formatURL(popInContent) ? this.createIframeFromURL(popInContent) : popInContent;
 
     let popIn = this.popIns[popInIdentifier];
     if (!popIn) {
@@ -116,12 +120,8 @@ characterPopIns = {
     });
   },
 
-  formatText(text, allowEverything = false) {
-    let output = text;
-    const url = formatURL(text);
-    if (url) output = `🔗 <a href="${url}" target="_blank">${url.origin}</a>`;
-    else if (!allowEverything) throw new Error('not-link');
-
+  formatText(text) {
+    const output = transformURL(text);
     return `<p>${output}</p>`;
   },
 };
