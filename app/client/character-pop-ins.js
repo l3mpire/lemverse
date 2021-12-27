@@ -5,7 +5,7 @@ const transformURL = text => text.replace(/(https?:\/\/[^\s]+)/g, url => {
   const name = formatedURL.hostname.replace('www.', '');
   const lastDot = name.lastIndexOf('.') || name.length;
 
-  return `<a href="${formatedURL}" target="_blank">${name.substring(lastDot, 0)}</a>`;
+  return `<a href="${formatedURL}" target="_blank">${lastDot === -1 ? name : name.substring(lastDot, 0)}</a>`;
 });
 
 const dispatchPopInEvent = event => {
