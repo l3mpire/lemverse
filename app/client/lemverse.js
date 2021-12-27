@@ -309,7 +309,6 @@ Template.lemverse.onCreated(function () {
               meet.fullscreen(zone.fullscreen);
               const screenMode = zone.fullscreen ? viewportModes.small : viewportModes.splitScreen;
               updateViewport(worldScene, screenMode);
-              updateViewport(uiScene, screenMode);
             }
           },
         });
