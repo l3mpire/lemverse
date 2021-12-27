@@ -39,7 +39,10 @@ updateSkin = (user, levelId) => {
       ...currentLevel.skins.default,
     };
   } else if (Characters.find({}).count() === 0) {
-    newProfile.body = Meteor.settings.public.skins.default;
+    newProfile = {
+      ...newProfile,
+      ...Meteor.settings.public.skins.default,
+    };
   } else {
     ['body', 'outfit', 'eye', 'hair', 'accessory'].forEach(part => {
       log('updateSkin: Randomize character parts...');
