@@ -145,7 +145,15 @@ Template.radialMenu.onCreated(function () {
   document.addEventListener('mousemove', onMouseMove);
   Session.set('menu-position', { x: 0, y: 0 });
 
+  // allow users to react without opening the menu
+  hotkeys('1,2,3,4,5,6,7,8,9', { keyup: true, scope: scopes.player }, e => {
+    const menuEntry = reactionMenuItems.find(menuItem => menuItem.shortcut === e.keyCode);
+    if (e.type === 'keyup' && menuEntry.cancel) menuEntry.cancel(this);
+    else if (e.type === 'keydown' && menuEntry.action) menuEntry.action(this);
+  });
+
   hotkeys('space', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
+
   hotkeys('*', { keyup: true, scope: scopes.player }, e => {
     // show/hide shortcuts
     if (e.key === 'Shift') {
