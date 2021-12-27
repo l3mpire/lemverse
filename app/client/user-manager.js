@@ -11,6 +11,7 @@ const characterInteractionConfiguration = {
   hitAreaCallback: Phaser.Geom.Circle.Contains,
   cursor: 'pointer',
 };
+const unavailablePlayerColor = 0x888888;
 const characterAnimations = Object.freeze({
   idle: 'idle',
   run: 'run',
@@ -267,7 +268,7 @@ userManager = {
   },
 
   removeUser(user) {
-    if (!this.players[user._id]) return;
+    if (!user || !this.players[user._id]) return;
 
     clearInterval(this.players[user._id].reactionHandler);
     delete this.players[user._id].reactionHandler;
