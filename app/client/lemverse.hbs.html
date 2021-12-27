@@ -35,9 +35,12 @@
   </div>
   {{> zonesName}}
   {{> gameMod}}
-  {{> console}}
   {{> modalContainer }}
-  {{> radialMenu }}
+
+  {{#unless isGuest}}
+    {{> radialMenu }}
+    {{> console}}
+  {{/unless}}
 
   <audio class="js-audio-webrtc-in" muted>
     <source src="/assets/lemverse/webrtc-in.mp3" type="audio/mp3">
