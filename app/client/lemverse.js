@@ -9,6 +9,11 @@ scopes = {
   form: 'form',
 };
 
+scopesNotifications = {
+  zone: 'zone',
+  nearUsers: 'nearUsers',
+};
+
 hotkeys.filter = function (event) {
   const { tagName } = event.target || event.srcElement;
   return !/^(INPUT|TEXTAREA)$/.test(tagName);
