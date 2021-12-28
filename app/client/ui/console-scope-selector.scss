@@ -1,12 +1,18 @@
+$background-color: #2b2d3de6;
+
 .console-scope-selector {
   button.js-scope-selector {
+    cursor: pointer;
     display: inline-block;
     text-align: center;
     height: 100%;
     padding: 0;
+    padding: 0 10px 0 15px;
+    background-color: $background-color;
     font-size: 21px;
-    padding-left: 15px;
-    transform: translateY(-2px);
-    cursor: pointer;
+
+    &:hover {
+      background-color: lighten($background-color, 15%);
+    }
   }
 }
