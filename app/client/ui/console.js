@@ -16,17 +16,18 @@ const closeAndFocusCanvas = () => {
   game.scene.keys.WorldScene.enableKeyboard(true, false);
 };
 
-const onSubmit = () => {
+const onSubmit = scope => {
   const fieldValue = document.querySelector(inputSelector).value;
   if (!fieldValue) return;
 
-  sendDataToNearUsers('text', fieldValue, Meteor.userId())
+  const func = scope === scopesNotifications.nearUsers ? sendDataToNearUsers : sendDataToUsersInZone;
+  func('text', fieldValue, Meteor.userId())
     .then(() => {
       userManager.onPeerDataReceived({ emitter: Meteor.userId(), data: fieldValue, type: 'text' });
       closeAndFocusCanvas();
     })
     .catch(e => {
-      if (e.message === 'no-targets') lp.notif.error('You need someone near you to send text');
+      if (e.message === 'no-targets' && scope === scopesNotifications.nearUsers) lp.notif.error('You need someone near you to send text');
       else lp.notif.error(e);
     });
 };
@@ -58,7 +59,7 @@ Template.console.events({
   'blur .js-command-input'() { hotkeys.setScope(scopes.player); game.scene.keys.WorldScene.enableKeyboard(true, false); },
   'keydown .js-command-input'(event) { if (event.which === 27) { closeAndFocusCanvas(); event.preventDefault(); } },
   'click .js-button-submit, submit .js-console-form'(event) {
-    onSubmit();
+    onSubmit(Template.instance().scope.get());
     event.preventDefault();
   },
 });

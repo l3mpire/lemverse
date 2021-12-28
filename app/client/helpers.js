@@ -40,3 +40,14 @@ sendDataToNearUsers = (type, data, emitterId) => new Promise((resolve, reject) =
     .then(resolve)
     .catch(reject);
 });
+
+sendDataToUsersInZone = (type, data, emitterId) => new Promise((resolve, reject) => {
+  const user = Meteor.user();
+  const usersInZone = zones.usersInZone(zones.currentZone(user));
+  const userInZoneIds = usersInZone.map(u => u._id);
+  if (!userInZoneIds.length) return reject(new Error('no-targets'));
+
+  return peer.sendData(userInZoneIds, { type, emitter: emitterId, data })
+    .then(resolve)
+    .catch(reject);
+});

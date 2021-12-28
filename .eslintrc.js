@@ -143,6 +143,7 @@ module.exports = {
     updateViewport: 'writable',
     formatURL: 'writable',
     sendDataToNearUsers: 'writable',
+    sendDataToUsersInZone: 'writable',
 
     tileGlobalIndex: 'writable',
     tileLayer: 'writable',
