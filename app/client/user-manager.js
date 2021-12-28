@@ -18,7 +18,7 @@ const characterAnimations = Object.freeze({
 });
 
 const messageReceived = {
-  duration: 5000,
+  duration: 10000,
   style: 'tooltip with-arrow fade-in',
 };
 
