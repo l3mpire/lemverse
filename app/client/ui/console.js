@@ -31,9 +31,17 @@ const onSubmit = () => {
     });
 };
 
-Template.console.onCreated(() => {
+const autoSetScope = template => {
+  if (userProximitySensor.isNearSomeone()) template.scope.set(scopesNotifications.nearUsers);
+  else template.scope.set(scopesNotifications.zone);
+};
+
+Template.console.onCreated(function () {
+  this.scope = new ReactiveVar(scopesNotifications.nearUsers);
+
   hotkeys('enter', scopes.player, () => {
     Session.set('console', true);
+    autoSetScope(this);
     clearAndFocusInputField();
   });
 
@@ -53,4 +61,8 @@ Template.console.events({
     onSubmit();
     event.preventDefault();
   },
+});
+
+Template.console.helpers({
+  scope() { return Template.instance().scope; },
 });
