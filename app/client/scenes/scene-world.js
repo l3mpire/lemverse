@@ -175,7 +175,7 @@ WorldScene = new Phaser.Class({
     levelManager.destroy();
     userManager.destroy();
     userProximitySensor.callProximityEndedForAllNearUsers();
-    peer.destroy();
+    peer.closeAll();
 
     Session.set('showScoreInterface', false);
     Session.set('sceneWorldReady', false);

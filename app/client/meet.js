@@ -21,7 +21,7 @@ meet = {
     meet.api = new window.JitsiMeetExternalAPI(Meteor.settings.public.meet.serverURL, options);
     this.show(true);
 
-    peer.destroy();
+    peer.disable();
     userProximitySensor.callProximityEndedForAllNearUsers();
 
     if (window.electron) {
@@ -34,6 +34,7 @@ meet = {
     meet.api?.dispose();
     meet.api = undefined;
     this.show(false);
+    peer.enable();
   },
 
   show(value) {
