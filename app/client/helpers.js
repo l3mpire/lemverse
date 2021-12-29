@@ -5,7 +5,7 @@ viewportModes = Object.freeze({
 });
 
 toggleUserProperty = (propertyName, value) => {
-  if (value) Meteor.users.update(Meteor.userId(), { $set: { [`profile.${propertyName}`]: !!value } });
+  if (typeof value === 'boolean') Meteor.users.update(Meteor.userId(), { $set: { [`profile.${propertyName}`]: !!value } });
   else Meteor.users.update(Meteor.userId(), { $set: { [`profile.${propertyName}`]: !Meteor.user().profile[propertyName] } });
 };
 
