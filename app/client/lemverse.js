@@ -83,7 +83,10 @@ Template.lemverse.onCreated(function () {
   Session.set('console', false);
 
   window.addEventListener('dblclick', () => sendEvent('toggle-fullscreen'));
-  window.addEventListener('beforeunload', () => Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } }));
+  window.addEventListener('beforeunload', () => {
+    Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } });
+    peer.destroy();
+  });
 
   this.currentLevelId = undefined;
   this.subscribe('characters');

@@ -408,6 +408,7 @@ peer = {
         if (skipConfig) delete peerConfig.config;
         if (this.peerInstance) this.destroy();
         this.peerInstance = new Peer(Meteor.userId(), peerConfig);
+        this.peerLoading = false;
 
         if (debug) log(`create peer: created (${this.peerInstance.id})`);
 
@@ -436,10 +437,6 @@ peer = {
 
           this.answerCall(remoteCall);
         });
-
-        window.removeEventListener('beforeunload', this.destroy.bind(this));
-        window.addEventListener('beforeunload', this.destroy.bind(this));
-        this.peerLoading = false;
 
         return resolve(this.peerInstance);
       });
