@@ -2,20 +2,7 @@
 
 meet = {
   api: undefined,
-
-  toggleFullscreen() {
-    this.fullscreen($('#game').width() > $('#meet').width());
-  },
-
-  fullscreen(value) {
-    const meetElement = $('#meet');
-
-    if (!value) {
-      meetElement.removeClass('fullscreen');
-    } else {
-      meetElement.addClass('fullscreen');
-    }
-  },
+  node: undefined,
 
   open(roomName = Meteor.settings.public.meet.roomDefaultName) {
     if (meet.api) return;
@@ -24,7 +11,7 @@ meet = {
       roomName,
       width: '100%',
       height: '100%',
-      parentNode: document.querySelector('#meet'),
+      parentNode: this.nodeElement(),
       userInfo: {
         email: Meteor.user().emails[0].address,
         displayName: Meteor.user().profile.name,
@@ -32,7 +19,7 @@ meet = {
     };
 
     meet.api = new window.JitsiMeetExternalAPI(Meteor.settings.public.meet.serverURL, options);
-    $('#meet').addClass('show');
+    this.show(true);
 
     peer.destroy();
     userProximitySensor.callProximityEndedForAllNearUsers();
@@ -44,8 +31,17 @@ meet = {
   },
 
   close() {
-    if (meet.api) { meet.api.dispose(); meet.api = undefined; }
-    $('#meet').removeClass('show');
+    meet.api?.dispose();
+    meet.api = undefined;
+    this.show(false);
+  },
+
+  show(value) {
+    this.nodeElement().classList.toggle('show', value);
+  },
+
+  fullscreen(value) {
+    this.nodeElement().classList.toggle('fullscreen', value);
   },
 
   mute() {
@@ -74,5 +70,10 @@ meet = {
       if (!muted) return;
       meet.api.executeCommand('toggleVideo');
     });
+  },
+
+  nodeElement() {
+    if (!this.node) this.node = document.querySelector('#meet');
+    return this.node;
   },
 };
