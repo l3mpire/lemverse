@@ -19,10 +19,6 @@ hotkeys.filter = function (event) {
   return !/^(INPUT|TEXTAREA)$/.test(tagName);
 };
 
-toggleUserProperty = propertyName => {
-  Meteor.users.update(Meteor.userId(), { $set: { [`profile.${propertyName}`]: !Meteor.user().profile[propertyName] } });
-};
-
 game = undefined;
 
 const config = {
@@ -84,7 +80,7 @@ Template.lemverse.onCreated(function () {
 
   window.addEventListener('dblclick', () => sendEvent('toggle-fullscreen'));
   window.addEventListener('beforeunload', () => {
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } });
+    toggleUserProperty('shareScreen', false);
     peer.destroy();
   });
 

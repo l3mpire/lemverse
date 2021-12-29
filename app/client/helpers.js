@@ -4,6 +4,11 @@ viewportModes = Object.freeze({
   splitScreen: 'split-screen',
 });
 
+toggleUserProperty = (propertyName, value) => {
+  if (value) Meteor.users.update(Meteor.userId(), { $set: { [`profile.${propertyName}`]: !!value } });
+  else Meteor.users.update(Meteor.userId(), { $set: { [`profile.${propertyName}`]: !Meteor.user().profile[propertyName] } });
+};
+
 relativePositionToCamera = (position, camera) => {
   const { worldView, zoom } = camera;
   return { x: (position.x - worldView.x) * zoom, y: (position.y - worldView.y) * zoom };
