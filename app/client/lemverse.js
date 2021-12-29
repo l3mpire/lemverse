@@ -98,6 +98,7 @@ Template.lemverse.onCreated(function () {
     if (game || !Session.get('tilesetsLoaded')) return;
     game = new Phaser.Game(config);
     game.scene.add('BootScene', BootScene, true);
+    peer.createMyPeer();
   });
 
   this.autorun(() => {
