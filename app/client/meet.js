@@ -48,29 +48,37 @@ meet = {
   mute() {
     meet.api.isAudioMuted().then(muted => {
       if (muted) return;
-      meet.api.executeCommand('toggleAudio');
+      this.toggleAudio();
     });
   },
 
   unmute() {
     meet.api.isAudioMuted().then(muted => {
       if (!muted) return;
-      meet.api.executeCommand('toggleAudio');
+      this.toggleAudio();
     });
   },
 
   hide() {
     meet.api.isVideoMuted().then(muted => {
       if (muted) return;
-      meet.api.executeCommand('toggleVideo');
+      this.toggleVideo();
     });
   },
 
   unhide() {
     meet.api.isVideoMuted().then(muted => {
       if (!muted) return;
-      meet.api.executeCommand('toggleVideo');
+      this.toggleVideo();
     });
+  },
+
+  toggleAudio() {
+    meet.api.executeCommand('toggleAudio');
+  },
+
+  toggleVideo() {
+    meet.api.executeCommand('toggleVideo');
   },
 
   nodeElement() {
