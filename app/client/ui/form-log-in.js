@@ -54,8 +54,8 @@ Template.formLogIn.events({
   'click .js-next-step'() { onSubmit(Template.instance()); },
   'focus input'() { hotkeys.setScope('form'); game?.scene?.keys?.WorldScene?.enableKeyboard(false, false); },
   'blur input'() { hotkeys.setScope(scopes.player); game?.scene?.keys?.WorldScene?.enableKeyboard(true, false); },
-  'change .js-email'(e) { Template.instance().email = e.target.value; },
-  'change .js-password'(e) { Template.instance().password = e.target.value; },
+  'keyup .js-email'(e) { Template.instance().email = e.target.value; },
+  'keyup .js-password'(e) { Template.instance().password = e.target.value; },
   'click .js-cancel-login-mode'() { Template.instance().loginMode.set(true); },
   'click .js-password-lost'() { Template.instance().loginMode.set(false); },
   'submit form'(e) {

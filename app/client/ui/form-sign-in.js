@@ -57,9 +57,9 @@ Template.formSignIn.events({
   'focus input'() { hotkeys.setScope('form'); game?.scene?.keys?.WorldScene?.enableKeyboard(false, false); },
   'blur input'() { hotkeys.setScope(scopes.player); game?.scene?.keys?.WorldScene?.enableKeyboard(true, false); },
   'click .js-previous-step'() { Template.instance().step.set(Template.instance().step.get() - 1); },
-  'change .js-email'(e) { Template.instance().email = e.target.value; },
-  'change .js-password'(e) { Template.instance().password = e.target.value; },
-  'change .js-nickname'(e) { Template.instance().nickname = e.target.value; },
+  'keyup .js-email'(e) { Template.instance().email = e.target.value; },
+  'keyup .js-password'(e) { Template.instance().password = e.target.value; },
+  'keyup .js-nickname'(e) { Template.instance().nickname = e.target.value; },
   'submit form'(e) {
     e.preventDefault();
     e.stopPropagation();
