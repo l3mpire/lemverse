@@ -179,6 +179,11 @@ button:focus {
     z-index: 30;
     background-size: contain;
     transition: opacity 0.25s linear;
+    pointer-events: none;
+
+    &.active {
+      pointer-events: all;
+    }
 
     video {
       width: 160px;
