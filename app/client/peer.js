@@ -11,6 +11,10 @@ peer = {
   sensorEnabled: true,
   enabled: true,
   lockedCalls: {},
+  reconnect: {
+    autoReconnectOnClose: true,
+    delayBetweenAttempt: 250,
+  },
 
   init() {
     userProximitySensor.onProximityEnded = this.onProximityEnded.bind(this);
@@ -414,7 +418,19 @@ peer = {
 
         this.peerInstance.on('connection', connection => connection.on('data', userManager.onPeerDataReceived));
 
-        this.peerInstance.on('close', () => { log('peer closed and destroyed'); this.peerInstance = undefined; });
+        this.peerInstance.on('close', () => {
+          log('peer closed and destroyed');
+          this.peerInstance = undefined;
+
+          if (this.reconnect.autoReconnectOnClose) {
+            window.setTimeout(() => {
+              log('auto-reconnecting peer…');
+              this.createMyPeer()
+                .then(() => log('peer reconnected'))
+                .catch(error => log(`unable to automatically reconnect peer: ${error.message}`));
+            }, this.reconnect.delayBetweenAttempt);
+          }
+        });
 
         this.peerInstance.on('error', peerErr => {
           if (['server-error', 'network'].includes(peerErr.type) && this.peerInstance.disconnected) this.peerInstance.reconnect();
