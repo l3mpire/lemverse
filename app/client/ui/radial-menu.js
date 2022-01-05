@@ -17,11 +17,11 @@ const lovePhrases = userName => [
 const reactionMenuItems = [
   { icon: '🪧', shortcut: 50, action: () => setReaction(Meteor.user().profile.defaultReaction || Meteor.settings.public.defaultReaction), cancel: () => setReaction() },
   { icon: '↩️', shortcut: 49, action: template => buildMenu(mainMenuItems, template.items) },
-  { icon: '🎉', shortcut: 57, action: () => setReaction('🎉'), cancel: () => setReaction() },
+  { icon: '👏', shortcut: 57, action: () => setReaction('👏'), cancel: () => setReaction() },
   { icon: '😲', shortcut: 56, action: () => setReaction('😲'), cancel: () => setReaction() },
   { icon: '😢', shortcut: 55, action: () => setReaction('😢'), cancel: () => setReaction() },
   { icon: '🤣', shortcut: 54, action: () => setReaction('🤣'), cancel: () => setReaction() },
-  { icon: '😡', shortcut: 53, action: () => setReaction('😡'), cancel: () => setReaction() },
+  { icon: '🙁', shortcut: 53, action: () => setReaction('🙁'), cancel: () => setReaction() },
   { icon: '👍', shortcut: 52, action: () => setReaction('👍'), cancel: () => setReaction() },
   { icon: '❤️', shortcut: 51, action: () => setReaction('❤️'), cancel: () => setReaction() },
 ];
