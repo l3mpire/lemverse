@@ -13,14 +13,14 @@
   "license": "ISC",
   "repository": "github:l3mpire/lemverse",
   "dependencies": {
-    "@jitsi/electron-sdk": "^3.0.2",
+    "@jitsi/electron-sdk": "^3.0.3",
     "dotenv": "^10.0.0",
-    "electron-log": "^4.4.1",
+    "electron-log": "^4.4.4",
     "electron-reload": "^2.0.0-alpha.1",
     "electron-updater": "^4.6.1"
   },
   "devDependencies": {
-    "electron": "^16.0.4",
+    "electron": "^16.0.6",
     "electron-builder": "^22.14.5",
     "electron-notarize": "^1.1.1"
   },
