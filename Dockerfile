@@ -22,7 +22,7 @@ RUN apk --no-cache add \
 		ca-certificates \
         imagemagick \
         graphicsmagick \
-        python make g++
+        python3 make g++
 
 # Copy in entrypoint
 COPY --from=builder $SCRIPTS_FOLDER $SCRIPTS_FOLDER/

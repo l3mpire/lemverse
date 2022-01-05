@@ -13,7 +13,7 @@ RUN apt update && apt install -y \
 		ca-certificates \
         imagemagick \
         graphicsmagick \
-        python make g++
+        python3 make g++
 
 
 WORKDIR $APP_SOURCE_FOLDER
