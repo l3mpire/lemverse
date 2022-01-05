@@ -2,12 +2,11 @@ version: "3.8"
 services:
     mongodb:
         image: mongo:5.0.3
-        container_name: mongodb
         environment:
             - PUID=1000
             - PGID=1000
         volumes:
-            - lemverse-db:/data/db # Necessary volume to keep database data between restarts
+            - db:/data/db # Necessary volume to keep database data between restarts
         ports:
             - 27017:27017 # Expose port to let you connect in db for debug, dont do it in prod
         restart: unless-stopped
@@ -17,7 +16,6 @@ services:
         build:
             context: .
             dockerfile: Dockerfile.dev
-        container_name: lemverse
         restart: unless-stopped
         networks:
             - net_lemverse
