@@ -2,7 +2,10 @@
 
   # lemverse<br>
 
-  [![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/uMfZf6T7) [![Latest release](https://badgen.net/github/release/Naereen/Strapdown.js)](https://github.com/l3mpire/lemverse/releases/tags) [![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)](https://github.com/l3mpire/lemverse)
+  [![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/uMfZf6T7)
+  [![GitHub release](https://img.shields.io/github/v/release/l3mpire/lemverse.svg)](https://GitHub.com/l3mpire/lemverse/releases/)
+  [![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)](https://github.com/l3mpire/lemverse)
+  [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
   <img alt="lemverse" src="./app/public/lemverse.png" width="128" height="128" style="margin-top: 10px;">  
 
