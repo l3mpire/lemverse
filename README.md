@@ -1,6 +1,12 @@
-<p align="center">
-  <img alt="lemverse" src="./app/public/lemverse.png" width="128" height="128">  
-</p>
+<div align="center">
+
+  # lemverse<br>
+
+  [![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/uMfZf6T7) [![Latest release](https://badgen.net/github/release/Naereen/Strapdown.js)](https://github.com/l3mpire/lemverse/releases/tags) [![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)](https://github.com/l3mpire/lemverse)
+
+  <img alt="lemverse" src="./app/public/lemverse.png" width="128" height="128" style="margin-top: 10px;">  
+
+</div>
 
 # Table of contents
 - [What is `lemverse`?](#what-is--lemverse--)
