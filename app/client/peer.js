@@ -87,7 +87,7 @@ peer = {
     if (!activeCallsCount) return;
 
     if (debug) log('close call: call closed successfully', userId);
-    sounds.play('webrtc-out');
+    sounds.play('webrtc-out.mp3', 0.2);
   },
 
   close(userId, timeout = 0, origin = null) {
@@ -137,7 +137,7 @@ peer = {
     const { shareAudio, shareScreen, shareVideo } = Meteor.user().profile;
 
     if (!this.calls[`${user._id}-${streamTypes.main}`] && !this.calls[`${user._id}-${streamTypes.screen}`]) {
-      sounds.play('webrtc-in');
+      sounds.play('webrtc-in.mp3', 0.2);
       if (userProximitySensor.nearUsersCount() === 1) Meteor.call('addUserInterruption');
     }
 

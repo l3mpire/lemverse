@@ -16,6 +16,7 @@ const characterAnimations = Object.freeze({
   idle: 'idle',
   run: 'run',
 });
+const timeBetweenReactionSound = 500;
 
 const messageReceived = {
   duration: 10000,
@@ -50,6 +51,7 @@ userManager = {
   playerWasMoving: false,
   players: {},
   scene: undefined,
+  canPlayReactionSound: true,
 
   init(scene) {
     this.entityFollowed = undefined;
@@ -164,6 +166,22 @@ userManager = {
     return this.players[user._id];
   },
 
+  playReaction(player, reaction) {
+    clearInterval(player.reactionHandler);
+    if (meet.api && this.canPlayReactionSound && sounds.reactionsSounds[reaction]) {
+      sounds.play(sounds.reactionsSounds[reaction]);
+
+      // avoid sound spamming
+      this.canPlayReactionSound = false;
+      setTimeout(() => { this.canPlayReactionSound = true; }, timeBetweenReactionSound);
+    }
+
+    const animation = reaction === '❤️' ? 'zigzag' : 'linearUpScaleDown';
+    const UIScene = game.scene.getScene('UIScene');
+    UIScene.spawnReaction(player, reaction, animation, { randomOffset: 10 });
+    player.reactionHandler = setInterval(() => UIScene.spawnReaction(player, reaction, animation, { randomOffset: 10 }), 250);
+  },
+
   updateUser(user, oldUser) {
     const isMe = user._id === Meteor.userId();
     const player = this.players[user._id];
@@ -171,18 +189,8 @@ userManager = {
     const { x, y, reaction, shareAudio, guest, userMediaError, name, nameColor } = user.profile;
 
     // show reactions
-    if (reaction) {
-      clearInterval(player.reactionHandler);
-      delete player.reactionHandler;
-
-      const animation = reaction === '❤️' ? 'zigzag' : 'linearUpScaleDown';
-      const UIScene = game.scene.getScene('UIScene');
-      UIScene.spawnReaction(player, reaction, animation, { randomOffset: 10 });
-      player.reactionHandler = setInterval(() => UIScene.spawnReaction(player, reaction, animation, { randomOffset: 10 }), 250);
-    } else {
-      clearInterval(player.reactionHandler);
-      delete player.reactionHandler;
-    }
+    if (reaction) this.playReaction(player, reaction);
+    else clearInterval(player.reactionHandler);
 
     // create missing character body parts or update it
     const characterBodyContainer = player.getByName('body');
