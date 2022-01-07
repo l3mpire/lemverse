@@ -1,5 +1,6 @@
 const Phaser = require('phaser');
 
+const userInterpolationInterval = 200;
 const defaultCharacterDirection = 'down';
 const defaultUserMediaColorError = '0xd21404';
 const characterSpritesOrigin = { x: 0.5, y: 1 };
@@ -41,7 +42,7 @@ savePlayer = player => {
   });
 };
 
-const throttledSavePlayer = throttle(savePlayer, 100, { leading: false });
+const throttledSavePlayer = throttle(savePlayer, userInterpolationInterval, { leading: false });
 
 userManager = {
   entityFollowed: undefined,
@@ -265,7 +266,7 @@ userManager = {
         player.lwOriginDate = moment();
         player.lwTargetX = user.profile.x;
         player.lwTargetY = user.profile.y;
-        player.lwTargetDate = moment().add(100, 'milliseconds');
+        player.lwTargetDate = moment().add(userInterpolationInterval, 'milliseconds');
         if (shouldCheckDistance) userProximitySensor.checkDistance(mainUser, user);
       }
 
