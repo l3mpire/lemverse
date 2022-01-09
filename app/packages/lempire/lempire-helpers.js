@@ -65,6 +65,7 @@ Template.registerHelper('isGod', lp.isGod);
 Template.registerHelper('isReallyProduction', () => lp.isProduction() && !lp.isStaging());
 Template.registerHelper('isProduction', () => lp.isProduction());
 Template.registerHelper('isStaging', () => lp.isStaging());
+Template.registerHelper('isBeta', feature => lp.isLemverseBeta(feature));
 
 // flow router
 Template.registerHelper('isActiveRoute', r => r === FlowRouter.getRouteName());

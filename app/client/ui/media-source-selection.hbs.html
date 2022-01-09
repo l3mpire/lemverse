@@ -1,0 +1,19 @@
+<template name="mediaSource">
+  <div class="js-screen-source {{#if selected}}selected{{/if}}" data-id="{{id}}">
+    <img src="{{image}}" alt="source thumbnail">
+    <span class="name">{{name}}</span>
+  </div>
+</template>
+
+<template name="mediaSourceSelection">
+  {{#modal title="Window selection"}}
+    <div class="media-source-selection container">
+      <div class="sources">
+        {{#each sources}}
+          {{> mediaSource}}
+        {{/each}}
+      </div>
+      <button type="button" class="button js-submit">Select</button>
+    </div>
+  {{/modal}}
+</template>

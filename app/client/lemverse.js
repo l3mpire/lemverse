@@ -6,15 +6,17 @@ const Phaser = require('phaser');
 scopes = {
   player: 'player',
   editor: 'editor',
+  form: 'form',
+};
+
+scopesNotifications = {
+  zone: 'zone',
+  nearUsers: 'nearUsers',
 };
 
 hotkeys.filter = function (event) {
   const { tagName } = event.target || event.srcElement;
   return !/^(INPUT|TEXTAREA)$/.test(tagName);
-};
-
-const toggleUserProperty = propertyName => {
-  Meteor.users.update(Meteor.userId(), { $set: { [`profile.${propertyName}`]: !Meteor.user().profile[propertyName] } });
 };
 
 game = undefined;
@@ -26,22 +28,38 @@ const config = {
   height: window.innerHeight / Meteor.settings.public.zoom,
   zoom: Meteor.settings.public.zoom,
   inputWindowEvents: false,
-  pixelArt: true,
-  roundPixels: true,
   title: Meteor.settings.public.lp.product,
   url: Meteor.settings.public.lp.website,
+  powerPreference: 'low-power',
+  fps: {
+    min: 5,
+    target: 60,
+    forceSetTimeOut: false,
+    deltaHistory: 10,
+    panicMax: 120,
+    smoothStep: true,
+  },
   physics: {
     default: 'arcade',
     arcade: {
       debug: Meteor.settings.public.debug,
       gravity: { y: 0 },
+      useTree: false,
     },
+  },
+  render: {
+    pixelArt: true,
+    roundPixels: true,
+    antialias: false,
+    antialiasGL: false,
   },
   scale: {
     mode: Phaser.Scale.RESIZE,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     width: 800, // Default game window width
     height: 600, // Default game window height,
+    autoRound: true,
+    resizeInterval: 999999,
   },
   dom: {
     createContainer: true,
@@ -57,12 +75,16 @@ Template.lemverse.onCreated(function () {
   Session.set('tilesetsLoaded', false);
   Session.set('editor', 0);
   Session.set('modal', undefined);
+  Session.set('menu', undefined);
+  Session.set('console', false);
 
+  window.addEventListener('dblclick', () => sendEvent('toggle-fullscreen'));
   window.addEventListener('beforeunload', () => {
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } });
+    toggleUserProperty('shareScreen', false);
+    peer.destroy();
   });
 
-  this.hasLevelLoaded = false;
+  this.currentLevelId = undefined;
   this.subscribe('characters');
   this.subscribe('levels');
   this.subscribe('notifications');
@@ -76,6 +98,10 @@ Template.lemverse.onCreated(function () {
     if (game || !Session.get('tilesetsLoaded')) return;
     game = new Phaser.Game(config);
     game.scene.add('BootScene', BootScene, true);
+
+    Tracker.nonreactive(() => {
+      if (!Meteor.user()?.profile.guest) peer.createMyPeer();
+    });
   });
 
   this.autorun(() => {
@@ -85,11 +111,14 @@ Template.lemverse.onCreated(function () {
   this.autorun(() => {
     if (!Session.get('sceneWorldReady')) return;
 
+    const menuOpen = Session.set('menu');
     const modalOpen = isModalOpen();
     Tracker.nonreactive(() => {
+      const interfaceOpen = menuOpen || modalOpen;
       const worldScene = game.scene.getScene('WorldScene');
-      worldScene.enableKeyboard(!modalOpen, !modalOpen);
       userManager.pauseAnimation(undefined, modalOpen);
+      worldScene.enableMouse(!interfaceOpen);
+      worldScene.enableKeyboard(!modalOpen, !modalOpen);
     });
   });
 
@@ -148,8 +177,8 @@ Template.lemverse.onCreated(function () {
           added(tileset) {
             game.scene.keys.BootScene.loadTilesetsAtRuntime([tileset], levelManager.addTilesetsToLayers.bind(levelManager));
           },
-          changed(n, o) {
-            levelManager.onTilesetUpdated(n, o);
+          changed(newTileset, oldTileset) {
+            levelManager.onTilesetUpdated(newTileset, oldTileset);
           },
         });
       }
@@ -216,7 +245,9 @@ Template.lemverse.onCreated(function () {
 
     const loggedUser = Meteor.user({ fields: { 'profile.levelId': 1 } });
     if (!loggedUser) return;
+
     const { levelId } = loggedUser.profile;
+    if (levelId === this.currentLevelId) return;
 
     Tracker.nonreactive(() => {
       if (this.handleEntitiesSubscribe) this.handleEntitiesSubscribe.stop();
@@ -232,6 +263,7 @@ Template.lemverse.onCreated(function () {
       const levelName = Levels.findOne(levelId)?.name;
       const loadingScene = game.scene.getScene('LoadingScene');
       const worldScene = game.scene.getScene('WorldScene');
+      const uiScene = game.scene.getScene('UIScene');
       loadingScene.setText(levelName);
       loadingScene.show();
 
@@ -240,10 +272,11 @@ Template.lemverse.onCreated(function () {
       if (levelName) titleParts.push(levelName);
       document.title = titleParts.reverse().join(' - ');
 
-      if (this.hasLevelLoaded) {
+      if (this.currentLevelId) {
         log(`unloading current level…`);
         worldScene.scene.restart();
-        this.hasLevelLoaded = false;
+        uiScene.onLevelUnloaded();
+        this.currentLevelId = undefined;
         return;
       }
 
@@ -253,13 +286,13 @@ Template.lemverse.onCreated(function () {
       this.handleUsersSubscribe = this.subscribe('users', levelId, () => {
         this.handleObserveUsers = Meteor.users.find({ status: { $exists: true } }).observe({
           added(user) {
-            userManager.create(user);
+            userManager.createUser(user);
           },
           changed(user, oldUser) {
-            userManager.update(user, oldUser);
+            userManager.updateUser(user, oldUser);
           },
           removed(user) {
-            userManager.remove(user);
+            userManager.removeUser(user);
             userProximitySensor.removeNearUser(user);
             lp.defer(() => peer.close(user._id, 0, 'user-disconnected'));
           },
@@ -283,7 +316,7 @@ Template.lemverse.onCreated(function () {
             if (meet.api) {
               meet.fullscreen(zone.fullscreen);
               const screenMode = zone.fullscreen ? viewportModes.small : viewportModes.splitScreen;
-              worldScene.updateViewport(screenMode);
+              updateViewport(worldScene, screenMode);
             }
           },
         });
@@ -334,7 +367,8 @@ Template.lemverse.onCreated(function () {
         levelManager.onLevelLoaded();
       });
 
-      this.hasLevelLoaded = true;
+      this.currentLevelId = levelId;
+      Session.set('menu', undefined);
       game.scene.getScene('EditorScene')?.init();
     });
   });
@@ -351,6 +385,11 @@ Template.lemverse.onCreated(function () {
     Session.set('editor', !Session.get('editor'));
   });
 
+  hotkeys('shift+r', { scope: 'all' }, event => {
+    if (event.repeat) return;
+    game.scene.getScene('WorldScene')?.resetZoom();
+  });
+
   hotkeys('l', { keyup: true, scope: scopes.player }, event => {
     if (event.repeat) return;
 
@@ -361,14 +400,16 @@ Template.lemverse.onCreated(function () {
   });
 
   hotkeys('f', { scope: scopes.player }, event => {
-    if (event.repeat || !meet.api) return;
+    if (event.repeat) return;
     event.preventDefault();
 
-    const user = Meteor.user();
-    if (!user.roles?.admin) return;
+    if (meet.api) {
+      const user = Meteor.user();
+      if (!user.roles?.admin) return;
 
-    const currentZone = zones.currentZone(user);
-    if (currentZone) zones.setFullscreen(currentZone, !currentZone.fullscreen);
+      const currentZone = zones.currentZone(user);
+      if (currentZone) zones.setFullscreen(currentZone, !currentZone.fullscreen);
+    } else userManager.follow(userProximitySensor.nearestUser(Meteor.user()));
   });
 
   hotkeys('j', { scope: scopes.player }, event => {
@@ -377,10 +418,10 @@ Template.lemverse.onCreated(function () {
 
     if (meet.api) {
       meet.close();
-      game.scene.keys.WorldScene.updateViewport(viewportModes.fullscreen);
+      updateViewport(game.scene.keys.WorldScene, viewportModes.fullscreen);
     } else {
       meet.open();
-      game.scene.keys.WorldScene.updateViewport(viewportModes.splitScreen);
+      updateViewport(game.scene.keys.WorldScene, viewportModes.splitScreen);
     }
   });
 
@@ -390,28 +431,9 @@ Template.lemverse.onCreated(function () {
     userManager.interact();
   });
 
-  const recordVoice = (event, callback) => {
-    userVoiceRecorderAbility.onSoundRecorded = callback;
-
-    if (event.type === 'keydown' && !userVoiceRecorderAbility.isRecording()) {
-      userStreams.audio(false);
-      userVoiceRecorderAbility.start();
-    } else if (event.type === 'keyup') {
-      userStreams.audio(Meteor.user()?.profile.shareAudio);
-      userVoiceRecorderAbility.stop();
-    }
-  };
-
   hotkeys('r', { keyup: true, scope: scopes.player }, event => {
     if (event.repeat) return;
-
-    recordVoice(event, chunks => {
-      const user = Meteor.user();
-      const usersInZone = zones.usersInZone(zones.currentZone(user));
-      peer.sendData(usersInZone, { type: 'audio', emitter: user._id, data: chunks }).then(() => {
-        lp.notif.success(`📣 Everyone has heard your powerful voice`);
-      }).catch(() => lp.notif.warning('❌ No one is there to hear you'));
-    });
+    userVoiceRecorderAbility.recordVoice(event.type === 'keydown', sendAudioChunksToUsersInZone);
   });
 
   hotkeys('p', { keyup: true, scope: scopes.player }, event => {
@@ -421,36 +443,9 @@ Template.lemverse.onCreated(function () {
     if (!user.roles?.admin) return;
     if (!userProximitySensor.nearUsersCount() && event.type === 'keydown') { lp.notif.error(`You need someone near you to whisper`); return; }
 
-    recordVoice(event, chunks => {
-      const { nearUsers } = userProximitySensor;
-      let targets = [...new Set(_.keys(nearUsers))];
-      targets = targets.filter(target => target !== Meteor.userId());
-      if (!targets.length) { lp.notif.error(`You need someone near you to whisper`); return; }
-
-      lp.notif.success('✉️ Your voice message has been sent!');
-
-      // Upload
-      const blob = userVoiceRecorderAbility.generateBlob(chunks);
-      const file = new File([blob], `audio-record.${userVoiceRecorderAbility.getExtension()}`, { type: blob.type });
-      const uploadInstance = Files.insert({
-        file,
-        chunkSize: 'dynamic',
-        meta: { source: 'voice-recorder', targets },
-      }, false);
-
-      uploadInstance.on('end', error => {
-        if (error) lp.notif.error(`Error during upload: ${error.reason}`);
-      });
-
-      uploadInstance.start();
-    });
+    userVoiceRecorderAbility.recordVoice(event.type === 'keydown', sendAudioChunksToNearUsers);
   });
 
-  hotkeys('shift+1', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
-  hotkeys('shift+2', { scope: scopes.player }, () => toggleUserProperty('shareVideo'));
-  hotkeys('shift+3', { scope: scopes.player }, () => toggleUserProperty('shareScreen'));
-  hotkeys('shift+4', { scope: scopes.player }, () => toggleModal('settingsMain'));
-  hotkeys('shift+5', { scope: scopes.player }, () => toggleModal('notifications'));
   hotkeys('tab', { scope: scopes.player }, e => {
     e.preventDefault();
     e.stopPropagation();
@@ -475,11 +470,8 @@ Template.lemverse.onDestroyed(function () {
   hotkeys.unbind('j', scopes.player);
   hotkeys.unbind('l', scopes.player);
   hotkeys.unbind('r', scopes.player);
+  hotkeys.unbind('shift+r', scopes.player);
   hotkeys.unbind('tab', scopes.player);
-  hotkeys.unbind('shift+1', scopes.player);
-  hotkeys.unbind('shift+2', scopes.player);
-  hotkeys.unbind('shift+3', scopes.player);
-  hotkeys.unbind('shift+4', scopes.player);
 });
 
 Template.lemverse.helpers({
@@ -493,27 +485,27 @@ Template.lemverse.helpers({
 });
 
 Template.lemverse.events({
-  'click .button.audio'(e) {
+  'mouseup .button.audio'(e) {
     e.preventDefault();
     e.stopPropagation();
     toggleUserProperty('shareAudio');
   },
-  'click .button.video'(e) {
+  'mouseup .button.video'(e) {
     e.preventDefault();
     e.stopPropagation();
     toggleUserProperty('shareVideo');
   },
-  'click .button.screen'(e) {
+  'mouseup .button.screen'(e) {
     e.preventDefault();
     e.stopPropagation();
     toggleUserProperty('shareScreen');
   },
-  'click .button.settings'(e) {
+  'mouseup .button.settings'(e) {
     e.preventDefault();
     e.stopPropagation();
     toggleModal('settingsMain');
   },
-  'click .button.js-notifications'(e) {
+  'mouseup .button.js-notifications'(e) {
     e.preventDefault();
     e.stopPropagation();
     toggleModal('notifications');

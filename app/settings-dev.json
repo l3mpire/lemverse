@@ -31,20 +31,117 @@
 
     "character": {
       "walkSpeed": 180,
-      "runSpeed": 720
+      "runSpeed": 720,
+      "sensorNearDistance": 75,
+      "sensorFarDistance": 85
     },
 
-    "characterNames": ["Basic", "Ghost"],
+    "assets": {
+      "character": {
+        "frameWidth": 16,
+        "frameHeight": 32,
+        "formats": {
+          "w-384": {
+            "animations": {
+              "run": {
+                "up": {
+                  "frames": [54, 55, 56, 57, 58, 59],
+                  "frameRate": 10,
+                  "repeat": -1
+                },
+                "down": {
+                  "frames": [66, 67, 68, 69, 70, 71],
+                  "frameRate": 10,
+                  "repeat": -1
+                },
+                "left": {
+                  "frames": [60, 61, 62, 63, 64, 65],
+                  "frameRate": 10,
+                  "repeat": -1
+                },
+                "right": {
+                  "frames": [48, 49, 50, 51, 52, 53],
+                  "frameRate": 10,
+                  "repeat": -1
+                }
+              }
+            }
+          },
+          "w-927": {
+            "animations": {
+              "run": {
+                "up": {
+                  "frames": [120, 121, 122, 123, 124, 125],
+                  "frameRate": 10,
+                  "repeat": -1
+                },
+                "down": {
+                  "frames": [132, 133, 134, 135, 136, 137],
+                  "frameRate": 10,
+                  "repeat": -1
+                },
+                "left": {
+                  "frames": [126, 127, 128, 129, 130, 131],
+                  "frameRate": 10,
+                  "repeat": -1
+                },
+                "right": {
+                  "frames": [114, 115, 116, 117, 118, 119],
+                  "frameRate": 10,
+                  "repeat": -1
+                }
+              }
+            }
+          },
+          "w-896": {
+            "animations": {
+              "run": {
+                "up": {
+                  "frames": [118, 119, 120, 121, 122, 123],
+                  "frameRate": 10,
+                  "repeat": -1
+                },
+                "down": {
+                  "frames": [130, 131, 132, 133, 134, 135],
+                  "frameRate": 10,
+                  "repeat": -1
+                },
+                "left": {
+                  "frames": [124, 125, 126, 127, 128, 129],
+                  "frameRate": 10,
+                  "repeat": -1
+                },
+                "right": {
+                  "frames": [112, 113, 114, 115, 116, 117],
+                  "frameRate": 10,
+                  "repeat": -1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
 
     "skins": {
-      "guest": "Ghost",
-      "default": "Basic"
+      "guest": {},
+      "default": {}
     },
 
-    "templateLevelId": "lvl_iLOVEaLOTlemverse"
+    "templateLevelId": "lvl_iLOVEaLOTlemverse",
+
+    "tos": {
+      "terms": "",
+      "cookies": "",
+      "privacy": ""
+    }
   },
 
   "defaultLevelId": "lvl_iLOVEaLOTlemverse",
+
+  "email": {
+    "from": "The lembot <contact@m.lemverse.com>"
+  },
 
   "peer": {
     "path": "/peer",

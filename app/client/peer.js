@@ -10,6 +10,11 @@ peer = {
   remoteStreamsByUsers: new ReactiveVar([]),
   sensorEnabled: true,
   enabled: true,
+  lockedCalls: {},
+  reconnect: {
+    autoReconnectOnClose: true,
+    delayBetweenAttempt: 250,
+  },
 
   init() {
     userProximitySensor.onProximityEnded = this.onProximityEnded.bind(this);
@@ -28,6 +33,7 @@ peer = {
   },
 
   closeAll() {
+    this.unlockCalls();
     if (Meteor.user().options?.debug) log('peer.closeAll: start');
     _.each(this.calls, call => this.close(call.peer, Meteor.settings.public.peer.delayBeforeClosingCall, 'close-all'));
   },
@@ -71,14 +77,17 @@ peer = {
     streamsByUsers = streamsByUsers.filter(usr => usr.main.srcObject !== undefined || usr.screen.srcObject !== undefined || usr.waitingCallAnswer);
     this.remoteStreamsByUsers.set(streamsByUsers);
 
-    if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
+    if (userProximitySensor.nearUsersCount() === 0) {
+      userStreams.destroyStream(streamTypes.main);
+      userStreams.hideUserPanel();
+    }
 
     $(`.js-video-${userId}-user`).remove();
 
     if (!activeCallsCount) return;
 
     if (debug) log('close call: call closed successfully', userId);
-    sounds.play('webrtc-out');
+    sounds.play('webrtc-out.mp3', 0.2);
   },
 
   close(userId, timeout = 0, origin = null) {
@@ -128,7 +137,7 @@ peer = {
     const { shareAudio, shareScreen, shareVideo } = Meteor.user().profile;
 
     if (!this.calls[`${user._id}-${streamTypes.main}`] && !this.calls[`${user._id}-${streamTypes.screen}`]) {
-      sounds.play('webrtc-in');
+      sounds.play('webrtc-in.mp3', 0.2);
       if (userProximitySensor.nearUsersCount() === 1) Meteor.call('addUserInterruption');
     }
 
@@ -184,14 +193,23 @@ peer = {
   onProximityStarted(user) {
     if (!this.sensorEnabled) return;
 
+    const userZone = zones.currentZone(user);
+    if (userZone?.disableCommunications) {
+      lp.notif.warning(`${user.profile.name} isn't available at the moment.<br /> Leave him a voice message by pressing "P"`);
+      return;
+    }
+
     this.cancelCallClose(user._id);
     this.cancelCallOpening(user._id);
 
     if (meet.api || Meteor.user()?.profile.guest) return;
+
+    userStreams.showUserPanel();
     this.callsOpening[user._id] = setTimeout(() => this.createPeerCalls(user), Meteor.settings.public.peer.callDelay);
   },
 
   onProximityEnded(user) {
+    if (this.lockedCalls[user._id]) return;
     this.close(user._id, Meteor.settings.public.peer.delayBeforeClosingCall, 'proximity-ended');
   },
 
@@ -209,14 +227,14 @@ peer = {
     delete this.callsOpening[userId];
   },
 
-  sendData(users, data) {
-    users = users.filter(Boolean); // remove falsy values
-    if (!users.length) return Promise.reject(new Error(`no users targeted`));
+  sendData(userIds, data) {
+    userIds = userIds.filter(Boolean); // remove falsy values
+    if (!userIds.length) return Promise.reject(new Error(`no users targeted`));
 
     return this.getPeer().then(peer => {
-      users.forEach(user => {
+      userIds.forEach(userId => {
         try {
-          const connection = peer.connect(user._id);
+          const connection = peer.connect(userId, { serialization: 'json' });
 
           connection.on('open', () => {
             connection.send(data);
@@ -225,11 +243,18 @@ peer = {
             setTimeout(() => connection.close(), 500);
           });
 
-          connection.on('error', () => lp.notif.warning(`${user.profile.name || user._id} was unavailable`));
-        } catch (err) { lp.notif.error(`an error has occured during connection with ${user.profile.name || user._id}`); }
+          connection.on('error', () => {
+            const user = Meteor.users.findOne(userId);
+            if (user) lp.notif.warning(`${user.profile.name} was unavailable`);
+            else lp.notif.warning(`${userId} is offline`);
+          });
+        } catch (err) {
+          const user = Meteor.users.findOne(userId);
+          lp.notif.error(`An error has occured during connection with ${user?.profile.name || userId}`);
+        }
       });
 
-      return users.length;
+      return userIds.length;
     });
   },
 
@@ -281,6 +306,9 @@ peer = {
     const remoteUser = Meteor.users.findOne({ _id: remoteUserId });
     if (!remoteUser) { log(`answer call: user not found "${remoteUserId}"`); return false; }
 
+    // Send global notification
+    sendEvent('proximity-started', { user: remoteUser });
+
     // IMPORTANT :
     // It looks like Meteor update locale collection when user focus the tab (chrome put asleep the tab maybe)
     // So, the locale position is probably the old-one, blocking the logic below
@@ -321,7 +349,7 @@ peer = {
 
   getPeer() {
     return new Promise(resolve => {
-      if (this.isPeerValid(this.peerInstance)) return resolve(this.peerInstance);
+      if (this.isPeerValid(this.peerInstance)) { resolve(this.peerInstance); return; }
       const debug = Meteor.user()?.options?.debug;
 
       if (this.peerInstance?.disconnected) {
@@ -332,16 +360,31 @@ peer = {
         } catch (err) { reconnected = false; }
 
         // peerjs reconnect doesn't offer a promise or callback so we have to wait a certain time until the reconnection is done
-        if (reconnected) return waitFor(() => this.isPeerValid(this.peerInstance), 5, 250).then(() => resolve(this.peerInstance));
+        if (reconnected) {
+          waitFor(() => this.isPeerValid(this.peerInstance), 5, 250)
+            .then(() => resolve(this.peerInstance))
+            .catch(() => {
+              this.destroy();
+              lp.notif.error('Unable to reconnect to the peer server');
+            });
+
+          return;
+        }
       }
 
-      if (!this.peerInstance && this.peerLoading) return waitFor(() => this.peerInstance !== undefined, 5, 250).then(() => resolve(this.peerInstance));
+      if (!this.peerInstance && this.peerLoading) {
+        waitFor(() => this.peerInstance !== undefined, 5, 250)
+          .then(() => resolve(this.peerInstance))
+          .catch(() => lp.notif.error('Unable to get a valid peer instance'));
+
+        return;
+      }
 
       if (debug) log('Peer invalid, creating new peer…');
       this.peerInstance = undefined;
       this.peerLoading = false;
 
-      return this.createMyPeer().then(resolve);
+      this.createMyPeer().then(resolve).catch(error => lp.notif.error(error.message));
     });
   },
 
@@ -369,21 +412,34 @@ peer = {
         if (skipConfig) delete peerConfig.config;
         if (this.peerInstance) this.destroy();
         this.peerInstance = new Peer(Meteor.userId(), peerConfig);
+        this.peerLoading = false;
 
         if (debug) log(`create peer: created (${this.peerInstance.id})`);
 
-        this.peerInstance.on('connection', connection => {
-          connection.on('data', dataReceived => {
-            if (dataReceived.type === 'audio') userVoiceRecorderAbility.playSound(dataReceived.data);
-          });
-        });
+        this.peerInstance.on('connection', connection => connection.on('data', userManager.onPeerDataReceived));
 
-        this.peerInstance.on('close', () => { log('peer closed and destroyed'); this.peerInstance = undefined; });
+        this.peerInstance.on('close', () => {
+          log('peer closed and destroyed');
+          this.peerInstance = undefined;
+
+          if (this.reconnect.autoReconnectOnClose) {
+            window.setTimeout(() => {
+              log('auto-reconnecting peer…');
+              this.createMyPeer()
+                .then(() => log('peer reconnected'))
+                .catch(error => log(`unable to automatically reconnect peer: ${error.message}`));
+            }, this.reconnect.delayBetweenAttempt);
+          }
+        });
 
         this.peerInstance.on('error', peerErr => {
           if (['server-error', 'network'].includes(peerErr.type) && this.peerInstance.disconnected) this.peerInstance.reconnect();
           else if (peerErr.type === 'unavailable-id') lp.notif.error(`It seems that lemverse is already open in another tab (unavailable-id)`);
-          else lp.notif.error(`Peer ${peerErr} (${peerErr.type})`);
+          else if (peerErr.type === 'peer-unavailable') {
+            const userId = peerErr.message.split(' ').pop();
+            const user = Meteor.users.findOne(userId);
+            lp.notif.warning(`User ${user.profile.name || userId} was unavailable`);
+          } else lp.notif.error(`Peer ${peerErr} (${peerErr.type})`);
 
           log(`peer error ${peerErr.type}`, peerErr);
         });
@@ -398,17 +454,37 @@ peer = {
           this.answerCall(remoteCall);
         });
 
-        window.removeEventListener('beforeunload', this.destroy.bind(this));
-        window.addEventListener('beforeunload', this.destroy.bind(this));
-        this.peerLoading = false;
-
         return resolve(this.peerInstance);
       });
     });
   },
 
+  lockCall(userId, notify = false) {
+    if (notify && !this.lockedCalls[userId]) this.sendData([userId], { type: 'followed', emitter: Meteor.userId() });
+    this.lockedCalls[userId] = true;
+  },
+
+  unlockCall(userId, notify = false) {
+    if (notify && this.lockedCalls[userId]) this.sendData([userId], { type: 'unfollowed', emitter: Meteor.userId() });
+    delete this.lockedCalls[userId];
+  },
+
+  unlockCalls() {
+    _.each(this.lockedCalls, (value, userId) => this.unlockCall(userId, true));
+  },
+
+  hasActiveStreams() {
+    return this.remoteStreamsByUsers.get().length;
+  },
+
   isPeerValid(peer) {
     return peer?.id && !peer.disconnected;
+  },
+
+  enableSensor(value) {
+    if (value === this.sensorEnabled) return;
+    this.sensorEnabled = value;
+    if (this.sensorEnabled) userProximitySensor.callProximityStartedForAllNearUsers();
   },
 
   isEnabled() {

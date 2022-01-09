@@ -1,0 +1,176 @@
+@import "../_variables";
+
+$menu-background-color: #2b2d3d;
+$menu-background-opacity: 0.8;
+$label-background-color: #2b2d3d;
+$label-text-color: white;
+$item-background-color: #2b2d3de6;
+$item-pressed-color: #02a3ff;
+
+.radial-menu-container {
+  position: absolute;
+  z-index: 9999;
+  pointer-events: none;
+
+  .label {
+    position: absolute;
+    bottom: -45px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-weight: bold;
+    font-size: 11pt;
+    padding: 3px 10px;
+    border-radius: 5px;
+    background-color: $label-background-color;
+    color: $label-text-color;
+    opacity: 0;
+
+    &.show {
+      opacity: 1;
+    }
+  }
+}
+
+.radial-menu {
+  width: 195px;
+  height: 195px;
+  transform: scale(0.0) translate(-50%, -65%);
+  transition: all .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-origin: top left;
+  opacity: 0;
+  pointer-events: none;
+
+  &.show {
+    transform: scale(1.0) translate(-50%, -65%);
+    opacity: 1;
+    pointer-events: all;
+
+    ul {
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  &.show-shortcuts {
+    li:before {
+      opacity: 1;
+    }
+  }
+
+  .background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    z-index: 1;
+    opacity: $menu-background-opacity;
+    background: -webkit-radial-gradient(50% 50%, circle, transparent 35%, $menu-background-color 35%);
+  }
+
+  ul {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    list-style-type: none;
+    transform-origin: center;
+    padding: 0;
+    margin: 0;
+    width: 1px;
+    height: 1px;
+    border-radius: 50%;
+    z-index: 2;
+
+    li {
+      cursor: pointer;
+      box-sizing: border-box;
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      width: 45px;
+      height: 45px;
+      border-radius: 50px;
+      margin: 0;
+      color: white;
+      transform: translate(-50%, -50%);
+
+      &:before {
+        content: attr(data-shortcut);
+        position: relative;
+        z-index: 2;
+        padding: 1px 5px;
+        font-size: 8pt;
+        top: 25px;
+        right: -26px;
+        background-color: white;
+        color: black;
+        border: 1px solid black;
+        opacity: 0;
+        transition: opacity 0.1s linear;
+        border-radius: 50%;
+      }
+
+      &.off {
+        button {
+          background-color: #E58273;
+
+          &:hover {
+            background-color: darken(#E58273, 5%);
+          }
+        }
+
+        &:after {
+          content: '❌';
+          z-index: 1000;
+          position: absolute;
+          color: hsl(8deg, 70%, 47%);
+          font-weight: bold;
+          top: 50%;
+          left: 50%;
+          transform: translate(-43%, -51%);
+          font-size: 12pt;
+          pointer-events: none;
+        }
+      }
+
+      &.on {
+        button {
+          background-color: #00B38A;
+
+          &:hover {
+            background-color: darken(#00B38A, 5%);
+          }
+        }
+      }
+
+      button {
+        border: 0;
+        background: none;
+        cursor: pointer;
+        width: 90%;
+        height: 90%;
+        border-radius: 50%;
+        background-color: $item-background-color;
+        transition: background-color 0.1s linear;
+
+        &:hover {
+          background-color: #A9AABC;
+        }
+
+        &:active {
+          background-color: $item-pressed-color;
+        }
+      }
+
+      >* {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 15pt;
+      }
+    }
+  }
+}

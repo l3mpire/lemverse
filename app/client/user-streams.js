@@ -6,7 +6,7 @@ const screenShareDefaultConfig = {
 const videoDefaultConfig = {
   width: { ideal: 320 },
   height: { ideal: 240 },
-  frameRate: { max: 20 },
+  frameRate: { ideal: 20 },
 };
 
 streamTypes = Object.freeze({
@@ -35,7 +35,7 @@ userStreams = {
 
   video(enabled) {
     const { instance: mainStream } = this.streams.main;
-    this.getVideoElement().parentElement.classList.toggle('active', mainStream && enabled);
+    this.getVideoElement().parentElement.classList.toggle('active-video', mainStream && enabled);
     if (mainStream?.getVideoTracks().length) _.each(mainStream.getVideoTracks(), track => { track.enabled = enabled; });
   },
 
@@ -69,13 +69,11 @@ userStreams = {
     if (debug) log('destroy stream: start', stream.id);
     this.stopTracks(stream);
 
-    const userVideo = this.getVideoElement();
-    destroyVideoSource(userVideo);
+    destroyVideoSource(this.getVideoElement());
 
     if (stream === this.streams.main.instance) {
       this.streams.main.instance = undefined;
-      userVideo.parentElement.classList.toggle('active', false);
-      userVideo.parentElement.style.backgroundImage = '';
+      this.hideUserPanel();
     } else if (stream === this.streams.screen.instance) this.streams.screen.instance = undefined;
 
     if (debug) log('destroy stream: done');
@@ -84,7 +82,7 @@ userStreams = {
   requestUserMedia(constraints = {}) {
     if (constraints.forceNew) this.destroyStream(streamTypes.main);
     const { instance: currentStream, loading } = this.streams.main;
-    if (currentStream) return new Promise(resolve => resolve(currentStream));
+    if (currentStream) return new Promise(resolve => { resolve(currentStream); });
     if (!currentStream && loading) return waitFor(() => this.streams.main.instance !== undefined, 15, 500).then(() => this.streams.main.instance);
 
     this.streams.main.loading = true;
@@ -134,7 +132,7 @@ userStreams = {
 
   requestDisplayMedia() {
     const { instance: currentStream, loading } = this.streams.screen;
-    if (currentStream) return new Promise(resolve => resolve(currentStream));
+    if (currentStream) return new Promise(resolve => { resolve(currentStream); });
     if (!currentStream && loading) return waitFor(() => this.streams.screen.instance !== undefined, 20, 1000).then(() => this.streams.screen.instance);
 
     this.streams.screen.loading = true;
@@ -167,7 +165,7 @@ userStreams = {
           // sync video element with the stream
           const videoElement = this.getVideoElement();
           if (stream.id !== videoElement.srcObject?.id) videoElement.srcObject = stream;
-          videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
+          this.showUserPanel();
 
           // ensures tracks are up-to-date
           this.audio(shareAudio);
@@ -195,6 +193,9 @@ userStreams = {
 
         videoElm.autoplay = true;
         videoElm.srcObject = stream;
+
+        // set framerate after stream creation due to a deprecated constraints issue with the frameRate attribute
+        this.applyConstraints(streamTypes.screen, 'video', this.getStreamConstraints(streamTypes.screen));
 
         return stream;
       });
@@ -231,7 +232,22 @@ userStreams = {
     return this.streams.main.domElement;
   },
 
+  showUserPanel() {
+    const videoElement = this.getVideoElement();
+    if (!videoElement) return;
+    videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
+    videoElement.parentElement.classList.toggle('active', true);
+  },
+
+  hideUserPanel() {
+    const videoElement = this.getVideoElement();
+    if (!videoElement) return;
+    videoElement.parentElement.classList.toggle('active', false);
+    videoElement.parentElement.style.backgroundImage = '';
+  },
+
   refreshVideoElementAvatar(videoElement) {
+    if (!videoElement) return;
     videoElement.parentElement.dataset.avatar = getRandomAvatarForUser(Meteor.user());
     if (this.streams.main.instance) videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
   },

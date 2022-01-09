@@ -1,8 +1,8 @@
 const Phaser = require('phaser');
 
+const userInterpolationInterval = 200;
 const defaultCharacterDirection = 'down';
 const defaultUserMediaColorError = '0xd21404';
-const characterNameOffset = { x: 0, y: -85 };
 const characterSpritesOrigin = { x: 0.5, y: 1 };
 const characterInteractionDistance = { x: 32, y: 32 };
 const characterFootOffset = { x: -20, y: -10 };
@@ -13,6 +13,16 @@ const characterInteractionConfiguration = {
   cursor: 'pointer',
 };
 const unavailablePlayerColor = 0x888888;
+const characterAnimations = Object.freeze({
+  idle: 'idle',
+  run: 'run',
+});
+const timeBetweenReactionSound = 500;
+
+const messageReceived = {
+  duration: 10000,
+  style: 'tooltip with-arrow fade-in',
+};
 
 charactersParts = Object.freeze({
   body: 0,
@@ -32,69 +42,66 @@ savePlayer = player => {
   });
 };
 
-const throttledSavePlayer = throttle(savePlayer, 100, { leading: false });
+const throttledSavePlayer = throttle(savePlayer, userInterpolationInterval, { leading: false });
 
 userManager = {
-  characterNamesObjects: {},
+  entityFollowed: undefined,
+  inputVector: new Phaser.Math.Vector2(),
   player: undefined,
   playerVelocity: new Phaser.Math.Vector2(),
   playerWasMoving: false,
   players: {},
   scene: undefined,
+  canPlayReactionSound: true,
 
   init(scene) {
-    this.characterNamesObjects = {};
+    this.entityFollowed = undefined;
+    this.inputVector = new Phaser.Math.Vector2();
     this.player = undefined;
+    this.playerVelocity = new Phaser.Math.Vector2();
     this.players = {};
     this.scene = scene;
-
-    scene.input.keyboard.on('keydown-SHIFT', () => { peer.sensorEnabled = false; });
-    scene.input.keyboard.on('keyup-SHIFT', () => {
-      peer.sensorEnabled = true;
-      userProximitySensor.callProximityStartedForAllNearUsers();
-    });
   },
 
   destroy() {
     this.onSleep();
-    _.each(this.players, player => {
-      clearInterval(player.reactionHandler);
-      delete player.reactionHandler;
-    });
-
     this.player = undefined;
     this.players = {};
-    this.characterNamesObjects = {};
   },
 
   onSleep() {
     throttledSavePlayer.cancel();
   },
 
-  rename(name) {
-    this.updateUserName(this.player.userId, name);
+  rename(name, color) {
+    game.scene.getScene('UIScene')?.updateUserName(this.player.userId, name, color);
     if (meet.api) meet.api.executeCommand('displayName', name);
   },
 
-  create(user) {
-    if (this.players[user._id]) return null;
+  computeGuestSkin(user) {
+    if (!user.profile.guest) return user;
 
-    if (user.profile.guest) {
-      if (_.isObject(Meteor.settings.public.skins.guest)) {
-        user.profile = {
-          ...user.profile,
-          ...Meteor.settings.public.skins.guest,
-        };
-      }
-
-      const currentLevel = Levels.findOne({ _id: user.profile.levelId });
-      if (currentLevel?.skins?.guest) {
-        user.profile = {
-          ...user.profile,
-          ...currentLevel.skins?.guest,
-        };
-      }
+    if (_.isObject(Meteor.settings.public.skins.guest)) {
+      user.profile = {
+        ...user.profile,
+        ...Meteor.settings.public.skins.guest,
+      };
     }
+
+    const currentLevel = Levels.findOne({ _id: user.profile.levelId });
+    if (currentLevel?.skins?.guest) {
+      user.profile = {
+        ...user.profile,
+        ...currentLevel.skins?.guest,
+      };
+    }
+
+    return user;
+  },
+
+  createUser(user) {
+    if (this.players[user._id]) return null;
+    if (user.profile.guest) user = this.computeGuestSkin(user);
 
     const { x, y, shareAudio, guest, body, direction } = user.profile;
     this.players[user._id] = this.scene.add.container(x, y);
@@ -106,11 +113,18 @@ userManager = {
 
     if (!user.profile.guest) {
       playerParts.setInteractive(characterInteractionConfiguration);
-      playerParts.on('pointerover', () => this.setTint(this.players[user._id], 0xFFAAFF));
+      playerParts.on('pointerover', () => {
+        if (Session.get('editor')) return;
+
+        this.setTint(this.players[user._id], 0xFFAAFF);
+        Session.set('menu', { userId: user._id });
+        Session.set('menu-position', relativePositionToCamera(this.players[user._id], this.scene.cameras.main));
+      });
+
       playerParts.on('pointerout', () => this.setTintFromState(this.players[user._id]));
       playerParts.on('pointerup', () => {
-        if (isModalOpen() || Session.get('editor')) return;
-        Session.set('modal', { template: 'profile', userId: user._id });
+        if (Session.get('menu')) Session.set('menu', undefined);
+        else Session.set('menu', { userId: user._id });
       });
     }
 
@@ -121,7 +135,7 @@ userManager = {
     shadow.setOrigin(characterSpritesOrigin.x, characterSpritesOrigin.y);
     this.players[user._id].add(shadow);
 
-    const bodyPlayer = this.scene.add.sprite(0, 0, body || guest ? Meteor.settings.public.skins.guest : Meteor.settings.public.skins.default);
+    const bodyPlayer = this.scene.add.sprite(0, 0, body || 'missing_texture');
     bodyPlayer.setOrigin(characterSpritesOrigin.x, characterSpritesOrigin.y);
     bodyPlayer.name = 'body';
     playerParts.add(bodyPlayer);
@@ -148,26 +162,36 @@ userManager = {
 
     this.players[user._id].setDepth(y);
 
-    this.update(user);
+    this.updateUser(user);
 
     return this.players[user._id];
   },
 
-  update(user, oldUser) {
+  playReaction(player, reaction) {
+    clearInterval(player.reactionHandler);
+    if (meet.api && this.canPlayReactionSound && sounds.reactionsSounds[reaction]) {
+      sounds.play(sounds.reactionsSounds[reaction]);
+
+      // avoid sound spamming
+      this.canPlayReactionSound = false;
+      setTimeout(() => { this.canPlayReactionSound = true; }, timeBetweenReactionSound);
+    }
+
+    const animation = reaction === '❤️' ? 'zigzag' : 'linearUpScaleDown';
+    const UIScene = game.scene.getScene('UIScene');
+    UIScene.spawnReaction(player, reaction, animation, { randomOffset: 10 });
+    player.reactionHandler = setInterval(() => UIScene.spawnReaction(player, reaction, animation, { randomOffset: 10 }), 250);
+  },
+
+  updateUser(user, oldUser) {
     const isMe = user._id === Meteor.userId();
     const player = this.players[user._id];
     if (!player) return;
-    const { x, y, reaction, shareAudio, guest, userMediaError, name } = user.profile;
+    const { x, y, reaction, shareAudio, guest, userMediaError, name, nameColor } = user.profile;
 
     // show reactions
-    if (reaction && !player.reactionHandler) {
-      const animation = reaction === '❤️' ? 'zigzag' : 'linearUpScaleDown';
-      this.spawnReaction(player, reaction, animation, { randomOffset: 10 });
-      player.reactionHandler = setInterval(() => this.spawnReaction(player, reaction, animation, { randomOffset: 10 }), 250);
-    } else if (!reaction && player.reactionHandler) {
-      clearInterval(player.reactionHandler);
-      delete player.reactionHandler;
-    }
+    if (reaction) this.playReaction(player, reaction);
+    else clearInterval(player.reactionHandler);
 
     // create missing character body parts or update it
     const characterBodyContainer = player.getByName('body');
@@ -192,9 +216,9 @@ userManager = {
       if (!user.profile[part]) characterBodyContainer?.getByName(part)?.destroy();
     });
 
-    if (hasUpdatedSkin) {
+    if (hasUpdatedSkin || user.profile.direction !== oldUser?.profile.direction) {
       delete player.lastDirection;
-      this.updateAnimation(player);
+      this.updateAnimation(characterAnimations.run, player);
       this.pauseAnimation(player, true, true);
     }
 
@@ -205,7 +229,7 @@ userManager = {
     }
     characterBodyContainer.alpha = guest ? 0.7 : 1.0;
 
-    if (!guest && name !== oldUser?.profile?.name) this.updateUserName(user._id, name);
+    if (!guest && name !== oldUser?.profile?.name) game.scene.getScene('UIScene')?.updateUserName(user._id, name, nameColor);
 
     let hasMoved = false;
     if (oldUser) {
@@ -242,7 +266,7 @@ userManager = {
         player.lwOriginDate = moment();
         player.lwTargetX = user.profile.x;
         player.lwTargetY = user.profile.y;
-        player.lwTargetDate = moment().add(100, 'milliseconds');
+        player.lwTargetDate = moment().add(userInterpolationInterval, 'milliseconds');
         if (shouldCheckDistance) userProximitySensor.checkDistance(mainUser, user);
       }
 
@@ -252,14 +276,14 @@ userManager = {
     player.getByName('stateIndicator').visible = !guest && !shareAudio;
   },
 
-  remove(user) {
-    if (!this.players[user._id]) return;
+  removeUser(user) {
+    if (!user || !this.players[user._id]) return;
 
     clearInterval(this.players[user._id].reactionHandler);
     delete this.players[user._id].reactionHandler;
 
     this.players[user._id].destroy();
-    this.destroyUserName(user._id);
+    game.scene.getScene('UIScene').destroyUserName(user._id);
 
     if (user._id === Meteor.userId()) this.unsetMainPlayer();
 
@@ -281,34 +305,18 @@ userManager = {
     });
   },
 
-  updateAnimation(player, direction) {
-    const user = Meteor.users.findOne(player.userId);
+  updateAnimation(animation, player, direction) {
+    let user = Meteor.users.findOne(player.userId);
     if (!user) return;
     direction = direction ?? (user.profile.direction || defaultCharacterDirection);
     if (player.lastDirection === direction) return;
     player.lastDirection = direction;
-
-    if (user.profile.guest) {
-      if (_.isObject(Meteor.settings.public.skins.guest)) {
-        user.profile = {
-          ...user.profile,
-          ...Meteor.settings.public.skins.guest,
-        };
-      }
-
-      const currentLevel = Levels.findOne({ _id: user.profile.levelId });
-      if (currentLevel?.skins?.guest) {
-        user.profile = {
-          ...user.profile,
-          ...currentLevel.skins?.guest,
-        };
-      }
-    }
+    if (user.profile.guest) user = this.computeGuestSkin(user);
 
     const playerBodyParts = player.getByName('body');
     playerBodyParts.list.forEach(bodyPart => {
       const element = user.profile[bodyPart.name];
-      if (element) bodyPart.anims.play(`${element}${direction}`, true);
+      if (element) bodyPart.anims.play(`${animation}-${direction}-${element}`, true);
     });
   },
 
@@ -368,30 +376,10 @@ userManager = {
     return userStateIndicatorContainer;
   },
 
-  destroyUserName(userId) {
-    const nameObject = this.characterNamesObjects[userId];
-    if (!nameObject) { return; }
-    nameObject?.destroy();
-
-    this.characterNamesObjects[userId] = undefined;
-  },
-
-  spawnReaction(player, content, animation, options) {
-    const ReactionDiff = animation === 'zigzag' ? 10 : 0;
-    const positionX = player.x - ReactionDiff + _.random(-options.randomOffset, options.randomOffset);
-    const positionY = player.y + characterNameOffset.y + _.random(-options.randomOffset, options.randomOffset);
-    const reaction = this.scene.add.text(positionX, positionY, content, { font: '32px Sans Open' }).setDepth(99997).setOrigin(0.5, 1);
-
-    this.scene.tweens.add({
-      targets: reaction,
-      ...reactionsAnimations[animation](positionX, positionY, ReactionDiff),
-      onComplete: () => reaction.destroy(),
-    });
-  },
-
   interpolatePlayerPositions() {
     const currentUser = Meteor.user();
 
+    const now = moment();
     _.each(this.players, (player, userId) => {
       if (userId === currentUser?._id) return;
 
@@ -401,121 +389,110 @@ userManager = {
       }
 
       this.pauseAnimation(player, false);
-      this.updateAnimation(player);
+      this.updateAnimation(characterAnimations.run, player);
 
-      if (player.lwTargetDate <= moment()) {
+      if (player.lwTargetDate <= now) {
         player.x = player.lwTargetX;
         player.y = player.lwTargetY;
+        player.setDepth(player.y);
         delete player.lwTargetDate;
         return;
       }
 
-      const elapsedTime = ((moment() - player.lwOriginDate) / (player.lwTargetDate - player.lwOriginDate));
+      const elapsedTime = ((now - player.lwOriginDate) / (player.lwTargetDate - player.lwOriginDate));
       player.x = player.lwOriginX + (player.lwTargetX - player.lwOriginX) * elapsedTime;
       player.y = player.lwOriginY + (player.lwTargetY - player.lwOriginY) * elapsedTime;
       player.setDepth(player.y);
     });
   },
 
-  handleUserInputs(keys, nippleMoving, nippleData) {
-    if (!this.player || isModalOpen()) return;
+  update() {
+    this.interpolatePlayerPositions();
+  },
 
+  directionFromVector(vector) {
+    if (Math.abs(vector.x) > Math.abs(vector.y)) {
+      if (vector.x <= -1) return 'left';
+      else if (vector.x >= 1) return 'right';
+    }
+
+    if (vector.y <= -1) return 'up';
+    else if (vector.y >= 1) return 'down';
+
+    return undefined;
+  },
+
+  handleUserInputs(keys, nippleMoving, nippleData) {
+    this.inputVector.set(0, 0);
+    if (isModalOpen()) return false;
+
+    if (nippleMoving) this.inputVector.set(nippleData.vector.x, -nippleData.vector.y);
+    else {
+      // Horizontal movement
+      if (keys.left.isDown || keys.q.isDown || keys.a.isDown) this.inputVector.x = -1;
+      else if (keys.right.isDown || keys.d.isDown) this.inputVector.x = 1;
+
+      // Vertical movement
+      if (keys.up.isDown || keys.z.isDown || keys.w.isDown) this.inputVector.y = -1;
+      else if (keys.down.isDown || keys.s.isDown) this.inputVector.y = 1;
+    }
+
+    return this.inputVector.x !== 0 || this.inputVector.y !== 0;
+  },
+
+  postUpdate(time, delta) {
+    if (!this.player) return;
+
+    // todo: remove this old code
     const user = Meteor.user();
     if (user.profile.freeze) {
       this.pauseAnimation(this.player, true);
+      this.player.body.setVelocity(0, 0);
+
       return;
     }
 
-    const maxSpeed = keys.shift.isDown ? Meteor.settings.public.character.runSpeed : Meteor.settings.public.character.walkSpeed;
+    const { keys, nippleMoving, nippleData } = this.scene;
+    let speed = keys.shift.isDown ? Meteor.settings.public.character.runSpeed : Meteor.settings.public.character.walkSpeed;
+
     this.playerVelocity.set(0, 0);
-    let direction;
+    const inputPressed = this.handleUserInputs(keys, nippleMoving, nippleData);
 
-    if (nippleMoving) {
-      this.playerVelocity.x = nippleData.vector.x;
-      this.playerVelocity.y = -nippleData.vector.y;
-      direction = nippleData?.direction?.angle;
-    } else {
-      // Horizontal movement
-      if (keys.left.isDown || keys.q.isDown || keys.a.isDown) {
-        this.playerVelocity.x = -1;
-        direction = 'left';
-      } else if (keys.right.isDown || keys.d.isDown) {
-        this.playerVelocity.x = 1;
-        direction = 'right';
-      }
+    if (inputPressed) {
+      this.playerVelocity.set(this.inputVector.x, this.inputVector.y);
+      this.follow(undefined); // interrupts the follow action
+      Session.set('menu', false);
+    } else if (this.entityFollowed) {
+      const minimumDistance = Meteor.settings.public.character.sensorNearDistance / 2;
 
-      // Vertical movement
-      if (keys.up.isDown || keys.z.isDown || keys.w.isDown) {
-        this.playerVelocity.y = -1;
-        direction = 'up';
-      } else if (keys.down.isDown || keys.s.isDown) {
-        this.playerVelocity.y = 1;
-        direction = 'down';
+      // eslint-disable-next-line new-cap
+      const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.entityFollowed.x, this.entityFollowed.y);
+      if (distance >= minimumDistance) {
+        speed = distance > Meteor.settings.public.character.sensorNearDistance ? Meteor.settings.public.character.runSpeed : Meteor.settings.public.character.walkSpeed;
+        this.playerVelocity.set(this.entityFollowed.x - this.player.x, this.entityFollowed.y - this.player.y);
       }
     }
 
-    this.playerVelocity.normalize().scale(maxSpeed);
+    this.playerVelocity.normalize().scale(speed);
     this.player.body.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
     this.player.setDepth(this.player.y);
+
+    const direction = this.directionFromVector(this.playerVelocity);
+    const running = keys.shift.isDown && direction;
+    if (!peer.hasActiveStreams()) peer.enableSensor(!running);
 
     if (direction) {
       this.player.direction = direction;
       this.pauseAnimation(this.player, false);
-      this.updateAnimation(this.player, direction);
+      this.updateAnimation(characterAnimations.run, this.player, direction);
     } else this.pauseAnimation(this.player, true);
-  },
 
-  postUpdate(time, delta) {
-    this.updateCharacterNamesPositions();
-    characterPopIns.update(this.player, this.players);
-    if (!this.player) return;
-
-    userChatCircle.update(this.player.x, this.player.y);
-    userVoiceRecorderAbility.update(this.player.x, this.player.y, delta);
-
-    let moving = Math.abs(this.player.body.velocity.x) > Number.EPSILON || Math.abs(this.player.body.velocity.y) > Number.EPSILON;
-
-    // Handle freeze
-    const user = Meteor.user();
-    if (user.profile.freeze) moving = false;
-
+    const moving = !!direction;
     if (moving || this.playerWasMoving) {
       this.scene.physics.world.update(time, delta);
       throttledSavePlayer(this.player);
     }
     this.playerWasMoving = moving;
-  },
-
-  updateCharacterNamesPositions() {
-    _.each(this.characterNamesObjects, (value, key) => {
-      if (!value) return;
-
-      const player = this.players[key];
-      if (!player) {
-        this.destroyUserName(key);
-        return;
-      }
-
-      value.setPosition(
-        player.x + characterNameOffset.x,
-        player.y + characterNameOffset.y,
-      );
-    });
-  },
-
-  updateUserName(userId, name) {
-    let textInstance = this.characterNamesObjects[userId];
-    if (!this.characterNamesObjects[userId]) {
-      textInstance = this.scene.add.text(0, -40, name, {
-        fontFamily: 'Verdana, "Times New Roman", Tahoma, serif',
-        fontSize: 18,
-        stroke: '#000',
-        strokeThickness: 3,
-      });
-      textInstance.setOrigin(0.5);
-      textInstance.setDepth(99999);
-      this.characterNamesObjects[userId] = textInstance;
-    } else if (textInstance) textInstance.text = name;
   },
 
   teleportMainUser(x, y) {
@@ -594,6 +571,23 @@ userManager = {
     }
   },
 
+  follow(user) {
+    if (!user || (user && this.entityFollowed)) {
+      if (this.entityFollowed) {
+        lp.notif.success(`You no longer follow anyone`);
+        peer.unlockCall(this.entityFollowed.userId, true);
+      }
+
+      this.entityFollowed = undefined;
+
+      return;
+    }
+
+    this.entityFollowed = this.players[user._id];
+    lp.notif.success(`You are following ${user.profile.name}`);
+    peer.lockCall(user._id, true);
+  },
+
   takeDamage(player) {
     this.flashColor(player, 0xFF0000);
   },
@@ -624,5 +618,30 @@ userManager = {
       callback() { this.clearTint(player); },
       callbackScope: this,
     });
+  },
+
+  onPeerDataReceived(dataReceived) {
+    const emitterUserId = dataReceived.emitter;
+    const userEmitter = Meteor.users.findOne(emitterUserId);
+    if (!userEmitter) return;
+
+    if (dataReceived.type === 'audio') userVoiceRecorderAbility.playSound(dataReceived.data);
+    else if (dataReceived.type === 'followed') {
+      peer.lockCall(emitterUserId);
+      lp.notif.warning(`${userEmitter.profile.name} is following you 👀`);
+    } else if (dataReceived.type === 'unfollowed') {
+      peer.unlockCall(emitterUserId);
+      lp.notif.warning(`${userEmitter.profile.name} has finally stopped following you 🎉`);
+    } else if (dataReceived.type === 'text') {
+      const emitterPlayer = userManager.players[emitterUserId];
+      if (!emitterPlayer) return;
+
+      const popInIdentifier = `${emitterUserId}-pop-in`;
+      characterPopIns.createOrUpdate(
+        popInIdentifier,
+        characterPopIns.formatText(dataReceived.data),
+        { target: emitterPlayer, className: messageReceived.style, autoClose: messageReceived.duration },
+      );
+    }
   },
 };

@@ -72,7 +72,7 @@ if (bamPkg) {
  */
 GuestUsers = new Mongo.Collection('guestUsers');
 Accounts.onLogin(par => {
-  if (par.user && par.user.username !== undefined && par.user.username.indexOf('guest') !== -1) {
+  if (par.user && par.user.username !== undefined && par.user.profile.guest) {
     if (!GuestUsers.findOne({ connection_id: par.connection.id })) {
       GuestUsers.insert({ connection_id: par.connection.id, user_id: par.user._id });
     }

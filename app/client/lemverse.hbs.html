@@ -13,9 +13,8 @@
           {{/each}}
         </div>
         <div class="user-panel {{#unless isLoading}}visible{{/unless}}">
-          <button type="button" class="button js-notifications {{#if hasNotifications}}visible{{/if}}" data-count="{{ pendingNotificationsCount }}">🔔</button>
           <div class="js-video-screen-me"></div>
-          <div class="js-video-me">
+          <div class="js-video-me has-radial-menu">
             <video type="video/mp4" width="160" height="120" autoplay muted></video>
             <div class="buttons">
               <button class="button audio {{#if currentUser.profile.shareAudio}}active{{/if}}" type="button">🎤</button>
@@ -25,7 +24,7 @@
             </div>
           </div>
         </div>
-        {{> reactionsToolbox}}
+        <button type="button" class="button js-notifications {{#if pendingNotificationsCount}}visible{{/if}} has-radial-menu" data-count="{{ pendingNotificationsCount }}">🔔</button>
       {{/if}}
       <div id="game" class="{{#if neq (Session 'editor') 0}}edit{{/if}} {{#if isLoading}}loading{{/if}}"></div>
     </div>
@@ -38,10 +37,8 @@
   {{> gameMod}}
   {{> modalContainer }}
 
-  <audio class="js-audio-webrtc-in" muted>
-    <source src="/assets/lemverse/webrtc-in.mp3" type="audio/mp3">
-  </audio>
-  <audio class="js-audio-webrtc-out" muted>
-    <source src="/assets/lemverse/webrtc-out.mp3" type="audio/mp3">
-  </audio>
+  {{#unless isGuest}}
+    {{> radialMenu }}
+    {{> console}}
+  {{/unless}}
 </template>

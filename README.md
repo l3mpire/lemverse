@@ -1,6 +1,15 @@
-<p align="center">
-  <img alt="lemverse" src="./app/public/lemverse.png" width="128" height="128">  
-</p>
+<div align="center">
+
+  # lemverse<br>
+
+  [![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/uMfZf6T7)
+  [![GitHub release](https://img.shields.io/github/v/release/l3mpire/lemverse.svg)](https://GitHub.com/l3mpire/lemverse/releases/)
+  [![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)](https://github.com/l3mpire/lemverse)
+  [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+
+  <img alt="lemverse" src="./app/public/lemverse.png" width="128" height="128" style="margin-top: 10px;">  
+
+</div>
 
 # Table of contents
 - [What is `lemverse`?](#what-is--lemverse--)
@@ -265,21 +274,119 @@ Please note, that as stated in section `Deploy in production`, there is an addit
 
       "character": { // Settings to handle velocity of the character
         "walkSpeed": 180,
-        "runSpeed": 720
+        "runSpeed": 720,
+        "sensorNearDistance": 75, // Distance required before starting a call with an user
+        "sensorFarDistance": 85  // Distance required before closing a call with an user
       },
 
-      "characterNames": ["Basic", "Ghost"], // List of in repository characters (should not change since you can upload new ones)
+      "assets": { // Assets configuration
+        "character": {
+          "frameWidth": 16,
+          "frameHeight": 32,
+          "formats": {
+            "w-384": { // Modern interiors: old format
+              "animations": {
+                "run": {
+                  "up": {
+                    "frames": [54, 55, 56, 57, 58, 59],
+                    "frameRate": 10,
+                    "repeat": -1
+                  },
+                  "down": {
+                    "frames": [66, 67, 68, 69, 70, 71],
+                    "frameRate": 10,
+                    "repeat": -1
+                  },
+                  "left": {
+                    "frames": [60, 61, 62, 63, 64, 65],
+                    "frameRate": 10,
+                    "repeat": -1
+                  },
+                  "right": {
+                    "frames": [48, 49, 50, 51, 52, 53],
+                    "frameRate": 10,
+                    "repeat": -1
+                  }
+                }
+              }
+            },
+            "w-927": { // Modern interiors: new format
+              "animations": {
+                "run": {
+                  "up": {
+                    "frames": [120, 121, 122, 123, 124, 125],
+                    "frameRate": 10,
+                    "repeat": -1
+                  },
+                  "down": {
+                    "frames": [132, 133, 134, 135, 136, 137],
+                    "frameRate": 10,
+                    "repeat": -1
+                  },
+                  "left": {
+                    "frames": [126, 127, 128, 129, 130, 131],
+                    "frameRate": 10,
+                    "repeat": -1
+                  },
+                  "right": {
+                    "frames": [114, 115, 116, 117, 118, 119],
+                    "frameRate": 10,
+                    "repeat": -1
+                  }
+                }
+              }
+            }
+          },
+          "w-896": { // Modern interiors: new format (for hairs, eyes, outfits, …)
+            "animations": {
+              "run": {
+                "up": {
+                  "frames": [118, 119, 120, 121, 122, 123],
+                  "frameRate": 10,
+                  "repeat": -1
+                },
+                "down": {
+                  "frames": [130, 131, 132, 133, 134, 135],
+                  "frameRate": 10,
+                  "repeat": -1
+                },
+                "left": {
+                  "frames": [124, 125, 126, 127, 128, 129],
+                  "frameRate": 10,
+                  "repeat": -1
+                },
+                "right": {
+                  "frames": [112, 113, 114, 115, 116, 117],
+                  "frameRate": 10,
+                  "repeat": -1
+                }
+              }
+            }
+          }
+        }
+      },
 
       "skins": {  // Default skins (can be defined at level)
-        "guest": "Ghost", // Simple format
-        "guest": { // Layered format
+        "guest": {
           "body": "chr_H2ARGyiKd8wQ4hQcr"
         },
-        "default": "Basic"
+        "default":  {
+          "body": "chr_2HARGyiKf8wQ8hQcr"
+        },
+      },
+
+      "tos": {
+        "terms": "",
+        "cookies": "",
+        "privacy": ""
       }
     },
 
     "defaultLevelId": "lvl_iLOVEaLOTlemverse", // Default level Id created at first run.
+
+    "email": {
+      "from": "The lembot <contact@domain.com>"
+    },
 
     "peer": {
       "path": "/peer",
@@ -531,6 +638,8 @@ Website with images API :
 # Assets
 
 We use paid assets from [limezu](https://limezu.itch.io/) on [itch.io](https://limezu.itch.io/moderninteriors) in the *version 35*. Please keep in mind than lemverse doesn't support the new character format for the moment.
+
+By default lemverse appears in black because you have no textures in the project, you must go to the editor to upload the different textures.
 
 # License
 

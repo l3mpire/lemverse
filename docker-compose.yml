@@ -18,7 +18,6 @@ services:
         build:
             context: .
             dockerfile: Dockerfile.dev
-        container_name: lemverse
         restart: unless-stopped
         networks:
             - net_lemverse

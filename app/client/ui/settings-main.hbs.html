@@ -1,0 +1,54 @@
+<template name="characterNameColorSelector">
+    <select name="name-color" class="js-name-color">
+      {{#each value in nameColors}}
+       {{#if isSelected value}}
+        <option selected="selected" value="{{value}}">{{value}}</option>
+       {{else}}
+        <option value="{{value}}">{{value}}</option>
+       {{/if}}
+      {{/each}}
+    </select>
+</template>
+
+<template name="settingsMain">
+  {{#modal title="Settings"}}
+    <div class="settings">
+      <div class="options container">
+        <div class="name-section">
+          <label for="name">Name</label>
+          <input type="text" name="name" id="name" class="js-name" value={{currentUser.profile.name}}>
+          {{> characterNameColorSelector}}
+        </div>
+        
+        <div class="reaction-section">
+          <label for="reaction">Custom reaction</label>
+          <input type="text" name="reaction" id="reaction" class="js-reaction" value={{#if currentUser.profile.defaultReaction}}{{currentUser.profile.defaultReaction}}{{else}}❤️{{/if}}>
+        </div>
+
+        <div>
+          <button class="js-profile">Edit profile</button>
+          <button class="js-character-designer" id="character-edit">Character editor</button>
+          <button class="js-medias-settings" id="medias-edit">Audio/Video settings</button>
+        </div>
+
+      </div>
+      <div class="shortcuts container background-lighter">
+        <h2 class="h2">Shortcuts</h2>
+        <ul>
+          <li><b>shift</b> to run</li>
+          <li><b>tab</b> show online users</li>
+          <li><b>E</b> to edit the level</li>
+          <li><b>L</b> to react</li>
+          <li><b>P</b> to leaves message</li>
+          <li><b>R</b> to shout</li>
+          <li><b>1-5</b> to react</li>
+          <li><b>shift + 1|4</b> toggle source</li>
+        </ul>
+      </div>
+
+      <div class="actions container background-lighter">
+        <button class="js-copy-invitation link">Copy invitation link ⎘</button>
+      </div>
+    </div>
+  {{/modal}}
+</template>

@@ -1,0 +1,56 @@
+{
+  "name": "lemverse",
+  "version": "0.1.4",
+  "description": "Desktop version of lemverse",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder -p always --universal",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "repository": "github:l3mpire/lemverse",
+  "dependencies": {
+    "@jitsi/electron-sdk": "^3.0.3",
+    "dotenv": "^10.0.0",
+    "electron-log": "^4.4.4",
+    "electron-reload": "^2.0.0-alpha.1",
+    "electron-updater": "^4.6.1"
+  },
+  "devDependencies": {
+    "electron": "^16.0.6",
+    "electron-builder": "^22.14.5",
+    "electron-notarize": "^1.1.1"
+  },
+  "build": {
+    "appId": "com.lempire.lemverse",
+    "productName": "lemverse",
+    "afterSign": "scripts/notarize.js",
+    "mac": {
+      "category": "public.app-category.business",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "./build/entitlements.mac.plist",
+      "entitlementsInherit": "./build/entitlements.mac.plist",
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "Please give us access to your microphone",
+        "NSCameraUsageDescription": "Please give us access to your camera",
+        "LSUIElement": 1
+      }
+    },
+    "mas": {
+        "entitlements": "./build/entitlements.mas.plist",
+        "entitlementsInherit": "./build/entitlements.mas.inherit.plist"
+    },
+    "publish": {
+      "provider": "github"
+    },
+    "dmg": {
+      "sign": false,
+      "title": "lemverse",
+      "icon": "Icon.png"
+    }
+  }
+}

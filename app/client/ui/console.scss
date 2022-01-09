@@ -1,0 +1,63 @@
+$form-background-color: #2b2d3df2;
+$form-text-color: white;
+$button-background-color: #02a3ff;
+$button-text-color: white;
+
+.console {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 530px;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.25s linear;
+  overflow: hidden;
+
+  &.show {
+    opacity: 1;
+  }
+
+  form {
+    display: flex;
+    flex-direction: row;
+    border-radius: 8px;
+    background-color: $form-background-color;
+    box-shadow: 0px 0 15px $form-background-color;
+    width: 100%;
+    overflow: hidden;
+
+    input,
+    button {
+      -webkit-appearance: none;
+      background-color: transparent;
+      border: 0;
+
+      &.js-command-input {
+        width: 100%;
+        height: 100%;
+        padding: 15px 10px 15px 10px;
+        color: $form-text-color;
+        font-weight: bold;
+        font-size: 13pt;
+      }
+    }
+
+    .js-button-submit {
+      cursor: pointer;
+      background-color: $button-background-color;
+      color: $button-text-color;
+      font-size: 13pt;
+      width: 80px;
+    }
+  }
+
+  .close-info {
+    text-align: center;
+    color: #fffefe;
+    font-size: 10pt;
+    margin-top: 10px;
+    box-shadow: 10px;
+    text-shadow: 1px 1px 5px black;
+  }
+}

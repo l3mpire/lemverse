@@ -1,0 +1,39 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #2E3440;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.status {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 30px;
+  color: white;
+  text-align: center;
+  z-index: 50;
+
+  &.connecting {
+    background-color: #f1bb55;
+  }
+
+  &.disconnected {
+    background-color: #f06a6a;
+  }
+
+  a {
+    color: white;
+    font-weight: bolder;
+  }
+}

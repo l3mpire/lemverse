@@ -11,8 +11,7 @@ const stopPaintMode = levelId => {
     Meteor.users.update(userId, { $set: { 'profile.escape.score': tiles.length } });
   });
 
-  // eslint-disable-next-line no-use-before-define
-  switchEntityStateLogic(levelId, 'last-door', false);
+  switchEntityState(levelId, 'last-door', false);
 };
 
 const startPaintMode = levelId => {
@@ -23,35 +22,9 @@ const startPaintMode = levelId => {
   Meteor.setTimeout(() => stopPaintMode(levelId), paintModeDuration);
 };
 
-const switchEntityStateLogic = (levelId, name, forcedState = undefined) => {
-  check([levelId, name], [String]);
-  const entity = Entities.findOne({ name, levelId });
-  if (!entity) return;
-
-  const entityDocument = Entities.findOne({ levelId, name });
-  const newState = forcedState !== undefined ? forcedState : !entityDocument.state;
-  const state = newState ? entity.states[1] : entity.states[0];
-
-  state.remove?.forEach(t => {
-    Tiles.remove({ levelId, x: t.x, y: t.y, index: t.index });
-  });
-
-  state.add?.forEach(t => {
-    Tiles.insert({ levelId, x: t.x, y: t.y, index: t.index, tilesetId: t.tilesetId, createdAt: new Date(), createdBy: Meteor.userId() });
-  });
-
-  state.replace?.forEach(t => {
-    Tiles.update({ levelId, x: t.x, y: t.y }, { $set: { tilesetId: t.newTilesetId, index: t.newIndex } });
-  });
-
-  Entities.update({ levelId, name }, { $set: { state: newState } });
-
-  if (name === 'room-4-ready') startPaintMode(levelId);
-};
-
 Meteor.methods({
-  switchEntityState(levelId, name, forcedState = undefined) {
-    switchEntityStateLogic(levelId, name, forcedState);
+  startPaintMode(levelId) {
+    startPaintMode(levelId); // todo: add hook on the entity collection to listen for state change and execute action
   },
   paintTile(levelId, x, y, index) {
     Tiles.update({ levelId, x, y, index }, { $set: { 'metadata.paint': Meteor.userId() } });

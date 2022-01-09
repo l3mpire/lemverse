@@ -1,0 +1,35 @@
+.media-source-selection {
+  .sources {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 15px;
+    margin-bottom: 60px;
+
+    .js-screen-source {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      flex: 0 0 50%;
+      padding: 5px 10px;
+      cursor: pointer;
+      border: 2px solid transparent;
+
+      img {
+        width: 100%;
+        height: auto;
+        max-height: 140px;
+        margin-bottom: 5px;
+      }
+
+      &.selected {
+        border: 2px solid darken(hsl(220, 22%, 76%), 15%);
+      }
+    }
+  }
+
+  button {
+    position: fixed;
+    bottom: 10px;
+    max-width: 460px;
+  }
+}

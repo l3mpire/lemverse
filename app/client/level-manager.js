@@ -36,7 +36,7 @@ levelManager = {
     const newTilesets = [];
     _.each(tilesets, tileset => {
       if (this.findTileset(tileset._id)) return;
-      const tilesetImage = this.map.addTilesetImage(tileset._id, tileset._id, 16, 16, 0, 0, tileset.gid);
+      const tilesetImage = this.map.addTilesetImage(tileset._id, tileset.fileId, 16, 16, 0, 0, tileset.gid);
       if (!tilesetImage) {
         log('unable to load tileset', tileset._id);
         return;
@@ -137,6 +137,15 @@ levelManager = {
     if (!this.map) return;
 
     const tileset = this.findTileset(newTileset._id);
+    if (newTileset.fileId !== oldTileset.fileId) {
+      this.scene.load.image(newTileset.fileId, `/api/files/${newTileset.fileId}`);
+      this.scene.load.once(Phaser.Loader.Events.COMPLETE, () => {
+        this.scene.textures.remove(oldTileset.fileId);
+        tileset.setImage(this.scene.textures.get(newTileset.fileId));
+      });
+      this.scene.load.start();
+    }
+
     tileset.tileProperties = newTileset.tiles;
 
     const oTileKeys = _.map(_.keys(oldTileset.tiles || {}), k => +k);
@@ -148,15 +157,15 @@ levelManager = {
     const xys = _.map(Tiles.find({ tilesetId: newTileset._id, index: { $in: changedTileIndexes } }).fetch(), t => ({ x: t.x, y: t.y }));
     _.forEach(xys, xy => levelManager.tileRefresh(xy.x, xy.y));
 
-    const enabledCollisionIndexes = _.difference(oldTileset.collisionTileIndexes, newTileset.collisionTileIndexes);
-    const disabledCollisionIndexes = _.difference(newTileset.collisionTileIndexes, oldTileset.collisionTileIndexes);
+    const enabledCollisionIndexes = _.difference(newTileset.collisionTileIndexes, oldTileset.collisionTileIndexes);
+    const disabledCollisionIndexes = _.difference(oldTileset.collisionTileIndexes, newTileset.collisionTileIndexes);
 
     const enabledCollisionGlobalIndexes = _.map(enabledCollisionIndexes, i => this.tileGlobalIndex({ index: i, tilesetId: newTileset._id }));
     const disabledCollisionGlobalIndexes = _.map(disabledCollisionIndexes, i => this.tileGlobalIndex({ index: i, tilesetId: newTileset._id }));
 
     _.each(this.map.layers, layer => {
-      this.map.setCollision(enabledCollisionGlobalIndexes, true, false, layer.tilemapLayer);
-      this.map.setCollision(disabledCollisionGlobalIndexes, false, false, layer.tilemapLayer);
+      this.map.setCollision(enabledCollisionGlobalIndexes, true, false, layer.tilemapLayer, true);
+      this.map.setCollision(disabledCollisionGlobalIndexes, false, false, layer.tilemapLayer, true);
     });
   },
 
