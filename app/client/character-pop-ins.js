@@ -47,11 +47,14 @@ characterPopIns = {
       config.y = position.y;
     } else config.target = userManager.player;
 
+    // allow zones to show iframe
+    config.iframe = !!formatURL(zone.inlineURL);
+
     this.createOrUpdate(`${Meteor.userId()}-${zone._id}`, zone.inlineURL, config);
   },
 
   createOrUpdate(popInIdentifier, popInContent, config = {}) {
-    const content = formatURL(popInContent) ? this.createIframeFromURL(popInContent) : popInContent;
+    const content = config.iframe ? this.createIframeFromURL(popInContent) : this.formatText(popInContent);
 
     let popIn = this.popIns[popInIdentifier];
     if (!popIn) {
@@ -101,7 +104,16 @@ characterPopIns = {
   },
 
   formatText(text) {
-    return `<p>${transformURL(text)}</p>`;
+    const user = Meteor.user();
+
+    // parse urls
+    let newText = transformURL(text);
+
+    // parse special strings
+    newText = newText.replace('{{firstname}}', user.profile.name || 'guest');
+    newText = newText.replace('{{level}}', Levels.findOne(user.profile.levelId).name);
+
+    return `<p>${newText}</p>`;
   },
 
   setContent(popInIdentifier, content) {

@@ -639,7 +639,7 @@ userManager = {
       const popInIdentifier = `${emitterUserId}-pop-in`;
       characterPopIns.createOrUpdate(
         popInIdentifier,
-        characterPopIns.formatText(dataReceived.data),
+        dataReceived.data,
         { target: emitterPlayer, className: messageReceived.style, autoClose: messageReceived.duration },
       );
     }
