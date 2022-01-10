@@ -283,7 +283,7 @@ button.js-notifications {
   padding: 4px 8px !important;
   font-size: 22px;
   display: none;
-  z-index: 99999999;
+  z-index: 101;
 
   &.visible {
     display: block;
@@ -312,4 +312,8 @@ button.js-notifications {
   &[data-count="0"]:after {
     display: none;
   }
+}
+
+#noty_layout__bottomLeft {
+  z-index: 100;
 }
