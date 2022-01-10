@@ -86,16 +86,6 @@ characterPopIns = {
     return `<div class="toggle-full-screen"></div><iframe loading="lazy" frameBorder="0" src="${url}" allow="accelerometer; autoplay; encrypted-media; gyroscope;"></iframe>`;
   },
 
-  setContent(popInIdentifier, content) {
-    const popIn = this.popIns[popInIdentifier];
-    if (!popIn) {
-      lp.notif.warning(`Pop-in "${popInIdentifier}"not found`);
-      return;
-    }
-
-    popIn.setHTML(content);
-  },
-
   destroyPopIn(popInIdentifier) {
     this.popIns[popInIdentifier]?.destroy();
     delete this.popIns[popInIdentifier];
@@ -104,6 +94,24 @@ characterPopIns = {
   destroy() {
     Object.keys(this.popIns).forEach(identifier => this.destroyPopIn(identifier));
     this.popIns = [];
+  },
+
+  find(identifier) {
+    return this.popIns[identifier];
+  },
+
+  formatText(text) {
+    return `<p>${transformURL(text)}</p>`;
+  },
+
+  setContent(popInIdentifier, content) {
+    const popIn = this.popIns[popInIdentifier];
+    if (!popIn) {
+      lp.notif.warning(`Pop-in "${popInIdentifier}"not found`);
+      return;
+    }
+
+    popIn.setHTML(content);
   },
 
   update(camera) {
@@ -120,10 +128,5 @@ characterPopIns = {
       popIn.x = position.x;
       popIn.y = position.y - popIn.displayHeight / 2 - characterPopIns.arrowHeight;
     });
-  },
-
-  formatText(text) {
-    const output = transformURL(text);
-    return `<p>${output}</p>`;
   },
 };

@@ -41,7 +41,8 @@ Template.zonesToolboxProperties.helpers({
 Template.zonesToolboxProperties.events({
   'click .js-zone-cancel'() { Session.set('displayZoneId', undefined); },
   'click .js-zone-save'() {
-    const currentFields = Zones.findOne(Session.get('displayZoneId'));
+    const zoneId = Session.get('displayZoneId');
+    const currentFields = Zones.findOne(zoneId);
     let newValues;
     try {
       newValues = JSON.parse($('.zones-toolbox-properties textarea').val());
@@ -52,8 +53,11 @@ Template.zonesToolboxProperties.events({
       if (!zoneHideProperties.includes(i) && !Object.keys(newValues).includes(i)) newObject[i] = 1;
       return newObject;
     }, {});
-    if (_.isEmpty($unset)) Zones.update(Session.get('displayZoneId'), { $set: newValues });
-    else Zones.update(Session.get('displayZoneId'), { $set: newValues, $unset });
+    if (_.isEmpty($unset)) Zones.update(zoneId, { $set: newValues });
+    else Zones.update(zoneId, { $set: newValues, $unset });
+
+    if (characterPopIns.find(`${Meteor.userId()}-${zoneId}`)) characterPopIns.initFromZone(Zones.findOne(zoneId));
+
     Session.set('displayZoneId', undefined);
   },
   'click .js-zone-delete'() {
