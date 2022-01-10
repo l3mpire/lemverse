@@ -636,6 +636,8 @@ userManager = {
       const emitterPlayer = userManager.players[emitterUserId];
       if (!emitterPlayer) return;
 
+      sounds.play('text-sound.wav', 0.5);
+
       const popInIdentifier = `${emitterUserId}-pop-in`;
       characterPopIns.createOrUpdate(
         popInIdentifier,
