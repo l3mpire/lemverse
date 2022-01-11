@@ -7,6 +7,10 @@
         <input type="text" name="name" id="name" class="js-name" value={{ name }}>
       </div>
       <div>
+        <label for="name">Hide from the list of levels:</label>
+        <input type="checkbox" class="js-hidden" checked={{hidden}}>
+      </div>
+      <div>
         <label for="name">Spawn position: (current {{ spawnPosition }})</label>
         <button type="button" class="js-spawn-position">Set spawn position</button>
       </div>
