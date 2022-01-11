@@ -6,10 +6,11 @@ $label-background-color: #2b2d3d;
 $label-text-color: white;
 $item-background-color: #2b2d3de6;
 $item-pressed-color: #02a3ff;
+$z-index: 100;
 
 .radial-menu-container {
   position: absolute;
-  z-index: 9999;
+  z-index: $z-index;
   pointer-events: none;
 
   .label {
