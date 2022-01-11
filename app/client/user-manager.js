@@ -645,7 +645,7 @@ userManager = {
       characterPopIns.createOrUpdate(
         popInIdentifier,
         dataReceived.data,
-        { target: emitterPlayer, className: messageReceived.style, autoClose: messageReceived.duration },
+        { target: emitterPlayer, className: messageReceived.style, autoClose: messageReceived.duration, parseURL: true },
       );
     }
   },

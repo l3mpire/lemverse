@@ -7,7 +7,7 @@
   background-color: white;
   border-radius: 5px;
 
-  p {
+  >p {
     text-align: center;
     margin: 0;
     overflow: hidden;
@@ -60,15 +60,6 @@
     &.with-arrow:before {
       border-top: 9px solid rgba(255, 255, 255, 0.75);
     }
-  }
-
-  &.v-center>p {
-    display: block;
-    top: 50%;
-    position: absolute;
-    transform: translateY(-50%);
-    left: 0;
-    right: 0;
   }
 
   &.tooltip {
