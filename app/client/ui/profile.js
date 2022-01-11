@@ -15,10 +15,7 @@ Template.profile.helpers({
     if (!website) return null;
 
     const url = formatURL(website);
-    if (!url) {
-      lp.notif.error('invalid website URL');
-      return null;
-    }
+    if (!url) return null;
 
     return url.href;
   },
