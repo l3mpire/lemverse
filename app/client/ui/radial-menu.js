@@ -84,7 +84,8 @@ const otherUserMenuItems = [
   { icon: '👤', label: 'Profile', shortcut: 51, action: () => Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId }) },
 ];
 
-let menuOpenUsingShift = false;
+let menuOpenUsingKey = false;
+const keyToOpen = 'alt';
 const menuOffset = { x: 0, y: -6 };
 const horizontalMenuItemDistance = { x: 45, y: -90 };
 const radialMenuRadius = 72;
@@ -125,7 +126,7 @@ const buildMenu = (menuItems, reactiveVar) => {
 };
 
 const onMouseMove = event => {
-  if (!Session.get('menu') || menuOpenUsingShift) return;
+  if (!Session.get('menu') || menuOpenUsingKey) return;
   const menuPosition = computeMenuPosition();
   const mousePosition = { x: event.clientX, y: event.clientY };
   const offsetY = 38;
@@ -156,24 +157,24 @@ Template.radialMenu.onCreated(function () {
 
   hotkeys('*', { keyup: true, scope: scopes.player }, e => {
     // show/hide shortcuts
-    if (e.key === 'Shift') {
+    if (e.key.toLowerCase() === keyToOpen) {
       this.showShortcuts.set(e.type === 'keydown');
 
       // show/hide menu when shift is pressed
       if (e.type === 'keydown' && !Session.get('menu')) {
-        menuOpenUsingShift = true;
+        menuOpenUsingKey = true;
         const worldScene = game.scene.getScene('WorldScene');
         const userId = Meteor.userId();
         Session.set('menu', { userId });
         Session.set('menu-position', relativePositionToCamera(userManager.players[userId], worldScene.cameras.main));
-      } else if (e.type === 'keyup' && menuOpenUsingShift) {
+      } else if (e.type === 'keyup' && menuOpenUsingKey) {
         Session.set('menu', undefined);
-        menuOpenUsingShift = false;
+        menuOpenUsingKey = false;
       }
     }
 
     // execute shortcut actions
-    if (e.repeat || !hotkeys.shift) return;
+    if (e.repeat || !hotkeys[keyToOpen]) return;
     const menuItems = !Session.get('menu') ? mainMenuItems : this.items.get();
     const menuEntry = menuItems.find(menuItem => menuItem.shortcut === e.keyCode);
     if (!menuEntry) return;
