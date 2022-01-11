@@ -110,23 +110,20 @@ userManager = {
     const playerParts = this.scene.add.container(0, 0);
     playerParts.setScale(3);
     playerParts.name = 'body';
+    playerParts.on('pointerover', () => {
+      if (Session.get('editor')) return;
 
-    if (!user.profile.guest) {
-      playerParts.setInteractive(characterInteractionConfiguration);
-      playerParts.on('pointerover', () => {
-        if (Session.get('editor')) return;
-
-        this.setTint(this.players[user._id], 0xFFAAFF);
-        Session.set('menu', { userId: user._id });
-        Session.set('menu-position', relativePositionToCamera(this.players[user._id], this.scene.cameras.main));
-      });
-
-      playerParts.on('pointerout', () => this.setTintFromState(this.players[user._id]));
-      playerParts.on('pointerup', () => {
-        if (Session.get('menu')) Session.set('menu', undefined);
-        else Session.set('menu', { userId: user._id });
-      });
-    }
+      this.setTint(this.players[user._id], 0xFFAAFF);
+      Session.set('menu', { userId: user._id });
+      Session.set('menu-position', relativePositionToCamera(this.players[user._id], this.scene.cameras.main));
+    });
+    playerParts.on('pointerout', () => this.setTintFromState(this.players[user._id]));
+    playerParts.on('pointerup', () => {
+      if (Session.get('menu')) Session.set('menu', undefined);
+      else Session.set('menu', { userId: user._id });
+    });
+    playerParts.setInteractive(characterInteractionConfiguration);
+    if (guest) playerParts.disableInteractive();
 
     const shadow = this.scene.add.circle(0, 6, 18, 0x000000);
     shadow.alpha = 0.1;
@@ -184,10 +181,10 @@ userManager = {
   },
 
   updateUser(user, oldUser) {
-    const isMe = user._id === Meteor.userId();
     const player = this.players[user._id];
     if (!player) return;
     const { x, y, reaction, shareAudio, guest, userMediaError, name, nameColor } = user.profile;
+    const isTransformedAccount = oldUser?.profile.guest && !user.profile.guest;
 
     // show reactions
     if (reaction) this.playReaction(player, reaction);
@@ -196,6 +193,11 @@ userManager = {
     // create missing character body parts or update it
     const characterBodyContainer = player.getByName('body');
     const charactersPartsKeys = Object.keys(charactersParts);
+
+    if (isTransformedAccount) {
+      characterBodyContainer.setInteractive();
+      game.scene.getScene('UIScene')?.updateUserName(user._id, name, nameColor);
+    }
 
     let hasUpdatedSkin = false;
     charactersPartsKeys.filter(part => user.profile[part]).forEach(part => {
@@ -239,6 +241,7 @@ userManager = {
     const mainUser = Meteor.user();
     const shouldCheckDistance = hasMoved && !guest && !meet.api;
 
+    const isMe = user._id === Meteor.userId();
     if (isMe) {
       // Check distance between players
       const dist = Math.sqrt(((player.x - x) ** 2) + ((player.y - y) ** 2));
