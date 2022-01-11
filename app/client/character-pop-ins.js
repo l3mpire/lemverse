@@ -54,7 +54,7 @@ characterPopIns = {
   },
 
   createOrUpdate(popInIdentifier, popInContent, config = {}) {
-    const content = config.iframe ? this.createIframeFromURL(popInContent) : this.formatText(popInContent, config.parseURL);
+    const content = config.iframe ? this.createIframeFromURL(popInContent) : this.formatText(popInContent, config);
 
     let popIn = this.popIns[popInIdentifier];
     if (!popIn) {
@@ -103,7 +103,7 @@ characterPopIns = {
     return this.popIns[identifier];
   },
 
-  formatText(text, parseURL = false) {
+  formatText(text, options = {}) {
     const user = Meteor.user();
 
     // parse special strings
@@ -111,9 +111,9 @@ characterPopIns = {
     newText = newText.replace('{{level}}', Levels.findOne(user.profile.levelId).name);
 
     // parse urls
-    if (parseURL) newText = transformURL(text);
+    if (options.parseURL) newText = transformURL(text);
 
-    return `<p>${newText}</p>`;
+    return `<p class="${options.classList}">${newText}</p>`;
   },
 
   setContent(popInIdentifier, content) {
