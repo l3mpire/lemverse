@@ -34,7 +34,7 @@ button:focus {
 
       .user-panel,
       .reactions-toolbox,
-      .js-videos,
+      .js-streams,
       .user-panel {
         display: none;
       }
@@ -145,7 +145,7 @@ button:focus {
   }
 }
 
-.js-videos {
+.js-streams {
   position: absolute;
   right: 0;
   max-height: calc(100vh - 200px);
@@ -168,7 +168,7 @@ button:focus {
     opacity: 1;
   }
 
-  .js-video-me {
+  .js-stream-me {
     position: relative;
     width: 164px;
     height: 124px;
@@ -236,7 +236,7 @@ button:focus {
     }
   }
 
-  .js-video-screen-me {
+  .js-stream-screen-me {
     display: none;
     position: absolute;
     bottom: 5px;

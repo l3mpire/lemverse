@@ -51,10 +51,10 @@ userStreams = {
         delete peer.calls[key];
       });
 
-      const divElm = document.querySelector('.js-video-screen-me');
+      const divElm = document.querySelector('.js-stream-screen-me');
       divElm.srcObject = undefined;
       divElm.style.display = 'none';
-      document.querySelectorAll('.js-video-screen-me video').forEach(v => {
+      document.querySelectorAll('.js-stream-screen-me video').forEach(v => {
         destroyVideoSource(v);
         v.remove();
       });
@@ -181,12 +181,12 @@ userStreams = {
       .then(stream => {
         if (!stream) return undefined;
 
-        let videoElm = document.querySelector('.js-video-screen-me video');
+        let videoElm = document.querySelector('.js-stream-screen-me video');
         if (!videoElm) {
           videoElm = document.createElement('video');
           videoElm.setAttribute('type', 'video/mp4');
 
-          const videoElmParent = document.querySelector('.js-video-screen-me');
+          const videoElmParent = document.querySelector('.js-stream-screen-me');
           videoElmParent.style.display = 'block';
           videoElmParent.appendChild(videoElm);
         }
@@ -225,7 +225,7 @@ userStreams = {
 
   getVideoElement() {
     if (!this.streams.main.domElement) {
-      this.streams.main.domElement = document.querySelector('.js-video-me video');
+      this.streams.main.domElement = document.querySelector('.js-stream-me video');
       if (this.streams.main.domElement) this.refreshVideoElementAvatar(this.streams.main.domElement);
     }
 

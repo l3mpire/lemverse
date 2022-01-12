@@ -7,14 +7,14 @@
         {{#if neq (Session 'editor') 0}}
           {{> editToolbox}}
         {{/if}}
-        <div class="js-videos">
+        <div class="js-streams">
           {{#each remoteUser in allRemoteStreamsByUsers}}
             {{> remoteStream remoteUser=remoteUser }}
           {{/each}}
         </div>
         <div class="user-panel {{#unless isLoading}}visible{{/unless}}">
-          <div class="js-video-screen-me"></div>
-          <div class="js-video-me has-radial-menu">
+          <div class="js-stream-screen-me"></div>
+          <div class="js-stream-me has-radial-menu">
             <video type="video/mp4" width="160" height="120" autoplay muted></video>
             <div class="buttons">
               <button class="button audio {{#if currentUser.profile.shareAudio}}active{{/if}}" type="button">🎤</button>
