@@ -18,15 +18,7 @@ const onZoneEntered = e => {
   else if (inlineURL) characterPopIns.initFromZone(zone);
 
   if ((roomName && !guest) || url) updateViewport(game.scene.keys.WorldScene, fullscreen ? viewportModes.small : viewportModes.splitScreen);
-  if (disableCommunications) {
-    setTimeout(() => Meteor.users.update(Meteor.userId(), { $set: {
-      'profile.shareVideo': false,
-      'profile.shareAudio': false,
-      'profile.shareScreen': false,
-    } }), 0);
-    peer.disable();
-    if (userManager.player) userManager.setTintFromState(userManager.player);
-  }
+  if (disableCommunications) userManager.setUserInDoNotDisturbMode(true);
 };
 
 const onZoneLeaved = e => {
@@ -37,10 +29,7 @@ const onZoneLeaved = e => {
   if (!popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(`${Meteor.userId()}-${zone._id}`);
 
   if (roomName || url) updateViewport(game.scene.keys.WorldScene, viewportModes.fullscreen);
-  if (disableCommunications) {
-    peer.enable();
-    if (userManager.player) userManager.setTintFromState(userManager.player);
-  }
+  if (disableCommunications) userManager.setUserInDoNotDisturbMode(false);
 };
 
 WorldScene = new Phaser.Class({

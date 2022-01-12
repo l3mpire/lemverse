@@ -606,6 +606,21 @@ userManager = {
     });
   },
 
+  setUserInDoNotDisturbMode(value) {
+    if (!this.player) return;
+
+    if (value) {
+      setTimeout(() => Meteor.users.update(Meteor.userId(), { $set: {
+        'profile.shareVideo': false,
+        'profile.shareAudio': false,
+        'profile.shareScreen': false,
+      } }), 0);
+      peer.disable();
+    } else peer.enable();
+
+    this.setTintFromState(this.player);
+  },
+
   setTintFromState(player) {
     const user = Meteor.users.findOne(player.userId);
     const currentZone = zones.currentZone(user);
