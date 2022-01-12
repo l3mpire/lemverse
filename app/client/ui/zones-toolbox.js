@@ -25,8 +25,8 @@ Template.zonesToolboxProperties.helpers({
     if (!props.url) props.url = '';
     if (!props.adminOnly) props.adminOnly = '';
     if (!props.teleportEndpoint) props.teleportEndpoint = '';
-    if (!props.unmute) props.unmute = '';
-    if (!props.unhide) props.unhide = '';
+    if (!props.unmute) props.unmute = false;
+    if (!props.unhide) props.unhide = false;
     if (!props.fullscreen) props.fullscreen = false;
     if (!props.targetedLevelId) props.targetedLevelId = '';
     if (!props.inlineURL) props.inlineURL = '';
