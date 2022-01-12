@@ -606,10 +606,10 @@ userManager = {
     });
   },
 
-  setUserInDoNotDisturbMode(value) {
+  setUserInDoNotDisturbMode(enable) {
     if (!this.player) return;
 
-    if (value) {
+    if (enable) {
       setTimeout(() => Meteor.users.update(Meteor.userId(), { $set: {
         'profile.shareVideo': false,
         'profile.shareAudio': false,
@@ -619,7 +619,7 @@ userManager = {
     } else peer.enable();
 
     this.setTintFromState(this.player);
-    sounds.enabled = !value;
+    sounds.enabled = !enable;
   },
 
   setTintFromState(player) {
