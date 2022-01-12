@@ -1,4 +1,5 @@
 sounds = {
+  enabled: true,
   folder: '/assets/sounds/',
   reactionsSounds: {
     '😲': 'sounds_reactions-surprise.mp3',
@@ -10,7 +11,7 @@ sounds = {
   },
 
   play(name, volume = 1.0) {
-    if (!name) return;
+    if (!name || !this.enabled) return;
 
     const audio = new Audio(`${this.folder}${name}`);
     audio.volume = volume;

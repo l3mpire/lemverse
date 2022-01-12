@@ -619,6 +619,7 @@ userManager = {
     } else peer.enable();
 
     this.setTintFromState(this.player);
+    sounds.enabled = !value;
   },
 
   setTintFromState(player) {
