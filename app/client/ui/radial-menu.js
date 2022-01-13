@@ -85,12 +85,13 @@ const otherUserMenuItems = [
 ];
 
 let menuOpenUsingKey = false;
-const keyToOpen = 'alt';
+const keyToOpen = 'shift';
 const menuOffset = { x: 0, y: -6 };
 const horizontalMenuItemDistance = { x: 45, y: -90 };
 const radialMenuRadius = 72;
 const mouseDistanceToCloseMenu = 105;
 const itemAmountRequiredForBackground = 2;
+let menuHandler;
 
 const computeMenuPosition = () => {
   const position = Session.get('menu-position');
@@ -160,14 +161,18 @@ Template.radialMenu.onCreated(function () {
     if (e.key.toLowerCase() === keyToOpen) {
       this.showShortcuts.set(e.type === 'keydown');
 
-      // show/hide menu when shift is pressed
+      // show/hide the menu when the special key is pressed
       if (e.type === 'keydown' && !Session.get('menu')) {
-        menuOpenUsingKey = true;
-        const worldScene = game.scene.getScene('WorldScene');
-        const userId = Meteor.userId();
-        Session.set('menu', { userId });
-        Session.set('menu-position', relativePositionToCamera(userManager.players[userId], worldScene.cameras.main));
-      } else if (e.type === 'keyup' && menuOpenUsingKey) {
+        clearTimeout(menuHandler);
+        menuHandler = setTimeout(() => {
+          menuOpenUsingKey = true;
+          const worldScene = game.scene.getScene('WorldScene');
+          const userId = Meteor.userId();
+          Session.set('menu', { userId });
+          Session.set('menu-position', relativePositionToCamera(userManager.players[userId], worldScene.cameras.main));
+        }, 200);
+      } else if (e.type === 'keyup') {
+        clearTimeout(menuHandler);
         Session.set('menu', undefined);
         menuOpenUsingKey = false;
       }
