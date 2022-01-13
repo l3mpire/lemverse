@@ -18,7 +18,10 @@ const closeAndFocusCanvas = () => {
 
 const onSubmit = scope => {
   const fieldValue = document.querySelector(inputSelector).value;
-  if (!fieldValue) return;
+  if (!fieldValue) {
+    closeAndFocusCanvas();
+    return;
+  }
 
   const func = scope === scopesNotifications.nearUsers ? sendDataToNearUsers : sendDataToUsersInZone;
   func('text', fieldValue, Meteor.userId())
