@@ -77,6 +77,9 @@ levelManager = {
   loadLevel(levelId) {
     if (Meteor.user().profile.levelId === levelId) return;
 
+    // avoid simulation sending new user position while the server is updating him (blocking scene update and inputs)
+    this.scene.scene.pause();
+
     const loadingScene = game.scene.getScene('LoadingScene');
     loadingScene.show(() => {
       this.scene.scene.sleep();
