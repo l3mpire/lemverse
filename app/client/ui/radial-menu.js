@@ -86,6 +86,7 @@ const otherUserMenuItems = [
 
 let menuOpenUsingKey = false;
 const keyToOpen = 'shift';
+const keyToOpenDelay = 200;
 const menuOffset = { x: 0, y: -6 };
 const horizontalMenuItemDistance = { x: 45, y: -90 };
 const radialMenuRadius = 72;
@@ -170,7 +171,7 @@ Template.radialMenu.onCreated(function () {
           const userId = Meteor.userId();
           Session.set('menu', { userId });
           Session.set('menu-position', relativePositionToCamera(userManager.players[userId], worldScene.cameras.main));
-        }, 200);
+        }, keyToOpenDelay);
       } else if (e.type === 'keyup') {
         clearTimeout(menuHandler);
         Session.set('menu', undefined);
