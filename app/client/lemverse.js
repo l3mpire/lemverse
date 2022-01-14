@@ -86,7 +86,6 @@ Template.lemverse.onCreated(function () {
 
   this.currentLevelId = undefined;
   this.subscribe('characters');
-  this.subscribe('levels');
   this.subscribe('notifications');
   this.subscribe('tilesets', () => {
     log('All tilesets loaded');
@@ -285,8 +284,12 @@ Template.lemverse.onCreated(function () {
         worldScene.scene.restart();
         uiScene.onLevelUnloaded();
         this.currentLevelId = undefined;
+        this.levelSubscribeHandler?.stop();
         return;
       }
+
+      // subscribe to the loaded level
+      this.levelSubscribeHandler = this.subscribe('currentLevel');
 
       // Load users
       log(`loading level: ${levelId || 'unknown'}…`);

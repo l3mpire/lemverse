@@ -32,7 +32,7 @@ updateSkin = (user, levelId) => {
   if (!levelId) throw new Error('missing levelId parameter');
 
   let newProfile = { ...user.profile };
-  const currentLevel = Levels.findOne({ _id: levelId });
+  const currentLevel = Levels.findOne(levelId);
   if (!user.profile?.body && currentLevel?.skins?.default) {
     newProfile = {
       ...newProfile,

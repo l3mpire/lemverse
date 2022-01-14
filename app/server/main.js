@@ -18,7 +18,7 @@ Accounts.onLogin(param => {
 
   log('onLogin: start', { userId: user._id, ip: param.connection?.httpHeaders?.['x-forwarded-for'], userAgent: param.connection?.httpHeaders?.['user-agent'], languages: param.connection?.httpHeaders?.['accept-language'] });
 
-  const currentLevel = Levels.findOne({ _id: Meteor.settings.defaultLevelId });
+  const currentLevel = Levels.findOne(Meteor.settings.defaultLevelId);
   if (currentLevel?.spawn && !user.profile?.x) {
     Meteor.users.update(user._id, { $set: { 'profile.x': currentLevel.spawn.x, 'profile.y': currentLevel.spawn.y } });
   }

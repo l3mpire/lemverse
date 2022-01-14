@@ -89,7 +89,7 @@ userManager = {
       };
     }
 
-    const currentLevel = Levels.findOne({ _id: user.profile.levelId });
+    const currentLevel = Levels.findOne(user.profile.levelId);
     if (currentLevel?.skins?.guest) {
       user.profile = {
         ...user.profile,
@@ -331,8 +331,8 @@ userManager = {
     const player = this.players[userId];
     if (!player) throw new Error(`Can't set as main player a non spawned character`);
 
-    const user = Meteor.users.findOne({ _id: userId });
-    const level = Levels.findOne({ _id: user.profile.levelId });
+    const user = Meteor.users.findOne(userId);
+    const level = Levels.findOne(user.profile.levelId);
     // enable collisions for the user only, each client has its own physics simulation and there isn't collision between characters
     this.scene.physics.world.enableBody(player);
     player.body.setImmovable(true);
@@ -343,7 +343,7 @@ userManager = {
     // add character's physic body to layers
     _.each(levelManager.layers, layer => {
       if (layer.playerCollider) this.scene.physics.world.removeCollider(layer.playerCollider);
-      if (!level.godMode) layer.playerCollider = this.scene.physics.add.collider(player, layer);
+      if (!level?.godMode) layer.playerCollider = this.scene.physics.add.collider(player, layer);
     });
 
     // ask camera to follow the player

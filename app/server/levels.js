@@ -86,6 +86,12 @@ Meteor.publish('levels', function () {
   return Levels.find();
 });
 
+Meteor.publish('currentLevel', function () {
+  if (!this.userId) return undefined;
+
+  return Levels.find({ _id: Meteor.user().profile.levelId || Meteor.settings.defaultLevelId });
+});
+
 Meteor.methods({
   toggleLevelEditionPermission(userId) {
     check(userId, String);

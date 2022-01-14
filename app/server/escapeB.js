@@ -91,7 +91,7 @@ Meteor.methods({
   },
   teleportAllTo(name, position) {
     log('teleportAllTo: start', { position });
-    const currentLevel = Levels.findOne({ _id: Meteor.user().profile.levelId });
+    const currentLevel = Levels.findOne(Meteor.user().profile.levelId);
     const allPlayers = Meteor.users.find({ 'profile.levelId': currentLevel._id, 'status.online': true }).fetch();
 
     if (!currentLevel.metadata.teleport[name]) {
@@ -112,7 +112,7 @@ Meteor.methods({
   },
   freezeOthers() {
     log('freezeOthers: start');
-    const currentLevel = Levels.findOne({ _id: Meteor.user().profile.levelId });
+    const currentLevel = Levels.findOne(Meteor.user().profile.levelId);
     const allOtherPlayers = Meteor.users.find({ 'profile.levelId': currentLevel._id, 'status.online': true, _id: { $ne: Meteor.userId() } }).fetch();
 
     log('freezeOthers: freezing', { allOtherPlayers: allOtherPlayers.length, levelId: currentLevel._id });
