@@ -663,7 +663,7 @@ userManager = {
       characterPopIns.createOrUpdate(
         popInIdentifier,
         dataReceived.data,
-        { target: emitterPlayer, className: messageReceived.style, autoClose: messageReceived.duration, parseURL: false, classList: 'copy', offset: characterPopInOffset },
+        { target: emitterPlayer, className: messageReceived.style, autoClose: messageReceived.duration, parseURL: true, classList: 'copy', offset: characterPopInOffset },
       );
     }
   },
