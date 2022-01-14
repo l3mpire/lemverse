@@ -12,8 +12,6 @@ const dispatchPopInEvent = event => {
   if (characterPopIns.onPopInEvent) characterPopIns.onPopInEvent(event);
 };
 
-const popInWithGameObjectTargetOffset = -65;
-
 characterPopIns = {
   className: 'character-pop-in',
   scene: undefined,
@@ -76,6 +74,7 @@ characterPopIns = {
 
     if (config.target) popIn.setData('target', config.target);
     else popIn.setData('target', { x: config.x || 0, y: config.y || 0 });
+    popIn.setData('offset', config.offset || { x: 0, y: 0 });
 
     clearTimeout(popIn.autoCloseHandler);
     if (config.autoClose) popIn.autoCloseHandler = window.setTimeout(() => this.destroyPopIn(popInIdentifier), config.autoClose);
@@ -132,9 +131,9 @@ characterPopIns = {
       const target = popIn.getData('target');
       if (!target) return;
 
-      const offset = target.type ? popInWithGameObjectTargetOffset : 0;
-      const x = Math.max(target.x, popIn.displayWidth / 2);
-      const y = Math.max(target.y + offset, popIn.displayHeight / 2);
+      const offset = popIn.getData('offset');
+      const x = Math.max(target.x + offset.x, popIn.displayWidth / 2);
+      const y = Math.max(target.y + offset.y, popIn.displayHeight / 2);
 
       const position = relativePositionToCamera({ x, y }, camera);
       popIn.x = position.x;
