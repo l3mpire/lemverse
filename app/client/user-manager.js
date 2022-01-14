@@ -3,6 +3,7 @@ const Phaser = require('phaser');
 const userInterpolationInterval = 200;
 const defaultCharacterDirection = 'down';
 const defaultUserMediaColorError = '0xd21404';
+const characterPopInOffset = { x: 0, y: -90 };
 const characterSpritesOrigin = { x: 0.5, y: 1 };
 const characterInteractionDistance = { x: 32, y: 32 };
 const characterFootOffset = { x: -20, y: -10 };
@@ -662,7 +663,7 @@ userManager = {
       characterPopIns.createOrUpdate(
         popInIdentifier,
         dataReceived.data,
-        { target: emitterPlayer, className: messageReceived.style, autoClose: messageReceived.duration, parseURL: true, classList: 'copy' },
+        { target: emitterPlayer, className: messageReceived.style, autoClose: messageReceived.duration, parseURL: false, classList: 'copy', offset: characterPopInOffset },
       );
     }
   },
