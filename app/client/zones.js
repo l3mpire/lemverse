@@ -57,6 +57,10 @@ zones = {
     return this.getCenter(zone);
   },
 
+  isUserInSameZone(userA, userB) {
+    return this.currentZone(userA)?._id === this.currentZone(userB)?._id;
+  },
+
   usersInZone(zone, includeCurrentUser = false) {
     if (!zone) return [];
 

@@ -167,7 +167,8 @@ userManager = {
   playReaction(player, reaction) {
     clearInterval(player.reactionHandler);
     if (meet.api && this.canPlayReactionSound && sounds.reactionsSounds[reaction]) {
-      sounds.play(sounds.reactionsSounds[reaction]);
+      const otherUser = Meteor.users.findOne(player.userId);
+      if (otherUser && zones.isUserInSameZone(Meteor.user(), otherUser)) sounds.play(sounds.reactionsSounds[reaction]);
 
       // avoid sound spamming
       this.canPlayReactionSound = false;
