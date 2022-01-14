@@ -94,6 +94,12 @@ const mouseDistanceToCloseMenu = 105;
 const itemAmountRequiredForBackground = 2;
 let menuHandler;
 
+const closeMenu = () => {
+  clearTimeout(menuHandler);
+  Session.set('menu', undefined);
+  menuOpenUsingKey = false;
+};
+
 const computeMenuPosition = () => {
   const position = Session.get('menu-position');
   return { x: (position?.x || 0) + menuOffset.x, y: (position.y || 0) + menuOffset.y };
@@ -158,8 +164,10 @@ Template.radialMenu.onCreated(function () {
   hotkeys('space', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
 
   hotkeys('*', { keyup: true, scope: scopes.player }, e => {
+    const metaKeyCode = 91;
+
     // show/hide shortcuts
-    if (e.key.toLowerCase() === keyToOpen) {
+    if (e.key.toLowerCase() === keyToOpen && !hotkeys.isPressed(metaKeyCode)) {
       this.showShortcuts.set(e.type === 'keydown');
 
       // show/hide the menu when the special key is pressed
@@ -172,12 +180,11 @@ Template.radialMenu.onCreated(function () {
           Session.set('menu', { userId });
           Session.set('menu-position', relativePositionToCamera(userManager.players[userId], worldScene.cameras.main));
         }, keyToOpenDelay);
-      } else if (e.type === 'keyup') {
-        clearTimeout(menuHandler);
-        Session.set('menu', undefined);
-        menuOpenUsingKey = false;
-      }
+      } else if (e.type === 'keyup') closeMenu();
     }
+
+    // close the menu if the meta key (command) is pressed
+    if (hotkeys.isPressed(metaKeyCode)) closeMenu();
 
     // execute shortcut actions
     if (e.repeat || !hotkeys[keyToOpen]) return;
