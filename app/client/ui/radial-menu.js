@@ -139,7 +139,7 @@ const onMouseMove = event => {
   const mousePosition = { x: event.clientX, y: event.clientY };
   const offsetY = 38;
   const distance = Math.sqrt((menuPosition.x - mousePosition.x) ** 2 + ((menuPosition.y - offsetY) - mousePosition.y) ** 2);
-  if (distance >= mouseDistanceToCloseMenu) Session.set('menu', false);
+  if (distance >= mouseDistanceToCloseMenu) closeMenu();
 };
 
 Template.radialMenuItem.helpers({
