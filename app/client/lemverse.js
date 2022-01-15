@@ -1,5 +1,4 @@
 import hotkeys from 'hotkeys-js';
-import DizzyEffect from '../public/assets/post-effects/DizzyEffect';
 
 const Phaser = require('phaser');
 
