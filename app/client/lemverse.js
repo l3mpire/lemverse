@@ -64,7 +64,6 @@ const config = {
   dom: {
     createContainer: true,
   },
-  pipeline: { DizzyEffect },
 };
 
 Template.lemverse.onCreated(function () {
@@ -346,13 +345,6 @@ Template.lemverse.onCreated(function () {
       Session.set('menu', undefined);
       game.scene.getScene('EditorScene')?.init();
     });
-  });
-
-  this.autorun(() => {
-    const currentLevel = Session.get('currentLevel');
-    if (!currentLevel) {
-      Meteor.call('currentLevel', (err, level) => { if (level) Session.set('currentLevel', level); });
-    }
   });
 
   hotkeys('e', { scope: 'all' }, event => {

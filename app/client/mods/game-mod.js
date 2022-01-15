@@ -6,7 +6,7 @@ const onZoneEntered = e => {
   const { levelId: currentLevelId } = Meteor.user().profile;
   const { zone } = e.detail;
   const { escape } = zone;
-  const { WorldScene } = game.scene.keys;
+  const { WorldScene, UIScene } = game.scene.keys;
 
   if (!escape) return;
 
@@ -61,7 +61,9 @@ const onZoneEntered = e => {
 
   if (escape.paintTiles) escapeA.enable_sync_coloration = true;
   else if (escape.enableDistortionEffect) {
+    game.renderer.pipelines.addPostPipeline('DizzyEffect', DizzyEffect);
     WorldScene.cameras.main.setPostPipeline(DizzyEffect);
+    UIScene.cameras.main.setPostPipeline(DizzyEffect);
     escapeA.enable_path_coloration = true;
   }
 };
@@ -72,6 +74,7 @@ const onZoneLeaved = e => {
   if (!zone.popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(`${Meteor.userId()}-${zone._id}`);
 
   game.scene.keys.WorldScene.cameras.main.resetPostPipeline();
+  game.scene.keys.UIScene.cameras.main.resetPostPipeline();
   escapeA.enable_path_coloration = false;
   escapeA.enable_sync_coloration = false;
 };

@@ -140,4 +140,11 @@ Template.escapeTimer.onRendered(function () {
     timer.minutesDelay = currentLevel.metadata.durationMinutes;
     timer.init();
   });
+
+  this.autorun(() => {
+    const currentLevel = Session.get('currentLevel');
+    if (!currentLevel) {
+      Meteor.call('currentLevel', (err, level) => { if (level) Session.set('currentLevel', level); });
+    }
+  });
 });
