@@ -176,13 +176,14 @@ Template.lemverse.onCreated(function () {
 
   this.autorun(() => {
     if (!Session.get('sceneWorldReady')) return;
+    const bootScene = game.scene.getScene('BootScene');
 
     Tracker.nonreactive(() => {
       if (this.handleObserveTilesets) this.handleObserveTilesets.stop();
       if (!this.handleObserveTilesets) {
         this.handleObserveTilesets = Tilesets.find().observe({
           added(tileset) {
-            game.scene.keys.BootScene.loadTilesetsAtRuntime([tileset], levelManager.addTilesetsToLayers.bind(levelManager));
+            bootScene.loadTilesetsAtRuntime([tileset], levelManager.addTilesetsToLayers.bind(levelManager));
           },
           changed(newTileset, oldTileset) {
             levelManager.onTilesetUpdated(newTileset, oldTileset);
@@ -194,52 +195,15 @@ Template.lemverse.onCreated(function () {
       if (!this.handleObserveCharacters) {
         this.handleObserveCharacters = Characters.find().observe({
           added(character) {
-            game.scene.keys.BootScene.loadCharactersAtRuntime([character]);
+            bootScene.loadCharactersAtRuntime([character]);
           },
-          changed(character, previous) {
-            if (!character.category) return;
+          changed(newCharacter, previousCharacter) {
+            if (!newCharacter.category) return;
 
-            const { anims } = game.scene.keys.WorldScene;
-            const animExist = (sprite, orientation) => anims[`${sprite._id}${sprite.category}${orientation}`];
-
-            // Remove previous animation
-            ['up', 'down', 'left', 'right'].forEach(orientation => {
-              if (animExist(previous, orientation)) {
-                anims.remove(`${previous._id}${previous.category}${orientation}`);
-              }
-            });
-
-            if (!animExist(character, 'right')) {
-              anims.create({
-                key: `${character._id}right`,
-                frames: anims.generateFrameNumbers(character._id, { frames: [48, 49, 50, 51, 52, 53] }),
-                frameRate: 10,
-                repeat: -1,
-              });
-            }
-            if (!animExist(character, 'up')) {
-              anims.create({
-                key: `${character._id}up`,
-                frames: anims.generateFrameNumbers(character._id, { frames: [54, 55, 56, 57, 58, 59] }),
-                frameRate: 10,
-                repeat: -1,
-              });
-            }
-            if (!animExist(character, 'left')) {
-              anims.create({
-                key: `${character._id}left`,
-                frames: anims.generateFrameNumbers(character._id, { frames: [60, 61, 62, 63, 64, 65] }),
-                frameRate: 10,
-                repeat: -1,
-              });
-            }
-            if (!animExist(character, 'down')) {
-              anims.create({
-                key: `${character._id}down`,
-                frames: anims.generateFrameNumbers(character._id, { frames: [66, 67, 68, 69, 70, 71] }),
-                frameRate: 10,
-                repeat: -1,
-              });
+            const imageChanged = newCharacter.fileId !== previousCharacter?.fileId;
+            if (imageChanged) {
+              bootScene.unloadCharacterAnimations([newCharacter]);
+              bootScene.loadCharactersAtRuntime([newCharacter]);
             }
           },
         });

@@ -59,6 +59,20 @@ BootScene = new Phaser.Class({
     });
   },
 
+  unloadCharacterAnimations(characters) {
+    const { formats } = Meteor.settings.public.assets.character;
+    characters.forEach(character => {
+      if (!character.category) return;
+
+      const { animations } = formats[`w-${character.width}`];
+      _.each(animations, (animation, animationName) => {
+        _.each(animation, (direction, key) => {
+          this.anims.remove(`${animationName}-${key}-${character._id}`);
+        });
+      });
+    });
+  },
+
   loadCharactersAtRuntime(characters) {
     const { frameHeight, frameWidth } = Meteor.settings.public.assets.character;
 
