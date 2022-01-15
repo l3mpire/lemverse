@@ -36,7 +36,7 @@ levelManager = {
     const newTilesets = [];
     _.each(tilesets, tileset => {
       if (this.findTileset(tileset._id)) return;
-      const tilesetImage = this.map.addTilesetImage(tileset._id, tileset.fileId, 16, 16, 0, 0, tileset.gid);
+      const tilesetImage = this.map.addTilesetImage(tileset._id, tileset.fileId, tileset.tileWidth || 16, tileset.tileHeight || 16, tileset.tileMargin || 0, tileset.tileSpacing || 0, tileset.gid);
       if (!tilesetImage) {
         log('unable to load tileset', tileset._id);
         return;
