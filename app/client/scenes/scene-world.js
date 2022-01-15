@@ -3,7 +3,7 @@ import nipplejs from 'nipplejs';
 const Phaser = require('phaser');
 
 const zoomConfig = Object.freeze({
-  min: 0.8,
+  min: 0.6,
   max: 1.5,
   delta: 450,
 });
