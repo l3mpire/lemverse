@@ -387,19 +387,6 @@ Template.lemverse.onCreated(function () {
     } else userManager.follow(userProximitySensor.nearestUser(Meteor.user()));
   });
 
-  hotkeys('j', { scope: scopes.player }, event => {
-    event.preventDefault();
-    if (event.repeat) return;
-
-    if (meet.api) {
-      meet.close();
-      updateViewport(game.scene.keys.WorldScene, viewportModes.fullscreen);
-    } else {
-      meet.open();
-      updateViewport(game.scene.keys.WorldScene, viewportModes.splitScreen);
-    }
-  });
-
   hotkeys('u', { scope: scopes.player }, event => {
     event.preventDefault();
     if (event.repeat) return;
