@@ -82,7 +82,7 @@ const createWindow = () => {
   });
 
   mainWindow.loadURL(appURL);
-  mainWindow.setAlwaysOnTop(true, 'normal');
+  mainWindow.setAlwaysOnTop(true, 'floating');
   mainWindow.setSkipTaskbar(true);
   mainWindow.setVisibleOnAllWorkspaces(true);
   mainWindow.on('focus', () => cancelWindowAutoClose());
