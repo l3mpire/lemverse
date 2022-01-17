@@ -12,6 +12,10 @@ body {
   overscroll-behavior-x: none;
   overscroll-behavior-y: none;
   -webkit-font-smoothing: antialiased;
+
+  * {
+    font-family: 'Roboto', sans-serif;
+  }
 }
 
 .status {
