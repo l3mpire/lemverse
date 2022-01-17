@@ -115,7 +115,7 @@ zones = {
       return mz;
     }, {});
 
-    if (this.activeZone?._id !== zone?._id) {
+    if (this.activeZone?._id !== zone._id) {
       // notify about zone change
       if (!_.isEmpty(this.activeZone)) {
         const zoneLeavedEvent = new CustomEvent('onZoneLeaved', { detail: { zone: this.activeZone } });
@@ -128,47 +128,34 @@ zones = {
       }
 
       this.activeZone = zone;
-      if (zone.name && !zone.hideName) this.toastZoneName(zone?.name);
+      if (zone.name && !zone.hideName) this.toastZoneName(zone.name);
 
       const dataPlayer = Meteor.users.findOne({ _id: player.userId });
 
-      if (zone?.adminOnly && !dataPlayer?.roles?.admin && !dataPlayer.profile?.guest) {
+      if (zone.adminOnly && !dataPlayer?.roles?.admin && !dataPlayer.profile.guest) {
         const [x, y] = zone.teleportEndpoint ? zone.teleportEndpoint.split(',') : [73, 45];
         userManager.teleportMainUser(+x, +y);
         lp.notif.error('This zone is reserved for admin');
       }
 
-      if (meet.api && !zone?.roomName) {
-        meet.close();
-      } else if (!meet.api && zone?.roomName && !dataPlayer.profile?.guest) {
-        meet.open(zone.roomName);
-      }
+      if (meet.api && !zone.roomName) meet.close();
+      else if (!meet.api && zone.roomName && !dataPlayer.profile.guest) meet.open(zone.roomName);
 
       if (meet.api) {
-        if (zone?.unmute) {
-          meet.unmute();
-        } else {
-          meet.mute();
-        }
+        if (zone.unmute) meet.unmute();
+        else meet.mute();
 
-        if (zone?.unhide) {
-          meet.unhide();
-        } else {
-          meet.hide();
-        }
+        if (zone.unhide) meet.unhide();
+        else meet.hide();
 
-        if (zone?.fullscreen) {
-          meet.fullscreen(true);
-        } else {
-          meet.fullscreen(false);
-        }
+        meet.fullscreen(zone.fullscreen);
       }
 
-      if (zone?.url) {
+      if (zone.url) {
         this.getIframeElement().src = zone.url;
         if (zone.yt) this.getIframeElement().allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
         this.getWebpageElement().classList.add('show');
-      } else if ((!zone || !zone.url) && !meet?.api) {
+      } else if (!zone.url && !meet.api) {
         this.getIframeElement().src = '';
         this.getWebpageElement().classList.remove('show');
       }
