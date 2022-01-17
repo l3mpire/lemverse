@@ -85,7 +85,7 @@ zones = {
     if (!this.toastBloc) this.toastBloc = $('.zone-name-toaster');
 
     if (zoneName) {
-      this.toastBloc.text(`You are entering: ${zoneName}`);
+      this.toastBloc.text(zoneName);
       this.toastBloc.addClass('show');
     }
 
