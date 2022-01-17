@@ -14,9 +14,10 @@ UIScene = new Phaser.Class({
     this.preRenderMethod = this.preRender.bind(this);
     this.shutdownMethod = this.shutdown.bind(this);
     this.updateViewportMethod = mode => updateViewport(this, mode);
-    this.physics.disableUpdate();
     this.reactionPool = this.add.group({ classType: CharacterReaction });
     this.UIElementsOffset = characterUIElementsOffset;
+    this.physics.disableUpdate();
+    this.scene.setVisible(false);
   },
 
   create() {
@@ -64,7 +65,12 @@ UIScene = new Phaser.Class({
     userVoiceRecorderAbility.setPosition(relativePlayerPosition.x, relativePlayerPosition.y, worldMainCamera);
   },
 
+  onLevelLoaded() {
+    this.scene.setVisible(true);
+  },
+
   onLevelUnloaded() {
+    this.scene.setVisible(false);
     characterPopIns.destroy();
 
     _.each(this.characterNamesObjects, text => text?.destroy());

@@ -251,7 +251,34 @@ Template.lemverse.onCreated(function () {
       }
 
       // subscribe to the loaded level
-      this.levelSubscribeHandler = this.subscribe('currentLevel');
+      this.levelSubscribeHandler = this.subscribe('currentLevel', () => {
+        worldScene.initFromLevel(Levels.findOne(levelId));
+
+        // Load tiles
+        log(`loading level: loading tiles`);
+        this.handleTilesSubscribe = this.subscribe('tiles', levelId, () => {
+          this.handleObserveTiles = Tiles.find().observe({
+            added(tile) {
+              const layer = levelManager.tileLayer(tile);
+              levelManager.map.putTileAt(levelManager.tileGlobalIndex(tile), tile.x, tile.y, false, layer);
+              window.dispatchEvent(new CustomEvent('onTileAdded', { detail: { tile, layer } }));
+            },
+            changed(tile) {
+              const layer = levelManager.tileLayer(tile);
+              levelManager.map.putTileAt(levelManager.tileGlobalIndex(tile), tile.x, tile.y, false, layer);
+              window.dispatchEvent(new CustomEvent('onTileChanged', { detail: { tile, layer } }));
+            },
+            removed(tile) {
+              const layer = levelManager.tileLayer(tile);
+              levelManager.map.removeTileAt(tile.x, tile.y, false, false, layer);
+            },
+          });
+
+          log('loading level: all tiles loaded');
+          uiScene.onLevelLoaded();
+          levelManager.onLevelLoaded();
+        });
+      });
 
       // Load users
       log(`loading level: ${levelId || 'unknown'}…`);
@@ -314,30 +341,6 @@ Template.lemverse.onCreated(function () {
         });
 
         log('loading level: all entities loaded');
-      });
-
-      // Load tiles
-      log(`loading level: loading tiles`);
-      this.handleTilesSubscribe = this.subscribe('tiles', levelId, () => {
-        this.handleObserveTiles = Tiles.find().observe({
-          added(tile) {
-            const layer = levelManager.tileLayer(tile);
-            levelManager.map.putTileAt(levelManager.tileGlobalIndex(tile), tile.x, tile.y, false, layer);
-            window.dispatchEvent(new CustomEvent('onTileAdded', { detail: { tile, layer } }));
-          },
-          changed(tile) {
-            const layer = levelManager.tileLayer(tile);
-            levelManager.map.putTileAt(levelManager.tileGlobalIndex(tile), tile.x, tile.y, false, layer);
-            window.dispatchEvent(new CustomEvent('onTileChanged', { detail: { tile, layer } }));
-          },
-          removed(tile) {
-            const layer = levelManager.tileLayer(tile);
-            levelManager.map.removeTileAt(tile.x, tile.y, false, false, layer);
-          },
-        });
-
-        log('loading level: all tiles loaded');
-        levelManager.onLevelLoaded();
       });
 
       this.currentLevelId = levelId;

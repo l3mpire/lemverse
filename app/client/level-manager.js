@@ -1,5 +1,6 @@
 const Phaser = require('phaser');
 
+const defaultMapConfig = { width: 100, height: 100, tileWidth: 48, tileHeight: 48 };
 const defaultLayer = 2;
 const defaultLayerCount = 9;
 const defaultLayerDepth = { 6: 10000, 7: 10001, 8: 10002 };
@@ -15,8 +16,8 @@ levelManager = {
     this.scene = scene;
   },
 
-  createMap() {
-    this.map = this.scene.make.tilemap({ tileWidth: 48, tileHeight: 48, width: 100, height: 100 });
+  createMapFromLevel(level) {
+    this.map = this.scene.make.tilemap({ ...level, ...defaultMapConfig });
     this.initMapLayers();
     this.addTilesetsToLayers(Tilesets.find().fetch());
 

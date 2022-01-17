@@ -40,37 +40,13 @@ WorldScene = new Phaser.Class({
   },
 
   init() {
-    this.input.keyboard.enabled = false;
     this.nippleData = undefined;
     this.nippleMoving = false;
-    this.scene.sleep();
     this.viewportMode = viewportModes.fullscreen;
-    this.physics.disableUpdate();
     this.sleepMethod = this.sleep.bind(this);
     this.updateViewportMethod = mode => updateViewport(this, mode);
     this.postUpdateMethod = this.postUpdate.bind(this);
     this.shutdownMethod = this.shutdown.bind(this);
-
-    window.addEventListener('onZoneEntered', onZoneEntered);
-    window.addEventListener('onZoneLeaved', onZoneLeaved);
-
-    this.events.on('sleep', this.sleepMethod, this);
-    this.scale.on('resize', this.updateViewportMethod, this);
-    Session.set('sceneWorldReady', true);
-
-    // Notes: tilesets with extrusion are required to avoid potential black lines between tiles
-    this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY) => {
-      const zoom = Math.min(Math.max(this.cameras.main.zoom + (deltaY / zoomConfig.delta), zoomConfig.min), zoomConfig.max);
-      this.cameras.main.setZoom(zoom);
-    });
-  },
-
-  create() {
-    entityManager.init(this);
-    levelManager.init(this);
-    userManager.init(this);
-
-    levelManager.createMap();
 
     // controls
     this.enableKeyboard(true, true);
@@ -91,9 +67,11 @@ WorldScene = new Phaser.Class({
       document.activeElement.blur();
     });
 
-    // cameras
-    this.cameras.main.setBounds(0, 0, levelManager.map.widthInPixels, levelManager.map.heightInPixels);
-    this.cameras.main.setRoundPixels(true);
+    // Notes: tilesets with extrusion are required to avoid potential black lines between tiles
+    this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY) => {
+      const zoom = Math.min(Math.max(this.cameras.main.zoom + (deltaY / zoomConfig.delta), zoomConfig.min), zoomConfig.max);
+      this.cameras.main.setZoom(zoom);
+    });
 
     if (window.matchMedia('(pointer: coarse)').matches) {
       this.nippleManager = nipplejs.create({
@@ -114,9 +92,32 @@ WorldScene = new Phaser.Class({
     }
 
     // events
+    this.events.on('sleep', this.sleepMethod, this);
     this.events.on('postupdate', this.postUpdateMethod, this);
     this.events.once('shutdown', this.shutdownMethod, this);
+    this.scale.on('resize', this.updateViewportMethod, this);
     hotkeys.setScope('guest');
+
+    // custom events
+    window.addEventListener('onZoneEntered', onZoneEntered);
+    window.addEventListener('onZoneLeaved', onZoneLeaved);
+
+    this.scene.sleep();
+    this.physics.disableUpdate();
+    Session.set('sceneWorldReady', true);
+    this.scene.setVisible(false);
+  },
+
+  initFromLevel(level) {
+    entityManager.init(this);
+    levelManager.init(this);
+    userManager.init(this);
+    levelManager.createMapFromLevel(level);
+
+    // cameras
+    this.cameras.main.setBounds(0, 0, levelManager.map.widthInPixels, levelManager.map.heightInPixels);
+    this.cameras.main.setRoundPixels(true);
+    this.scene.setVisible(true);
   },
 
   update() {
