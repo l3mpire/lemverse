@@ -165,6 +165,14 @@
       "alive_timeout": 60000,
       "expire_timeout": 5000,
       "allow_discovery": false
+    },
+
+    "packages": {
+      "email": {
+        "service": "Mailgun",
+        "user": "postmaster@meteor.com",
+        "password": "superDuperPassword"
+      }
     }
   }
 }

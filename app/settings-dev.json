@@ -168,6 +168,14 @@
     }
   },
 
+  "packages": {
+    "email": {
+      "service": "Mailgun",
+      "user": "postmaster@meteor.com",
+      "password": "superDuperPassword"
+    }
+  },
+
   "services": {
     "escape":{ "interval": 10 },
     "escapeCleanUp":{ "interval": 10 },

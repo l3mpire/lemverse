@@ -411,6 +411,14 @@ Please note, that as stated in section `Deploy in production`, there is an addit
         "expire_timeout": 5000,
         "allow_discovery": false,
       }
+    },
+
+    "packages": {
+      "email": {
+        "service": "Mailgun",
+        "user": "postmaster@meteor.com",
+        "password": "superDuperPassword"
+      }
     }
   }
 ```
