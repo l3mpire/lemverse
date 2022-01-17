@@ -103,11 +103,17 @@ const onTileChanged = e => {
   if (tile.metadata.paint) paintTile(WorldScene, tile, layer);
 };
 
+const onEntityUpdated = e => {
+  const { entity } = e.detail;
+  escapeA.update(entity);
+};
+
 Template.gameMod.onCreated(() => {
   window.addEventListener('onZoneEntered', onZoneEntered);
   window.addEventListener('onZoneLeaved', onZoneLeaved);
   window.addEventListener('onTileAdded', onTileAdded);
   window.addEventListener('onTileChanged', onTileChanged);
+  window.addEventListener('onEntityUpdated', onEntityUpdated);
 });
 
 Template.gameMod.onDestroyed(() => {
@@ -115,6 +121,7 @@ Template.gameMod.onDestroyed(() => {
   window.removeEventListener('onZoneLeaved', onZoneLeaved);
   window.removeEventListener('onTileAdded', onTileAdded);
   window.removeEventListener('onTileChanged', onTileChanged);
+  window.removeEventListener('onEntityUpdated', onEntityUpdated);
 });
 
 Template.gameMod.helpers({

@@ -18,7 +18,7 @@ entityManager = {
   remove() { },
 
   update(entity) {
-    escapeA.update(entity);
+    window.dispatchEvent(new CustomEvent('onEntityUpdated', { detail: { entity } }));
   },
 
   onInteraction(tiles, interactionPosition) {
