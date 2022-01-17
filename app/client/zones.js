@@ -139,7 +139,7 @@ zones = {
       }
 
       if (meet.api && !zone.roomName) meet.close();
-      else if (!meet.api && zone.roomName && !dataPlayer.profile.guest) meet.open(zone.roomName);
+      else if (!meet.api && zone.roomName && !dataPlayer.profile.guest) meet.open(`${zone.levelId}-${zone.roomName}`);
 
       if (meet.api) {
         if (zone.unmute) meet.unmute();
