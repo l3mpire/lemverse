@@ -1,3 +1,5 @@
+const iframeAllowAttributeSettings = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+
 zones = {
   activeZone: undefined,
   toastTimerInstance: undefined,
@@ -132,7 +134,7 @@ zones = {
 
       if (zone.url) {
         this.getIframeElement().src = zone.url;
-        if (zone.yt) this.getIframeElement().allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        if (zone.yt) this.getIframeElement().allow = iframeAllowAttributeSettings;
         this.getWebpageElement().classList.add('show');
       } else if (!zone.url && !meet.api) {
         this.getIframeElement().src = '';
