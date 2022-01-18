@@ -177,8 +177,11 @@ Template.radialMenu.onCreated(function () {
           menuOpenUsingKey = true;
           const worldScene = game.scene.getScene('WorldScene');
           const userId = Meteor.userId();
+          const player = userManager.players[userId];
+          if (!player) return;
+
           Session.set('menu', { userId });
-          Session.set('menu-position', relativePositionToCamera(userManager.players[userId], worldScene.cameras.main));
+          Session.set('menu-position', relativePositionToCamera(player, worldScene.cameras.main));
         }, keyToOpenDelay);
       } else if (e.type === 'keyup') closeMenu();
     }
