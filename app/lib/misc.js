@@ -20,11 +20,18 @@ isEditionAllowed = userId => {
   if (!userId) return false;
   const user = Meteor.users.findOne(userId);
   if (!user) return false;
+
   const { levelId } = user.profile;
   const currentLevel = Levels.findOne(levelId);
-  if (user?.roles?.admin && !currentLevel?.disableEdit) return true;
+  if (!currentLevel) return false;
 
-  return (currentLevel?.sandbox || currentLevel?.editorUserIds?.includes(user._id) || user._id === currentLevel.createdBy) && (!currentLevel?.disableEdit);
+  if (user.roles?.admin) return true;
+  if (userId === currentLevel.createdBy) return true;
+  if (currentLevel.sandbox) return true;
+  if (currentLevel.userTags?.editor?.includes(userId)) return true;
+  if (currentLevel.editorUserIds?.includes(userId)) return true;
+
+  return false;
 };
 
 updateSkin = (user, levelId) => {
