@@ -229,17 +229,10 @@ Template.lemverse.onCreated(function () {
       if (this.handleObserveZones) this.handleObserveZones.stop();
 
       // world clean-up
-      const levelName = Levels.findOne(levelId)?.name;
       const loadingScene = game.scene.getScene('LoadingScene');
       const worldScene = game.scene.getScene('WorldScene');
       const uiScene = game.scene.getScene('UIScene');
-      loadingScene.setText(levelName);
       loadingScene.show();
-
-      // update title
-      const titleParts = [Meteor.settings.public.lp.product];
-      if (levelName) titleParts.push(levelName);
-      document.title = titleParts.reverse().join(' - ');
 
       if (this.currentLevelId) {
         log(`unloading current level…`);
@@ -252,7 +245,16 @@ Template.lemverse.onCreated(function () {
 
       // subscribe to the loaded level
       this.levelSubscribeHandler = this.subscribe('currentLevel', () => {
-        worldScene.initFromLevel(Levels.findOne(levelId));
+        // update title
+        const level = Levels.findOne(levelId);
+        const titleParts = [Meteor.settings.public.lp.product];
+        if (level.name) {
+          titleParts.push(level.name);
+          loadingScene.setText(level.name);
+        }
+        document.title = titleParts.reverse().join(' - ');
+
+        worldScene.initFromLevel(level);
 
         // Load tiles
         log(`loading level: loading tiles`);

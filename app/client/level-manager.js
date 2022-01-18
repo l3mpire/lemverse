@@ -82,6 +82,7 @@ levelManager = {
     this.scene.scene.pause();
 
     const loadingScene = game.scene.getScene('LoadingScene');
+    loadingScene.setText('');
     loadingScene.show(() => {
       this.scene.scene.sleep();
       Meteor.call('teleportUserInLevel', levelId, (error, levelName) => {
