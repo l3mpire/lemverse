@@ -130,16 +130,34 @@ zones = {
       this.activeZone = zone;
       if (zone.name && !zone.hideName) this.toastZoneName(zone.name);
 
-      const dataPlayer = Meteor.users.findOne({ _id: player.userId });
+      if (zone.url) {
+        this.getIframeElement().src = zone.url;
+        if (zone.yt) this.getIframeElement().allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        this.getWebpageElement().classList.add('show');
+      } else if (!zone.url && !meet.api) {
+        this.getIframeElement().src = '';
+        this.getWebpageElement().classList.remove('show');
+      }
 
-      if (zone.adminOnly && !dataPlayer?.roles?.admin && !dataPlayer.profile.guest) {
+      const user = Meteor.users.findOne(player.userId);
+      if (!user) return;
+
+      if (!this.isUserAllowed(user, zone)) {
         const [x, y] = zone.teleportEndpoint ? zone.teleportEndpoint.split(',') : [73, 45];
         userManager.teleportMainUser(+x, +y);
-        lp.notif.error('This zone is reserved for admin');
+        lp.notif.error('This zone is reserved');
+
+        return;
+      }
+
+      if (zone.adminOnly && !user.roles?.admin && !user.profile.guest) {
+        const [x, y] = zone.teleportEndpoint ? zone.teleportEndpoint.split(',') : [73, 45];
+        userManager.teleportMainUser(+x, +y);
+        lp.notif.error('This zone is reserved');
       }
 
       if (meet.api && !zone.roomName) meet.close();
-      else if (!meet.api && zone.roomName && !dataPlayer.profile.guest) meet.open(`${zone.levelId}-${zone.roomName}`);
+      else if (!meet.api && zone.roomName && !user.profile.guest) meet.open(`${zone.levelId}-${zone.roomName}`);
 
       if (meet.api) {
         if (zone.unmute) meet.unmute();
@@ -150,16 +168,20 @@ zones = {
 
         meet.fullscreen(zone.fullscreen);
       }
-
-      if (zone.url) {
-        this.getIframeElement().src = zone.url;
-        if (zone.yt) this.getIframeElement().allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-        this.getWebpageElement().classList.add('show');
-      } else if (!zone.url && !meet.api) {
-        this.getIframeElement().src = '';
-        this.getWebpageElement().classList.remove('show');
-      }
     }
+  },
+
+  isUserAllowed(user, zone) {
+    if (zone.adminOnly && !user.roles?.admin) return false;
+
+    if (zone.requiredTags?.length) {
+      if (user.profile.guest) return false;
+
+      const userTags = levelUserTags(user.profile.levelId, user._id);
+      return zone.requiredTags.every(tag => userTags.includes(tag));
+    }
+
+    return true;
   },
 
   getIframeElement() {

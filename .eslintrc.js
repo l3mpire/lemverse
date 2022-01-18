@@ -138,6 +138,7 @@ module.exports = {
     sendAudioChunksToNearUsers: 'writable',
     sendAudioChunksToUsersInZone: 'writable',
     switchEntityState: 'writable',
+    levelUserTags: 'writable',
 
     relativePositionToCamera: 'writable',
     updateViewport: 'writable',

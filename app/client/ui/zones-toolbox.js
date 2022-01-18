@@ -23,7 +23,7 @@ Template.zonesToolboxProperties.helpers({
     if (!props.roomName) props.roomName = '';
     if (!props.name) props.name = '';
     if (!props.url) props.url = '';
-    if (!props.adminOnly) props.adminOnly = '';
+    if (!props.adminOnly) props.adminOnly = false;
     if (!props.teleportEndpoint) props.teleportEndpoint = '';
     if (!props.unmute) props.unmute = false;
     if (!props.unhide) props.unhide = false;
@@ -32,6 +32,7 @@ Template.zonesToolboxProperties.helpers({
     if (!props.inlineURL) props.inlineURL = '';
     if (!props.hideName) props.hideName = false;
     if (!props.disableCommunications) props.disableCommunications = false;
+    if (!props.requiredTags) props.requiredTags = [];
 
     return JSON.stringify(props, ' ', 2);
   },

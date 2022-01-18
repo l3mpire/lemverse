@@ -121,3 +121,14 @@ teleportUserInLevel = (levelId, userId) => {
 sendEvent = (command, data = {}) => {
   window.parent.postMessage(JSON.parse(JSON.stringify({ command, ...data })), '*');
 };
+
+levelUserTags = (levelId, userId) => {
+  const level = Levels.findOne(levelId);
+
+  const tags = [];
+  _.each(level.userTags || [], (userIds, tag) => {
+    if (userIds.includes(userId)) tags.push(tag);
+  });
+
+  return tags;
+};
