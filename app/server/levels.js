@@ -89,8 +89,14 @@ Meteor.publish('levels', function () {
 Meteor.publish('currentLevel', function () {
   if (!this.userId) return undefined;
 
+  const { name } = Meteor.user().profile;
+  const { levelId } = Meteor.user().profile || Meteor.settings.defaultLevelId;
+  callHooks(Levels.findOne(levelId), activityType.userEnteredLevel, { userId: this.userId, meta: { name } });
+
+  this.onStop(() => callHooks(Levels.findOne(levelId), activityType.userLeavedLevel, { userId: this.userId, meta: { name } }));
+
   return Levels.find(
-    { _id: Meteor.user().profile.levelId || Meteor.settings.defaultLevelId },
+    { _id: levelId },
     { fields: { name: 1, spawn: 1, hide: 1, height: 1, width: 1 } },
   );
 });

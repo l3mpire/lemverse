@@ -141,6 +141,7 @@ module.exports = {
     switchEntityState: 'writable',
     levelUserTags: 'writable',
     activityType: 'writable',
+    callHooks: 'writable',
 
     relativePositionToCamera: 'writable',
     updateViewport: 'writable',
