@@ -3,6 +3,15 @@ import fs from 'fs';
 import createDOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
 
+const { RateLimiterMemory } = require('rate-limiter-flexible');
+
+const rateLimiters = {};
+
+rateLimiters.default = new RateLimiterMemory({
+  points: 20, // 20 requests
+  duration: 2, // per 2 seconds
+});
+
 // handle the error safely
 process.on('uncaughtException', Meteor.bindEnvironment(err => { error(err, 'uncaughtException'); }, error));
 
@@ -39,28 +48,108 @@ lp.purify = (str, options = { FORBID_TAGS: ['form', 'input', 'textarea', 'button
   }
 };
 
-lp.route = (path, type, cb) => {
-  Picker.route(path, (params, req, res) => {
-    try {
-      if (type) res.setHeader('Content-Type', type);
+const commonHeaders = (res, rateLimiter, rateLimiterRes) => {
+  res.setHeader('Retry-After', rateLimiterRes.msBeforeNext / 1000);
+  res.setHeader('X-RateLimit-Limit', rateLimiter.points);
+  res.setHeader('X-RateLimit-Remaining', rateLimiterRes.remainingPoints);
+  res.setHeader('X-RateLimit-Reset', +(new Date(Date.now() + rateLimiterRes.msBeforeNext)));
+};
 
-      log(`lp.route: ${req.method} ${req.url}`, { _ip: lp.ip(req).ip, params });
-      const result = cb(params, req, res);
-      if (result) log(`lp.route: ${req.method} ${req.url}`, { _ip: lp.ip(req).ip, params, result });
-    } catch (err) {
-      const level = err?.errorType === 'Match.Error' ? log : error;
-      level(`lp.route: ${req.method} ${req.url}`, { _ip: lp.ip(req).ip, params, body: req.body, err });
+const searchApiKey = (params, req) => {
+  let apiKey;
+
+  if (params?.query?.access_token) apiKey = params.query.access_token;
+  else if (req.body && req.body.access_token) apiKey = req.body.access_token;
+  else if (req.headers && req.headers.authorization) {
+    // find the api key in the header auth https://segment.com/docs/partners/direct-integration/
+    const auth = req.headers.authorization.substr(6); // remove // Basic
+    ({ 1: apiKey } = Buffer.from(auth || '', 'base64').toString('utf8').split(':'));
+  }
+
+  if (typeof apiKey !== 'string' || !apiKey) return false;
+
+  return apiKey;
+};
+
+const routeWrapper = (path, type, cb, params, req, res) => {
+  const before = Date.now();
+  try {
+    if (type) res.setHeader('Content-Type', type);
+
+    const result = cb(params, req, res);
+    const durationMs = Date.now() - before;
+    log(`lp.route: ${req.method} ${path} end in ${durationMs}ms`, { _ip: lp.ip(req).ip, params, result });
+    if (durationMs > 10000 && path.startsWith('/api/stripe')) {
+      error(`lp.route: ${req.method} ${path} end in ${durationMs}ms`, { _ip: lp.ip(req).ip, params, result });
+    }
+  } catch (err) {
+    const level = err?.errorType === 'Match.Error' ? log : error;
+    level(`lp.route: ${req.method} ${path} end in ${Date.now() - before}ms with an error`, { _ip: lp.ip(req).ip, params, body: req.body, err });
+  }
+
+  if (!res.finished) {
+    let emptyValue = '';
+    switch (type) {
+      case 'image/gif': emptyValue = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64'); break;
+      case 'application/json': emptyValue = '{}'; break;
+      default:
+    }
+    res.end(emptyValue);
+  }
+};
+
+lp.route = (path, type, rateLimitType = 'none', cb) => {
+  const route = routeWrapper.bind(undefined, path, type, cb);
+
+  Picker.route(path, (params, req, res) => {
+    const apiKey = searchApiKey(params, req);
+    log(`lp.route: ${req.method} ${path} start`, { _ip: lp.ip(req).ip, params, apiKey });
+
+    let rateLimitBy;
+
+    switch (rateLimitType) {
+      case 'api':
+        rateLimitBy = apiKey;
+        break;
+      case 'ip':
+      case 'image-templates':
+        rateLimitBy = lp.ip(req).ip;
+        break;
+      case 'none':
+        break;
+      default:
+        error('lp.route: Unimplemented type of rate limit', { rateLimitType });
     }
 
-    if (!req.finished) {
-      let emptyValue = '';
+    if (!rateLimitBy) {
+      if (rateLimitType !== 'none') log(`lp.route: Impossible to get value for '${rateLimitType}'`, { rateLimitType });
+      route(params, req, res);
+      return;
+    }
+
+    const rateLimiter = rateLimiters[rateLimitType] || rateLimiters.default;
+
+    try {
+      const rateLimiterRes = Promise.await(rateLimiter.consume(rateLimitBy));
+      commonHeaders(res, rateLimiter, rateLimiterRes);
+    } catch (err) {
+      log(`lp.route: ${req.method} ${path} end with 429`, { _ip: lp.ip(req).ip, params, apiKey });
+
+      commonHeaders(res, rateLimiter, err);
+      res.writeHead(429);
+
+      let emptyValue = 'Too Many Requests';
       switch (type) {
         case 'image/gif': emptyValue = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64'); break;
-        case 'application/json': emptyValue = '{}'; break;
+        case 'application/json': emptyValue = '{ error: }'; break;
         default:
       }
+
       res.end(emptyValue);
+      return;
     }
+
+    route(params, req, res);
   });
 };
 

@@ -1,7 +1,7 @@
 /* cSpell:disable */
 Package.describe({
   name: 'lempire:lempire',
-  version: '1.0.0',
+  version: '1.0.1',
   summary: 'boilerplate for lempire projects',
   git: '',
   documentation: 'README.md',
@@ -18,6 +18,7 @@ Npm.depends({
   'underscore.string': '3.3.5',
   'fast-json-stable-stringify': '2.1.0',
   'prom-client': '12.0.0',
+  'rate-limiter-flexible': '2.2.1',
 });
 
 Package.onUse(api => {

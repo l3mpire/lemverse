@@ -43,6 +43,7 @@ module.exports = {
     'no-underscore-dangle': 0,
     'operator-linebreak': ['error', 'after'],
     'no-promise-executor-return': 0,
+    'default-param-last': 'off',
   },
   globals: {
     // Meteor
@@ -139,6 +140,7 @@ module.exports = {
     sendAudioChunksToUsersInZone: 'writable',
     switchEntityState: 'writable',
     levelUserTags: 'writable',
+    activityType: 'writable',
 
     relativePositionToCamera: 'writable',
     updateViewport: 'writable',

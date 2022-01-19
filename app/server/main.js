@@ -1,4 +1,7 @@
 import stringify from 'fast-json-stable-stringify';
+import bodyParser from 'body-parser';
+
+Picker.middleware(bodyParser.json({ limit: '5mb' }));
 
 Accounts.onCreateUser((options, user) => {
   log('onCreateUser', { options, user });
