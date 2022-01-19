@@ -16,7 +16,6 @@ callHooks = (level, type, content = {}) => {
   if (!level.hooks || !level.hooks.length) return;
 
   const data = { ...activity, ...content, type };
-  console.log(data);
   let hooksCalledCount = 0;
   level.hooks.forEach(hook => {
     hooksCalledCount++;

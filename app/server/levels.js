@@ -4,6 +4,7 @@ createLevel = (templateId = undefined, newName = undefined) => {
     _id: newLevelId,
     name: newName || `${Meteor.user().profile.name || Meteor.user().username}'s world`,
     spawn: { x: 200, y: 200 },
+    apiKey: CryptoJS.MD5((+new Date()) + Random.hexString(48)).toString(),
     createdAt: new Date(),
     createdBy: Meteor.userId(),
   });
