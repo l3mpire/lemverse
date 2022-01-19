@@ -65,6 +65,12 @@ const config = {
   },
 };
 
+const extractLevelIdFromURL = () => {
+  const levelId = FlowRouter.getParam('levelId');
+  if (!levelId) return undefined;
+  return `lvl_${levelId}`;
+};
+
 Template.lemverse.onCreated(function () {
   Session.set('selectedTiles', undefined);
   Session.set('selectedTilesetId', undefined);
@@ -81,6 +87,9 @@ Template.lemverse.onCreated(function () {
     toggleUserProperty('shareScreen', false);
     peer.destroy();
   });
+
+  const levelId = extractLevelIdFromURL();
+  if (levelId) Meteor.call('teleportUserInLevel', levelId);
 
   this.currentLevelId = undefined;
   this.subscribe('characters');
