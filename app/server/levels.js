@@ -105,6 +105,7 @@ Meteor.methods({
     else Levels.update(levelId, { $pull: { editorUserIds: userId } });
   },
   createLevel(templateId = undefined) {
+    check(templateId, Match.Maybe(String));
     return createLevel(templateId);
   },
   updateLevel(name, position, hide) {
