@@ -88,8 +88,8 @@ Template.lemverse.onCreated(function () {
     peer.destroy();
   });
 
-  const levelId = extractLevelIdFromURL();
-  if (levelId) Meteor.call('teleportUserInLevel', levelId);
+  const extractedLevelId = extractLevelIdFromURL();
+  if (extractedLevelId) Meteor.call('teleportUserInLevel', extractedLevelId);
 
   this.currentLevelId = undefined;
   this.subscribe('characters');
