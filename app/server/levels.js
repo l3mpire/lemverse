@@ -83,13 +83,16 @@ setSpawnLevelXY = () => {
 Meteor.publish('levels', function () {
   if (!this.userId) return undefined;
 
-  return Levels.find();
+  return Levels.find({ }, { fields: { name: 1, hide: 1, visit: 1 } });
 });
 
 Meteor.publish('currentLevel', function () {
   if (!this.userId) return undefined;
 
-  return Levels.find({ _id: Meteor.user().profile.levelId || Meteor.settings.defaultLevelId });
+  return Levels.find(
+    { _id: Meteor.user().profile.levelId || Meteor.settings.defaultLevelId },
+    { fields: { name: 1, spawn: 1, hide: 1, height: 1, width: 1 } },
+  );
 });
 
 Meteor.methods({
