@@ -117,25 +117,27 @@ To edit those information, simply click on the name of the room (bold text).
 
 ```jsonc
 {
-  "adminOnly": "", // Put true to restrict the zone
-  "levelId": "lvl_iLOVEaLOTlemverse", // LevelId of the zone
+  "adminOnly": false|true, // Put true to restrict the zone to administrators
   "name": "PianoSession", // Name displayed when you enter in the zone
-  "roomName": "", // Useful for jitsi server
+  "hideName": false|true, // Shows/hides the name of the zone when the user enters it
+  "roomName": "", // Open a jitsi room with the given name, leave empty to do nothing
   "teleportEndpoint": "", // Coordinate "640,480" where unauthorized people will be teleported once enter restricted zone
-  "unmute": "", // Automatically unmute jitsi mic (useful to unmute people on platform in conference room)
+  "unmute": false|true, // Automatically unmute jitsi mic (useful to unmute people on platform in conference room)
+  "unhide": false|true, // Automatically show cam in jitsi (useful to show people face automatically on platform in conference room)
   "url": "https://mczak.com/code/piano/pianoframe", // If present, this will popup an iframe with this url inside
-  "unhide": "", // Automatically show cam in jitsi (useful to show people face automatically on platform in conference room)
-  "fullscreen": false, // Set the iframe if full screen or not
+  "fullscreen": false|true, // Set the iframe if full screen or not
   "targetedLevelId": "", // Used for teleport zone. Should be the id of the level to teleport to.,
-  "inlineURL": "https://status.lemlist.com|<p>My custom text</p>", // Create a pop-in with URL or HTML content
-  "disableCommunications": false, // Disabling communications for the user inside
+  "inlineURL": "https://status.lemlist.com|<p>My custom text</p>", // Pop-in content with URL or HTML content
+  "disableCommunications": false|true, // Disabling all communications for the user inside the zone
+  "yt": false|true, // If the "url" attribute is a YouTube video it allows its integration without blocking
+  "requiredTags": ["editor", "director"], // Tags required to enter the zone (here an user with editor & director tags)
   "popInConfiguration": {
     "position": "top", // Optional: Pop-in position on the zone (center, left, right, bottom or top), set "relative" for custom position using "x" & "y" (default center)
     "x": 0, // Optional: Relative position from the zone's center on X (you need to set "position" to "relative")
     "y": -60, // Optional: Relative position from the zone's center on Y (you need to set "position" to "relative")
     "width": 120, // Optional: Custom width
     "height": 45, // Optional: Custom height
-    "className": "wood welcome" // Optional: List of CSS classes to customize pop-in's style
+    "className": "wood-style welcome with-arrow tooltip acid fade-in animated-text" // Optional: List of CSS classes to customize pop-in's style
   }
 }
 ```
