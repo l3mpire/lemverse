@@ -82,7 +82,10 @@ Template.lemverse.onCreated(function () {
   Session.set('menu', undefined);
   Session.set('console', false);
 
-  window.addEventListener('dblclick', () => sendEvent('toggle-fullscreen'));
+  window.addEventListener('dblclick', e => {
+    if (e.target === document.querySelector('canvas')) sendEvent('toggle-fullscreen');
+  });
+
   window.addEventListener('beforeunload', () => {
     toggleUserProperty('shareScreen', false);
     peer.destroy();
