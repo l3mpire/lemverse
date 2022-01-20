@@ -40,6 +40,7 @@
       }
 
       .js-toggle-edition {
+        cursor: pointer;
         position: relative;
 
         &.denied:after {
