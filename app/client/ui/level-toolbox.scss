@@ -17,6 +17,10 @@
     display: block;
     padding-top: 15px;
     font-size: 10pt;
+
+    &[for=level-toolbox-hidden] {
+      display: inline-block;
+    }
   }
 
   input[type="text"],

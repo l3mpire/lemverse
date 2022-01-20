@@ -3,16 +3,16 @@
     <h1 class="title">Level settings</h1>
     <div class="options">
       <div>
-        <label for="name">Name</label>
-        <input type="text" name="name" id="name" class="js-name" value={{ name }}>
+        <label for="level-toolbox-name">Name</label>
+        <input type="text" name="name" id="level-toolbox-name" class="js-name" value={{ name }}>
       </div>
       <div>
-        <label for="name">Hide from the list of levels:</label>
-        <input type="checkbox" class="js-hidden" checked={{hidden}}>
+        <label for="level-toolbox-position">Spawn position: (current {{ spawnPosition }})</label>
+        <button id="level-toolbox-position" type="button" class="js-spawn-position">Set spawn position</button>
       </div>
       <div>
-        <label for="name">Spawn position: (current {{ spawnPosition }})</label>
-        <button type="button" class="js-spawn-position">Set spawn position</button>
+        <input id="level-toolbox-hidden" type="checkbox" class="js-hidden" checked={{hidden}}>
+        <label for="level-toolbox-hidden">Hide from the list of levels</label>
       </div>
     </div>
   </div>
