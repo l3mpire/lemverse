@@ -5,10 +5,12 @@ toggleModal = modalName => {
   else Session.set('modal', { template: modalName });
 };
 
+const closeModal = () => Session.set('modal', undefined);
+
 const keydownListener = e => {
   if (e.code !== 'Escape' || !Session.get('modal')) return;
 
-  Session.set('modal', null);
+  closeModal();
   game.scene.keys.WorldScene.enableKeyboard(true, true);
   document.activeElement.blur();
 };
@@ -38,7 +40,7 @@ Template.modalContainer.onDestroyed(() => {
 });
 
 Template.modalContainer.events({
-  'click .js-modal-background'() { Session.set('modal', null); },
+  'click .js-modal-background'() { closeModal(); },
 });
 
 Template.modalContainer.helpers({
@@ -46,5 +48,5 @@ Template.modalContainer.helpers({
 });
 
 Template.modal.events({
-  'click .js-modal-close'() { Session.set('modal', null); },
+  'click .js-modal-close'() { closeModal(); },
 });
