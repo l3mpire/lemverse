@@ -38,11 +38,11 @@ meet = {
   },
 
   show(value) {
-    this.nodeElement().classList.toggle('show', value);
+    this.nodeElement().classList.toggle('show', !!value);
   },
 
   fullscreen(value) {
-    this.nodeElement().classList.toggle('fullscreen', value);
+    this.nodeElement().classList.toggle('fullscreen', !!value);
   },
 
   mute() {
