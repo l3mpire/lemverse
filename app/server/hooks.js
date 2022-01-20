@@ -9,13 +9,13 @@ const activity = {
   zoneId: undefined,
   entityId: undefined,
   meta: {},
-  createdAt: new Date(),
+  createdAt: undefined,
 };
 
 callHooks = (level, type, content = {}) => {
   if (!level.hooks || !level.hooks.length) return;
 
-  const data = { ...activity, ...content, type };
+  const data = { ...activity, ...content, type, createdAt: new Date() };
   let hooksCalledCount = 0;
   level.hooks.forEach(hook => {
     hooksCalledCount++;
