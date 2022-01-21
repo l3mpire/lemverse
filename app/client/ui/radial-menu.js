@@ -1,5 +1,15 @@
 /* eslint-disable no-use-before-define */
 
+let menuOpenUsingKey = false;
+const keyToOpen = 'shift';
+const keyToOpenDelay = 200;
+const menuOffset = { x: 0, y: -6 };
+const horizontalMenuItemDistance = { x: 45, y: -90 };
+const radialMenuRadius = 72;
+const mouseDistanceToCloseMenu = 105;
+const itemAmountRequiredForBackground = 2;
+let menuHandler;
+
 const getMenuActiveUser = () => {
   const { userId } = Session.get('menu');
   if (!userId) return undefined;
@@ -13,6 +23,12 @@ const lovePhrases = userName => [
   `Have a good day ${userName}!`,
   `I hope your day is great ${userName}`,
 ];
+
+const closeMenu = () => {
+  clearTimeout(menuHandler);
+  Session.set('menu', undefined);
+  menuOpenUsingKey = false;
+};
 
 const reactionMenuItems = [
   { icon: '🪧', shortcut: 50, action: () => setReaction(Meteor.user().profile.defaultReaction || Meteor.settings.public.defaultReaction), cancel: () => setReaction() },
@@ -30,15 +46,16 @@ const mainMenuItems = [
   { icon: '📺', shortcut: 51, label: 'Screen', state: 'shareScreen', action: () => toggleUserProperty('shareScreen') },
   { icon: '🎥', shortcut: 50, label: 'Camera', state: 'shareVideo', action: () => toggleUserProperty('shareVideo') },
   { icon: '🎤', shortcut: 49, label: 'Audio', state: 'shareAudio', action: () => toggleUserProperty('shareAudio') },
-  { icon: '😃', shortcut: 55, label: 'Reactions', action: template => buildMenu(reactionMenuItems, template.items) },
-  { icon: '🔔', shortcut: 54, label: 'Voice mail', action: () => { toggleModal('notifications'); Session.set('menu', false); } },
+  { icon: '😃', shortcut: 56, label: 'Reactions', action: template => buildMenu(reactionMenuItems, template.items) },
+  { icon: '🔔', shortcut: 55, label: 'Voice mail', action: () => { toggleModal('notifications'); closeMenu(); } },
+  { icon: '💬', shortcut: 54, label: 'Text', action: () => { Session.set('console', true); closeMenu(); } },
   { icon: '📢',
     label: 'Shout',
     shortcut: 53,
     action: () => userVoiceRecorderAbility.recordVoice(true, sendAudioChunksToUsersInZone),
     cancel: () => userVoiceRecorderAbility.recordVoice(false, sendAudioChunksToUsersInZone),
   },
-  { icon: '⚙️', shortcut: 52, label: 'Settings', action: () => { toggleModal('settingsMain'); Session.set('menu', false); } },
+  { icon: '⚙️', shortcut: 52, label: 'Settings', action: () => { toggleModal('settingsMain'); closeMenu(); } },
 ];
 
 const otherUserMenuItems = [
@@ -64,7 +81,7 @@ const otherUserMenuItems = [
       }
 
       userManager.follow(user);
-      Session.set('menu', false);
+      closeMenu();
     },
   },
   { icon: '🎙️',
@@ -83,22 +100,6 @@ const otherUserMenuItems = [
   },
   { icon: '👤', label: 'Profile', shortcut: 51, action: () => Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId }) },
 ];
-
-let menuOpenUsingKey = false;
-const keyToOpen = 'shift';
-const keyToOpenDelay = 200;
-const menuOffset = { x: 0, y: -6 };
-const horizontalMenuItemDistance = { x: 45, y: -90 };
-const radialMenuRadius = 72;
-const mouseDistanceToCloseMenu = 105;
-const itemAmountRequiredForBackground = 2;
-let menuHandler;
-
-const closeMenu = () => {
-  clearTimeout(menuHandler);
-  Session.set('menu', undefined);
-  menuOpenUsingKey = false;
-};
 
 const computeMenuPosition = () => {
   const position = Session.get('menu-position');

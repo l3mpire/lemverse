@@ -43,12 +43,15 @@ const autoSetScope = template => {
 Template.console.onCreated(function () {
   this.scope = new ReactiveVar(scopesNotifications.nearUsers);
 
-  hotkeys('enter', scopes.player, () => {
-    Session.set('console', true);
-    autoSetScope(this);
-    clearAndFocusInputField();
+  this.autorun(() => {
+    const console = Session.get('console');
+    if (console) {
+      autoSetScope(this);
+      clearAndFocusInputField();
+    }
   });
 
+  hotkeys('enter', scopes.player, () => Session.set('console', true));
   hotkeys('escape', scopes.player, () => closeAndFocusCanvas());
 });
 
