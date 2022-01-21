@@ -98,7 +98,7 @@ Meteor.publish('currentLevel', function () {
 
   return Levels.find(
     { _id: levelId },
-    { fields: { name: 1, spawn: 1, hide: 1, height: 1, width: 1, editorUserIds: 1 } },
+    { fields: { name: 1, spawn: 1, hide: 1, height: 1, width: 1, editorUserIds: 1, userTags: 1, createdBy: 1 } },
   );
 });
 
