@@ -29,12 +29,11 @@ const config = {
   inputWindowEvents: false,
   title: Meteor.settings.public.lp.product,
   url: Meteor.settings.public.lp.website,
-  powerPreference: 'low-power',
   fps: {
     min: 5,
     target: 60,
     forceSetTimeOut: false,
-    deltaHistory: 10,
+    deltaHistory: 5,
     panicMax: 120,
     smoothStep: true,
   },
@@ -44,6 +43,7 @@ const config = {
       debug: Meteor.settings.public.debug,
       gravity: { y: 0 },
       useTree: false,
+      customUpdate: true,
     },
   },
   render: {
@@ -51,6 +51,7 @@ const config = {
     roundPixels: true,
     antialias: false,
     antialiasGL: false,
+    powerPreference: 'low-power',
   },
   scale: {
     mode: Phaser.Scale.RESIZE,
