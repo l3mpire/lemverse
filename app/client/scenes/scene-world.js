@@ -70,7 +70,8 @@ WorldScene = new Phaser.Class({
     // Notes: tilesets with extrusion are required to avoid potential black lines between tiles
     this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY) => {
       const zoom = Math.min(Math.max(this.cameras.main.zoom + (deltaY / zoomConfig.delta), zoomConfig.min), zoomConfig.max);
-      this.cameras.main.setZoom(zoom);
+      const roundedZoom = Math.round(zoom * 1000) / 1000;
+      this.cameras.main.setZoom(roundedZoom);
     });
 
     if (window.matchMedia('(pointer: coarse)').matches) {
