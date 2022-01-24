@@ -1,5 +1,7 @@
 const iframeAllowAttributeSettings = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
 
+const getZoneCenter = zone => [(zone.x1 + zone.x2) * 0.5, (zone.y1 + zone.y2) * 0.5];
+
 zones = {
   activeZone: undefined,
   toastTimerInstance: undefined,
@@ -8,12 +10,19 @@ zones = {
   webpageIframeContainer: undefined,
 
   currentZone(user) {
-    return Zones.findOne({
+    if (!user || user === Meteor.user()) return this.activeZone;
+
+    const zones = Zones.find({
       x1: { $lte: user.profile.x },
       x2: { $gte: user.profile.x },
       y1: { $lte: user.profile.y },
       y2: { $gte: user.profile.y },
-    });
+    }).fetch();
+
+    if (!zones.length) return undefined;
+    const sortedZones = this.sortByNearest(zones, user.profile.x, user.profile.y);
+
+    return sortedZones[0];
   },
 
   setFullscreen(zone, value) {
@@ -25,6 +34,18 @@ zones = {
       x: zone.x1 + (zone.x2 - zone.x1) / 2,
       y: zone.y1 + (zone.y2 - zone.y1) / 2,
     };
+  },
+
+  sortByNearest(zones, x, y) {
+    // todo: sort using square edges or polygons
+    return zones.sort((zoneA, zoneB) => {
+      const zoneAPosition = getZoneCenter(zoneA);
+      const zoneBPosition = getZoneCenter(zoneB);
+      const zoneADistance = (zoneAPosition[0] - x) ** 2 + (zoneAPosition[1] - y) ** 2;
+      const zoneBDistance = (zoneBPosition[0] - x) ** 2 + (zoneBPosition[1] - y) ** 2;
+
+      return zoneADistance - zoneBDistance;
+    });
   },
 
   computePositionFromString(zone, positionName) {

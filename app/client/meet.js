@@ -1,5 +1,13 @@
 // https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe
 
+const onMuteStatusChanged = event => {
+  const currentZone = zones.currentZone();
+  if (!event.muted && !currentZone.unmute) {
+    meet.mute();
+    lp.notif.warning(`This zone does not allow the microphone`);
+  }
+};
+
 meet = {
   api: undefined,
   node: undefined,
@@ -7,18 +15,25 @@ meet = {
   open(roomName = Meteor.settings.public.meet.roomDefaultName) {
     if (meet.api) return;
 
+    const user = Meteor.user();
+    const currentZone = zones.currentZone();
+
     const options = {
       roomName,
       width: '100%',
       height: '100%',
       parentNode: this.nodeElement(),
       userInfo: {
-        email: Meteor.user().emails[0].address,
-        displayName: Meteor.user().profile.name,
+        email: user.emails[0].address,
+        displayName: user.profile.name,
+      },
+      configOverwrite: {
+        startWithAudioMuted: !currentZone.unmute || !user.profile.shareAudio,
       },
     };
 
     meet.api = new window.JitsiMeetExternalAPI(Meteor.settings.public.meet.serverURL, options);
+    meet.api.addListener('audioMuteStatusChanged', onMuteStatusChanged);
     this.show(true);
 
     peer.disable();
@@ -31,6 +46,7 @@ meet = {
   },
 
   close() {
+    meet.api.removeListener('audioMuteStatusChanged', onMuteStatusChanged);
     meet.api?.dispose();
     meet.api = undefined;
     this.show(false);

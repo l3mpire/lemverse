@@ -105,26 +105,13 @@ Template.zonesToolbox.onDestroyed(() => {
   Session.set('displayZoneId', null);
 });
 
-const getZoneCenter = zone => [(zone.x1 + zone.x2) * 0.5, (zone.y1 + zone.y2) * 0.5];
-
 Template.zonesToolbox.helpers({
   zones() { return Zones.find(); },
   zonesSortedByDistance() {
     const user = Meteor.user();
     const { x, y } = user.profile;
-    const zones = Zones.find().fetch();
 
-    // todo: sort using square edges or polygons
-    const sortedZones = zones.sort((zoneA, zoneB) => {
-      const zoneAPosition = getZoneCenter(zoneA);
-      const zoneBPosition = getZoneCenter(zoneB);
-      const zoneADistance = (zoneAPosition[0] - x) ** 2 + (zoneAPosition[1] - y) ** 2;
-      const zoneBDistance = (zoneBPosition[0] - x) ** 2 + (zoneBPosition[1] - y) ** 2;
-
-      return zoneADistance - zoneBDistance;
-    });
-
-    return sortedZones;
+    return zones.sortByNearest(Zones.find().fetch(), x, y);
   },
   displayZone() { return Zones.findOne(Session.get('displayZoneId')); },
 });
