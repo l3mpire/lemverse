@@ -1,7 +1,7 @@
 const entityTooltipConfig = {
   identifier: 'nearest-entity',
   proximityRequired: 100 ** 2, // Distance without using sqrt
-  text: '<p>Press the key <b>u</b> to use</p>',
+  text: 'Press the key <b>u</b> to use',
   style: 'tooltip with-arrow fade-in',
 };
 
