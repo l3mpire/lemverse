@@ -152,6 +152,11 @@ Template.lemverse.onCreated(function () {
           userProximitySensor.callProximityStartedForAllNearUsers();
         });
       }
+
+      if (meet.api) {
+        if (user.profile.shareAudio) meet.unmute();
+        else meet.mute();
+      }
     });
   });
 
@@ -167,6 +172,11 @@ Template.lemverse.onCreated(function () {
           userStreams.video(true);
           userProximitySensor.callProximityStartedForAllNearUsers();
         });
+      }
+
+      if (meet.api) {
+        if (user.profile.shareVideo) meet.unhide();
+        else meet.hide();
       }
     });
   });
@@ -301,15 +311,17 @@ Template.lemverse.onCreated(function () {
       this.handleUsersSubscribe = this.subscribe('users', levelId, () => {
         this.handleObserveUsers = Meteor.users.find({ status: { $exists: true } }).observe({
           added(user) {
-            userManager.createUser(user);
+            window.setTimeout(() => userManager.createUser(user), 0);
           },
           changed(user, oldUser) {
-            userManager.updateUser(user, oldUser);
+            window.setTimeout(() => userManager.updateUser(user, oldUser));
           },
           removed(user) {
-            userManager.removeUser(user);
-            userProximitySensor.removeNearUser(user);
-            lp.defer(() => peer.close(user._id, 0, 'user-disconnected'));
+            window.setTimeout(() => {
+              userManager.removeUser(user);
+              userProximitySensor.removeNearUser(user);
+              lp.defer(() => peer.close(user._id, 0, 'user-disconnected'));
+            }, 0);
           },
         });
 

@@ -183,11 +183,10 @@ zones = {
       else if (!meet.api && zone.roomName && !user.profile.guest) meet.open(`${zone.levelId}-${zone.roomName}`);
 
       if (meet.api) {
-        if (zone.unmute) meet.unmute();
-        else meet.mute();
+        toggleUserProperty('shareAudio', zone.unmute || false);
 
-        if (zone.unhide) meet.unhide();
-        else meet.hide();
+        // The camera of a person who leaves the area is not automatically deactivated, unlike the microphone
+        if (zone.unhide) toggleUserProperty('shareVideo', true);
 
         meet.fullscreen(zone.fullscreen);
       }
