@@ -132,6 +132,7 @@ button:focus {
   opacity: 0;
   transition: opacity 0.25s;
   background-color: white;
+  pointer-events: none;
 
   &.show {
     visibility: visible;
