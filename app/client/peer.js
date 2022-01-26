@@ -470,7 +470,7 @@ peer = {
   },
 
   unlockCalls() {
-    _.each(this.lockedCalls, (value, userId) => this.unlockCall(userId, true));
+    _.each(this.lockedCalls, (value, userId) => this.unlockCall(userId, false));
   },
 
   hasActiveStreams() {
