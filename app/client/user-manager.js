@@ -620,6 +620,7 @@ userManager = {
       peer.disable();
     } else peer.enable();
 
+    this.follow(undefined); // interrupts the follow action
     this.setTintFromState(this.player);
     sounds.enabled = !enable;
   },
@@ -652,7 +653,9 @@ userManager = {
       lp.notif.warning(`${userEmitter.profile.name} is following you 👀`);
     } else if (dataReceived.type === 'unfollowed') {
       peer.unlockCall(emitterUserId);
-      lp.notif.warning(`${userEmitter.profile.name} has finally stopped following you 🎉`);
+
+      if (this.entityFollowed?.userId === emitterUserId) this.follow(undefined);
+      else lp.notif.warning(`${userEmitter.profile.name} has finally stopped following you 🎉`);
     } else if (dataReceived.type === 'text') {
       const emitterPlayer = userManager.players[emitterUserId];
       if (!emitterPlayer) return;
