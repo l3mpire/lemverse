@@ -416,7 +416,7 @@ peer = {
 
         if (debug) log(`create peer: created (${this.peerInstance.id})`);
 
-        this.peerInstance.on('connection', connection => connection.on('data', userManager.onPeerDataReceived));
+        this.peerInstance.on('connection', connection => connection.on('data', data => userManager.onPeerDataReceived(data)));
 
         this.peerInstance.on('close', () => {
           log('peer closed and destroyed');
