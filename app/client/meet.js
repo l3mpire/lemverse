@@ -11,7 +11,7 @@ meet = {
     const currentZone = zones.currentZone();
 
     const options = {
-      roomName,
+      roomName: kebabCase(roomName),
       width: '100%',
       height: '100%',
       parentNode: this.nodeElement(),

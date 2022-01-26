@@ -84,6 +84,7 @@ module.exports = {
     remote: 'writable',
     _: 'readable',
     stats: 'writable',
+    kebabCase: 'writable',
 
     game: 'writable',
     createLevel: 'writable',
