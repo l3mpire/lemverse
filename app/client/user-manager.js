@@ -448,15 +448,6 @@ userManager = {
   postUpdate(time, delta) {
     if (!this.player) return;
 
-    // todo: remove this old code
-    const user = Meteor.user();
-    if (user.profile.freeze) {
-      this.pauseAnimation(this.player, true);
-      this.player.body.setVelocity(0, 0);
-
-      return;
-    }
-
     const { keys, nippleMoving, nippleData } = this.scene;
     let speed = keys.shift.isDown ? Meteor.settings.public.character.runSpeed : Meteor.settings.public.character.walkSpeed;
 
