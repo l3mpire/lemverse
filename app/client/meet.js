@@ -20,7 +20,8 @@ meet = {
         displayName: user.profile.name,
       },
       configOverwrite: {
-        startWithAudioMuted: !currentZone.unmute || !user.profile.shareAudio,
+        startWithAudioMuted: !currentZone.unmute,
+        startWithVideoMuted: !currentZone.unhide,
       },
     };
 

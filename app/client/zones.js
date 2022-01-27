@@ -184,9 +184,7 @@ zones = {
 
       if (meet.api) {
         toggleUserProperty('shareAudio', zone.unmute || false);
-
-        // The camera of a person who leaves the area is not automatically deactivated, unlike the microphone
-        if (zone.unhide) toggleUserProperty('shareVideo', true);
+        toggleUserProperty('shareVideo', zone.unhide || false);
 
         meet.fullscreen(zone.fullscreen);
       }
