@@ -89,9 +89,9 @@ waitFor = (condition, attempt, delay = 250) => new Promise((resolve, reject) => 
 
 getRandomAvatarForUser = user => {
   let URL = Meteor.settings.public.peer.avatarAPI;
-  URL = URL.replace('[user_id]', encodeURI(user._id));
-  URL = URL.replace('[user_name]', encodeURI(user.profile.name));
-  URL = URL.replace('[user_avatar]', encodeURI(user.profile.avatar || 'cat'));
+  URL = URL.replace('[user_id]', encodeURI(user?._id || 'guest'));
+  URL = URL.replace('[user_name]', encodeURI(user?.profile.name || 'guest'));
+  URL = URL.replace('[user_avatar]', encodeURI(user?.profile.avatar || 'cat'));
 
   return URL;
 };

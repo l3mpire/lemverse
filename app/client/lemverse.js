@@ -123,7 +123,10 @@ Template.lemverse.onCreated(function () {
   });
 
   this.autorun(() => {
-    if (!Meteor.userId()) Session.set('sceneWorldReady', false);
+    if (!Meteor.userId()) {
+      Session.set('sceneWorldReady', false);
+      userManager.unsetMainPlayer();
+    }
   });
 
   this.autorun(() => {
