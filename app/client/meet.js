@@ -22,6 +22,7 @@ meet = {
       configOverwrite: {
         startWithAudioMuted: !currentZone.unmute,
         startWithVideoMuted: !currentZone.unhide,
+        disableTileView: !currentZone.unhide,
       },
     };
 
