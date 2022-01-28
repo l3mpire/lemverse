@@ -7,13 +7,18 @@
         <input type="text" name="name" id="level-toolbox-name" class="js-name" value={{ name }}>
       </div>
       <div>
-        <label for="level-toolbox-position">Spawn position: (current {{ spawnPosition }})</label>
-        <button id="level-toolbox-position" type="button" class="js-spawn-position">Set spawn position</button>
-      </div>
-      <div>
         <input id="level-toolbox-hidden" type="checkbox" class="js-hidden" checked={{hidden}}>
         <label for="level-toolbox-hidden">Hide from the list of levels</label>
       </div>
+      <div>
+        <label for="level-toolbox-position">Spawn position: (current {{ spawnPosition }})</label>
+        <button id="level-toolbox-position" type="button" class="js-spawn-position">Set spawn position</button>
+      </div>
+      {{#if isBeta 'levelTags'}}
+        <div>
+          <button type="button" class="js-edit-tags">Edit tags</button>
+        </div>
+      {{/if}}
     </div>
   </div>
 </template>

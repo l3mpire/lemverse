@@ -1,0 +1,27 @@
+<template name="levelTag">
+  <div class="level-tag">
+    <h2>
+      {{tag}} 
+      <button type="button" class="js-add-user">Add user</button>
+      <button type="button" class="js-remove-tag">Remove tag</button>
+    </h2>
+    <div>
+      {{#each user in users}}
+        {{> levelTagsUser tag=tag user=user}}
+      {{/each}}
+    </div>
+  </div>
+</template>
+
+<template name="levelTags">
+  {{#modal title="Level tags"}}
+    <div class="level-tags">
+      {{> levelTagsCreate}}
+      <div class="tags-list">
+        {{#each tag in allLevelTags}}
+          {{> levelTag tag=tag }}
+        {{/each}}
+      </div>
+    </div>
+  {{/modal}}
+</template>

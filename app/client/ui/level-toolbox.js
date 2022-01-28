@@ -27,6 +27,9 @@ Template.levelToolbox.events({
     const { x, y } = Meteor.user().profile;
     updateLevel(name, { x, y }, currentLevel().hide);
   },
+  'click .js-edit-tags'() {
+    Session.set('modal', { template: 'levelTags' });
+  },
 });
 
 Template.levelToolbox.helpers({

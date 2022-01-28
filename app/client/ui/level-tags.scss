@@ -1,0 +1,42 @@
+.level-tags {
+  height: 100%;
+
+  .level-tag {
+    button {
+      cursor: pointer;
+      appearance: none;
+      background-color: #ed5d68;
+      border: 0;
+      color: white;
+      font-size: 8pt;
+      border-radius: 5px;
+      padding: 3px 8px;
+    }
+
+    .js-remove-tag {
+      background-color: #ed5d68;
+    }
+
+    .js-add-user {
+      background-color: #38b77c;
+    }
+  }
+
+  .tags-list {
+    background-color: #f4f7fb;
+
+    h2 {
+      display: inline-block;
+      padding: 3px 10px;
+      margin-top: 5px;
+      margin-bottom: 5px;
+      font-size: 17px;
+    }
+
+    .tag-element {
+      border-radius: 5px;
+      background-color: red;
+      color: white;
+    }
+  }
+}
