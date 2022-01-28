@@ -1,5 +1,5 @@
 <template name="characterNameColorSelector">
-    <select name="name-color" class="js-name-color">
+    <select name="name-color" class="js-name-color select">
       {{#each value in nameColors}}
        {{#if isSelected value}}
         <option selected="selected" value="{{value}}">{{value}}</option>
@@ -15,20 +15,20 @@
     <div class="settings">
       <div class="options container">
         <div class="name-section">
-          <label for="name">Name</label>
-          <input type="text" name="name" id="name" class="js-name" value={{currentUser.profile.name}}>
+          <label for="name" class="label">Name</label>
+          <input type="text" name="name" id="name" class="js-name input" value={{currentUser.profile.name}}>
           {{> characterNameColorSelector}}
         </div>
         
         <div class="reaction-section">
-          <label for="reaction">Custom reaction</label>
-          <input type="text" name="reaction" id="reaction" class="js-reaction" value={{#if currentUser.profile.defaultReaction}}{{currentUser.profile.defaultReaction}}{{else}}❤️{{/if}}>
+          <label for="reaction" class="label">Custom reaction</label>
+          <input type="text" name="reaction" id="reaction" class="js-reaction input" value={{#if currentUser.profile.defaultReaction}}{{currentUser.profile.defaultReaction}}{{else}}❤️{{/if}}>
         </div>
 
         <div>
-          <button class="js-profile">Edit profile</button>
-          <button class="js-character-designer" id="character-edit">Character editor</button>
-          <button class="js-medias-settings" id="medias-edit">Audio/Video settings</button>
+          <button class="js-profile button">Edit profile</button>
+          <button class="js-character-designer button" id="character-edit">Character editor</button>
+          <button class="js-medias-settings button" id="medias-edit">Audio/Video settings</button>
         </div>
 
       </div>
