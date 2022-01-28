@@ -79,7 +79,9 @@ module.exports = {
     Levels: 'writable',
     Files: 'writable',
     Notifications: 'writable',
+    Messages: 'writable',
     nearestDuration: 'writable',
+    isCommunicationAllowed: 'writable',
     isEditionAllowed: 'writable',
     remote: 'writable',
     _: 'readable',
@@ -159,5 +161,7 @@ module.exports = {
     LoadingScene: 'writable',
     WorldScene: 'writable',
     UIScene: 'writable',
+
+    messagesModule: 'writeable',
   },
 };

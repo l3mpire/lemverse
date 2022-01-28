@@ -16,6 +16,20 @@ nearestDuration = duration => {
   return message.join(':');
 };
 
+isCommunicationAllowed = userId => {
+  if (!userId) return false;
+  const user = Meteor.users.findOne(userId);
+  if (!user) return false;
+
+  const { levelId } = user.profile;
+  const currentLevel = Levels.findOne(levelId);
+  if (!currentLevel) return false;
+
+  // todo: check if the user is in the zone
+
+  return true;
+};
+
 isEditionAllowed = userId => {
   if (!userId) return false;
   const user = Meteor.users.findOne(userId);

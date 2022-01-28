@@ -30,6 +30,12 @@ Levels = lp.collectionRegister('levels', 'lvl', [], {
   remove(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
 });
 
+Messages = lp.collectionRegister('messages', 'msg', [], {
+  insert(userId) { return isCommunicationAllowed(userId); },
+  update(userId) { return isCommunicationAllowed(userId); },
+  remove(userId) { return isCommunicationAllowed(userId); },
+});
+
 Notifications = lp.collectionRegister('notifications', 'not', [], {
   insert(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
   update(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },

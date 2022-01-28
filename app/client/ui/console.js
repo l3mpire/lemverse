@@ -23,6 +23,9 @@ const onSubmit = scope => {
     return;
   }
 
+  messagesModule.sendMessage(scope, fieldValue);
+
+  // webrtc event
   const func = scope === scopesNotifications.nearUsers ? sendDataToNearUsers : sendDataToUsersInZone;
   func('text', fieldValue, Meteor.userId())
     .then(() => {

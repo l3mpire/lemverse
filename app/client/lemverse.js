@@ -83,6 +83,8 @@ Template.lemverse.onCreated(function () {
   Session.set('menu', undefined);
   Session.set('console', false);
 
+  messagesModule.init(this);
+
   window.addEventListener('dblclick', e => {
     if (e.target === document.querySelector('canvas')) sendEvent('toggle-fullscreen');
   });
@@ -458,6 +460,8 @@ Template.lemverse.onDestroyed(function () {
   hotkeys.unbind('r', scopes.player);
   hotkeys.unbind('shift+r', scopes.player);
   hotkeys.unbind('tab', scopes.player);
+
+  messagesModule.destroy();
 });
 
 Template.lemverse.helpers({
