@@ -1,0 +1,16 @@
+<template name="messagesListMessage">
+  <div class="message">
+    <span class="user">{{user}}</span> <span class="time" title="{{date}}">{{time}}</span>
+    <p class="text">{{text}}</p>
+  </div>
+</template>
+
+<template name="messagesList">
+  <div class="messages-module {{#if Session 'console'}}show{{/if}}">
+    <div class="messages-list">
+      {{#each message in messages}}
+        {{> messagesListMessage message=message }}
+      {{/each}}
+    </div>
+  </div>
+</template>
