@@ -1,3 +1,18 @@
+const getCurrentChannelName = () => {
+  const messages = Messages.find().fetch();
+  if (!messages.length) return '-';
+
+  const channels = messages.map(message => message.channel);
+  const channelItems = [...new Set(channels)];
+
+  if (channelItems.length === 1) return Zones.findOne(channelItems[0])?.name || 'Zone';
+
+  const users = Meteor.users.find({ _id: { $in: channelItems } }).fetch();
+  const userNames = users.map(user => user.profile.name);
+
+  return userNames.split(' & ');
+};
+
 Template.messagesListMessage.helpers({
   user() { return Meteor.users.findOne(this.message.createdBy)?.profile.name || '[removed]'; },
   text() { return this.message.text; },
@@ -15,5 +30,7 @@ Template.messagesList.onCreated(function () {
 });
 
 Template.messagesList.helpers({
+  show() { return Session.get('console') && Messages.find().count(); },
+  channelName() { return getCurrentChannelName(); },
   messages() { return Messages.find({}, { sort: { createdAt: -1 } }).fetch(); },
 });

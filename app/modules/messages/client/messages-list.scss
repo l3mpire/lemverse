@@ -2,6 +2,8 @@ $background-color: #2b2d3df2;
 $border-radius: 8px;
 
 .messages-module {
+  display: flex;
+  flex-direction: column;
   position: absolute;
   bottom: 130px;
   left: 50%;
@@ -19,6 +21,14 @@ $border-radius: 8px;
   &.show {
     opacity: 1;
     pointer-events: all;
+  }
+
+  .channel-name {
+    margin: 0;
+    padding: 15px 0;
+    text-align: center;
+    background-color: #2c2e3e;
+    color: white;
   }
 
   .messages-list {
