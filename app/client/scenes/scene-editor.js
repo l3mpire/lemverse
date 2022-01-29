@@ -55,6 +55,7 @@ EditorScene = new Phaser.Class({
         this.isMouseDown = false;
         if (zoneId) {
           const zone = Zones.findOne(zoneId);
+          if (!zone) return;
           const { startPosition, endPosition } = this.computePositions(zone, worldPoint, Session.get('selectedZonePoint'), altIsDown);
 
           Zones.update(zoneId, { $set: {
@@ -76,6 +77,7 @@ EditorScene = new Phaser.Class({
 
       if (zoneId) {
         const zone = Zones.findOne(zoneId);
+        if (!zone) return;
 
         const { startPosition, endPosition } = this.computePositions(zone, worldPoint, Session.get('selectedZonePoint'), altIsDown);
         const size = {
