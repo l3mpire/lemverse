@@ -31,13 +31,19 @@ userProximitySensor = {
   addNearUser(user) {
     const userAlreadyNear = this.isUserNear(user);
     this.nearUsers[user._id] = user;
-    if (this.onProximityStarted && !userAlreadyNear) this.onProximityStarted(user);
+
+    if (!userAlreadyNear) {
+      window.dispatchEvent(new CustomEvent('onUserNear', { detail: { user } }));
+      if (this.onProximityStarted) this.onProximityStarted(user);
+    }
   },
 
   removeNearUser(user) {
     if (!this.isUserNear(user)) return;
 
     delete this.nearUsers[user._id];
+
+    window.dispatchEvent(new CustomEvent('onUserMovedAway', { detail: { user } }));
     if (this.onProximityEnded) this.onProximityEnded(user);
   },
 
