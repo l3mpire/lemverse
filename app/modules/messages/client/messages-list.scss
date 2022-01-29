@@ -39,8 +39,26 @@ $border-radius: 8px;
     overflow-y: auto;
 
     .message {
+      display: flex;
       margin-bottom: 10px;
       color: white;
+
+      >div:first-child {
+        width: 45px;
+        height: 45px;
+        margin-right: 10px;
+      }
+
+      .avatar-viewer {
+        width: 70px;
+        height: 70px;
+        border-radius: 5px;
+        background-color: #2c2e3e;
+
+        .character-body-part-container {
+          transform: scale(0.7) translate(-1px, -28px);
+        }
+      }
 
       .user {
         font-weight: 600;

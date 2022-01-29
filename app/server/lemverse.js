@@ -43,7 +43,7 @@ Meteor.publish('usernames', function (userIds) {
 
   return Meteor.users.find(
     { _id: { $in: userIds } },
-    { fields: { 'profile.name': 1 } },
+    { fields: { 'profile.name': 1, 'profile.body': 1, 'profile.hair': 1, 'profile.outfit': 1, 'profile.eye': 1, 'profile.accessory': 1 } },
   );
 });
 

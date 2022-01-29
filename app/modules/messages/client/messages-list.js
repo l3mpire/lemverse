@@ -14,7 +14,8 @@ const getCurrentChannelName = () => {
 };
 
 Template.messagesListMessage.helpers({
-  user() { return Meteor.users.findOne(this.message.createdBy)?.profile.name || '[removed]'; },
+  user() { return Meteor.users.findOne(this.message.createdBy); },
+  userName() { return Meteor.users.findOne(this.message.createdBy)?.profile.name || '[removed]'; },
   text() { return this.message.text; },
   date() { return this.message.createdAt.toDateString(); },
   time() { return this.message.createdAt.toLocaleTimeString(); },

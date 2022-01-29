@@ -1,7 +1,10 @@
 <template name="messagesListMessage">
   <div class="message">
-    <span class="user">{{user}}</span> <span class="time" title="{{date}}">{{time}}</span>
-    <p class="text">{{text}}</p>
+    {{> avatarViewer user=user}}
+    <div>
+      <span class="user">{{userName}}</span> <span class="time" title="{{date}}">{{time}}</span>
+      <p class="text">{{text}}</p>
+    </div>
   </div>
 </template>
 
