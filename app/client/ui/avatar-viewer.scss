@@ -1,0 +1,27 @@
+$frame-width: 47px;
+$frame-height: 85px;
+
+.avatar-viewer {
+  position: relative;
+  width: $frame-width;
+  height: $frame-height;
+  overflow: hidden;
+  pointer-events: none;
+
+  .character-body-part-container {
+    position: absolute;
+    margin: 0;
+    width: $frame-width;
+    height: $frame-height;
+    overflow: hidden;
+
+    .character-body-part {
+      display: block;
+      position: absolute;
+      top: -200px;
+      left: -865px;
+      margin: 0;
+      image-rendering: pixelated;
+    }
+  }
+}

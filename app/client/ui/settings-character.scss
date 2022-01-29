@@ -17,24 +17,6 @@
     min-width: 75px;
     display: flex;
     align-items: center;
-
-    .renderCharacterWrapper {
-      margin: 0;
-      margin-left: 15px;
-      position: absolute;
-      width: 46px;
-      height: 120px;
-      overflow: hidden;
-
-      .partCharacter {
-        image-rendering: pixelated;
-        margin: 0;
-        position: absolute;
-        top: -200px;
-        left: -865px;
-        display: block;
-      }
-    }
   }
 
   .customize {

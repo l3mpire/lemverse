@@ -1,19 +1,15 @@
-const getImage = id => Characters.findOne(id);
-
 Template.settingsCharacter.onCreated(() => {
   if (!Session.get('settings-character-category')) Session.set('settings-character-category', 'body');
 });
 
 Template.settingsCharacter.helpers({
-  getAppearance() {
-    return Object.keys(charactersParts).filter(part => Meteor.user()?.profile[part]).map(part => getImage(Meteor.user()?.profile[part]));
-  },
   getAllImages() {
     return Characters.find({ category: Session.get('settings-character-category'), $or: [{ hide: { $exists: false } }, { hide: false }] }).fetch();
   },
   isBodyPart(id) {
     return Meteor.user().profile[Session.get('settings-character-category')] === id;
   },
+  user() { return Meteor.user(); },
 });
 
 Template.settingsCharacter.events({

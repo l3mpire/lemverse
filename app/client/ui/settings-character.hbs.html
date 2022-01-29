@@ -3,11 +3,7 @@
     <div class="settings container">
       <div class="settingsCharacter">
         <div class="renderCharacter">
-          {{#each getAppearance}}
-            <div class="renderCharacterWrapper">
-              <img height="{{zoom height 2}}" width="{{zoom width 2}}" src="{{concat '/api/files/' fileId}}" alt="" class="partCharacter">
-            </div>
-          {{/each}}
+          {{> avatarViewer user=user}}
         </div>
         <div class="customize">
           <div class="customize-menus">
