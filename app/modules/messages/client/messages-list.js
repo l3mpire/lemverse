@@ -5,12 +5,12 @@ const getCurrentChannelName = () => {
   const channels = messages.map(message => message.channel);
   const channelItems = [...new Set(channels)];
 
-  if (channelItems.length === 1) return Zones.findOne(channelItems[0])?.name || 'Zone';
+  if (channelItems.length === 1 && channelItems[0].includes('zon_')) return Zones.findOne(channelItems[0])?.name || 'Zone';
 
   const users = Meteor.users.find({ _id: { $in: channelItems } }).fetch();
   const userNames = users.map(user => user.profile.name);
 
-  return userNames.split(' & ');
+  return userNames.join(' & ');
 };
 
 Template.messagesListMessage.helpers({
