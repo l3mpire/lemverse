@@ -75,6 +75,7 @@ const extractLevelIdFromURL = () => {
 Template.lemverse.onCreated(function () {
   Session.set('selectedTiles', undefined);
   Session.set('selectedTilesetId', undefined);
+  Session.set('messagesChannel', undefined);
   Session.set('sceneWorldReady', false);
   Session.set('loading', true);
   Session.set('tilesetsLoaded', false);

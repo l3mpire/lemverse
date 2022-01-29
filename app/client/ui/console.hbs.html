@@ -1,7 +1,7 @@
 <template name="console">
   <div class="console {{#if Session 'console'}}show{{/if}}">
     <form class="js-console-form">
-      {{> consoleScopeSelector scope=scope}}
+      {{> consoleScopeSelector}}
       <input type="text" class="js-command-input" name="js-command-input" placeholder="Talk here" autocomplete="off">
       <button type="button" class="js-button-submit">Send</button>
     </form>

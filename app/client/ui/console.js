@@ -16,40 +16,30 @@ const closeAndFocusCanvas = () => {
   game.scene.keys.WorldScene.enableKeyboard(true, false);
 };
 
-const onSubmit = scope => {
+const onSubmit = () => {
   const fieldValue = document.querySelector(inputSelector).value;
   if (!fieldValue) {
     closeAndFocusCanvas();
     return;
   }
 
-  messagesModule.sendMessage(scope, fieldValue);
+  const channel = Session.get('messagesChannel');
+  if (!channel) {
+    lp.notif.error('No channel selected to send a message');
+    return;
+  }
 
-  // webrtc event
-  const func = scope === scopesNotifications.nearUsers ? sendDataToNearUsers : sendDataToUsersInZone;
-  func('text', fieldValue, Meteor.userId())
-    .then(() => {
-      userManager.onPeerDataReceived({ emitter: Meteor.userId(), data: fieldValue, type: 'text' });
-      closeAndFocusCanvas();
-    })
-    .catch(e => {
-      if (e.message === 'no-targets' && scope === scopesNotifications.nearUsers) lp.notif.error('You need someone near you to send text');
-      else lp.notif.error(e);
-    });
-};
-
-const autoSetScope = template => {
-  if (userProximitySensor.isNearSomeone()) template.scope.set(scopesNotifications.nearUsers);
-  else template.scope.set(scopesNotifications.zone);
+  messagesModule
+    .sendMessage(channel, fieldValue)
+    .then(() => userManager.onPeerDataReceived({ emitter: Meteor.userId(), data: fieldValue, type: 'text' }))
+    .catch(e => lp.notif.error(e));
 };
 
 Template.console.onCreated(function () {
-  this.scope = new ReactiveVar(scopesNotifications.nearUsers);
-
   this.autorun(() => {
     const console = Session.get('console');
     if (console) {
-      autoSetScope(this);
+      messagesModule.autoSelectChannel();
       clearAndFocusInputField();
     }
   });
@@ -68,11 +58,7 @@ Template.console.events({
   'blur .js-command-input'() { hotkeys.setScope(scopes.player); game.scene.keys.WorldScene.enableKeyboard(true, false); },
   'keydown .js-command-input'(event) { if (event.which === 27) { closeAndFocusCanvas(); event.preventDefault(); } },
   'click .js-button-submit, submit .js-console-form'(event) {
-    onSubmit(Template.instance().scope.get());
+    onSubmit();
     event.preventDefault();
   },
-});
-
-Template.console.helpers({
-  scope() { return Template.instance().scope; },
 });

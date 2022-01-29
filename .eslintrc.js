@@ -163,5 +163,6 @@ module.exports = {
     UIScene: 'writable',
 
     messagesModule: 'writeable',
+    computeChannelNameFromNearUsers: 'writeable',
   },
 };

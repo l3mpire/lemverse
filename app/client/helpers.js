@@ -66,3 +66,10 @@ sendDataToUsersInZone = (type, data, emitterId) => new Promise((resolve, reject)
 });
 
 kebabCase = string => string.replace(/([a-z])([A-Z])/g, '$1-$2').replace(/\s+/g, '-').toLowerCase();
+
+computeChannelNameFromNearUsers = (includeUser = true) => {
+  const nearUsers = Object.keys(userProximitySensor.nearUsers);
+  if (nearUsers.length && includeUser) nearUsers.push(Meteor.userId());
+
+  return nearUsers.sort().join(';');
+};
