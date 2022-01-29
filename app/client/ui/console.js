@@ -25,7 +25,7 @@ const onSubmit = () => {
 
   const channel = Session.get('messagesChannel');
   if (!channel) {
-    lp.notif.error('No channel selected to send a message');
+    lp.notif.error('You have to be in a zone and/or near someone to send a message');
     return;
   }
 
