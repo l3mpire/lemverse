@@ -12,6 +12,13 @@ zones = {
   currentZone(user) {
     if (!user || user === Meteor.user()) return this.activeZone;
 
+    const zones = this.currentZones(user);
+    if (!zones.length) return undefined;
+
+    return zones[0];
+  },
+
+  currentZones(user) {
     const zones = Zones.find({
       x1: { $lte: user.profile.x },
       x2: { $gte: user.profile.x },
@@ -19,10 +26,9 @@ zones = {
       y2: { $gte: user.profile.y },
     }).fetch();
 
-    if (!zones.length) return undefined;
-    const sortedZones = this.sortByNearest(zones, user.profile.x, user.profile.y);
+    if (!zones.length) return [];
 
-    return sortedZones[0];
+    return this.sortByNearest(zones, user.profile.x, user.profile.y);
   },
 
   setFullscreen(zone, value) {
