@@ -1,13 +1,16 @@
 messagesModule = {
   handleMessagesSubscribe: undefined,
+  channel: undefined,
+  template: undefined,
 
   init(template) {
+    this.template = template;
+
     const onZoneEntered = event => {
       const { zone } = event.detail;
-      if (this.handleMessagesSubscribe) this.handleMessagesSubscribe.stop();
-      if (zone) this.handleMessagesSubscribe = template.subscribe('messages', zone._id);
+      this.changeMessagesChannel(zone._id);
     };
-    const onZoneLeaved = () => this.handleMessagesSubscribe?.stop();
+    const onZoneLeaved = () => this.stopListeningMessagesChannel();
 
     window.addEventListener('onZoneEntered', onZoneEntered);
     window.addEventListener('onZoneLeaved', onZoneLeaved);
@@ -31,11 +34,38 @@ messagesModule = {
       return false;
     }
 
-    Messages.insert({ _id: Messages.id(), zoneId: zone._id, text: message, createdAt: new Date(), createdBy: Meteor.userId() });
+    return this.sendMessageToChannel(zone._id, message);
+  },
+
+  sendMessageToNearUsers(message) {
+    const { nearUsers } = userProximitySensor;
+    const userIds = Object.keys(nearUsers);
+
+    if (!userIds.length) {
+      lp.notif.error('You need someone near you to send a message');
+      return false;
+    }
+
+    return this.sendMessageToChannel(userIds.join(';'), message);
+  },
+
+  changeMessagesChannel(channel) {
+    if (!channel || channel === this.channel) return;
+
+    this.stopListeningMessagesChannel();
+    this.handleMessagesSubscribe = this.template.subscribe('messages', channel);
+    this.channel = channel;
+  },
+
+  sendMessageToChannel(channel, message) {
+    Messages.insert({ _id: Messages.id(), channel, text: message, createdAt: new Date(), createdBy: Meteor.userId() });
     return true;
   },
 
-  sendMessageToNearUsers() { return false; },
+  stopListeningMessagesChannel() {
+    this.channel = undefined;
+    this.handleMessagesSubscribe?.stop();
+  },
 
   postUpdate() {},
 
