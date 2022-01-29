@@ -23,6 +23,7 @@ EditorScene = new Phaser.Class({
     Session.set('editor', 0);
 
     this.events.on('wake', () => {
+      Session.set('console', undefined);
       this.marker.visible = true;
       this.updateEditionMarker(Session.get('selectedTiles'));
     });
