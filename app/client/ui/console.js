@@ -31,7 +31,10 @@ const onSubmit = () => {
 
   messagesModule
     .sendMessage(channel, fieldValue)
-    .then(() => userManager.onPeerDataReceived({ emitter: Meteor.userId(), data: fieldValue, type: 'text' }))
+    .then(() => {
+      userManager.onPeerDataReceived({ emitter: Meteor.userId(), data: fieldValue, type: 'text' });
+      clearAndFocusInputField();
+    })
     .catch(e => lp.notif.error(e));
 };
 
