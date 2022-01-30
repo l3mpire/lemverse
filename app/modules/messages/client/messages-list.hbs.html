@@ -10,11 +10,13 @@
 
 <template name="messagesList">
   <div class="messages-module {{#if show}}show{{/if}}">
-    <h3 class="channel-name">{{channelName}}</h3>
-    <div class="messages-list">
-      {{#each message in messages}}
-        {{> messagesListMessage message=message }}
-      {{/each}}
-    </div>
+    {{#if show}}
+      <h3 class="channel-name">{{channelName}}</h3>
+      <div class="messages-list">
+        {{#each message in messages}}
+          {{> messagesListMessage message=message }}
+        {{/each}}
+      </div>
+    {{/if}}
   </div>
 </template>
