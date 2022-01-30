@@ -61,6 +61,12 @@
     .button {
       width: 50px;
       height: 30px;
+      padding: 0 8px;
+
+      &.active {
+        background-color: rgb(78, 87, 106);
+        color: white;
+      }
     }
   }
 
