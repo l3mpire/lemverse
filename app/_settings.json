@@ -139,6 +139,8 @@
 
   "defaultLevelId": "lvl_iLOVEaLOTlemverse",
 
+  "botUserId": "",
+
   "email": {
     "from": "The lembot <contact@m.lemverse.com>"
   },

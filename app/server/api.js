@@ -47,6 +47,35 @@ lp.route('/api/entities/:entityId', 'application/json', 'api', (params, req, res
   return '';
 });
 
+lp.route('/api/zones/:zoneId/messages', 'application/json', 'api', (params, req, res) => {
+  try { check(params.zoneId, Match.SafeString); } catch (err) { return 'Invalid zone id'; }
+  if (!req.body) return 'no body';
+  if (req.method !== 'POST') return 'bad method';
+
+  const { text } = req.body;
+  try { check(text, String); } catch (err) { return 'Text data is missing'; }
+  if (!text.length) return 'invalid text';
+
+  const { level } = getLevel(params, req, res);
+  if (!level) return 'bad level';
+
+  const zone = Zones.findOne(params.zoneId);
+  if (!zone) return 'zone not found';
+
+  if (!Meteor.settings.botUserId) return 'bot configuration missing';
+
+  const updated = Promise.await(Messages.insert({
+    _id: Messages.id(),
+    channel: params.zoneId,
+    text,
+    createdAt: new Date(),
+    createdBy: Meteor.settings.botUserId,
+  }));
+  if (!updated) return 'not added';
+
+  return '';
+});
+
 lp.route('/api/hooks', 'application/json', 'api', (params, req, res) => {
   const { levelId, level } = getLevel(params, req, res);
   if (!levelId) return 'bad level id';
