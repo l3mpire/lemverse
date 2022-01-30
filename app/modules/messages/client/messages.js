@@ -54,6 +54,7 @@ messagesModule = {
 
   sendMessage(channel, message) {
     const isZoneTargeted = channel.includes('zon_');
+    if (message.length >= 4096) return Promise.reject(new Error('The message is too long (> 4096 chars)'));
 
     return new Promise(resolve => {
       // insert message

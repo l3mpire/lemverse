@@ -55,6 +55,7 @@ lp.route('/api/zones/:zoneId/messages', 'application/json', 'api', (params, req,
   const { text } = req.body;
   try { check(text, String); } catch (err) { return 'Text data is missing'; }
   if (!text.length) return 'invalid text';
+  if (text.length >= 4096) return 'The text is too long (> 4096 chars)';
 
   const { level } = getLevel(params, req, res);
   if (!level) return 'bad level';
