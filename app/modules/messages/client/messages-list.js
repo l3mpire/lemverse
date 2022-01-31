@@ -17,7 +17,7 @@ Template.messagesListMessage.helpers({
   userName() { return Meteor.users.findOne(this.message.createdBy)?.profile.name || '[removed]'; },
   text() { return this.message.text; },
   date() { return this.message.createdAt.toDateString(); },
-  time() { return this.message.createdAt.toLocaleTimeString(); },
+  time() { return this.message.createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); },
 });
 
 Template.messagesList.onCreated(function () {
