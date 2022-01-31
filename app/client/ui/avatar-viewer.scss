@@ -2,11 +2,11 @@ $frame-width: 47px;
 $frame-height: 85px;
 
 .avatar-viewer {
+  cursor: pointer;
   position: relative;
   width: $frame-width;
   height: $frame-height;
   overflow: hidden;
-  pointer-events: none;
 
   .character-body-part-container {
     position: absolute;
