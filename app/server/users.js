@@ -36,7 +36,7 @@ Meteor.publish('users', function (levelId) {
 
   return Meteor.users.find(
     { 'status.online': true, 'profile.levelId': levelId },
-    { fields: { options: 1, profile: 1, roles: 1, status: { online: 1 }, beta: 1 } },
+    { fields: { options: 1, profile: 1, roles: 1, status: { online: 1 }, beta: 1, inventory: 1 } },
   );
 });
 

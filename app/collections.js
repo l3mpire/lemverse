@@ -48,6 +48,12 @@ Entities = lp.collectionRegister('entities', 'ent', [], {
   remove(userId) { return isEditionAllowed(userId); },
 });
 
+Items = lp.collectionRegister('items', 'itm', [], {
+  insert(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
+  update(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
+  remove(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
+});
+
 Files = new FilesCollection({
   collectionName: 'Files',
   storagePath: '/var/tmp/lemverse',

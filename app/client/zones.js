@@ -200,11 +200,11 @@ zones = {
   isUserAllowed(user, zone) {
     if (zone.adminOnly && !user.roles?.admin) return false;
 
-    if (zone.requiredTags?.length) {
+    if (zone.requiredItems?.length) {
       if (user.profile.guest) return false;
 
-      const userTags = levelUserTags(user.profile.levelId, user._id);
-      return zone.requiredTags.every(tag => userTags.includes(tag));
+      const userItems = (user.inventory || []).map(inventoryItem => inventoryItem.itemId);
+      return zone.requiredItems.every(tag => userItems.includes(tag));
     }
 
     return true;

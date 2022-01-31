@@ -80,6 +80,7 @@ module.exports = {
     Files: 'writable',
     Notifications: 'writable',
     Messages: 'writable',
+    Items: 'writable',
     nearestDuration: 'writable',
     isCommunicationAllowed: 'writable',
     isEditionAllowed: 'writable',

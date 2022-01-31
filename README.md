@@ -130,7 +130,7 @@ To edit those information, simply click on the name of the room (bold text).
   "inlineURL": "https://status.lemlist.com|<p>My custom text</p>", // Pop-in content with URL or HTML content
   "disableCommunications": false|true, // Disabling all communications for the user inside the zone
   "yt": false|true, // If the "url" attribute is a YouTube video it allows its integration without blocking
-  "requiredTags": ["editor", "director"], // Tags required to enter the zone (here an user with editor & director tags)
+  "requiredItems": ["itm_x", "itm_y"], // Items required to enter the zone
   "popInConfiguration": {
     "position": "top", // Optional: Pop-in position on the zone (center, left, right, bottom or top), set "relative" for custom position using "x" & "y" (default center)
     "x": 0, // Optional: Relative position from the zone's center on X (you need to set "position" to "relative")

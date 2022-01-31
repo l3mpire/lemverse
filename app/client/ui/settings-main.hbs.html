@@ -27,8 +27,11 @@
 
         <div>
           <button class="js-profile button">Edit profile</button>
-          <button class="js-character-designer button" id="character-edit">Character editor</button>
-          <button class="js-medias-settings button" id="medias-edit">Audio/Video settings</button>
+          {{#if isBeta inventory}}
+            <button class="js-inventory button">Inventory</button>
+          {{/if}}
+          <button class="js-character-designer button">Character editor</button>
+          <button class="js-medias-settings button">Audio/Video settings</button>
         </div>
 
       </div>

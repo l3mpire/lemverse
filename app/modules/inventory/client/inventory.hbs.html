@@ -1,0 +1,24 @@
+<template name="inventoryItem">
+  {{#if exist}}
+    <div class="inventory-item">
+      <div>
+        <img src="{{thumbnail}}" alt="thumbnail" class="thumbnail">
+        <span class="amount">x{{amount}}</span>
+      </div>
+      <div>
+        <span class="name">{{name}}</span>
+        <p class="description">{{description}}</p>
+      </div>
+    </div>
+  {{/if}}
+</template>
+
+<template name="inventory">
+  {{#modal title="Inventory"}}
+    <div class="inventory">
+      {{#each item in items}}
+        {{> inventoryItem item=item }}
+      {{/each}}
+    </div>
+  {{/modal}}
+</template>
