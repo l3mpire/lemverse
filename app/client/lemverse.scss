@@ -268,6 +268,7 @@ button.js-notifications {
   font-size: 22px;
   display: none;
   z-index: 101;
+  width: 40px;
 
   &.visible {
     display: block;
