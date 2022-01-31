@@ -9,6 +9,7 @@ $frame-height: 85px;
   overflow: hidden;
 
   .character-body-part-container {
+    pointer-events: none;
     position: absolute;
     margin: 0;
     width: $frame-width;
