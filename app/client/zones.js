@@ -185,8 +185,13 @@ zones = {
         lp.notif.error('This zone is reserved');
       }
 
-      if (meet.api && !zone.roomName) meet.close();
-      else if (!meet.api && zone.roomName && !user.profile.guest) meet.open(`${zone.levelId}-${zone.roomName}`);
+      if (meet.api && !zone.roomName) {
+        meet.close();
+        userManager.clearMediaStates();
+      } else if (!meet.api && zone.roomName && !user.profile.guest) {
+        userManager.saveMediaStates();
+        meet.open(`${zone.levelId}-${zone.roomName}`);
+      }
 
       if (meet.api) {
         toggleUserProperty('shareAudio', zone.unmute || false);

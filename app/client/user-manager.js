@@ -54,6 +54,7 @@ userManager = {
   players: {},
   scene: undefined,
   canPlayReactionSound: true,
+  userMediaStates: undefined,
 
   init(scene) {
     this.entityFollowed = undefined;
@@ -62,6 +63,7 @@ userManager = {
     this.playerVelocity = new Phaser.Math.Vector2();
     this.players = {};
     this.scene = scene;
+    this.userMediaStates = undefined;
   },
 
   destroy() {
@@ -603,13 +605,17 @@ userManager = {
     if (!this.player) return;
 
     if (enable) {
+      this.saveMediaStates();
       setTimeout(() => Meteor.users.update(Meteor.userId(), { $set: {
         'profile.shareVideo': false,
         'profile.shareAudio': false,
         'profile.shareScreen': false,
       } }), 0);
       peer.disable();
-    } else peer.enable();
+    } else {
+      peer.enable();
+      this.clearMediaStates();
+    }
 
     this.follow(undefined); // interrupts the follow action
     this.setTintFromState(this.player);
@@ -631,6 +637,20 @@ userManager = {
       callback() { this.clearTint(player); },
       callbackScope: this,
     });
+  },
+
+  saveMediaStates() {
+    const { shareAudio, shareVideo } = Meteor.user().profile;
+    this.userMediaStates = { shareAudio, shareVideo };
+  },
+
+  clearMediaStates() {
+    if (this.userMediaStates) {
+      const { shareAudio, shareVideo } = this.userMediaStates;
+      Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareAudio': shareAudio, 'profile.shareVideo': shareVideo } });
+    }
+
+    this.userMediaStates = undefined;
   },
 
   onPeerDataReceived(dataReceived) {
