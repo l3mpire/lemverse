@@ -165,6 +165,9 @@ module.exports = {
 
     eventTypes: 'writable',
 
+    addToInventory: 'writable',
+    removeFromInventory: 'writable',
+
     messagesModule: 'writeable',
     computeChannelNameFromNearUsers: 'writeable',
   },

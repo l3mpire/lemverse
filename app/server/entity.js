@@ -15,22 +15,12 @@ switchEntityState = (entity, forcedState = undefined) => {
 };
 
 const pickEntityInventory = entity => {
-  if (!entity.inventory?.length) throw new Error('unable to pick an entity without inventory');
+  const inventoryItemKeys = Object.keys(entity.inventory || []);
+  if (!inventoryItemKeys.length) throw new Error('unable to pick an entity without inventory');
 
-  const user = Meteor.user();
-  const userInventory = user.inventory || [];
-  entity.inventory.forEach(entityInventoryItem => {
-    const userInventoryItemIndex = user.inventory.findIndex(inventoryItem => inventoryItem.itemId === entityInventoryItem.itemId);
-    const userInventoryItem = userInventory[userInventoryItemIndex];
-
-    const updatedUserInventoryItem = { itemId: entityInventoryItem.itemId, amount: entityInventoryItem.amount };
-    updatedUserInventoryItem.amount += Math.abs(userInventoryItem?.amount || 0);
-
-    userInventory[userInventoryItemIndex] = updatedUserInventoryItem;
-  });
-
-  // update inventory
-  Meteor.users.update(Meteor.userId(), { $set: { inventory: userInventory } });
+  // add entity items to inventory
+  const itemsToAdd = inventoryItemKeys.map(key => ({ itemId: key, amount: entity.inventory[key] }));
+  addToInventory(Meteor.user(), itemsToAdd);
 
   // remove the entity from the level
   Entities.remove(entity._id);

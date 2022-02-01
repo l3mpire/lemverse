@@ -208,7 +208,7 @@ zones = {
     if (zone.requiredItems?.length) {
       if (user.profile.guest) return false;
 
-      const userItems = (user.inventory || []).map(inventoryItem => inventoryItem.itemId);
+      const userItems = Object.keys(user.inventory || []);
       return zone.requiredItems.every(tag => userItems.includes(tag));
     }
 

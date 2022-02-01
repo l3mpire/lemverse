@@ -14,13 +14,14 @@ Template.inventory.onCreated(function () {
   this.inventory = new ReactiveVar([]);
 
   this.autorun(() => {
-    const inventoryItems = Meteor.user().inventory;
-    const itemsIds = inventoryItems.map(inventoryItem => inventoryItem.itemId).filter(Boolean);
-    if (itemsIds?.length) {
-      this.subscribe('items', itemsIds, () => {
-        this.inventory.set(Meteor.user().inventory || []);
-      });
-    }
+    const itemsIds = Object.keys(Meteor.user().inventory);
+    if (!itemsIds?.length) return;
+
+    this.subscribe('items', itemsIds, () => {
+      const inventoryItems = Meteor.user().inventory || [];
+      const itemIds = Object.keys(inventoryItems);
+      this.inventory.set(itemIds.map(itemId => ({ itemId, amount: inventoryItems[itemId] })));
+    });
   });
 });
 
