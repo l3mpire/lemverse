@@ -34,7 +34,20 @@ entityManager = {
 
   onInteraction(tiles, interactionPosition) {
     if (this.previousNearestEntity?.actionType === entityActionType.pickable) {
-      Meteor.call('useEntity', this.previousNearestEntity._id, () => lp.notif.success(itemAddedToInventoryText));
+      this.scene.tweens.add({
+        targets: this.entities[this.previousNearestEntity._id],
+        y: Meteor.user().profile.y - 30,
+        x: Meteor.user().profile.x,
+        scale: 0,
+        duration: 200,
+        angle: 180,
+        repeat: 0,
+        ease: 'Circular.easeIn',
+        onComplete: () => {
+          Meteor.call('useEntity', this.previousNearestEntity._id, () => lp.notif.success(itemAddedToInventoryText));
+        },
+      });
+
       return;
     }
 
@@ -47,8 +60,9 @@ entityManager = {
     escapeA.postUpdate();
 
     if (this.entitiesToSpawn.length) {
-      this.spawnEntities(this.entitiesToSpawn);
+      const clonedEntities = [...this.entitiesToSpawn];
       this.entitiesToSpawn = [];
+      this.spawnEntities(clonedEntities);
     }
 
     const { player } = userManager;
@@ -116,15 +130,16 @@ entityManager = {
     throw new Error('entity action not implemented');
   },
 
-  spawnEntities(entities) {
-    let sprites = entities.map(entity => entity.gameObject?.sprite);
-    sprites = sprites.filter(Boolean);
+  spawnEntities(entities, callback) {
+    const sprites = entities.map(entity => entity.gameObject?.sprite).filter(Boolean);
 
     const bootScene = game.scene.getScene('BootScene');
     bootScene.loadSpritesAtRuntime(sprites, () => {
       entities.forEach(entity => {
         if (!entity.gameObject) return;
-        const gameObject = this.scene.add.container(entity.x, entity.y);
+        const animateSpawn = entity.actionType === entityActionType.pickable;
+        const gameObject = this.scene.add.container(entity.x, entity.y + (animateSpawn ? -50 : 0));
+        gameObject.setData('id', entity._id);
         gameObject.setDepth(entity.y);
 
         if (entity.gameObject.sprite) {
@@ -134,8 +149,20 @@ entityManager = {
 
         if (entity.gameObject.collide) this.scene.physics.world.enableBody(gameObject);
 
+        if (animateSpawn) {
+          this.scene.tweens.add({
+            targets: gameObject,
+            y: entity.y,
+            duration: 500,
+            repeat: 0,
+            ease: 'Bounce.easeOut',
+          });
+        }
+
         this.entities[entity._id] = gameObject;
       });
+
+      if (callback) callback();
     });
   },
 };
