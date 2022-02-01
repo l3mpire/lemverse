@@ -125,6 +125,7 @@ entityManager = {
       entities.forEach(entity => {
         if (!entity.gameObject) return;
         const gameObject = this.scene.add.container(entity.x, entity.y);
+        gameObject.setDepth(entity.y);
 
         if (entity.gameObject.sprite) {
           const sprite = this.scene.add.sprite(0, 0, entity.gameObject.sprite.key);

@@ -168,6 +168,8 @@ module.exports = {
     addToInventory: 'writable',
     removeFromInventory: 'writable',
 
+    createEntityFromItem: 'writeable',
+
     messagesModule: 'writeable',
     computeChannelNameFromNearUsers: 'writeable',
   },

@@ -14,6 +14,25 @@ switchEntityState = (entity, forcedState = undefined) => {
   Entities.update(entity._id, { $set: { state: newState } });
 };
 
+createEntityFromItem = (item, data = {}) => {
+  log('createEntityFromItem: start', { item });
+  if (!item.entity) throw new Error(`The item isn't linked to an entity`);
+
+  const entityPrefab = Entities.findOne(item.entity);
+  if (!entityPrefab) throw new Error(`The entity linked to the item doesn't exists`);
+
+  const { levelId, x, y } = Meteor.user().profile;
+  Entities.insert({
+    ...entityPrefab,
+    _id: Entities.id(),
+    levelId: data.levelId || levelId,
+    x: data.x || x,
+    y: data.y || y,
+    createdBy: Meteor.userId(),
+    createdAt: new Date(),
+  });
+};
+
 const pickEntityInventory = entity => {
   const inventoryItemKeys = Object.keys(entity.inventory || []);
   if (!inventoryItemKeys.length) throw new Error('unable to pick an entity without inventory');

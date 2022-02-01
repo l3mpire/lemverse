@@ -48,3 +48,20 @@ Meteor.publish('selfUser', function () {
     { fields: { emails: 1, options: 1, profile: 1, roles: 1, status: 1, beta: 1 } },
   );
 });
+
+const dropInventoryItem = (itemId, data = {}) => {
+  log('dropInventoryItem: start', { itemId, data });
+  const item = Items.findOne(itemId);
+  if (!item) throw new Meteor.Error(404, 'Item not found.');
+
+  removeFromInventory(Meteor.user(), [{ itemId, amount: data.amount || 1 }]);
+  createEntityFromItem(item);
+};
+
+Meteor.methods({
+  dropInventoryItem(itemId, data = {}) {
+    check(itemId, String);
+    check(data, Object);
+    dropInventoryItem(itemId, data);
+  },
+});
