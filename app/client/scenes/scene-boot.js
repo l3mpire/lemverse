@@ -79,7 +79,7 @@ BootScene = new Phaser.Class({
 
     if (!imageLoadedCount) this.loadCharacterAnimations(characters);
     else {
-      this.load.on(`complete`, () => this.loadCharacterAnimations(characters));
+      this.load.once(`complete`, () => this.loadCharacterAnimations(characters));
       this.load.start();
     }
   },
@@ -104,7 +104,7 @@ BootScene = new Phaser.Class({
 
     if (!imageLoadedCount) onComplete(images);
     else {
-      this.load.on(`complete`, () => onComplete(images));
+      this.load.once(`complete`, () => onComplete(images));
       this.load.start();
     }
   },
