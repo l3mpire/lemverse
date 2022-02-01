@@ -1,5 +1,11 @@
 const crypto = require('crypto');
 
+entityActionType = Object.freeze({
+  none: 0,
+  actionable: 1,
+  pickable: 2,
+});
+
 destroyVideoSource = video => {
   if (!video) return;
   video.pause();
@@ -134,15 +140,4 @@ teleportUserInLevel = (levelId, userId) => {
 
 sendEvent = (command, data = {}) => {
   window.parent.postMessage(JSON.parse(JSON.stringify({ command, ...data })), '*');
-};
-
-levelUserTags = (levelId, userId) => {
-  const level = Levels.findOne(levelId);
-
-  const tags = [];
-  _.each(level.userTags || [], (userIds, tag) => {
-    if (userIds.includes(userId)) tags.push(tag);
-  });
-
-  return tags;
 };

@@ -68,7 +68,8 @@
         "webm",
         "webrtc",
         "websockets",
-        "yoyo"
+        "yoyo",
+        "pickable"
     ],
     "flagWords": [
         "hte"

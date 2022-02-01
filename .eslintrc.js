@@ -88,6 +88,7 @@ module.exports = {
     _: 'readable',
     stats: 'writable',
     kebabCase: 'writable',
+    entityActionType: 'writable',
 
     game: 'writable',
     createLevel: 'writable',
@@ -143,7 +144,6 @@ module.exports = {
     sendAudioChunksToNearUsers: 'writable',
     sendAudioChunksToUsersInZone: 'writable',
     switchEntityState: 'writable',
-    levelUserTags: 'writable',
     activityType: 'writable',
     callHooks: 'writable',
 

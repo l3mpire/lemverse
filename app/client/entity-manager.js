@@ -1,7 +1,6 @@
 const entityTooltipConfig = {
   identifier: 'nearest-entity',
   proximityRequired: 100 ** 2, // Distance without using sqrt
-  text: 'Press the key <b>u</b> to use',
   style: 'tooltip with-arrow fade-in',
 };
 
@@ -22,11 +21,13 @@ entityManager = {
   },
 
   onInteraction(tiles, interactionPosition) {
-    const { levelId } = Meteor.user().profile;
-    const entities = Entities.find().fetch();
+    if (this.previousNearestEntity?.actionType === entityActionType.pickable) {
+      Meteor.call('useEntity', this.previousNearestEntity._id);
+      return;
+    }
 
-    entities.forEach(entity => {
-      if (this.isEntityTriggered(entity, interactionPosition)) Meteor.call('switchEntityState', levelId, entity.name);
+    Entities.find().fetch().forEach(entity => {
+      if (this.isEntityTriggered(entity, interactionPosition)) Meteor.call('useEntity', entity._id);
     });
   },
 
@@ -45,7 +46,7 @@ entityManager = {
       if (!this.previousNearestEntity) {
         characterPopIns.createOrUpdate(
           entityTooltipConfig.identifier,
-          entityTooltipConfig.text,
+          this.tooltipTextFromActionType(nearestEntity.actionType),
           { target: nearestEntity, className: entityTooltipConfig.style },
         );
       }
@@ -88,5 +89,13 @@ entityManager = {
     if (position.y > entity.y + area.y + area.h) return false;
 
     return true;
+  },
+
+  tooltipTextFromActionType(actionType) {
+    if (actionType === entityActionType.none || !actionType) return '';
+    if (actionType === entityActionType.actionable) return 'Press the key <b>u</b> to use';
+    if (actionType === entityActionType.pickable) return 'Press the key <b>u</b> to pick';
+
+    throw new Error('entity action not implemented');
   },
 };
