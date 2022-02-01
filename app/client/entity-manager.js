@@ -29,7 +29,7 @@ entityManager = {
   },
 
   update(entity) {
-    window.dispatchEvent(new CustomEvent('onEntityUpdated', { detail: { entity } }));
+    window.dispatchEvent(new CustomEvent(eventTypes.onEntityUpdated, { detail: { entity } }));
   },
 
   onInteraction(tiles, interactionPosition) {

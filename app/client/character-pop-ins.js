@@ -24,8 +24,8 @@ characterPopIns = {
     if (this.scene) this.destroy();
     this.scene = scene;
 
-    window.document.removeEventListener('pop-in-event', dispatchPopInEvent);
-    window.document.addEventListener('pop-in-event', dispatchPopInEvent, false);
+    window.document.removeEventListener(eventTypes.onPopInEvent, dispatchPopInEvent);
+    window.document.addEventListener(eventTypes.onPopInEvent, dispatchPopInEvent, false);
   },
 
   dispatchPopInEvent(event) {

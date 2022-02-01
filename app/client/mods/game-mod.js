@@ -109,19 +109,19 @@ const onEntityUpdated = e => {
 };
 
 Template.gameMod.onCreated(() => {
-  window.addEventListener('onZoneEntered', onZoneEntered);
-  window.addEventListener('onZoneLeaved', onZoneLeaved);
-  window.addEventListener('onTileAdded', onTileAdded);
-  window.addEventListener('onTileChanged', onTileChanged);
-  window.addEventListener('onEntityUpdated', onEntityUpdated);
+  window.addEventListener(eventTypes.onZoneEntered, onZoneEntered);
+  window.addEventListener(eventTypes.onZoneLeaved, onZoneLeaved);
+  window.addEventListener(eventTypes.onTileAdded, onTileAdded);
+  window.addEventListener(eventTypes.onTileChanged, onTileChanged);
+  window.addEventListener(eventTypes.onEntityUpdated, onEntityUpdated);
 });
 
 Template.gameMod.onDestroyed(() => {
-  window.removeEventListener('onZoneEntered', onZoneEntered);
-  window.removeEventListener('onZoneLeaved', onZoneLeaved);
-  window.removeEventListener('onTileAdded', onTileAdded);
-  window.removeEventListener('onTileChanged', onTileChanged);
-  window.removeEventListener('onEntityUpdated', onEntityUpdated);
+  window.removeEventListener(eventTypes.onZoneEntered, onZoneEntered);
+  window.removeEventListener(eventTypes.onZoneLeaved, onZoneLeaved);
+  window.removeEventListener(eventTypes.onTileAdded, onTileAdded);
+  window.removeEventListener(eventTypes.onTileChanged, onTileChanged);
+  window.removeEventListener(eventTypes.onEntityUpdated, onEntityUpdated);
 });
 
 Template.gameMod.helpers({

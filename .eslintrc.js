@@ -163,6 +163,8 @@ module.exports = {
     WorldScene: 'writable',
     UIScene: 'writable',
 
+    eventTypes: 'writable',
+
     messagesModule: 'writeable',
     computeChannelNameFromNearUsers: 'writeable',
   },

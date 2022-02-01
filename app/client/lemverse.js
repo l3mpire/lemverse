@@ -292,12 +292,12 @@ Template.lemverse.onCreated(function () {
             added(tile) {
               const layer = levelManager.tileLayer(tile);
               levelManager.map.putTileAt(levelManager.tileGlobalIndex(tile), tile.x, tile.y, false, layer);
-              window.dispatchEvent(new CustomEvent('onTileAdded', { detail: { tile, layer } }));
+              window.dispatchEvent(new CustomEvent(eventTypes.onTileAdded, { detail: { tile, layer } }));
             },
             changed(tile) {
               const layer = levelManager.tileLayer(tile);
               levelManager.map.putTileAt(levelManager.tileGlobalIndex(tile), tile.x, tile.y, false, layer);
-              window.dispatchEvent(new CustomEvent('onTileChanged', { detail: { tile, layer } }));
+              window.dispatchEvent(new CustomEvent(eventTypes.onTileChanged, { detail: { tile, layer } }));
             },
             removed(tile) {
               const layer = levelManager.tileLayer(tile);

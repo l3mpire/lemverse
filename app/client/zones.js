@@ -147,12 +147,12 @@ zones = {
     if (this.activeZone?._id !== zone._id) {
       // notify about zone change
       if (!_.isEmpty(this.activeZone)) {
-        const zoneLeavedEvent = new CustomEvent('onZoneLeaved', { detail: { zone: this.activeZone } });
+        const zoneLeavedEvent = new CustomEvent(eventTypes.onZoneLeaved, { detail: { zone: this.activeZone } });
         window.dispatchEvent(zoneLeavedEvent);
       }
 
       if (!_.isEmpty(zone)) {
-        const zoneEnteredEvent = new CustomEvent('onZoneEntered', { detail: { zone, previousZone: this.activeZone } });
+        const zoneEnteredEvent = new CustomEvent(eventTypes.onZoneEntered, { detail: { zone, previousZone: this.activeZone } });
         window.dispatchEvent(zoneEnteredEvent);
       }
 

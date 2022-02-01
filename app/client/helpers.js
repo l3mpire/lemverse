@@ -4,6 +4,17 @@ viewportModes = Object.freeze({
   splitScreen: 'split-screen',
 });
 
+eventTypes = Object.freeze({
+  onEntityUpdated: 'onEntityUpdated',
+  onTileAdded: 'onTileAdded',
+  onTileChanged: 'onTileChanged',
+  onUserNear: 'onUserNear',
+  onUserMovedAway: 'onUserMovedAway',
+  onZoneEntered: 'onZoneEntered',
+  onZoneLeaved: 'onZoneLeaved',
+  onPopInEvent: 'pop-in-event',
+});
+
 toggleUserProperty = (propertyName, value) => {
   // the user must not be able to deactivate his microphone in the unmute zones
   if (propertyName === 'shareAudio' && (value || (value === undefined && !Meteor.user().profile.shareAudio))) {

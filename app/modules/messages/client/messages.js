@@ -32,10 +32,10 @@ messagesModule = {
       else this.stopListeningMessagesChannel();
     };
 
-    window.addEventListener('onZoneEntered', onZoneEntered);
-    window.addEventListener('onZoneLeaved', onZoneLeaved);
-    window.addEventListener('onUserNear', onUserNear);
-    window.addEventListener('onUserMovedAway', onUserMovedAway);
+    window.addEventListener(eventTypes.onZoneEntered, onZoneEntered);
+    window.addEventListener(eventTypes.onZoneLeaved, onZoneLeaved);
+    window.addEventListener(eventTypes.onUserNear, onUserNear);
+    window.addEventListener(eventTypes.onUserMovedAway, onUserMovedAway);
   },
 
   autoSelectChannel() {

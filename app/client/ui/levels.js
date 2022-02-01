@@ -15,7 +15,7 @@ const askLoadLevel = (levelId, incrementVisit = false) => {
 
   if (window.self !== window.top) {
     const data = { userId: Meteor.userId(), levelId, type: 'load-level' };
-    window.parent.document.dispatchEvent(new CustomEvent('pop-in-event', { detail: data }));
+    window.parent.document.dispatchEvent(new CustomEvent(eventTypes.onPopInEvent, { detail: data }));
   } else {
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.levelId': levelId } });
   }

@@ -33,7 +33,7 @@ userProximitySensor = {
     this.nearUsers[user._id] = user;
 
     if (!userAlreadyNear) {
-      window.dispatchEvent(new CustomEvent('onUserNear', { detail: { user } }));
+      window.dispatchEvent(new CustomEvent(eventTypes.onUserNear, { detail: { user } }));
       if (this.onProximityStarted) this.onProximityStarted(user);
     }
   },
@@ -43,7 +43,7 @@ userProximitySensor = {
 
     delete this.nearUsers[user._id];
 
-    window.dispatchEvent(new CustomEvent('onUserMovedAway', { detail: { user } }));
+    window.dispatchEvent(new CustomEvent(eventTypes.onUserMovedAway, { detail: { user } }));
     if (this.onProximityEnded) this.onProximityEnded(user);
   },
 

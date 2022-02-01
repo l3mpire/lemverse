@@ -100,8 +100,8 @@ WorldScene = new Phaser.Class({
     hotkeys.setScope('guest');
 
     // custom events
-    window.addEventListener('onZoneEntered', onZoneEntered);
-    window.addEventListener('onZoneLeaved', onZoneLeaved);
+    window.addEventListener(eventTypes.onZoneEntered, onZoneEntered);
+    window.addEventListener(eventTypes.onZoneLeaved, onZoneLeaved);
 
     this.scene.sleep();
     this.physics.disableUpdate();
@@ -160,8 +160,8 @@ WorldScene = new Phaser.Class({
     this.events.off('postupdate', this.postUpdateMethod, this);
     this.events.off('sleep', this.sleepMethod, this);
     this.scale.off('resize', this.updateViewportMethod);
-    window.removeEventListener('onZoneEntered', onZoneEntered);
-    window.removeEventListener('onZoneLeaved', onZoneLeaved);
+    window.removeEventListener(eventTypes.onZoneEntered, onZoneEntered);
+    window.removeEventListener(eventTypes.onZoneLeaved, onZoneLeaved);
 
     levelManager.destroy();
     userManager.destroy();
