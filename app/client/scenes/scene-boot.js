@@ -85,17 +85,26 @@ BootScene = new Phaser.Class({
   },
 
   loadTilesetsAtRuntime(tilesets, onComplete) {
+    this.loadImagesAtRuntime(tilesets, onComplete, true);
+  },
+
+  loadSpritesAtRuntime(sprites, onComplete) {
+    this.loadImagesAtRuntime(sprites, onComplete);
+  },
+
+  loadImagesAtRuntime(images, onComplete, useFileAPI = false) {
     let imageLoadedCount = 0;
-    _.each(tilesets, tileset => {
-      if (this.textures.exists(tileset.fileId)) return;
+    _.each(images, image => {
+      if (this.textures.exists(image.path)) return;
 
       imageLoadedCount++;
-      this.load.image(tileset.fileId, `/api/files/${tileset.fileId}`);
+      if (useFileAPI) this.load.image(image.fileId, `/api/files/${image.fileId}`);
+      else this.load.image(image.key, image.path);
     });
 
-    if (!imageLoadedCount) onComplete(tilesets);
+    if (!imageLoadedCount) onComplete(images);
     else {
-      this.load.on(`complete`, () => onComplete(tilesets));
+      this.load.on(`complete`, () => onComplete(images));
       this.load.start();
     }
   },
