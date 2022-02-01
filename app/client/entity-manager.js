@@ -4,17 +4,29 @@ const entityTooltipConfig = {
   style: 'tooltip with-arrow fade-in',
 };
 
+const itemAddedToInventoryText = 'An object has been added to your inventory';
+
 entityManager = {
   scene: undefined,
   previousNearestEntity: undefined,
+  entities: {},
+  entitiesToSpawn: [],
 
   init(scene) {
     this.scene = scene;
   },
 
-  create() { },
+  create(entity) {
+    this.entitiesToSpawn.push(entity);
+  },
 
-  remove() { },
+  remove(entity) {
+    const entityInstance = this.entities[entity._id];
+    if (!entityInstance) return;
+
+    entityInstance.destroy();
+    delete this.entities[entity._id];
+  },
 
   update(entity) {
     window.dispatchEvent(new CustomEvent('onEntityUpdated', { detail: { entity } }));
@@ -22,7 +34,7 @@ entityManager = {
 
   onInteraction(tiles, interactionPosition) {
     if (this.previousNearestEntity?.actionType === entityActionType.pickable) {
-      Meteor.call('useEntity', this.previousNearestEntity._id);
+      Meteor.call('useEntity', this.previousNearestEntity._id, () => lp.notif.success(itemAddedToInventoryText));
       return;
     }
 
@@ -33,6 +45,11 @@ entityManager = {
 
   postUpdate() {
     escapeA.postUpdate();
+
+    if (this.entitiesToSpawn.length) {
+      this.spawnEntities(this.entitiesToSpawn);
+      this.entitiesToSpawn = [];
+    }
 
     const { player } = userManager;
     if (player) this.handleNearestEntityTooltip(player);
@@ -47,7 +64,7 @@ entityManager = {
         characterPopIns.createOrUpdate(
           entityTooltipConfig.identifier,
           this.tooltipTextFromActionType(nearestEntity.actionType),
-          { target: nearestEntity, className: entityTooltipConfig.style },
+          { target: nearestEntity, className: entityTooltipConfig.style, offset: nearestEntity.tooltipOffset },
         );
       }
 
@@ -97,5 +114,27 @@ entityManager = {
     if (actionType === entityActionType.pickable) return 'Press the key <b>u</b> to pick';
 
     throw new Error('entity action not implemented');
+  },
+
+  spawnEntities(entities) {
+    let sprites = entities.map(entity => entity.gameObject?.sprite);
+    sprites = sprites.filter(Boolean);
+
+    const bootScene = game.scene.getScene('BootScene');
+    bootScene.loadSpritesAtRuntime(sprites, () => {
+      entities.forEach(entity => {
+        if (!entity.gameObject) return;
+        const gameObject = this.scene.add.container(entity.x, entity.y);
+
+        if (entity.gameObject.sprite) {
+          const sprite = this.scene.add.sprite(0, 0, entity.gameObject.sprite.key);
+          gameObject.add(sprite);
+        }
+
+        if (entity.gameObject.collide) this.scene.physics.world.enableBody(gameObject);
+
+        this.entities[entity._id] = gameObject;
+      });
+    });
   },
 };
