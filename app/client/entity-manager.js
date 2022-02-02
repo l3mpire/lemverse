@@ -149,7 +149,7 @@ entityManager = {
     const sprites = entities.map(entity => entity.gameObject?.sprite).filter(Boolean);
 
     const bootScene = game.scene.getScene('BootScene');
-    bootScene.loadSpritesAtRuntime(sprites, () => {
+    bootScene.loadImagesAtRuntime(sprites, () => {
       entities.forEach(entity => {
         if (!entity.gameObject) return;
 
@@ -158,10 +158,22 @@ entityManager = {
         const gameObject = this.scene.add.container(entity.x, startPosition);
         gameObject.setData('id', entity._id);
         gameObject.setDepth(entity.y);
+        gameObject.setScale(entity.gameObject.scale || 1);
 
         if (entity.gameObject.sprite) {
           const sprite = this.scene.add.sprite(0, 0, entity.gameObject.sprite.key);
           gameObject.add(sprite);
+
+          // play spritesheet animation
+          if (entity.gameObject.sprite.framerate) {
+            this.scene.anims.create({
+              key: entity.gameObject.sprite.key,
+              frames: this.scene.anims.generateFrameNumbers(entity.gameObject.sprite.key),
+              frameRate: entity.gameObject.sprite.framerate || 16,
+            });
+
+            sprite.play({ key: entity.gameObject.sprite.key, repeat: -1 });
+          }
         }
 
         if (entity.gameObject.collide) this.scene.physics.world.enableBody(gameObject);
