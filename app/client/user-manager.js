@@ -522,12 +522,12 @@ userManager = {
     return this.getTilesRelativeToPlayer(player, positionOffset, layers);
   },
 
-  getPositionInFrontOfPlayer(player) {
+  getPositionInFrontOfPlayer(player, distance = undefined) {
     const directionVector = this.directionToVector(player.direction);
 
     return {
-      x: player.x + directionVector[0] * characterInteractionDistance.x,
-      y: player.y + characterFootOffset.y + directionVector[1] * characterInteractionDistance.y,
+      x: player.x + directionVector[0] * (distance || characterInteractionDistance.x),
+      y: player.y + characterFootOffset.y + directionVector[1] * (distance || characterInteractionDistance.y),
     };
   },
 
