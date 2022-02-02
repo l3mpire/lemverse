@@ -60,12 +60,15 @@ const dropInventoryItem = (itemId, data = {}) => {
   const itemsEdited = removeFromInventory(user, [{ itemId, amount: data.amount || 1 }]);
   if (Object.keys(itemsEdited).length === 1) createEntityFromItem(item, data);
   else throw new Meteor.Error(404, 'Inventory not updated: item not found in the user inventory.');
+
+  return itemsEdited;
 };
 
 Meteor.methods({
   dropInventoryItem(itemId, data = {}) {
     check(itemId, String);
     check(data, Object);
-    dropInventoryItem(itemId, data);
+
+    return dropInventoryItem(itemId, data);
   },
 });
