@@ -34,8 +34,9 @@ entityManager = {
 
   onInteraction(tiles, interactionPosition) {
     if (this.previousNearestEntity?.actionType === entityActionType.pickable) {
+      const previousNearestEntityId = this.previousNearestEntity._id;
       this.scene.tweens.add({
-        targets: this.entities[this.previousNearestEntity._id],
+        targets: this.entities[previousNearestEntityId],
         y: Meteor.user().profile.y - 30,
         x: Meteor.user().profile.x,
         scale: 0,
@@ -44,7 +45,7 @@ entityManager = {
         repeat: 0,
         ease: 'Circular.easeIn',
         onComplete: () => {
-          Meteor.call('useEntity', this.previousNearestEntity._id, () => lp.notif.success(itemAddedToInventoryText));
+          Meteor.call('useEntity', previousNearestEntityId, () => lp.notif.success(itemAddedToInventoryText));
         },
       });
 
