@@ -64,42 +64,22 @@ BootScene = new Phaser.Class({
     });
   },
 
-  loadCharactersAtRuntime(characters) {
-    const { frameHeight, frameWidth } = Meteor.settings.public.assets.character;
-
-    let imageLoadedCount = 0;
-    _.each(characters, character => {
-      if (this.textures.exists(character.fileId)) return;
-      imageLoadedCount++;
-      this.load.spritesheet(character.fileId, `/api/files/${character.fileId}`, {
-        frameWidth: frameWidth || 16,
-        frameHeight: frameHeight || 32,
-      });
-    });
-
-    if (!imageLoadedCount) this.loadCharacterAnimations(characters);
-    else {
-      this.load.once(`complete`, () => this.loadCharacterAnimations(characters));
-      this.load.start();
-    }
-  },
-
-  loadTilesetsAtRuntime(tilesets, onComplete) {
-    this.loadImagesAtRuntime(tilesets, onComplete, true);
-  },
-
-  loadSpritesAtRuntime(sprites, onComplete) {
-    this.loadImagesAtRuntime(sprites, onComplete);
-  },
-
-  loadImagesAtRuntime(images, onComplete, useFileAPI = false) {
+  loadImagesAtRuntime(images, onComplete) {
     let imageLoadedCount = 0;
     _.each(images, image => {
-      if (this.textures.exists(image.path)) return;
+      const key = image.fileId || image.key;
+      if (this.textures.exists(key)) return;
+
+      const path = image.path || `/api/files/${image.fileId}`;
+
+      if (image.frameWidth || image.frameHeight) {
+        this.load.spritesheet(key, path, {
+          frameWidth: image.frameWidth || 16,
+          frameHeight: image.frameHeight || 32,
+        });
+      } else this.load.image(key, path);
 
       imageLoadedCount++;
-      if (useFileAPI) this.load.image(image.fileId, `/api/files/${image.fileId}`);
-      else this.load.image(image.key, image.path);
     });
 
     if (!imageLoadedCount) onComplete(images);
