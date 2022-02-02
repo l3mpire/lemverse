@@ -50,6 +50,8 @@ Meteor.methods({
     check(entityId, String);
 
     const entity = Entities.findOne(entityId);
+    if (!entity) throw new Meteor.Error(404, 'Entity not found.');
+
     if (!entity.actionType || entity.actionType === entityActionType.actionable) switchEntityState(entity, value);
     else if (entity.actionType === entityActionType.pickable) pickEntityInventory(entity, value);
     else throw new Error('entity action not implemented');
