@@ -55,7 +55,7 @@ const dropInventoryItem = (itemId, data = {}) => {
   if (!item) throw new Meteor.Error(404, 'Item not found.');
 
   removeFromInventory(Meteor.user(), [{ itemId, amount: data.amount || 1 }]);
-  createEntityFromItem(item);
+  createEntityFromItem(item, data);
 };
 
 Meteor.methods({
