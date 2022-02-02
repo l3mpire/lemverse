@@ -40,15 +40,11 @@
         "LSUIElement": 1
       }
     },
-    "mas": {
-        "entitlements": "./build/entitlements.mas.plist",
-        "entitlementsInherit": "./build/entitlements.mas.inherit.plist"
-    },
     "publish": {
       "provider": "github"
     },
     "dmg": {
-      "sign": false,
+      "sign": true,
       "title": "lemverse",
       "icon": "Icon.png"
     }
