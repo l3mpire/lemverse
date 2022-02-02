@@ -4,7 +4,7 @@ Template.inventoryItemPanel.helpers({
   exist() { return Session.get('selectedInventoryItem'); },
   name() { return Session.get('selectedInventoryItem')?.name; },
   description() { return Session.get('selectedInventoryItem')?.description || '-'; },
-  amount() { return Session.get('selectedInventoryItem')?.amount; },
+  amount() { return Meteor.user().inventory[Session.get('selectedInventoryItem')._id] || 0; },
   thumbnail() { return Session.get('selectedInventoryItem')?.thumbnail; },
 });
 
@@ -15,7 +15,10 @@ Template.inventoryItemPanel.events({
 
     const itemId = Session.get('selectedInventoryItem')._id;
     const positionInFrontOfPlayer = userManager.getPositionInFrontOfPlayer(userManager.player, dropItemDistance);
-    Meteor.call('dropInventoryItem', itemId, positionInFrontOfPlayer);
+    Meteor.call('dropInventoryItem', itemId, positionInFrontOfPlayer, (error, editedItems) => {
+      if (error) { lp.notif.error('An error occured during the drop'); return; }
+      if (!editedItems[itemId]) Session.set('selectedInventoryItem', undefined);
+    });
   },
 });
 
@@ -24,8 +27,8 @@ Template.inventoryItem.onCreated(function () {
 });
 
 Template.inventoryItem.helpers({
-  exist() { return Template.instance().item !== undefined && this.item.amount > 0; },
-  amount() { return this.item.amount; },
+  exist() { return Template.instance().item !== undefined && Meteor.user().inventory[this.item.itemId] > 0; },
+  amount() { return Meteor.user().inventory[this.item.itemId] || 0; },
   thumbnail() { return Template.instance().item.thumbnail; },
 });
 
@@ -44,11 +47,14 @@ Template.inventory.onCreated(function () {
   this.autorun(() => {
     const inventoryItems = Meteor.user().inventory || [];
     const itemsIds = Object.keys(inventoryItems);
-    if (!itemsIds?.length) return;
+    if (!itemsIds?.length) {
+      this.inventory.set([]);
+      return;
+    }
 
     this.subscribe('items', itemsIds, () => {
       const itemIds = Object.keys(inventoryItems);
-      this.inventory.set(itemIds.map(itemId => ({ itemId, amount: inventoryItems[itemId] })));
+      this.inventory.set(itemIds.map(itemId => ({ itemId, amount: inventoryItems[itemId] })).filter(item => item.amount > 0));
     });
   });
 });
