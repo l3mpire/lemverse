@@ -1,3 +1,24 @@
+const entityAnimations = {
+  drop: (x, y) => ({
+    y,
+    duration: 500,
+    repeat: 0,
+    ease: 'Bounce.easeOut',
+  }),
+  floating: (x, y) => ({
+    y: { value: y, duration: 1300, ease: 'Sine.easeIn', yoyo: true, repeat: -1 },
+  }),
+  picked: (x, y) => ({
+    y,
+    x,
+    scale: 0,
+    duration: 200,
+    angle: 180,
+    repeat: 0,
+    ease: 'Circular.easeIn',
+  }),
+};
+
 const entityTooltipConfig = {
   identifier: 'nearest-entity',
   proximityRequired: 100 ** 2, // Distance without using sqrt
@@ -35,18 +56,11 @@ entityManager = {
   onInteraction(tiles, interactionPosition) {
     if (this.previousNearestEntity?.actionType === entityActionType.pickable) {
       const previousNearestEntityId = this.previousNearestEntity._id;
+      const animation = entityAnimations.picked(Meteor.user().profile.x, Meteor.user().profile.y - 30);
       this.scene.tweens.add({
         targets: this.entities[previousNearestEntityId],
-        y: Meteor.user().profile.y - 30,
-        x: Meteor.user().profile.x,
-        scale: 0,
-        duration: 200,
-        angle: 180,
-        repeat: 0,
-        ease: 'Circular.easeIn',
-        onComplete: () => {
-          Meteor.call('useEntity', previousNearestEntityId, () => lp.notif.success(itemAddedToInventoryText));
-        },
+        ...animation,
+        onComplete: () => Meteor.call('useEntity', previousNearestEntityId, () => lp.notif.success(itemAddedToInventoryText)),
       });
 
       return;
@@ -79,11 +93,11 @@ entityManager = {
         characterPopIns.createOrUpdate(
           entityTooltipConfig.identifier,
           this.tooltipTextFromActionType(nearestEntity.actionType),
-          { target: nearestEntity, className: entityTooltipConfig.style, offset: nearestEntity.tooltipOffset },
+          { target: this.entities[nearestEntity._id], className: entityTooltipConfig.style, offset: nearestEntity.tooltipOffset },
         );
       }
 
-      characterPopIns.popIns[entityTooltipConfig.identifier].setData('target', nearestEntity);
+      characterPopIns.popIns[entityTooltipConfig.identifier].setData('target', this.entities[nearestEntity._id] || nearestEntity);
       this.previousNearestEntity = nearestEntity;
     } else if (this.previousNearestEntity) {
       characterPopIns.destroyPopIn(entityTooltipConfig.identifier);
@@ -138,8 +152,10 @@ entityManager = {
     bootScene.loadSpritesAtRuntime(sprites, () => {
       entities.forEach(entity => {
         if (!entity.gameObject) return;
+
         const animateSpawn = entity.actionType === entityActionType.pickable;
-        const gameObject = this.scene.add.container(entity.x, entity.y + (animateSpawn ? -50 : 0));
+        const startPosition = entity.y;
+        const gameObject = this.scene.add.container(entity.x, startPosition);
         gameObject.setData('id', entity._id);
         gameObject.setDepth(entity.y);
 
@@ -151,12 +167,11 @@ entityManager = {
         if (entity.gameObject.collide) this.scene.physics.world.enableBody(gameObject);
 
         if (animateSpawn) {
+          const animation = entityAnimations.floating(0, startPosition - 20);
           this.scene.tweens.add({
             targets: gameObject,
-            y: entity.y,
-            duration: 500,
-            repeat: 0,
-            ease: 'Bounce.easeOut',
+            ...animation,
+            onUpdate: () => gameObject.setDepth(gameObject.y + 20),
           });
         }
 
