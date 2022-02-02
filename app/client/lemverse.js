@@ -210,7 +210,7 @@ Template.lemverse.onCreated(function () {
       if (!this.handleObserveTilesets) {
         this.handleObserveTilesets = Tilesets.find().observe({
           added(tileset) {
-            bootScene.loadTilesetsAtRuntime([tileset], levelManager.addTilesetsToLayers.bind(levelManager));
+            bootScene.loadImagesAtRuntime([tileset], levelManager.addTilesetsToLayers.bind(levelManager));
           },
           changed(newTileset, oldTileset) {
             levelManager.onTilesetUpdated(newTileset, oldTileset);
@@ -222,7 +222,9 @@ Template.lemverse.onCreated(function () {
       if (!this.handleObserveCharacters) {
         this.handleObserveCharacters = Characters.find().observe({
           added(character) {
-            bootScene.loadCharactersAtRuntime([character]);
+            const { frameHeight, frameWidth } = Meteor.settings.public.assets.character;
+            const spritesheet = { ...character, frameHeight, frameWidth };
+            bootScene.loadImagesAtRuntime([spritesheet], () => bootScene.loadCharacterAnimations([spritesheet]));
           },
           changed(newCharacter, previousCharacter) {
             if (!newCharacter.category) return;
@@ -230,7 +232,9 @@ Template.lemverse.onCreated(function () {
             const imageChanged = newCharacter.fileId !== previousCharacter?.fileId;
             if (imageChanged) {
               bootScene.unloadCharacterAnimations([newCharacter]);
-              bootScene.loadCharactersAtRuntime([newCharacter]);
+              const { frameHeight, frameWidth } = Meteor.settings.public.assets.character;
+              const spritesheet = { ...newCharacter, frameHeight, frameWidth };
+              bootScene.loadImagesAtRuntime([spritesheet], () => bootScene.loadCharacterAnimations([spritesheet]));
             }
           },
         });
