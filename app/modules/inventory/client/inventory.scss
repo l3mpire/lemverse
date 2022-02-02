@@ -1,24 +1,85 @@
-$inventory-item-height: 80px;
+$inventory-item-size: 80px;
 
 .inventory {
   height: 100%;
-  padding: .5rem;
   color: #4f4f4f;
 
-  .inventory-item {
+  >p {
+    text-align: center;
+  }
+
+  .items {
     display: flex;
-    height: $inventory-item-height;
-    margin-bottom: 5px;
+    flex-wrap: wrap;
+    padding: 0.5rem;
+
+    .inventory-item {
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      height: $inventory-item-size;
+      width: $inventory-item-size;
+      margin: 5px;
+      background-color: #d0d6e1;
+      color: #4e5869;
+      border-radius: 8px;
+      overflow: hidden;
+      justify-content: center;
+      align-items: center;
+
+      &:hover {
+        background-color: darken(#d0d6e1, 10%);
+      }
+
+      .thumbnail {
+        max-width: 90%;
+        width: 90%;
+        height: 90%;
+      }
+
+      .amount {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .inventory-item-panel {
+    position: absolute;
+    display: flex;
+    flex-wrap: wrap;
+    height: 35px;
+    margin: 0;
+    padding: 10px;
+    bottom: 0;
+    right: 0;
+    left: 0;
     background-color: #d0d6e1;
-    color: #4e5869;
+    transition: height 0.15s linear;
+
+    &.show {
+      height: 120px;
+    }
+
+    .item-not-selected-message {
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 0.95rem;
+    }
 
     >div:first-child {
       position: relative;
-      width: 80px;
-      height: $inventory-item-height;
+      width: 100px;
+      height: 100px;
+      margin-right: 10px;
+      border-radius: 8px;
+      overflow: hidden;
 
-      .thumbnail {
-        max-width: 100%;
+      img {
         width: 100%;
         height: 100%;
       }
@@ -31,18 +92,21 @@ $inventory-item-height: 80px;
       }
     }
 
-    div:nth-of-type(2) {
-      width: 404px;
-      padding: 5px 10px;
+    .item-description {
+      display: flex;
+      flex-direction: column;
+      width: 370px;
 
       .name {
         display: block;
         font-size: 1.1rem;
         font-weight: bold;
-        margin-bottom: 5px;
+        margin-bottom: 7px;
       }
 
       .description {
+        display: block;
+        flex-grow: 1;
         font-size: 0.9rem;
         padding: 0;
         margin: 0;

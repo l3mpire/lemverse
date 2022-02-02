@@ -1,14 +1,26 @@
-<template name="inventoryItem">
-  {{#if exist}}
-    <div class="inventory-item">
+<template name="inventoryItemPanel">
+  <div class="inventory-item-panel {{#if exist}}show{{/if}}">
+    {{#if exist}}
       <div>
         <img src="{{thumbnail}}" alt="thumbnail" class="thumbnail">
         <span class="amount">x{{amount}}</span>
       </div>
-      <div>
+      <div class="item-description">
         <span class="name">{{name}}</span>
         <p class="description">{{description}}</p>
+        <button type="button" class="js-drop-item button">Drop x1</button>
       </div>
+    {{else}}
+      <p class="item-not-selected-message">--- Click an item to select it ---</p>
+    {{/if}}
+  </div>
+</template>
+
+<template name="inventoryItem">
+  {{#if exist}}
+    <div class="inventory-item js-inventory-item">
+      <img src="{{thumbnail}}" alt="thumbnail" class="thumbnail">
+      <span class="amount">x{{amount}}</span>
     </div>
   {{/if}}
 </template>
@@ -16,9 +28,16 @@
 <template name="inventory">
   {{#modal title="Inventory"}}
     <div class="inventory">
-      {{#each item in items}}
-        {{> inventoryItem item=item }}
-      {{/each}}
+      {{#if hasItems}}
+        <div class="items">
+          {{#each item in items}}
+            {{> inventoryItem item=item }}
+          {{/each}}
+        </div>
+      {{else}}
+        <p>--- Your inventory is empty ---</p>
+      {{/if}}
+      {{> inventoryItemPanel}}
     </div>
   {{/modal}}
 </template>
