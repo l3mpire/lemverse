@@ -1,3 +1,5 @@
+const dropItemDistance = 45;
+
 Template.inventoryItem.onCreated(function () {
   this.item = Items.findOne(this.data.item.itemId);
 });
@@ -8,6 +10,16 @@ Template.inventoryItem.helpers({
   description() { return Template.instance().item.description || '-'; },
   amount() { return this.item.amount; },
   thumbnail() { return Template.instance().item.thumbnail; },
+});
+
+Template.inventoryItem.events({
+  'click .js-drop-item'(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const positionInFrontOfPlayer = userManager.getPositionInFrontOfPlayer(userManager.player, dropItemDistance);
+    Meteor.call('dropInventoryItem', Template.instance().data.item.itemId, positionInFrontOfPlayer);
+  },
 });
 
 Template.inventory.onCreated(function () {
