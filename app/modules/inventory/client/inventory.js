@@ -45,7 +45,7 @@ Template.inventory.onCreated(function () {
   Session.set('selectedInventoryItem', undefined);
 
   this.autorun(() => {
-    const inventoryItems = Meteor.user().inventory || [];
+    const inventoryItems = Meteor.user().inventory || {};
     const itemsIds = Object.keys(inventoryItems);
     if (!itemsIds?.length) {
       this.inventory.set([]);

@@ -1,7 +1,8 @@
 addToInventory = (user, inventoryItems) => {
+  log('addToInventory: start', { user, inventoryItems });
   if (!user) throw new Meteor.Error(404, 'User not found.');
 
-  const userInventory = user.inventory || [];
+  const userInventory = user.inventory || {};
   inventoryItems.forEach(({ itemId, amount }) => {
     userInventory[itemId] = amount + Math.abs(userInventory[itemId] || 0);
   });
@@ -10,10 +11,11 @@ addToInventory = (user, inventoryItems) => {
 };
 
 removeFromInventory = (user, inventoryItems) => {
+  log('removeFromInventory: start', { user, inventoryItems });
   if (!user) throw new Meteor.Error(404, 'User not found.');
 
   const itemsEdited = {};
-  const userInventory = user.inventory || [];
+  const userInventory = user.inventory || {};
   inventoryItems.forEach(({ itemId, amount }) => {
     if (!userInventory[itemId]) {
       delete userInventory[itemId];

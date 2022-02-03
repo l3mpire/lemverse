@@ -34,7 +34,8 @@ createEntityFromItem = (item, data = {}) => {
 };
 
 const pickEntityInventory = entity => {
-  const inventoryItemKeys = Object.keys(entity.inventory || []);
+  log('pickEntityInventory: start', { entity });
+  const inventoryItemKeys = Object.keys(entity.inventory || {});
   if (!inventoryItemKeys.length) throw new Error('unable to pick an entity without inventory');
 
   // add entity items to inventory
