@@ -84,3 +84,14 @@ computeChannelNameFromNearUsers = (includeUser = true) => {
 
   return nearUsers.sort().join(';');
 };
+
+createFakeShadow = (scene, x, y, scaleX, scaleY) => {
+  const shadow = scene.add.sprite(x, y, 'circle');
+  shadow.alpha = 0.1;
+  shadow.scaleX = scaleX;
+  shadow.scaleY = scaleY;
+  shadow.setDepth(-1);
+  shadow.setTint(0x000000);
+
+  return shadow;
+};

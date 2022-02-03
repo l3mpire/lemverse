@@ -128,12 +128,7 @@ userManager = {
     playerParts.setInteractive(characterInteractionConfiguration);
     if (guest) playerParts.disableInteractive();
 
-    const shadow = this.scene.add.sprite(0, 7, 'circle');
-    shadow.setTint(0x000000);
-    shadow.alpha = 0.08;
-    shadow.scaleX = 0.55;
-    shadow.scaleY = 0.25;
-    shadow.setDepth(-1);
+    const shadow = createFakeShadow(this.scene, 0, 7, 0.55, 0.25);
     shadow.setOrigin(characterSpritesOrigin.x, characterSpritesOrigin.y);
     this.players[user._id].add(shadow);
 

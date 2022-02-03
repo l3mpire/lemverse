@@ -146,6 +146,7 @@ module.exports = {
     switchEntityState: 'writable',
     activityType: 'writable',
     callHooks: 'writable',
+    createFakeShadow: 'writable',
 
     relativePositionToCamera: 'writable',
     updateViewport: 'writable',

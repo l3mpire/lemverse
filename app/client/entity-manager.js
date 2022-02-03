@@ -153,16 +153,18 @@ entityManager = {
       entities.forEach(entity => {
         if (!entity.gameObject) return;
 
-        const animateSpawn = entity.actionType === entityActionType.pickable;
+        const pickable = entity.actionType === entityActionType.pickable;
         const startPosition = entity.y;
         const gameObject = this.scene.add.container(entity.x, startPosition);
         gameObject.setData('id', entity._id);
         gameObject.setDepth(entity.y);
         gameObject.setScale(entity.gameObject.scale || 1);
 
+        let mainSprite;
         if (entity.gameObject.sprite) {
-          const sprite = this.scene.add.sprite(0, 0, entity.gameObject.sprite.key);
-          gameObject.add(sprite);
+          mainSprite = this.scene.add.sprite(0, 0, entity.gameObject.sprite.key);
+          mainSprite.name = 'main-sprite';
+          gameObject.add(mainSprite);
 
           // play spritesheet animation
           if (entity.gameObject.sprite.framerate) {
@@ -172,18 +174,29 @@ entityManager = {
               frameRate: entity.gameObject.sprite.framerate || 16,
             });
 
-            sprite.play({ key: entity.gameObject.sprite.key, repeat: -1 });
+            mainSprite.play({ key: entity.gameObject.sprite.key, repeat: -1 });
           }
         }
 
         if (entity.gameObject.collide) this.scene.physics.world.enableBody(gameObject);
 
-        if (animateSpawn) {
-          const animation = entityAnimations.floating(0, startPosition - 20);
+        // pickable/loots animations
+        if (pickable && mainSprite) {
+          const floatingDistance = 20;
+          const animation = entityAnimations.floating(0, -floatingDistance);
           this.scene.tweens.add({
-            targets: gameObject,
+            targets: mainSprite,
             ...animation,
-            onUpdate: () => gameObject.setDepth(gameObject.y + 20),
+            onUpdate: () => gameObject.setDepth(gameObject.y + floatingDistance),
+          });
+
+          const shadow = createFakeShadow(this.scene, 0, floatingDistance, 0.3, 0.15);
+          gameObject.add(shadow);
+
+          this.scene.tweens.add({
+            targets: shadow,
+            scaleX: { value: 0.25, duration: 1300, ease: 'Sine.easeIn', yoyo: true, repeat: -1 },
+            scaleY: { value: 0.1, duration: 1300, ease: 'Sine.easeIn', yoyo: true, repeat: -1 },
           });
         }
 
