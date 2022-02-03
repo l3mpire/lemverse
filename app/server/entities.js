@@ -1,5 +1,5 @@
 switchEntityState = (entity, forcedState = undefined) => {
-  if (!entity || !entity.states) return;
+  if (!entity || !entity.states) throw new Error(`Entity without state`);
 
   const newState = forcedState !== undefined ? forcedState : !entity.state;
   const state = newState ? entity.states[1] : entity.states[0];
@@ -56,5 +56,7 @@ Meteor.methods({
     if (!entity.actionType || entity.actionType === entityActionType.actionable) switchEntityState(entity, value);
     else if (entity.actionType === entityActionType.pickable) pickEntityInventory(entity, value);
     else throw new Error('entity action not implemented');
+
+    return entity;
   },
 });

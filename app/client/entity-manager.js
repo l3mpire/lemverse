@@ -26,7 +26,8 @@ const entityTooltipConfig = {
 };
 
 const floatingDistance = 20;
-const itemAddedToInventoryText = 'An object has been added to your inventory';
+const itemAddedToInventoryText = 'Item added to your inventory';
+const itemAlreadyPickedText = 'Someone just picked up this item 😢';
 
 entityManager = {
   scene: undefined,
@@ -61,7 +62,12 @@ entityManager = {
       this.scene.tweens.add({
         targets: this.entities[previousNearestEntityId],
         ...animation,
-        onComplete: () => Meteor.call('useEntity', previousNearestEntityId, () => lp.notif.success(itemAddedToInventoryText)),
+        onComplete: () => {
+          Meteor.call('useEntity', previousNearestEntityId, error => {
+            if (error) lp.notif.error(itemAlreadyPickedText);
+            else lp.notif.success(itemAddedToInventoryText);
+          });
+        },
       });
 
       return;
