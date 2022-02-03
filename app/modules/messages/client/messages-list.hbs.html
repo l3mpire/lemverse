@@ -1,9 +1,12 @@
 <template name="messagesListMessage">
-  <div class="message">
+  <div class="js-message">
     {{> avatarViewer user=user}}
-    <div>
+    <div class="message-content">
       <span class="js-username">{{userName}}</span> <span class="time" title="{{date}}">{{time}}</span>
       <p class="text">{{text}}</p>
+    </div>
+    <div class="actions {{#if showActions}}show{{/if}}">
+      <button type="button" class="button js-message-remove">x</button> 
     </div>
   </div>
 </template>

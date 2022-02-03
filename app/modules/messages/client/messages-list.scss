@@ -38,10 +38,20 @@ $border-radius: 8px;
     padding: 10px 10px 5px 10px;
     overflow-y: auto;
 
-    .message {
+    .js-message {
+      position: relative;
       display: flex;
       margin-bottom: 10px;
       color: white;
+
+      .message-content {
+        width: 450px;
+      }
+
+      &:hover .actions.show {
+        opacity: 1;
+        pointer-events: all;
+      }
 
       >div:first-child {
         width: 45px;
@@ -50,8 +60,29 @@ $border-radius: 8px;
         margin-right: 10px;
       }
 
-      div {
-        max-width: 100%;
+      .actions {
+        position: absolute;
+        right: 0;
+        top: 8px;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.25s;
+
+        .js-message-remove {
+          background-color: #E58273;
+          color: white;
+          width: 30px;
+          height: 30px;
+          padding: 0;
+          margin: 0;
+          border: 0;
+          font-size: 0.9rem;
+          font-weight: bold;
+
+          &:hover {
+            background-color: darken(#E58273, 10%);
+          }
+        }
       }
 
       .avatar-viewer {

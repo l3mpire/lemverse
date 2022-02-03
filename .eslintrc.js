@@ -83,6 +83,7 @@ module.exports = {
     Items: 'writable',
     nearestDuration: 'writable',
     isCommunicationAllowed: 'writable',
+    isMessageModerationAllowed: 'writable',
     isEditionAllowed: 'writable',
     remote: 'writable',
     _: 'readable',

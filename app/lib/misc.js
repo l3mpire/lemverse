@@ -36,16 +36,35 @@ isCommunicationAllowed = userId => {
   return true;
 };
 
+isMessageModerationAllowed = (userId, message) => {
+  if (!userId || !message) return false;
+  if (message.createdBy === userId) return true;
+
+  const user = Meteor.users.findOne(userId);
+  if (!user) return false;
+
+  if (user.roles?.admin) return true;
+
+  const { levelId } = user.profile;
+  const currentLevel = Levels.findOne(levelId);
+  if (!currentLevel) return false;
+  if (userId === currentLevel.createdBy) return true;
+  if (currentLevel.editorUserIds?.includes(userId)) return true;
+
+  return false;
+};
+
 isEditionAllowed = userId => {
   if (!userId) return false;
   const user = Meteor.users.findOne(userId);
   if (!user) return false;
 
+  if (user.roles?.admin) return true;
+
   const { levelId } = user.profile;
   const currentLevel = Levels.findOne(levelId);
   if (!currentLevel) return false;
 
-  if (user.roles?.admin) return true;
   if (userId === currentLevel.createdBy) return true;
   if (currentLevel.sandbox) return true;
   if (currentLevel.userTags?.editor?.includes(userId)) return true;
