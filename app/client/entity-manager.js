@@ -25,6 +25,7 @@ const entityTooltipConfig = {
   style: 'tooltip with-arrow fade-in',
 };
 
+const floatingDistance = 20;
 const itemAddedToInventoryText = 'An object has been added to your inventory';
 
 entityManager = {
@@ -89,15 +90,20 @@ entityManager = {
     if (nearestEntity && this.entityDistanceTo(nearestEntity, position) >= entityTooltipConfig.proximityRequired) nearestEntity = undefined;
 
     if (nearestEntity) {
+      if (nearestEntity === this.previousNearestEntity) return;
+
       if (!this.previousNearestEntity) {
         characterPopIns.createOrUpdate(
           entityTooltipConfig.identifier,
           this.tooltipTextFromActionType(nearestEntity.actionType),
-          { target: this.entities[nearestEntity._id], className: entityTooltipConfig.style, offset: nearestEntity.tooltipOffset },
+          { className: entityTooltipConfig.style },
         );
       }
 
-      characterPopIns.popIns[entityTooltipConfig.identifier].setData('target', this.entities[nearestEntity._id] || nearestEntity);
+      const popIn = characterPopIns.popIns[entityTooltipConfig.identifier];
+      popIn.setData('target', this.entities[nearestEntity._id] || nearestEntity);
+      popIn.setData('offset', nearestEntity.tooltipOffset || this.computeTooltipPosition(nearestEntity));
+
       this.previousNearestEntity = nearestEntity;
     } else if (this.previousNearestEntity) {
       characterPopIns.destroyPopIn(entityTooltipConfig.identifier);
@@ -158,12 +164,12 @@ entityManager = {
         const gameObject = this.scene.add.container(entity.x, startPosition);
         gameObject.setData('id', entity._id);
         gameObject.setDepth(entity.y);
-        gameObject.setScale(entity.gameObject.scale || 1);
 
         let mainSprite;
         if (entity.gameObject.sprite) {
           mainSprite = this.scene.add.sprite(0, 0, entity.gameObject.sprite.key);
           mainSprite.name = 'main-sprite';
+          mainSprite.setScale(entity.gameObject.sprite.scale || 1);
           gameObject.add(mainSprite);
 
           // play spritesheet animation
@@ -182,7 +188,6 @@ entityManager = {
 
         // pickable/loots animations
         if (pickable && mainSprite) {
-          const floatingDistance = 20;
           const animation = entityAnimations.floating(0, -floatingDistance);
           this.scene.tweens.add({
             targets: mainSprite,
@@ -198,6 +203,8 @@ entityManager = {
             scaleX: { value: 0.25, duration: 1300, ease: 'Sine.easeIn', yoyo: true, repeat: -1 },
             scaleY: { value: 0.1, duration: 1300, ease: 'Sine.easeIn', yoyo: true, repeat: -1 },
           });
+
+          mainSprite.setOrigin(0.5, 1);
         }
 
         this.entities[entity._id] = gameObject;
@@ -205,5 +212,15 @@ entityManager = {
 
       if (callback) callback();
     });
+  },
+
+  computeTooltipPosition(entity) {
+    const gameObject = this.entities[entity._id];
+    if (!gameObject) return { x: 0, y: 0 };
+
+    const mainSprite = gameObject.getByName('main-sprite');
+    const pickable = entity.actionType === entityActionType.pickable;
+
+    return { x: 0, y: -(mainSprite.displayHeight + (pickable ? floatingDistance : 0)) };
   },
 };
