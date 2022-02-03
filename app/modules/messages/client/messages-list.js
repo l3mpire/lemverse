@@ -6,7 +6,7 @@ const getCurrentChannelName = () => {
   if (channel.includes('zon_')) return Zones.findOne(channel)?.name || 'Zone';
 
   const userIds = channel.split(';');
-  const users = Meteor.users.find({ _id: { $in: userIds } }).fetch();
+  const users = Meteor.users.find({ _id: { $in: userIds }, status: { $exists: true } }).fetch();
   const userNames = users.map(user => user.profile.name);
 
   return userNames.join(' & ');

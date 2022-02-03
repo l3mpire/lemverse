@@ -260,7 +260,7 @@ userManager = {
       if (user.profile.avatar !== oldUser?.profile.avatar) userStreams.refreshVideoElementAvatar(userStreams.getVideoElement());
 
       if (shouldCheckDistance) {
-        const otherUsers = Meteor.users.find({ _id: { $ne: mainUser._id } }).fetch();
+        const otherUsers = Meteor.users.find({ _id: { $ne: mainUser._id }, status: { $exists: true } }).fetch();
         userProximitySensor.checkDistances(mainUser, otherUsers);
       }
     } else {

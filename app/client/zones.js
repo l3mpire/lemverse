@@ -93,10 +93,11 @@ zones = {
   usersInZone(zone, includeCurrentUser = false) {
     if (!zone) return [];
 
-    const queryOption = includeCurrentUser ? {} : { _id: { $ne: Meteor.userId() } };
+    const queryOption = { status: { $exists: true } };
+    if (!includeCurrentUser) queryOption._id = { $ne: Meteor.userId() };
     const users = Meteor.users.find(queryOption).fetch();
-    const usersInZone = [];
 
+    const usersInZone = [];
     _.each(users, user => {
       const { x, y } = user.profile;
       if (x < zone.x1) return;
