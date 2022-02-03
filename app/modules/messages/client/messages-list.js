@@ -20,6 +20,15 @@ Template.messagesListMessage.helpers({
   time() { return this.message.createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); },
 });
 
+Template.messagesListMessage.events({
+  'click .js-username'(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const userId = Template.instance().data.message.createdBy;
+    if (userId) Session.set('modal', { template: 'profile', userId });
+  },
+});
+
 Template.messagesList.onCreated(function () {
   this.autorun(() => {
     document.querySelector('.messages-list')?.scrollIntoView();
