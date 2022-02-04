@@ -12,6 +12,13 @@ const getCurrentChannelName = () => {
   return userNames.join(' & ');
 };
 
+const sortedMessages = () => Messages.find({}, { sort: { createdAt: 1 } }).fetch();
+
+const scrollToBottom = () => {
+  const messagesElement = document.querySelector('.messages-list');
+  if (messagesElement) messagesElement.scrollTop = messagesElement.scrollHeight;
+};
+
 Template.messagesListMessage.onCreated(function () {
   this.moderationAllowed = isMessageModerationAllowed(Meteor.userId(), this.data.message);
 });
@@ -40,15 +47,34 @@ Template.messagesListMessage.events({
 
 Template.messagesList.onCreated(function () {
   this.autorun(() => {
-    document.querySelector('.messages-list')?.scrollIntoView();
+    if (!Session.get('console')) return;
+
     const messages = Messages.find({}, { fields: { createdBy: 1 } }).fetch();
     const userIds = messages.map(message => message.createdBy).filter(Boolean);
-    if (userIds?.length) this.subscribe('usernames', userIds);
+    if (userIds?.length) this.subscribe('usernames', userIds, () => scrollToBottom());
+    else scrollToBottom();
   });
 });
 
 Template.messagesList.helpers({
   show() { return Session.get('console') && Messages.find().count(); },
   channelName() { return getCurrentChannelName(); },
-  messages() { return Messages.find({}, { sort: { createdAt: -1 } }).fetch(); },
+  messages() { return sortedMessages(); },
+  sameDay(index) {
+    if (index === 0) return true;
+
+    const messages = sortedMessages();
+    if (index >= messages.length) return true;
+    return new Date(messages[index].createdAt).getDate() === new Date(messages[index - 1].createdAt).getDate();
+  },
+  formattedSeparationDate(index) {
+    const messages = sortedMessages();
+    const messageDate = new Date(messages[index].createdAt);
+
+    const date = new Date();
+    if (messageDate.getDate() === date.getDate()) return 'Today';
+    if (messageDate.getDate() === date.getDate() - 1) return 'Yesterday';
+
+    return messageDate.toDateString();
+  },
 });
