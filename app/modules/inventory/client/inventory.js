@@ -4,7 +4,7 @@ Template.inventoryItemPanel.helpers({
   exist() { return Session.get('selectedInventoryItem'); },
   name() { return Session.get('selectedInventoryItem')?.name; },
   description() { return Session.get('selectedInventoryItem')?.description || '-'; },
-  amount() { return Meteor.user().inventory[Session.get('selectedInventoryItem')._id] || 0; },
+  amount() { return Meteor.user().inventory[Session.get('selectedInventoryItem')?._id] || 0; },
   thumbnail() { return Session.get('selectedInventoryItem')?.thumbnail; },
 });
 
@@ -47,6 +47,7 @@ Template.inventory.onCreated(function () {
   this.autorun(() => {
     const inventoryItems = Meteor.user().inventory || {};
     const itemsIds = Object.keys(inventoryItems);
+    this.inventory.set([]);
     if (!itemsIds?.length) {
       this.inventory.set([]);
       return;
