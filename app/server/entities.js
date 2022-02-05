@@ -36,14 +36,14 @@ createEntityFromItem = (item, data = {}) => {
 const pickEntityInventory = entity => {
   log('pickEntityInventory: start', { entity });
   const inventoryItemKeys = Object.keys(entity.inventory || {});
-  if (!inventoryItemKeys.length) throw new Error('unable to pick an entity without inventory');
+  if (!inventoryItemKeys.length) throw new Error(`entity's inventory is empty`);
 
-  // add entity items to inventory
+  // adds the entity's items to the user's inventory
   const itemsToAdd = inventoryItemKeys.map(key => ({ itemId: key, amount: entity.inventory[key] }));
   addToInventory(Meteor.user(), itemsToAdd);
 
-  // remove the entity from the level
-  Entities.remove(entity._id);
+  // clear entity's inventory
+  Entities.update(entity._id, { $set: { inventory: {} } });
 };
 
 Meteor.methods({
@@ -54,8 +54,10 @@ Meteor.methods({
     if (!entity) throw new Meteor.Error(404, 'Entity not found.');
 
     if (!entity.actionType || entity.actionType === entityActionType.actionable) switchEntityState(entity, value);
-    else if (entity.actionType === entityActionType.pickable) pickEntityInventory(entity, value);
-    else throw new Error('entity action not implemented');
+    else if (entity.actionType === entityActionType.pickable) {
+      pickEntityInventory(entity, value);
+      Entities.remove(entity._id);
+    } else throw new Error('entity action not implemented');
 
     return entity;
   },
