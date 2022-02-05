@@ -51,11 +51,15 @@ const onZoneEntered = e => {
     const usersCountZoneA = zones.usersInZone(zoneA, true).length;
     const usersCountZoneB = zones.usersInZone(zoneB, true).length;
 
-    if (usersCountZoneA > 0 && usersCountZoneB > 0 && usersCountZoneA === usersCountZoneB) differMeteorCall('switchEntityState', currentLevelId, 'door-room-2');
-  } else if (escape.switchEntityState) differMeteorCall('switchEntityState', currentLevelId, escape.switchEntityState);
+    if (usersCountZoneA > 0 && usersCountZoneB > 0 && usersCountZoneA === usersCountZoneB) {
+      const entityId = Entities.findOne({ name: 'door-room-2' });
+      differMeteorCall('useEntity', entityId);
+    }
+  } else if (escape.switchEntityState) differMeteorCall('useEntity', escape.switchEntityState);
   else if (escape.waitEveryoneZone) {
     if (zones.usersInZone(zone, true).length === Meteor.users.find().count()) {
-      differMeteorCall('switchEntityState', currentLevelId, 'room-4-ready', escape.forceEntityState);
+      const entityId = Entities.findOne({ name: 'room-4-ready' });
+      differMeteorCall('useEntity', entityId, escape.forceEntityState);
     }
   }
 
