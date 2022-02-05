@@ -1,4 +1,5 @@
 switchEntityState = (entity, forcedState = undefined) => {
+  check(forcedState, Match.Maybe(Boolean));
   if (!entity || !entity.states) throw new Error(`Entity without state`);
 
   const newState = forcedState !== undefined ? forcedState : !entity.state;
