@@ -42,6 +42,8 @@ $inventory-item-size: 80px;
         bottom: 5px;
         right: 5px;
         font-weight: bold;
+        text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+        color: white;
       }
     }
   }
@@ -89,6 +91,8 @@ $inventory-item-size: 80px;
         bottom: 5px;
         right: 5px;
         font-weight: bold;
+        text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+        color: white;
       }
     }
 
@@ -107,7 +111,7 @@ $inventory-item-size: 80px;
       .description {
         display: block;
         flex-grow: 1;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
         padding: 0;
         margin: 0;
       }
