@@ -17,10 +17,10 @@ switchEntityState = (entity, forcedState = undefined) => {
 
 createEntityFromItem = (item, data = {}) => {
   log('createEntityFromItem: start', { item });
-  if (!item.entity) throw new Error(`The item isn't linked to an entity`);
+  if (!item.entityId) throw new Error(`The item isn't linked to an entity`);
 
-  const entityPrefab = Entities.findOne(item.entity);
-  if (!entityPrefab) throw new Error(`The entity linked to the item doesn't exists`);
+  const entityPrefab = Entities.findOne(item.entityId);
+  if (!entityPrefab) throw new Error(`The entity linked to the item doesn't exists (${item.entityId})`);
 
   const { levelId, x, y } = Meteor.user().profile;
   Entities.insert({
