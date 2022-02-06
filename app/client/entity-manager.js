@@ -180,13 +180,12 @@ entityManager = {
 
           // play spritesheet animation
           if (entity.gameObject.sprite.framerate) {
-            this.scene.anims.create({
+            const animation = this.scene.anims.create({
               key: entity.gameObject.sprite.key,
               frames: this.scene.anims.generateFrameNumbers(entity.gameObject.sprite.key),
               frameRate: entity.gameObject.sprite.framerate || 16,
             });
-
-            mainSprite.play({ key: entity.gameObject.sprite.key, repeat: -1 });
+            if (animation.frames.length) mainSprite.play({ key: entity.gameObject.sprite.key, repeat: -1 });
           }
         }
 
