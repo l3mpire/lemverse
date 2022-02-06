@@ -39,6 +39,15 @@ entityManager = {
     this.scene = scene;
   },
 
+  destroy() {
+    this.onSleep();
+    this.entities = {};
+    this.entitiesToSpawn = [];
+    this.previousNearestEntity = undefined;
+  },
+
+  onSleep() { },
+
   create(entity) {
     this.entitiesToSpawn.push(entity);
   },

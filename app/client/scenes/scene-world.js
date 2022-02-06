@@ -150,6 +150,7 @@ WorldScene = new Phaser.Class({
   },
 
   sleep() {
+    entityManager.onSleep();
     userManager.onSleep();
   },
 
@@ -164,6 +165,7 @@ WorldScene = new Phaser.Class({
     window.removeEventListener(eventTypes.onZoneLeaved, onZoneLeaved);
 
     levelManager.destroy();
+    entityManager.destroy();
     userManager.destroy();
     userProximitySensor.callProximityEndedForAllNearUsers();
     peer.closeAll();
