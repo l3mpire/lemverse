@@ -20,7 +20,7 @@ shell-server@0.5.0            # Server-side component of the `meteor shell` comm
 session@1.2.0
 random@1.2.0
 momentjs:moment
-accounts-base@2.2.0
+accounts-base@2.2.1
 accounts-password@2.2.0
 accounts-ui@1.4.2
 kadira:flow-router
