@@ -9,7 +9,7 @@
     "desktop": "meteor-desktop"
   },
   "dependencies": {
-    "@babel/runtime": "^7.16.7",
+    "@babel/runtime": "^7.17.0",
     "body-parser": "^1.19.1",
     "fast-json-stable-stringify": "^2.1.0",
     "file-type": "^16.5.3",
