@@ -174,6 +174,9 @@ entityManager = {
       entities.forEach(entity => {
         if (!entity.gameObject) return;
 
+        // the spawn being asynchronous, an entity may have disappeared before being created
+        if (!Entities.findOne(entity._id)) return;
+
         const pickable = entity.actionType === entityActionType.pickable;
         const startPosition = entity.y;
         const gameObject = this.scene.add.container(entity.x, startPosition);
