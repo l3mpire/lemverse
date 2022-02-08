@@ -201,6 +201,14 @@ entityManager = {
           }
         }
 
+        if (entity.gameObject.text) {
+          const mainText = this.scene.make.text({ x: 0, y: 0, ...entity.gameObject.text, add: true });
+          mainText.name = 'main-text';
+          mainText.setScale(entity.gameObject.text.scale || 1);
+          mainText.setOrigin(0.5, 0.5);
+          gameObject.add(mainText);
+        }
+
         if (entity.gameObject.collide) this.scene.physics.world.enableBody(gameObject);
 
         // pickable/loots animations
