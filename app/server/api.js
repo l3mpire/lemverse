@@ -36,7 +36,7 @@ lp.route('/api/entities/:entityId', 'application/json', 'api', (params, req, res
   if (req.method !== 'PUT') return 'bad method';
 
   const { state } = req.body;
-  try { check(state, Boolean); } catch (err) { return 'Invalid state'; }
+  try { check(state, String); } catch (err) { return 'Invalid state'; }
 
   const { level, levelId } = getLevel(params, req, res);
   if (!level) return 'bad level';
