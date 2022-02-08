@@ -1,16 +1,22 @@
-switchEntityState = (entity, forcedState = undefined) => {
-  check(forcedState, Match.Maybe(Boolean));
-  if (!entity || !entity.states) throw new Error(`Entity without state`);
-
-  const newState = forcedState !== undefined ? forcedState : !entity.state;
-  const state = newState ? entity.states[1] : entity.states[0];
+const applyEntityState = (entity, stateActions) => {
   const { levelId } = entity;
 
-  state.remove?.forEach(t => Tiles.remove({ levelId, x: t.x, y: t.y, index: t.index }));
+  stateActions.remove?.forEach(t => Tiles.remove({ levelId, x: t.x, y: t.y, index: t.index }));
 
-  state.add?.forEach(t => Tiles.insert({ levelId, x: t.x, y: t.y, index: t.index, tilesetId: t.tilesetId, createdAt: new Date(), createdBy: Meteor.userId() }));
+  stateActions.add?.forEach(t => Tiles.insert({ levelId, x: t.x, y: t.y, index: t.index, tilesetId: t.tilesetId, createdAt: new Date(), createdBy: Meteor.userId() }));
 
-  state.replace?.forEach(t => Tiles.update({ levelId, x: t.x, y: t.y }, { $set: { tilesetId: t.newTilesetId, index: t.newIndex } }));
+  stateActions.replace?.forEach(t => Tiles.update({ levelId, x: t.x, y: t.y }, { $set: { tilesetId: t.newTilesetId, index: t.newIndex } }));
+};
+
+switchEntityState = (entity, forcedState = undefined) => {
+  check(forcedState, Match.Maybe(String));
+  if (!entity || !entity.states) throw new Error(`Entity without state`);
+
+  const toggledState = entity.state === 'on' ? 'off' : 'on';
+  const newState = forcedState !== undefined ? forcedState : toggledState;
+
+  const stateActions = newState === 'on' ? entity.states[1] : entity.states[0];
+  applyEntityState(entity, stateActions);
 
   Entities.update(entity._id, { $set: { state: newState } });
 };
