@@ -61,6 +61,14 @@ entityManager = {
   },
 
   update(entity) {
+    const entityInstance = this.entities[entity._id];
+    if (!entityInstance) return;
+
+    if (entity.gameObject.text) {
+      const mainSprite = entityInstance.getByName('main-text');
+      mainSprite.setText(entity.gameObject.text.text || entity.state);
+    }
+
     window.dispatchEvent(new CustomEvent(eventTypes.onEntityUpdated, { detail: { entity } }));
   },
 
@@ -207,6 +215,8 @@ entityManager = {
           mainText.setScale(entity.gameObject.text.scale || 1);
           mainText.setOrigin(0.5, 0.5);
           gameObject.add(mainText);
+
+          if (!entity.gameObject.text.text) mainText.setText(entity.state);
         }
 
         if (entity.gameObject.collide) this.scene.physics.world.enableBody(gameObject);
