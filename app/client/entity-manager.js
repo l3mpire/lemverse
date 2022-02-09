@@ -104,8 +104,8 @@ entityManager = {
       this.spawnEntities(clonedEntities);
     }
 
-    const { player } = userManager;
-    if (player) this.handleNearestEntityTooltip(player);
+    const { player, playerWasMoving } = userManager;
+    if (player && playerWasMoving) this.handleNearestEntityTooltip(player);
   },
 
   handleNearestEntityTooltip(position) {
