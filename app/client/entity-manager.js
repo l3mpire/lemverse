@@ -109,7 +109,7 @@ entityManager = {
   },
 
   handleNearestEntityTooltip(position) {
-    let nearestEntity = this.nearestEntity(position);
+    let nearestEntity = this.nearestEntity(position, true);
     if (nearestEntity && this.entityDistanceTo(nearestEntity, position) >= entityTooltipConfig.proximityRequired) nearestEntity = undefined;
 
     if (nearestEntity) {
@@ -134,8 +134,9 @@ entityManager = {
     }
   },
 
-  nearestEntity(position) {
-    const entities = Entities.find().fetch();
+  nearestEntity(position, ignoreNonInteractive = false) {
+    const filters = ignoreNonInteractive ? { actionType: { $ne: entityActionType.none } } : {};
+    const entities = Entities.find(filters).fetch();
     let nearestEntity;
     let previousDistance = Infinity;
     for (let i = 0; i < entities.length; i++) {
