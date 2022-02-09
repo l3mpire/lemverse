@@ -27,6 +27,14 @@ meet = {
     };
 
     meet.api = new window.JitsiMeetExternalAPI(Meteor.settings.public.meet.serverURL, options);
+    meet.api.addEventListener('videoConferenceJoined', () => {
+      const { shareAudio, shareVideo } = Meteor.user().profile;
+      if (shareAudio) this.unmute();
+      else this.mute();
+
+      if (shareVideo) this.unhide();
+      else this.hide();
+    });
     this.show(true);
 
     peer.disable();
