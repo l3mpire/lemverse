@@ -386,6 +386,8 @@ Please note, that as stated in section `Deploy in production`, there is an addit
 
     "defaultLevelId": "lvl_iLOVEaLOTlemverse", // Default level Id created at first run.
 
+    "respawnDelay": 540, // Spawn users to the level's spawn point after 9 hours. Remove this to disable the respawn
+
     "email": {
       "from": "The lembot <contact@domain.com>"
     },

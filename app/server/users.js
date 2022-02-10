@@ -123,6 +123,20 @@ Meteor.methods({
 });
 
 Meteor.users.find({ 'status.online': true }).observeChanges({
+  added(id) {
+    const user = Meteor.users.findOne(id);
+    if (!user || !user.status.lastLogoutAt) return;
+
+    const { respawnDelay } = Meteor.settings;
+    if (!respawnDelay) return;
+
+    const diffInMinutes = ((new Date()).getTime() - new Date(user.status.lastLogoutAt).getTime()) / 60000;
+    if (diffInMinutes < respawnDelay) return;
+
+    const levelId = user.profile.levelId || Meteor.settings.defaultLevelId;
+    const currentLevel = Levels.findOne(levelId);
+    if (currentLevel?.spawn) Meteor.users.update(user._id, { $set: { 'profile.x': currentLevel.spawn.x, 'profile.y': currentLevel.spawn.y } });
+  },
   removed(id) {
     Meteor.users.update(id, { $set: { 'status.lastLogoutAt': new Date() } });
   },

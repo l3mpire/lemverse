@@ -41,12 +41,14 @@
         "overscroll",
         "peerjs",
         "Phaser's",
+        "pickable",
         "plusplus",
         "postupdate",
         "prejoin",
         "privkey",
         "raisehand",
         "recaptcha",
+        "respawn",
         "Roki",
         "screenshare",
         "sharedvideo",
@@ -68,8 +70,7 @@
         "webm",
         "webrtc",
         "websockets",
-        "yoyo",
-        "pickable"
+        "yoyo"
     ],
     "flagWords": [
         "hte"

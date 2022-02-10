@@ -141,6 +141,8 @@
 
   "botUserId": "",
 
+  "respawnDelay": 480,
+
   "email": {
     "from": "The lembot <contact@m.lemverse.com>"
   },
