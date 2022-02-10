@@ -121,3 +121,9 @@ Meteor.methods({
     Notifications.update({ _id: notificationId, userId: this.userId }, { $set: { read: true } });
   },
 });
+
+Meteor.users.find({ 'status.online': true }).observeChanges({
+  removed(id) {
+    Meteor.users.update(id, { $set: { 'status.lastLogoutAt': new Date() } });
+  },
+});
