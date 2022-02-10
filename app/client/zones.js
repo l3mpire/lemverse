@@ -164,10 +164,7 @@ zones = {
         this.getIframeElement().src = zone.url;
         if (zone.yt) this.getIframeElement().allow = iframeAllowAttributeSettings;
         this.getWebpageElement().classList.add('show');
-      } else if (!zone.url && !meet.api) {
-        this.getIframeElement().src = '';
-        this.getWebpageElement().classList.remove('show');
-      }
+      } else if (!zone.url && !meet.api) this.closeIframeElement();
 
       const user = Meteor.users.findOne(player.userId);
       if (!user) return;
@@ -214,6 +211,11 @@ zones = {
     }
 
     return true;
+  },
+
+  closeIframeElement() {
+    this.getIframeElement().src = '';
+    this.getWebpageElement().classList.remove('show');
   },
 
   getIframeElement() {

@@ -276,6 +276,11 @@ Template.lemverse.onCreated(function () {
       const loadingScene = game.scene.getScene('LoadingScene');
       const worldScene = game.scene.getScene('WorldScene');
       const uiScene = game.scene.getScene('UIScene');
+
+      // ensures scene is fullscreen and without iframe loaded
+      zones.closeIframeElement();
+      updateViewport(worldScene, viewportModes.fullscreen);
+
       loadingScene.show();
 
       if (this.currentLevelId) {
