@@ -23,13 +23,6 @@ Meteor.publish('tiles', function (levelId) {
   return Tiles.find({ levelId, $or: [{ invisible: false }, { invisible: { $exists: false } }] }, { fields: { index: 1, x: 1, y: 1, tilesetId: 1, levelId: 1, metadata: 1 } });
 });
 
-Meteor.publish('entities', function (levelId) {
-  if (!this.userId) return undefined;
-  if (!levelId) levelId = Meteor.settings.defaultLevelId;
-
-  return Entities.find({ levelId });
-});
-
 Meteor.publish('zones', function (levelId) {
   if (!this.userId) return undefined;
   if (!levelId) levelId = Meteor.settings.defaultLevelId;

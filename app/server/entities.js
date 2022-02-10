@@ -69,3 +69,10 @@ Meteor.methods({
     return entity;
   },
 });
+
+Meteor.publish('entities', function (levelId) {
+  if (!this.userId) return undefined;
+  if (!levelId) levelId = Meteor.settings.defaultLevelId;
+
+  return Entities.find({ levelId });
+});
