@@ -37,38 +37,6 @@ Meteor.publish('characters', function () {
 });
 
 Meteor.methods({
-  teleportUserInLevel(levelId) {
-    return teleportUserInLevel(levelId, Meteor.userId());
-  },
-  markNotificationAsRead(notificationId) {
-    if (!this.userId) return;
-    check(notificationId, String);
-    Notifications.update({ _id: notificationId, userId: this.userId }, { $set: { read: true } });
-  },
-  convertGuestAccountToRealAccount(email, name, password) {
-    if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
-    check([email, name, password], [String]);
-
-    const { profile } = Meteor.user();
-    try {
-      Promise.await(Meteor.users.update(this.userId, {
-        $set: {
-          'emails.0.address': email,
-          profile: {
-            ...profile,
-            name,
-            shareAudio: true,
-            shareVideo: true,
-          },
-        },
-      }));
-    } catch (err) { throw new Meteor.Error('email-duplicate', 'Email already exists'); }
-
-    // ensures the logged user don't have guest attributes anymore
-    Meteor.users.update(this.userId, { $unset: { 'profile.guest': true, username: true } });
-    updateSkin(Meteor.user(), profile.levelId);
-    Accounts.setPassword(this.userId, password, { logout: false });
-  },
   getPeerConfig() {
     if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
     const { url, config, port, secret } = Meteor.settings.peer.client;
