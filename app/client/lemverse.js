@@ -126,6 +126,17 @@ Template.lemverse.onCreated(function () {
   });
 
   this.autorun(() => {
+    const { status } = Meteor.status();
+    Tracker.nonreactive(() => {
+      const user = Meteor.user();
+      if (!user || user.profile.guest) return;
+
+      if (status === 'connected') peer.createMyPeer();
+      else peer.peerInstance?.disconnect();
+    });
+  });
+
+  this.autorun(() => {
     if (!Meteor.userId()) {
       Session.set('sceneWorldReady', false);
       userManager.unsetMainPlayer();
