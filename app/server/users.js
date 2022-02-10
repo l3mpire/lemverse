@@ -1,3 +1,5 @@
+const mainFields = { options: 1, profile: 1, roles: 1, status: { online: 1 }, beta: 1, inventory: 1 };
+
 Accounts.onCreateUser((options, user) => {
   log('onCreateUser', { options, user });
   user._id = `usr_${Random.id()}`;
@@ -36,7 +38,7 @@ Meteor.publish('users', function (levelId) {
 
   return Meteor.users.find(
     { 'status.online': true, 'profile.levelId': levelId },
-    { fields: { options: 1, profile: 1, roles: 1, status: { online: 1 }, beta: 1, inventory: 1 } },
+    { fields: mainFields },
   );
 });
 
@@ -55,7 +57,7 @@ Meteor.publish('usernames', function (userIds) {
 
   return Meteor.users.find(
     { _id: { $in: userIds } },
-    { fields: { 'profile.name': 1, 'profile.body': 1, 'profile.hair': 1, 'profile.outfit': 1, 'profile.eye': 1, 'profile.accessory': 1 } },
+    { fields: mainFields },
   );
 });
 
@@ -63,7 +65,7 @@ Meteor.publish('userProfile', function (userId) {
   if (!this.userId) return undefined;
   check(userId, String);
 
-  return Meteor.users.find(userId, { fields: { 'profile.name': 1, 'profile.company': 1, 'profile.bio': 1, 'profile.website': 1, createdAt: 1 } });
+  return Meteor.users.find(userId, { fields: { ...mainFields, createdAt: 1 } });
 });
 
 const dropInventoryItem = (itemId, data = {}) => {
