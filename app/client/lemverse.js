@@ -466,6 +466,12 @@ Template.lemverse.onCreated(function () {
     e.stopPropagation();
     toggleModal('userList');
   });
+
+  hotkeys('x', { scope: scopes.player }, e => {
+    e.preventDefault();
+    e.stopPropagation();
+    userManager.punch(userProximitySensor.nearestUsers(Meteor.user()));
+  });
 });
 
 Template.lemverse.onDestroyed(function () {

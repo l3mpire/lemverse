@@ -83,4 +83,21 @@ userProximitySensor = {
 
     return nearestUser;
   },
+
+  nearestUsers(user) {
+    if (!this.nearUsersCount()) return undefined;
+
+    const nearestUsers = [];
+    let nearestDistance = Infinity;
+
+    _.each(this.nearUsers, nearUser => {
+      const distance = this.distance(user, nearUser);
+      if (distance < nearestDistance) {
+        nearestUsers.push(nearUser);
+        nearestDistance = distance;
+      }
+    });
+
+    return nearestUsers;
+  },
 };

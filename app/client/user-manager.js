@@ -583,6 +583,11 @@ userManager = {
     peer.lockCall(user._id, true);
   },
 
+  punch(users) {
+    if (!users || !users.length) return;
+    peer.punchCall(_.pluck(users, '_id'));
+  },
+
   takeDamage(player) {
     this.flashColor(player, 0xFF0000);
   },
@@ -656,7 +661,23 @@ userManager = {
     if (!userEmitter) return;
 
     if (dataReceived.type === 'audio') userVoiceRecorderAbility.playSound(dataReceived.data);
-    else if (dataReceived.type === 'followed') {
+    else if (dataReceived.type === 'punch') {
+      console.log('punched received');
+      const punchedUser = Meteor.user();
+
+      const punchingUser = Meteor.users.findOne(emitterUserId);
+      if (!punchingUser) return;
+
+      const vx = punchedUser.profile.x - punchingUser.profile.x;
+      const vy = punchedUser.profile.y - punchingUser.profile.y;
+
+      const vl = Math.sqrt(vx * vx + vy * vy);
+      console.log(vl);
+      const newX = punchedUser.profile.x + (60 - vl) * vx / vl;
+      const newY = punchedUser.profile.y + (60 - vl) * vy / vl;
+
+      this.teleportMainUser(newX, newY);
+    } else if (dataReceived.type === 'followed') {
       peer.lockCall(emitterUserId);
       lp.notif.warning(`${userEmitter.profile.name} is following you 👀`);
     } else if (dataReceived.type === 'unfollowed') {

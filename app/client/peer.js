@@ -490,4 +490,9 @@ peer = {
   isEnabled() {
     return this.sensorEnabled;
   },
+
+  punchCall(userIds) {
+    if (!userIds || !userIds.length) return;
+    this.sendData(userIds, { type: 'punch', emitter: Meteor.userId() });
+  },
 };
