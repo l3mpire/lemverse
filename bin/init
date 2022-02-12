@@ -22,12 +22,12 @@ npm install
 
 # init lemverse
 cd app
-./init
+./bin/init
 cd ..
 
 # must be the last because it changes node with the nvm use 4
 cd mup
-./init
+./bin/init
 cd ..
 
 # Restore latest used node version
