@@ -470,6 +470,7 @@ Template.lemverse.onCreated(function () {
   hotkeys('x', { scope: scopes.player }, e => {
     e.preventDefault();
     e.stopPropagation();
+    if (e.repeat) return;
     userManager.punch(userProximitySensor.nearestUsers(Meteor.user()));
   });
 });

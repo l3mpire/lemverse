@@ -587,6 +587,9 @@ userManager = {
     if (!users || !users.length) return;
     sounds.play('punch.mp3');
     if (Math.random() > 0.95) sounds.play('punch2.mp3');
+
+    users.forEach(user => this.takeDamage(this.players[user._id]));
+
     peer.punchCall(_.pluck(users, '_id'));
   },
 
@@ -668,6 +671,8 @@ userManager = {
       if (Math.random() > 0.95) sounds.play('punch2.mp3');
 
       const punchedUser = Meteor.user();
+
+      this.takeDamage(this.players[punchedUser._id]);
 
       const punchingUser = Meteor.users.findOne(emitterUserId);
       if (!punchingUser) return;
