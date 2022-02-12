@@ -585,6 +585,8 @@ userManager = {
 
   punch(users) {
     if (!users || !users.length) return;
+    sounds.play('punch.mp3');
+    if (Math.random() > 0.95) sounds.play('punch2.mp3');
     peer.punchCall(_.pluck(users, '_id'));
   },
 
@@ -662,7 +664,9 @@ userManager = {
 
     if (dataReceived.type === 'audio') userVoiceRecorderAbility.playSound(dataReceived.data);
     else if (dataReceived.type === 'punch') {
-      console.log('punched received');
+      sounds.play('punch.mp3');
+      if (Math.random() > 0.95) sounds.play('punch2.mp3');
+
       const punchedUser = Meteor.user();
 
       const punchingUser = Meteor.users.findOne(emitterUserId);
@@ -672,7 +676,7 @@ userManager = {
       const vy = punchedUser.profile.y - punchingUser.profile.y;
 
       const vl = Math.sqrt(vx * vx + vy * vy);
-      console.log(vl);
+
       const newX = punchedUser.profile.x + (60 - vl) * vx / vl;
       const newY = punchedUser.profile.y + (60 - vl) * vy / vl;
 
