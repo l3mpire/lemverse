@@ -1,4 +1,4 @@
-.iframe {
+.escape-b-iframe {
     height: 100%;
     width: 100%;
     position: fixed;
@@ -95,7 +95,7 @@
 }
 
 @media (prefers-color-scheme: light) {
-    .iframe {
+    .escape-b-iframe {
         background: white !important;
 
         .dark {
@@ -121,7 +121,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-    .iframe {
+    .escape-b-iframe {
         background: black !important;
 
         .container {
