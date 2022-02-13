@@ -585,6 +585,7 @@ userManager = {
 
   punch(users) {
     if (!users || !users.length) return;
+    this.scene.cameras.main.shake(250, 0.015, 0.02);
     sounds.play('punch.mp3');
     if (Math.random() > 0.95) sounds.play('punch2.mp3');
 
@@ -668,6 +669,7 @@ userManager = {
     if (dataReceived.type === 'audio') userVoiceRecorderAbility.playSound(dataReceived.data);
     else if (dataReceived.type === 'punch') {
       sounds.play('punch.mp3');
+      this.scene.cameras.main.shake(250, 0.015, 0.02);
       if (Math.random() > 0.95) sounds.play('punch2.mp3');
 
       const punchedUser = Meteor.user();
