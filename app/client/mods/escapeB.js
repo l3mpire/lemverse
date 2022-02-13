@@ -35,17 +35,17 @@ Template.escapeB.events({
   'click .js-key-code'(e) {
     const { lock, code } = e.currentTarget.dataset;
     const lockString = `lock${lock}`;
-    beep();
+    sounds.play('beep.mp3');
 
     const currentLevel = Session.get('currentLevel');
     if (code === 'VALIDATE') {
       if (Session.get(lockString) === currentLevel.metadata[lockString].code) {
         // Success
         Meteor.call('enlightenZone', currentLevel.metadata[lockString].zone);
-        unlock();
+        sounds.play('unlock.mp3');
       } else {
         // Failure
-        buzz();
+        sounds.play('buzz.wav');
         document.querySelector('#redLed').classList.remove('hide');
         setTimeout(() => {
           document.querySelector('#redLed').classList.add('hide');
@@ -61,7 +61,7 @@ Template.escapeB.events({
   'click .js-activate-switch'(e) {
     const { zone } = e.currentTarget.dataset;
     if (!zone) return;
-    click();
+    sounds.play('click.wav');
     Meteor.call('toggleZone', zone);
   },
 });

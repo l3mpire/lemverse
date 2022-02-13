@@ -95,7 +95,7 @@ const onTileAdded = e => {
   if (!tile.metadata) return;
 
   const { WorldScene } = game.scene.keys;
-  if (tile.metadata.escapeHint) chest();
+  if (tile.metadata.escapeHint) sounds.play('chest.mp3');
   else if (tile.metadata.paint) paintTile(WorldScene, tile, layer);
 };
 
