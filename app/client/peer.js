@@ -33,7 +33,6 @@ peer = {
   },
 
   closeAll() {
-    this.unlockCalls();
     if (Meteor.user().options?.debug) log('peer.closeAll: start');
     _.each(this.calls, call => this.close(call.peer, Meteor.settings.public.peer.delayBeforeClosingCall, 'close-all'));
   },
@@ -54,6 +53,7 @@ peer = {
       delete callsSource[`${user}-${type}`];
     };
 
+    this.unlockCall(userId, true);
     close(false, userId, streamTypes.main);
     close(false, userId, streamTypes.screen);
     close(true, userId, streamTypes.main);
@@ -467,10 +467,6 @@ peer = {
   unlockCall(userId, notify = false) {
     if (notify && this.lockedCalls[userId]) this.sendData([userId], { type: 'unfollowed', emitter: Meteor.userId() });
     delete this.lockedCalls[userId];
-  },
-
-  unlockCalls() {
-    _.each(this.lockedCalls, (value, userId) => this.unlockCall(userId, false));
   },
 
   hasActiveStreams() {
