@@ -234,7 +234,7 @@ peer = {
     return this.getPeer().then(peer => {
       userIds.forEach(userId => {
         try {
-          const connection = peer.connect(userId, { serialization: 'json' });
+          const connection = peer.connect(userId);
 
           connection.on('open', () => {
             connection.send(data);
