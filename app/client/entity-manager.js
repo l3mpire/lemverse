@@ -64,7 +64,7 @@ entityManager = {
     const entityInstance = this.entities[entity._id];
     if (!entityInstance) return;
 
-    if (entity.gameObject.text) {
+    if (entity.gameObject?.text) {
       const mainSprite = entityInstance.getByName('main-text');
       mainSprite.setText(entity.gameObject.text.text || entity.state);
     }
@@ -135,20 +135,19 @@ entityManager = {
   },
 
   nearestEntity(position, ignoreNonInteractive = false) {
-    const filters = ignoreNonInteractive ? { actionType: { $ne: entityActionType.none } } : {};
-    const entities = Entities.find(filters).fetch();
+    const entities = Object.values(this.entities);
     let nearestEntity;
     let previousDistance = Infinity;
-    for (let i = 0; i < entities.length; i++) {
-      const entity = entities[i];
-      const distance = this.entityDistanceTo(entity, position);
-      if (distance < previousDistance) {
-        nearestEntity = entity;
-        previousDistance = distance;
-      }
-    }
+    entities.forEach(entity => {
+      if (ignoreNonInteractive && entity.getData('actionType') === entityActionType.none) return;
 
-    return nearestEntity;
+      const distance = this.entityDistanceTo(entity, position);
+      if (distance > previousDistance) return;
+      nearestEntity = entity.getData('id');
+      previousDistance = distance;
+    });
+
+    return nearestEntity ? Entities.findOne(nearestEntity) : undefined;
   },
 
   entityDistanceTo(entity, position) {
@@ -181,16 +180,17 @@ entityManager = {
     const bootScene = game.scene.getScene('BootScene');
     bootScene.loadImagesAtRuntime(sprites, () => {
       entities.forEach(entity => {
-        if (!entity.gameObject) return;
-
         // the spawn being asynchronous, an entity may have disappeared before being created
         if (!Entities.findOne(entity._id)) return;
 
         const pickable = entity.actionType === entityActionType.pickable;
-        const startPosition = entity.y;
-        const gameObject = this.scene.add.container(entity.x, startPosition);
+        const gameObject = this.scene.add.container(entity.x, entity.y);
         gameObject.setData('id', entity._id);
+        gameObject.setData('actionType', entity.actionType);
         gameObject.setDepth(entity.y);
+        this.entities[entity._id] = gameObject;
+
+        if (!entity.gameObject) return;
 
         let mainSprite;
         if (entity.gameObject.sprite) {
@@ -242,8 +242,6 @@ entityManager = {
 
           mainSprite.setOrigin(0.5, 1);
         }
-
-        this.entities[entity._id] = gameObject;
       });
 
       if (callback) callback();
@@ -255,6 +253,7 @@ entityManager = {
     if (!gameObject) return { x: 0, y: 0 };
 
     const mainSprite = gameObject.getByName('main-sprite');
+    if (!mainSprite) return { x: 0, y: 0 };
     const pickable = entity.actionType === entityActionType.pickable;
 
     return { x: 0, y: -(mainSprite.displayHeight + (pickable ? floatingDistance : 0)) };
