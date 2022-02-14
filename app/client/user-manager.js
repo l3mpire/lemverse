@@ -381,11 +381,9 @@ userManager = {
   },
 
   interpolatePlayerPositions() {
-    const currentUser = Meteor.user();
-
     const now = moment();
-    _.each(this.players, (player, userId) => {
-      if (userId === currentUser?._id) return;
+    Object.values(this.players).forEach(player => {
+      if (player.userId === this.player.userId) return;
 
       if (!player.lwTargetDate) {
         this.pauseAnimation(player, true);
