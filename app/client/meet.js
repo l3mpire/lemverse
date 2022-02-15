@@ -38,7 +38,6 @@ meet = {
     this.show(true);
 
     peer.disable();
-    userProximitySensor.callProximityEndedForAllNearUsers();
 
     if (window.electron) {
       const { setupScreenSharingRender } = window.electron.jitsiMeetElectronUtils;

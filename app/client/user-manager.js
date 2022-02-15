@@ -240,7 +240,7 @@ userManager = {
       hasMoved = x !== oldX || y !== oldY;
     }
     const mainUser = Meteor.user();
-    const shouldCheckDistance = hasMoved && !guest && !meet.api;
+    const shouldCheckDistance = hasMoved && !guest;
 
     const isMe = user._id === Meteor.userId();
     if (isMe) {
