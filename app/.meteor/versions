@@ -3,7 +3,7 @@ accounts-guest@0.0.1
 accounts-password@2.2.0
 accounts-ui@1.4.2
 accounts-ui-unstyled@1.6.0
-allow-deny@1.1.0
+allow-deny@1.1.1
 astraload:meteor-apm-client@2.32.0
 autoupdate@1.8.0
 babel-compiler@7.8.0
@@ -57,7 +57,7 @@ meteor-base@1.5.1
 meteorhacks:picker@1.0.3
 minifier-css@1.6.0
 minifier-js@2.7.3
-minimongo@1.7.0
+minimongo@1.8.0
 mizzao:timesync@0.5.2
 mizzao:user-status@1.0.1
 mobile-experience@1.1.0
@@ -66,12 +66,12 @@ modern-browsers@0.1.7
 modules@0.18.0
 modules-runtime@0.12.0
 momentjs:moment@2.29.1
-mongo@1.13.0
+mongo@1.14.4
 mongo-decimal@0.1.2
 mongo-dev-server@1.1.0
 mongo-id@1.0.8
 mongo-livedata@1.0.12
-npm-mongo@3.9.1
+npm-mongo@4.3.1
 observe-sequence@1.0.19
 ordered-dict@1.1.0
 ostrio:cookies@2.7.0
