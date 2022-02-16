@@ -383,13 +383,13 @@ Template.lemverse.onCreated(function () {
       this.handleEntitiesSubscribe = this.subscribe('entities', levelId, () => {
         this.handleObserveEntities = Entities.find().observe({
           added(entity) {
-            entityManager.create(entity);
+            entityManager.onDocumentAdded(entity);
           },
-          changed(entity) {
-            setTimeout(() => entityManager.update(entity), 0);
+          changed(newEntity, oldEntity) {
+            setTimeout(() => entityManager.onDocumentUpdated(newEntity, oldEntity), 0);
           },
           removed(entity) {
-            entityManager.remove(entity);
+            entityManager.onDocumentRemoved(entity);
           },
         });
 

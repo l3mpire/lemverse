@@ -48,11 +48,11 @@ entityManager = {
 
   onSleep() { },
 
-  create(entity) {
+  onDocumentAdded(entity) {
     this.entitiesToSpawn.push(entity);
   },
 
-  remove(entity) {
+  onDocumentRemoved(entity) {
     const entityInstance = this.entities[entity._id];
     if (!entityInstance) return;
 
@@ -60,16 +60,18 @@ entityManager = {
     delete this.entities[entity._id];
   },
 
-  update(entity) {
-    const entityInstance = this.entities[entity._id];
+  onDocumentUpdated(newEntity) {
+    const entityInstance = this.entities[newEntity._id];
     if (!entityInstance) return;
 
-    if (entity.gameObject?.text) {
+    entityInstance.setPosition(newEntity.x, newEntity.y);
+
+    if (newEntity.gameObject?.text) {
       const mainSprite = entityInstance.getByName('main-text');
-      mainSprite.setText(entity.gameObject.text.text || entity.state);
+      mainSprite.setText(newEntity.gameObject.text.text || newEntity.state);
     }
 
-    window.dispatchEvent(new CustomEvent(eventTypes.onEntityUpdated, { detail: { entity } }));
+    window.dispatchEvent(new CustomEvent(eventTypes.onEntityUpdated, { detail: { entity: newEntity } }));
   },
 
   onInteraction(tiles, interactionPosition) {
