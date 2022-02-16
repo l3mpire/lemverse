@@ -60,18 +60,45 @@ entityManager = {
     delete this.entities[entity._id];
   },
 
-  onDocumentUpdated(newEntity) {
+  onDocumentUpdated(newEntity, oldEntity) {
     const entityInstance = this.entities[newEntity._id];
     if (!entityInstance) return;
 
     entityInstance.setPosition(newEntity.x, newEntity.y);
 
-    if (newEntity.gameObject?.text) {
-      const mainSprite = entityInstance.getByName('main-text');
-      mainSprite.setText(newEntity.gameObject.text.text || newEntity.state);
+    if (newEntity.states && newEntity.state !== oldEntity.state) {
+      const state = newEntity.states[newEntity.state];
+      this.updateEntityFromState(newEntity, state);
     }
 
     window.dispatchEvent(new CustomEvent(eventTypes.onEntityUpdated, { detail: { entity: newEntity } }));
+  },
+
+  updateEntityFromState(entity, state) {
+    const entityInstance = this.entities[entity._id];
+    if (!entityInstance) return;
+
+    if (state.sprite) {
+      const sprite = entityInstance.getByName('main-sprite');
+      if (sprite) {
+        const color = state.sprite.tint || 0xffffff;
+        sprite.setTint(color, color, color, color);
+
+        if (state.sprite.animation) {
+          if (state.sprite.animation === 'pause') sprite.anims.pause();
+          else sprite.anims.resume();
+        }
+      }
+    }
+
+    if (state.text) {
+      const text = entityInstance.getByName('main-text');
+      if (text) {
+        const color = state.text.tint || 0xffffff;
+        text.setTint(color, color, color, color);
+        text.setText(state.text.text || entity.state);
+      }
+    }
   },
 
   onInteraction(tiles, interactionPosition) {
@@ -244,6 +271,8 @@ entityManager = {
 
           mainSprite.setOrigin(0.5, 1);
         }
+
+        if (entity.states) this.updateEntityFromState(entity, entity.states[entity.state]);
       });
 
       if (callback) callback();
