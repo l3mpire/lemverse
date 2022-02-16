@@ -76,7 +76,7 @@ entityManager = {
 
   updateEntityFromState(entity, state) {
     const entityInstance = this.entities[entity._id];
-    if (!entityInstance) return;
+    if (!entityInstance || !state) return;
 
     if (state.sprite) {
       const sprite = entityInstance.getByName('main-sprite');
