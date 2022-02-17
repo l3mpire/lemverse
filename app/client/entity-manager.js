@@ -103,6 +103,7 @@ entityManager = {
 
   onInteraction(tiles, interactionPosition) {
     if (!this.previousNearestEntity || this.previousNearestEntity.actionType === entityActionType.none) return;
+    if (Meteor.user().profile.guest) return;
 
     if (this.previousNearestEntity.actionType === entityActionType.pickable) {
       const previousNearestEntityId = this.previousNearestEntity._id;
@@ -141,7 +142,7 @@ entityManager = {
     }
 
     const { player, playerWasMoving } = userManager;
-    if (player && playerWasMoving) this.handleNearestEntityTooltip(player);
+    if (player && playerWasMoving && !Meteor.user().profile.guest) this.handleNearestEntityTooltip(player);
   },
 
   handleNearestEntityTooltip(position) {
