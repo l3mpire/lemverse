@@ -102,7 +102,9 @@ entityManager = {
   },
 
   onInteraction(tiles, interactionPosition) {
-    if (this.previousNearestEntity?.actionType === entityActionType.pickable) {
+    if (!this.previousNearestEntity || this.previousNearestEntity.actionType === entityActionType.none) return;
+
+    if (this.previousNearestEntity.actionType === entityActionType.pickable) {
       const previousNearestEntityId = this.previousNearestEntity._id;
       const animation = entityAnimations.picked(Meteor.user().profile.x, Meteor.user().profile.y - 30);
       this.scene.tweens.add({
@@ -117,6 +119,11 @@ entityManager = {
       });
 
       return;
+    }
+
+    if (this.previousNearestEntity.action) {
+      const [action, value] = this.previousNearestEntity.action.split(':');
+      if (action === 'modal') Session.set('modal', { template: value });
     }
 
     Entities.find().fetch().forEach(entity => {
