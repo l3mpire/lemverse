@@ -81,6 +81,7 @@ module.exports = {
     Notifications: 'writable',
     Messages: 'writable',
     Items: 'writable',
+    Quests: 'writable',
     nearestDuration: 'writable',
     isCommunicationAllowed: 'writable',
     isMessageModerationAllowed: 'writable',

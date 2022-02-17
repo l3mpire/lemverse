@@ -54,6 +54,12 @@ Items = lp.collectionRegister('items', 'itm', [], {
   remove(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
 });
 
+Quests = lp.collectionRegister('quests', 'qst', [], {
+  insert(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
+  update(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
+  remove(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
+});
+
 Files = new FilesCollection({
   collectionName: 'Files',
   storagePath: '/var/tmp/lemverse',
