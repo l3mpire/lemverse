@@ -1,0 +1,14 @@
+<template name="questsList">
+  <div class="quests-list {{#if show}}show{{/if}}">
+    <h2 class="title">Quests</h2>
+    {{#if hasQuests}}
+      <ul class="quests">
+        {{#each q in quests}}
+          <li class="js-quest" data-quest-id="{{q._id}}">{{q._id}}</li>
+        {{/each}}
+      </ul>
+    {{else}}
+      <p>--- No quest available for now ---</p>
+    {{/if}}
+  </div>
+</template>

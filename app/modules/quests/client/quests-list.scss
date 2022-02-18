@@ -1,0 +1,49 @@
+.quests-list {
+  position: absolute;
+  left: 50%;
+  bottom: 130px;
+  display: flex;
+  flex-direction: column;
+  height: 350px;
+  width: 180px;
+  z-index: 100;
+  background-color: #2b2d3df2;
+  border-radius: 8px;
+  transform: translateX(-454px);
+  opacity: 0;
+  transition: opacity 0.25s linear;
+  pointer-events: none;
+
+  &.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .title {
+    color: white;
+    text-align: center;
+    padding: 16px 0;
+    margin: 0;
+    font-size: 1.1rem;
+    background-color: #2c2e3e;
+    border-radius: 8px;
+  }
+
+  .quests {
+    margin: 0;
+    padding: 0;
+
+    .js-quest {
+      display: block;
+      color: white;
+      cursor: pointer;
+      padding: 10px;
+      transition: all linear 0.150s;
+
+      &:hover {
+        background-color: lighten(#2b2d3df2, 10%);
+        padding-left: 15px;
+      }
+    }
+  }
+}
