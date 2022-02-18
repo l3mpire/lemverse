@@ -4,11 +4,16 @@
     {{#if hasQuests}}
       <ul class="quests">
         {{#each q in quests}}
-          <li class="js-quest" data-quest-id="{{q._id}}">{{q._id}}</li>
+          <li class="js-quest {{#if isQuestSelected q._id}}selected{{/if}} {{#if q.completed}}completed{{/if}}" data-quest-id="{{q._id}}">
+            <span>{{author q.createdBy}}</span>
+            <span class="actions">
+              <button type="button" class="button js-mark-as-completed">✔</button>
+            </span>
+          </li>
         {{/each}}
       </ul>
     {{else}}
-      <p>--- No quest available for now ---</p>
+      <p>--- Empty ---</p>
     {{/if}}
   </div>
 </template>

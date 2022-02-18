@@ -6,5 +6,5 @@ Meteor.publish('quests', function () {
       { owners: { $in: [Meteor.userId()] } },
       { createdBy: Meteor.userId() },
     ],
-  }, { sort: { createdAt: -1 } });
+  }, { sort: { completed: 1, createdAt: 1 } });
 });

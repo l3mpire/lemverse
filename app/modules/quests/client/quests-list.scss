@@ -5,11 +5,11 @@
   display: flex;
   flex-direction: column;
   height: 350px;
-  width: 180px;
+  width: 220px;
   z-index: 100;
   background-color: #2b2d3df2;
   border-radius: 8px;
-  transform: translateX(-454px);
+  transform: translateX(-495px);
   opacity: 0;
   transition: opacity 0.25s linear;
   pointer-events: none;
@@ -39,10 +39,60 @@
       cursor: pointer;
       padding: 10px;
       transition: all linear 0.150s;
+      position: relative;
+      border-left: 5px solid transparent;
+      font-weight: bold;
+
+      .actions {
+        position: absolute;
+        right: 10px;
+        transform: translateY(-3px);
+        opacity: 0;
+        pointer-events: none;
+
+        .button {
+          width: 25px;
+          height: 25px;
+          padding: 0;
+          margin: 0;
+          text-align: center;
+
+          &.js-mark-as-completed {
+            background-color: #C3E991;
+            border: 0;
+
+            &:hover {
+              background-color: darken(#C3E991, 20%);
+            }
+          }
+        }
+      }
 
       &:hover {
         background-color: lighten(#2b2d3df2, 10%);
-        padding-left: 15px;
+      }
+
+      &.completed {
+        color: #CEDADA;
+        font-weight: normal;
+
+        .actions {
+          .js-mark-as-completed {
+            display: none;
+          }
+        }
+      }
+
+      &.selected {
+        background-color: #FFE19C;
+        color: #2b2d3d;
+        font-weight: bold;
+        border-left: 5px solid darken(#FFE19C, 20%);
+
+        .actions {
+          opacity: 1;
+          pointer-events: all;
+        }
       }
     }
   }
