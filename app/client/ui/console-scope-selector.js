@@ -1,6 +1,7 @@
 const channelIcons = {
   none: '❌',
   zone: '📍',
+  quest: '📖',
   nearUsers: '👥',
 };
 
@@ -56,6 +57,10 @@ Template.consoleScopeSelector.helpers({
     const channel = Session.get('messagesChannel');
     if (!channel) return channelIcons.none;
 
-    return channel.includes('zon_') ? channelIcons.zone : channelIcons.nearUsers;
+    if (channel.includes('zon_')) return channelIcons.zone;
+    else if (channel.includes('qst_')) return channelIcons.quest;
+
+    return channelIcons.nearUsers;
   },
+  disabledScopeSelected() { return (Session.get('messagesChannel') || '').includes('qst_'); },
 });
