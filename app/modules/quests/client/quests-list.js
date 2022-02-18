@@ -1,3 +1,5 @@
+const sortFilters = { completed: 1, createdAt: 1 };
+
 const closeInterface = () => Session.set('quests', undefined);
 const showQuestsList = () => Session.get('quests') && Session.get('console');
 const markQuestAsCompleted = questId => {
@@ -32,6 +34,10 @@ Template.questsList.onCreated(function () {
       const quests = Quests.find().fetch();
       const userIds = quests.map(quest => quest.createdBy).filter(Boolean);
       if (userIds?.length) this.subscribe('usernames', userIds);
+
+      // auto-select first quest available
+      const firstQuest = Quests.findOne({}, { sort: sortFilters, limit: 1 });
+      if (firstQuest) selectQuest(firstQuest._id, this);
     });
   });
 
@@ -41,7 +47,7 @@ Template.questsList.onCreated(function () {
 Template.questsList.helpers({
   show() { return showQuestsList(); },
   hasQuests() { return Quests.find().count(); },
-  quests() { return Quests.find({}, { sort: { completed: 1, createdAt: 1 } }).fetch(); },
+  quests() { return Quests.find({}, { sort: sortFilters }).fetch(); },
   author(id) { return Meteor.users.findOne(id)?.profile.name || '[deleted]'; },
   isQuestSelected(id) { return Template.instance().selectedQuest.get() === id; },
 });
