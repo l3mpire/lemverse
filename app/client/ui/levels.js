@@ -2,9 +2,9 @@ const listMode = 'list';
 
 const levelQueryFilters = ignoredLevelId => ({
   _id: { $ne: ignoredLevelId || Meteor.settings.public.templateLevelId },
-  $and: [
-    { $or: [{ template: false }, { template: { $exists: false } }] }, // todo: remove later
+  $or: [
     { $or: [{ hide: false }, { hide: { $exists: false } }] },
+    { createdBy: Meteor.userId() },
   ],
 });
 
