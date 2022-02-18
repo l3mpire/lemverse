@@ -1,8 +1,7 @@
 const getCurrentChannelName = () => {
-  const messages = Messages.find().fetch();
-  if (!messages.length) return '-';
+  const channel = Session.get('messagesChannel');
+  if (!channel) return '-';
 
-  const { channel } = messages[0];
   if (channel.includes('zon_')) return Zones.findOne(channel)?.name || 'Zone';
   else if (channel.includes('qst_')) return Quests.findOne(channel)?.name || 'Quest';
 
