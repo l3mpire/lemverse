@@ -50,4 +50,5 @@ Template.questsList.helpers({
   quests() { return Quests.find({}, { sort: sortFilters }).fetch(); },
   author(id) { return Meteor.users.findOne(id)?.profile.name || '[deleted]'; },
   isQuestSelected(id) { return Template.instance().selectedQuest.get() === id; },
+  canMarkAsCompleted(userId) { return userId === Meteor.userId(); },
 });
