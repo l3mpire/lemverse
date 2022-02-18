@@ -4,6 +4,7 @@ const getCurrentChannelName = () => {
 
   const { channel } = messages[0];
   if (channel.includes('zon_')) return Zones.findOne(channel)?.name || 'Zone';
+  else if (channel.includes('qst_')) return Quests.findOne(channel)?.name || 'Quest';
 
   const userIds = channel.split(';');
   const users = Meteor.users.find({ _id: { $in: userIds } }).fetch();
@@ -57,7 +58,7 @@ Template.messagesList.onCreated(function () {
 });
 
 Template.messagesList.helpers({
-  show() { return Session.get('console') && Messages.find().count(); },
+  show() { return Session.get('console'); },
   channelName() { return getCurrentChannelName(); },
   messages() { return sortedMessages(); },
   sameDay(index) {
