@@ -8,7 +8,7 @@ const createQuest = () => {
   });
 
   Session.set('modal', undefined);
-  Session.set('quests', true);
+  Session.set('quests', questId);
   Session.set('console', true);
 };
 

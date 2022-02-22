@@ -1,14 +1,25 @@
 const sortFilters = { completed: 1, createdAt: 1 };
 
 const closeInterface = () => Session.set('quests', undefined);
+
 const showQuestsList = () => Session.get('quests') && Session.get('console');
+
 const markQuestAsCompleted = questId => {
   if (!questId) throw new Error(`questId is missing`);
   Quests.update(questId, { $set: { completed: true } });
 };
+
 const selectQuest = (questId, template) => {
   template.selectedQuest.set(questId);
   messagesModule.changeMessagesChannel(questId);
+};
+
+const autoSelectQuest = template => {
+  if (Session.get('quests')?.includes('qst_')) selectQuest(Session.get('quests'), template);
+  else {
+    const firstQuest = Quests.findOne({}, { sort: sortFilters, limit: 1 });
+    if (firstQuest) selectQuest(firstQuest._id, template);
+  }
 };
 
 Template.questsList.events({
@@ -35,9 +46,7 @@ Template.questsList.onCreated(function () {
       const userIds = quests.map(quest => quest.createdBy).filter(Boolean);
       if (userIds?.length) this.subscribe('usernames', userIds);
 
-      // auto-select first quest available
-      const firstQuest = Quests.findOne({}, { sort: sortFilters, limit: 1 });
-      if (firstQuest) selectQuest(firstQuest._id, this);
+      Tracker.nonreactive(() => autoSelectQuest(this));
     });
   });
 
