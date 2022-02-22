@@ -124,7 +124,7 @@ entityManager = {
 
     if (this.previousNearestEntity.action) {
       const [action, value] = this.previousNearestEntity.action.split(':');
-      if (action === 'modal') Session.set('modal', { template: value });
+      if (action === 'modal') Session.set('modal', { template: value, entity: this.previousNearestEntity });
     }
 
     Entities.find().fetch().forEach(entity => {
