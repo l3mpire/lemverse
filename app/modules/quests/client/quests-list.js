@@ -1,4 +1,4 @@
-const sortFilters = { completed: 1, createdAt: 1 };
+const sortFilters = { completed: 1, createdAt: -1 };
 
 const closeInterface = () => Session.set('quests', undefined);
 
