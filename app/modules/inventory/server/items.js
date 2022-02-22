@@ -6,10 +6,3 @@ Meteor.publish('items', function (itemIds) {
 
   return Items.find({ _id: { $in: itemIds } }, { fields });
 });
-
-Meteor.publish('levelItems', function () {
-  if (!this.userId) return '';
-
-  const { levelId } = Meteor.user().profile;
-  return Items.find({ levelId }, { fields });
-});
