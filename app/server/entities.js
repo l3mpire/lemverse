@@ -10,10 +10,12 @@ const applyEntityState = (entity, stateActions) => {
 
 switchEntityState = (entity, forcedState = undefined) => {
   check(forcedState, Match.Maybe(String));
-  if (!entity || !entity.states) throw new Error(`Entity without state`);
+  log('switchEntityState: start', { entity, forcedState });
+  if (!entity || !entity.states) throw new Error(`Entity without states`);
 
   const toggledState = entity.state === 'on' ? 'off' : 'on';
   const newState = forcedState !== undefined ? forcedState : toggledState;
+  log('switchEntityState: new state', { newState });
 
   const stateActions = newState === 'on' ? entity.states[1] : entity.states[0];
   applyEntityState(entity, stateActions);
