@@ -1,0 +1,62 @@
+.quest-entity {
+
+  .js-quest-create {
+    margin: 10px auto;
+    display: block;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+
+  ul {
+    padding: 0.5rem;
+    margin: 0;
+
+    li {
+      display: flex;
+      align-items: center;
+
+      .avatar-viewer {
+        width: 70px;
+        height: 70px;
+        border-radius: 5px;
+        background-color: darken(#d0d6e1, 10%);
+        transform: scale(0.8);
+
+        &:hover {
+          background-color: darken(#d0d6e1, 15%);
+        }
+
+        .character-body-part-container {
+          transform: scale(0.8) translate(13px, -16px);
+        }
+      }
+
+      >span {
+        font-size: 1.1rem;
+        padding-left: 10px;
+      }
+    }
+  }
+
+  .bottom-action {
+    position: absolute;
+    display: block;
+    flex-wrap: wrap;
+    height: 35px;
+    margin: 0;
+    padding: 10px;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background-color: #d0d6e1;
+    width: 100%;
+    -webkit-appearance: none;
+    border: 0;
+    cursor: pointer;
+
+    &:hover {
+      background-color: darken(#d0d6e1, 30%);
+      color: white;
+    }
+  }
+}

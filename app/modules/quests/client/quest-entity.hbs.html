@@ -1,0 +1,17 @@
+<template name="questEntity">
+  {{#modal title="Quest builder"}}
+    <div class="quest-entity">
+      <button type="button" class="js-quest-create">📖 Create new quest</button>
+
+      <ul>
+        {{#each subscriber in subscribers}}
+          <li>
+            {{> avatarViewer user=subscriber}}
+            <span>{{subscriber.profile.name}}</span>
+          </li>
+        {{/each}}
+      </ul>
+      <button type="button" class="js-quest-subscribe bottom-action {{#if userSubscribed}}unsubscribe{{else}}subscribe{{/if}}">{{#if userSubscribed}}Unsubscribe{{else}}Subscribe{{/if}}</button>
+    </div>
+  {{/modal}}
+</template>
