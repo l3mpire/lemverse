@@ -36,10 +36,8 @@ isCommunicationAllowed = userId => {
   return true;
 };
 
-isLevelOwner = userParam => {
-  if (!userParam) return false;
-
-  const user = typeof userParam === 'string' ? Meteor.users.findOne(userParam) : userParam;
+isLevelOwner = userId => {
+  const user = Meteor.users.findOne(userId);
   if (!user) return false;
 
   const { levelId } = user.profile;

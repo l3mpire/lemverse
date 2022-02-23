@@ -19,17 +19,13 @@
             {{/if}}
             {{#if roles.admin}}
               <span title="Is admin">👑</span>
-            {{else}}
-              {{#if levelOwner}}
-                <span title="Is level owner">🗺️</span>
+            {{else if levelOwner}}
+              <span title="Is level owner">🗺️</span>
+            {{else if canAddEditors}}
+              {{#if canEditLevel}}
+                <span class="js-toggle-edition" title="Edition allowed">🔨</span>
               {{else}}
-                {{#if canAddEditors}}
-                  {{#if canEditLevel}}
-                    <span class="js-toggle-edition" title="Edition allowed">🔨</span>
-                  {{else}}
-                    <span class="js-toggle-edition denied" title="Click to allow edition">🔨</span>
-                  {{/if}}
-                {{/if}}
+                <span class="js-toggle-edition denied" title="Click to allow edition">🔨</span>
               {{/if}}
             {{/if}}
           </div>

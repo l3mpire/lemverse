@@ -1,3 +1,7 @@
+Template.userList.onCreated(function () {
+  this.hasLevelRights = Meteor.user().roles?.admin || isLevelOwner(Meteor.userId());
+});
+
 Template.userList.helpers({
   users() {
     const users = Meteor.users.find({ 'profile.guest': { $not: true }, 'status.online': true }, { sort: { 'profile.name': 1 } }).fetch();
@@ -24,10 +28,7 @@ Template.userList.helpers({
 
     return `Users (${usersCount}) ${guestsCount > 0 ? `(and ${guestsCount} 👻)` : ''}`;
   },
-  canAddEditors() {
-    if (Meteor.user().roles?.admin) return true;
-    return isLevelOwner(Meteor.userId());
-  },
+  canAddEditors() { return Template.instance().hasLevelRights; },
   levelOwner() { return isLevelOwner(this._id); },
 });
 
