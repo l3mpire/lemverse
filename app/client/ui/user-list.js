@@ -17,8 +17,6 @@ Template.userList.helpers({
 
     return users;
   },
-  zones() { return Zones.find({}, { sort: { name: 1 } }).fetch(); },
-  isMe() { return this._id === Meteor.userId(); },
   canEditLevel() { return isEditionAllowed(this._id); },
   title() {
     const usersCount = Meteor.users.find({ 'profile.guest': { $not: true }, 'status.online': true }).count();
@@ -26,6 +24,11 @@ Template.userList.helpers({
 
     return `Users (${usersCount}) ${guestsCount > 0 ? `(and ${guestsCount} 👻)` : ''}`;
   },
+  canAddEditors() {
+    if (Meteor.user().roles?.admin) return true;
+    return isLevelOwner(Meteor.userId());
+  },
+  levelOwner() { return isLevelOwner(this._id); },
 });
 
 Template.userList.events({

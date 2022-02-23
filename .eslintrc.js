@@ -86,6 +86,7 @@ module.exports = {
     isCommunicationAllowed: 'writable',
     isMessageModerationAllowed: 'writable',
     isEditionAllowed: 'writable',
+    isLevelOwner: 'writeable',
     remote: 'writable',
     _: 'readable',
     stats: 'writable',

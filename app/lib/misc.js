@@ -36,6 +36,19 @@ isCommunicationAllowed = userId => {
   return true;
 };
 
+isLevelOwner = userParam => {
+  if (!userParam) return false;
+
+  const user = typeof userParam === 'string' ? Meteor.users.findOne(userParam) : userParam;
+  if (!user) return false;
+
+  const { levelId } = user.profile;
+  const currentLevel = Levels.findOne(levelId);
+  if (!currentLevel) return false;
+
+  return currentLevel.createdBy === user._id;
+};
+
 isMessageModerationAllowed = (userId, message) => {
   if (!userId || !message) return false;
   if (message.createdBy === userId) return true;
@@ -67,7 +80,6 @@ isEditionAllowed = userId => {
 
   if (userId === currentLevel.createdBy) return true;
   if (currentLevel.sandbox) return true;
-  if (currentLevel.userTags?.editor?.includes(userId)) return true;
   if (currentLevel.editorUserIds?.includes(userId)) return true;
 
   return false;
