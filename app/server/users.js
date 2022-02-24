@@ -28,7 +28,7 @@ Accounts.onLogin(param => {
   const isBodyValid = user.profile.body?.includes('chr_');
   if (!isBodyValid) {
     log('onLogin: setting default skin', { userId: user._id, ip: param.connection?.httpHeaders?.['x-forwarded-for'], userAgent: param.connection?.httpHeaders?.['user-agent'], languages: param.connection?.httpHeaders?.['accept-language'] });
-    updateSkin(user, Meteor.settings.defaultLevelId);
+    generateRandomCharacterSkin(user, Meteor.settings.defaultLevelId);
   }
 });
 
@@ -118,7 +118,7 @@ Meteor.methods({
 
     // ensures the logged user don't have guest attributes anymore
     Meteor.users.update(this.userId, { $unset: { 'profile.guest': true, username: true } });
-    updateSkin(Meteor.user(), profile.levelId);
+    generateRandomCharacterSkin(Meteor.user(), profile.levelId);
     Accounts.setPassword(this.userId, password, { logout: false });
   },
   teleportUserInLevel(levelId) {

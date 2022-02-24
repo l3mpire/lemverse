@@ -276,7 +276,7 @@ peer = {
       streamsByUsers.push({
         _id: user._id,
         name: user.profile.name,
-        avatar: getRandomAvatarForUser(user),
+        avatar: generateRandomAvatarURLForUser(user),
         main: {},
         screen: {},
         waitingCallAnswer: true,

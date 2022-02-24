@@ -22,14 +22,16 @@ nearestDuration = duration => {
   return message.join(':');
 };
 
-isCommunicationAllowed = userId => {
-  if (!userId) return false;
+userLevel = userId => {
   const user = Meteor.users.findOne(userId);
-  if (!user) return false;
+  if (!user) return undefined;
 
-  const { levelId } = user.profile;
-  const currentLevel = Levels.findOne(levelId);
-  if (!currentLevel) return false;
+  return Levels.findOne(user.profile.levelId);
+};
+
+isCommunicationAllowed = userId => {
+  const level = userLevel(userId);
+  if (!level) return false;
 
   // todo: check if the user is in the zone
 
@@ -37,14 +39,10 @@ isCommunicationAllowed = userId => {
 };
 
 isLevelOwner = userId => {
-  const user = Meteor.users.findOne(userId);
-  if (!user) return false;
+  const level = userLevel(userId);
+  if (!level) return false;
 
-  const { levelId } = user.profile;
-  const currentLevel = Levels.findOne(levelId);
-  if (!currentLevel) return false;
-
-  return currentLevel.createdBy === user._id;
+  return level.createdBy === userId;
 };
 
 isMessageModerationAllowed = (userId, message) => {
@@ -66,7 +64,6 @@ isMessageModerationAllowed = (userId, message) => {
 };
 
 isEditionAllowed = userId => {
-  if (!userId) return false;
   const user = Meteor.users.findOne(userId);
   if (!user) return false;
 
@@ -83,10 +80,7 @@ isEditionAllowed = userId => {
   return false;
 };
 
-updateSkin = (user, levelId) => {
-  if (!user) throw new Error('missing user parameter');
-  if (!levelId) throw new Error('missing levelId parameter');
-
+generateRandomCharacterSkin = (user, levelId) => {
   let newProfile = { ...user.profile };
   const currentLevel = Levels.findOne(levelId);
   if (!user.profile?.body && currentLevel?.skins?.default) {
@@ -101,7 +95,7 @@ updateSkin = (user, levelId) => {
     };
   } else {
     ['body', 'outfit', 'eye', 'hair', 'accessory'].forEach(part => {
-      log('updateSkin: Randomize character parts...');
+      log('generateRandomCharacterSkin: Randomize character parts...');
       const parts = Characters.find({ category: part, $or: [{ hide: { $exists: false } }, { hide: false }] }).fetch();
       if (parts.length) newProfile[part] = parts[_.random(0, parts.length - 1)]._id;
     });
@@ -136,14 +130,10 @@ waitFor = (condition, attempt, delay = 250) => new Promise((resolve, reject) => 
   waitFunc();
 });
 
-getRandomAvatarForUser = user => {
-  let URL = Meteor.settings.public.peer.avatarAPI;
-  URL = URL.replace('[user_id]', encodeURI(user?._id || 'guest'));
-  URL = URL.replace('[user_name]', encodeURI(user?.profile.name || 'guest'));
-  URL = URL.replace('[user_avatar]', encodeURI(user?.profile.avatar || 'cat'));
-
-  return URL;
-};
+generateRandomAvatarURLForUser = user => Meteor.settings.public.peer.avatarAPI
+  .replace('[user_id]', encodeURI(user._id || 'guest'))
+  .replace('[user_name]', encodeURI(user.profile.name || 'guest'))
+  .replace('[user_avatar]', encodeURI(user.profile.avatar || 'cat'));
 
 stringToColor = str => {
   let hash = 0;
