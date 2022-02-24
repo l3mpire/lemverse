@@ -1,8 +1,8 @@
-const createQuest = () => {
+const createQuest = entity => {
   const questId = Quests.id();
   Quests.insert({
     _id: questId,
-    owners: [],
+    origin: entity._id,
     createdAt: new Date(),
     createdBy: Meteor.userId(),
   });
@@ -12,45 +12,41 @@ const createQuest = () => {
   Session.set('console', true);
 };
 
-const toggleSubscribe = entity => Meteor.call('toggleEntitySubscriber', entity._id, Meteor.userId());
+const refreshSubscriberList = template => {
+  Meteor.call('subscribedUsers', template.data.entity._id, (error, users) => template.subscribers.set(users));
+};
+
+const toggleSubscribe = (entity, callback) => Meteor.call('toggleEntitySubscription', entity._id, callback);
 
 Template.questEntity.events({
-  'click .js-quest-create'(e) {
+  'click .js-quest-create'(e, template) {
     e.preventDefault();
     e.stopPropagation();
-    createQuest();
+    createQuest(template.data.entity);
   },
   'click .js-quest-subscribe'(e, template) {
     e.preventDefault();
     e.stopPropagation();
-    toggleSubscribe(template.data.entity);
+    toggleSubscribe(template.data.entity, () => refreshSubscriberList(template));
   },
 });
 
 Template.questEntity.onCreated(function () {
   this.entity = new ReactiveVar();
+  this.subscribers = new ReactiveVar();
 
   this.autorun(() => {
     const modal = Session.get('modal');
     if (!modal?.entity || !modal.template.includes('questEntity')) return;
     this.entity.set(modal.entity);
-
-    Tracker.nonreactive(() => {
-      const userIds = modal.entity.meta?.subscribers || [];
-      if (userIds.length) this.subscribe('usernames', userIds);
-    });
+    refreshSubscriberList(this);
   });
 });
 
 Template.questEntity.helpers({
-  subscribers() {
-    const entity = Entities.findOne(this.entity._id);
-    const userIds = entity.meta?.subscribers || [];
-    return Meteor.users.find({ _id: { $in: userIds } }).fetch();
-  },
   userSubscribed() {
-    const entity = Entities.findOne(this.entity._id);
-    const userIds = entity.meta?.subscribers || [];
-    return userIds.includes(Meteor.userId());
+    const subscriptions = Meteor.user().entitySubscriptionIds || [];
+    return subscriptions.includes(Template.instance().entity.get()?._id);
   },
+  subscribers() { return Template.instance().subscribers.get(); },
 });

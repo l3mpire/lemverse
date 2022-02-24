@@ -170,3 +170,8 @@ teleportUserInLevel = (levelId, userId) => {
 sendEvent = (command, data = {}) => {
   window.parent.postMessage(JSON.parse(JSON.stringify({ command, ...data })), '*');
 };
+
+subscribedUsersToEntity = entityId => Meteor.users.find(
+  { entitySubscriptionIds: entityId },
+  { fields: { 'profile.body': 1, 'profile.hair': 1, 'profile.outfit': 1, 'profile.name': 1 } },
+).fetch();

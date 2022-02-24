@@ -1,4 +1,4 @@
-const mainFields = { options: 1, profile: 1, roles: 1, status: { online: 1 }, beta: 1, inventory: 1 };
+const mainFields = { options: 1, profile: 1, roles: 1, status: { online: 1 }, beta: 1, inventory: 1, entitySubscriptionIds: 1 };
 
 Accounts.onCreateUser((options, user) => {
   log('onCreateUser', { options, user });
@@ -47,7 +47,7 @@ Meteor.publish('selfUser', function () {
 
   return Meteor.users.find(
     this.userId,
-    { fields: { emails: 1, options: 1, profile: 1, roles: 1, status: 1, beta: 1 } },
+    { fields: { emails: 1, options: 1, profile: 1, roles: 1, status: 1, beta: 1, entitySubscriptionIds: 1 } },
   );
 });
 
@@ -84,6 +84,13 @@ const dropInventoryItem = (itemId, data = {}) => {
 };
 
 Meteor.methods({
+  toggleEntitySubscription(entityId) {
+    if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
+
+    const entitySubscriptionIds = Meteor.user().entitySubscriptionIds || [];
+    if (entitySubscriptionIds.includes(entityId)) Meteor.users.update(this.userId, { $pull: { entitySubscriptionIds: entityId } });
+    else Meteor.users.update(this.userId, { $push: { entitySubscriptionIds: entityId } });
+  },
   dropInventoryItem(itemId, data = {}) {
     check(itemId, String);
     check(data, Object);

@@ -56,16 +56,6 @@ const pickEntityInventory = entity => {
 };
 
 Meteor.methods({
-  toggleEntitySubscriber(entityId, userId) {
-    check(userId, String);
-
-    const entity = Entities.findOne(entityId);
-    if (!entity) throw new Meteor.Error(404, 'Entity not found.');
-
-    const subscribers = entity.meta?.subscribers || [];
-    if (subscribers.includes(userId)) Entities.update(entity._id, { $pull: { 'meta.subscribers': userId } });
-    else Entities.update(entity._id, { $addToSet: { 'meta.subscribers': { $each: [userId] } } });
-  },
   useEntity(entityId, value = undefined) {
     check(entityId, String);
 
@@ -80,6 +70,7 @@ Meteor.methods({
 
     return entity;
   },
+  subscribedUsers(entityId) { return subscribedUsersToEntity(entityId); },
 });
 
 Meteor.publish('entities', function (levelId) {
