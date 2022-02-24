@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 entityActionType = Object.freeze({
   none: 0,
@@ -94,17 +94,15 @@ generateRandomCharacterSkin = (user, levelId) => {
 };
 
 generateTURNCredentials = (name, secret) => {
-  const unixTimeStamp = parseInt(Date.now() / 1000, 10) + Meteor.settings.peer.client.credentialDuration;
+  const duration = Meteor.settings.peer?.client.credentialDuration || 86400;
+  const unixTimeStamp = parseInt(Date.now() / 1000, 10) + duration;
   const username = [unixTimeStamp, name].join(':');
   const hmac = crypto.createHmac('sha1', secret);
   hmac.setEncoding('base64');
   hmac.write(username);
   hmac.end();
 
-  return {
-    username,
-    password: hmac.read(),
-  };
+  return { username, password: hmac.read() };
 };
 
 waitFor = (condition, attempt, delay = 250) => new Promise((resolve, reject) => {
