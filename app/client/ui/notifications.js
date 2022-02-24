@@ -9,7 +9,28 @@ const formatedDuration = value => {
 
 const resetPlayButtonState = template => template._playing.set(false);
 
-Template.notificationsItem.onCreated(function () {
+const markNotificationAsRead = notificationId => Meteor.call('markNotificationAsRead', notificationId);
+
+Template.notificationsQuestItem.helpers({
+  date() { return moment(this.createdAt).calendar(); },
+  author() {
+    const { createdBy } = Template.instance().data;
+    return Meteor.users.findOne(createdBy)?.profile.name || createdBy;
+  },
+});
+
+Template.notificationsQuestItem.events({
+  'click .js-quest-name'(event) {
+    event.preventDefault();
+
+    markNotificationAsRead(this._id);
+    Session.set('modal', undefined);
+    Session.set('quests', this.questId);
+    Session.set('console', true);
+  },
+});
+
+Template.notificationsAudioItem.onCreated(function () {
   this._duration = new ReactiveVar(0);
   this._playing = new ReactiveVar(false);
   this.audio = new Audio(`/api/files/${this.data.fileId}`);
@@ -26,11 +47,11 @@ Template.notificationsItem.onCreated(function () {
   this.audio.addEventListener('timeupdate', () => this._duration.set(this.audio.currentTime), false);
 });
 
-Template.notificationsItem.onDestroyed(function () {
+Template.notificationsAudioItem.onDestroyed(function () {
   this.audio.pause();
 });
 
-Template.notificationsItem.helpers({
+Template.notificationsAudioItem.helpers({
   date() { return moment(this.createdAt).calendar(); },
   duration() { return formatedDuration(Template.instance()._duration.get()); },
   isPlaying() { return Template.instance()._playing.get(); },
@@ -40,11 +61,10 @@ Template.notificationsItem.helpers({
   },
 });
 
-Template.notificationsItem.events({
+Template.notificationsAudioItem.events({
   'click .js-play'(event, template) {
     event.preventDefault();
-
-    Meteor.call('markNotificationAsRead', template.data._id);
+    markNotificationAsRead(template.data._id);
 
     template._playing.set(true);
     if (template.audio.paused && template.audio.currentTime > 0 && !template.audio.ended) template.audio.play();

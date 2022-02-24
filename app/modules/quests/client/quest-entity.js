@@ -7,7 +7,6 @@ const createQuest = entity => {
     createdBy: Meteor.userId(),
   });
 
-  Session.set('modal', undefined);
   Session.set('quests', questId);
   Session.set('console', true);
 };
@@ -22,6 +21,8 @@ Template.questEntity.events({
   'click .js-quest-create'(e, template) {
     e.preventDefault();
     e.stopPropagation();
+
+    Session.set('modal', undefined);
     createQuest(template.data.entity);
   },
   'click .js-quest-subscribe'(e, template) {

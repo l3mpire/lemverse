@@ -1,21 +1,32 @@
-<template name="notificationsItem">
-  <li class="notification {{#if read}}read{{/if}}">
-    <div>
-      <button type="button" class="js-play {{#if isPlaying}}playing{{/if}}"></button>
-      <span>{{duration}}</span>
-    </div>
-    <div>{{date}}</div>
-    <div>By <b>{{author}}</b></div>
-  </li>
+<template name="notificationsQuestItem">
+  <div>
+    <span class="js-quest-name">📖 Quest updated</span>
+  </div>
+  <div>{{date}}</div>
+  <div>By <b>{{author}}</b></div>
 </template>
 
+<template name="notificationsAudioItem">
+  <div>
+    <button type="button" class="js-play {{#if isPlaying}}playing{{/if}}"></button>
+    <span>{{duration}}</span>
+  </div>
+  <div>{{date}}</div>
+  <div>By <b>{{author}}</b></div>
+</template>
 
 <template name="notifications">
   {{#modal id="displayNotificationsPanel" title="Notifications"}}
     <div class="notifications">
       <ul>
         {{#each notification in notifications}}
-          {{> notificationsItem notification}}
+          <li class="notification {{#if read}}read{{/if}}">
+            {{#if notification.fileId}}
+              {{> notificationsAudioItem notification}}
+            {{else if notification.questId}}
+              {{> notificationsQuestItem notification}}
+            {{/if}}
+          </li>
         {{/each}}
       </ul>
     </div>
