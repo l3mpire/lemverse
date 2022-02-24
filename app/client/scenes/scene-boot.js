@@ -1,4 +1,4 @@
-const Phaser = require('phaser');
+import Phaser from 'phaser';
 
 BootScene = new Phaser.Class({
   Extends: Phaser.Scene,

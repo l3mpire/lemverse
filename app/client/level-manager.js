@@ -1,4 +1,4 @@
-const Phaser = require('phaser');
+import Phaser from 'phaser';
 
 const defaultMapConfig = { width: 100, height: 100, tileWidth: 48, tileHeight: 48 };
 const defaultLayer = 2;

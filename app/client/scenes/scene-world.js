@@ -1,6 +1,5 @@
 import nipplejs from 'nipplejs';
-
-const Phaser = require('phaser');
+import Phaser from 'phaser';
 
 const zoomConfig = Object.freeze({
   min: 0.6,

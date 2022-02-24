@@ -1,4 +1,4 @@
-const Phaser = require('phaser');
+import Phaser from 'phaser';
 
 const reactionsAnimations = {
   zigzag: (x, y, xOffset) => ({

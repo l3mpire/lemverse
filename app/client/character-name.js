@@ -1,4 +1,4 @@
-const Phaser = require('phaser');
+import Phaser from 'phaser';
 
 characterNameColors = {
   white: ['0xffffff', '0xffffff', '0xffffff', '0xffffff'],

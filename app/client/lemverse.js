@@ -1,6 +1,5 @@
 import hotkeys from 'hotkeys-js';
-
-const Phaser = require('phaser');
+import Phaser from 'phaser';
 
 scopes = {
   player: 'player',
