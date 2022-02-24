@@ -45,24 +45,6 @@ isLevelOwner = userId => {
   return level.createdBy === userId;
 };
 
-isMessageModerationAllowed = (userId, message) => {
-  if (!userId || !message) return false;
-  if (message.createdBy === userId) return true;
-
-  const user = Meteor.users.findOne(userId);
-  if (!user) return false;
-
-  if (user.roles?.admin) return true;
-
-  const { levelId } = user.profile;
-  const currentLevel = Levels.findOne(levelId);
-  if (!currentLevel) return false;
-  if (userId === currentLevel.createdBy) return true;
-  if (currentLevel.editorUserIds?.includes(userId)) return true;
-
-  return false;
-};
-
 isEditionAllowed = userId => {
   const user = Meteor.users.findOne(userId);
   if (!user) return false;
@@ -70,14 +52,21 @@ isEditionAllowed = userId => {
   if (user.roles?.admin) return true;
 
   const { levelId } = user.profile;
-  const currentLevel = Levels.findOne(levelId);
-  if (!currentLevel) return false;
+  const level = Levels.findOne(levelId);
+  if (!level) return false;
 
-  if (userId === currentLevel.createdBy) return true;
-  if (currentLevel.sandbox) return true;
-  if (currentLevel.editorUserIds?.includes(userId)) return true;
+  if (userId === level.createdBy) return true;
+  if (level.sandbox) return true;
+  if (level.editorUserIds?.includes(userId)) return true;
 
   return false;
+};
+
+messageModerationAllowed = (userId, message) => {
+  if (!userId || !message) return false;
+  if (message.createdBy === userId) return true;
+
+  return isEditionAllowed(userId);
 };
 
 generateRandomCharacterSkin = (user, levelId) => {

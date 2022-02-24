@@ -20,7 +20,7 @@ const scrollToBottom = () => {
 };
 
 Template.messagesListMessage.onCreated(function () {
-  this.moderationAllowed = isMessageModerationAllowed(Meteor.userId(), this.data.message);
+  this.moderationAllowed = messageModerationAllowed(Meteor.userId(), this.data.message);
 });
 
 Template.messagesListMessage.helpers({

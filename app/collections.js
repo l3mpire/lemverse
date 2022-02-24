@@ -33,7 +33,7 @@ Levels = lp.collectionRegister('levels', 'lvl', [], {
 Messages = lp.collectionRegister('messages', 'msg', [], {
   insert(userId) { return communicationAllowed(userId); },
   update(userId) { return communicationAllowed(userId); },
-  remove(userId, message) { return isMessageModerationAllowed(userId, message); },
+  remove(userId, message) { return messageModerationAllowed(userId, message); },
 });
 
 Notifications = lp.collectionRegister('notifications', 'not', [], {
