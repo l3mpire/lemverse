@@ -91,11 +91,11 @@ userManager = {
       };
     }
 
-    const currentLevel = Levels.findOne(user.profile.levelId);
-    if (currentLevel?.skins?.guest) {
+    const level = Levels.findOne(user.profile.levelId);
+    if (level?.skins?.guest) {
       user.profile = {
         ...user.profile,
-        ...currentLevel.skins?.guest,
+        ...level.skins?.guest,
       };
     }
 
