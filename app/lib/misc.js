@@ -29,7 +29,7 @@ userLevel = userId => {
   return Levels.findOne(user.profile.levelId);
 };
 
-isCommunicationAllowed = userId => {
+communicationAllowed = userId => {
   const level = userLevel(userId);
   if (!level) return false;
 

@@ -83,7 +83,7 @@ module.exports = {
     Items: 'writable',
     Quests: 'writable',
     nearestDuration: 'writable',
-    isCommunicationAllowed: 'writable',
+    communicationAllowed: 'writable',
     isMessageModerationAllowed: 'writable',
     isEditionAllowed: 'writable',
     isLevelOwner: 'writable',
