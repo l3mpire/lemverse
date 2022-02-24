@@ -86,7 +86,7 @@ module.exports = {
     isCommunicationAllowed: 'writable',
     isMessageModerationAllowed: 'writable',
     isEditionAllowed: 'writable',
-    isLevelOwner: 'writeable',
+    isLevelOwner: 'writable',
     remote: 'writable',
     _: 'readable',
     stats: 'writable',
@@ -150,6 +150,7 @@ module.exports = {
     activityType: 'writable',
     callHooks: 'writable',
     createFakeShadow: 'writable',
+    subscribedUsersToEntity: 'writable',
 
     relativePositionToCamera: 'writable',
     updateViewport: 'writable',
@@ -172,9 +173,9 @@ module.exports = {
     addToInventory: 'writable',
     removeFromInventory: 'writable',
 
-    createEntityFromItem: 'writeable',
+    createEntityFromItem: 'writable',
 
-    messagesModule: 'writeable',
-    computeChannelNameFromNearUsers: 'writeable',
+    messagesModule: 'writable',
+    computeChannelNameFromNearUsers: 'writable',
   },
 };
