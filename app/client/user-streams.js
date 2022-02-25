@@ -79,33 +79,39 @@ userStreams = {
     if (debug) log('destroy stream: done');
   },
 
-  requestUserMedia(constraints = {}) {
+  async requestUserMedia(constraints = {}) {
     if (constraints.forceNew) this.destroyStream(streamTypes.main);
     const { instance: currentStream, loading } = this.streams.main;
-    if (currentStream) return new Promise(resolve => { resolve(currentStream); });
-    if (!currentStream && loading) return waitFor(() => this.streams.main.instance !== undefined, 15, 500).then(() => this.streams.main.instance);
+    if (currentStream) return currentStream;
+    if (!currentStream && loading) {
+      try {
+        await waitFor(() => this.streams.main.instance !== undefined, 15, 500);
+        return this.streams.main.instance;
+      } catch {
+        lp.notif.error(`Unable to access the camera and microphone after few attempts`);
+      }
+    }
 
     this.streams.main.loading = true;
-    return navigator.mediaDevices
-      .getUserMedia(constraints)
-      .then(stream => {
-        this.destroyStream(streamTypes.main);
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia(constraints);
+    } catch (err) {
+      error('requestUserMedia failed', err);
+      Meteor.users.update(Meteor.userId(), { $set: { 'profile.userMediaError': err.message } });
+      if (err.message === 'Permission denied') lp.notif.warning('Camera and microphone are required 😢');
+      else if (err.message === 'Permission denied by system') lp.notif.warning('Unable to access the camera and microphone');
 
-        if (Meteor.user()?.options?.debug) log('create stream', stream.id);
-        this.streams.main.instance = stream;
-        Meteor.users.update(Meteor.userId(), { $set: { 'profile.userMediaError': false } });
+      throw err;
+    } finally { this.streams.main.loading = false; }
 
-        return stream;
-      })
-      .catch(err => {
-        error('requestUserMedia failed', err);
-        Meteor.users.update(Meteor.userId(), { $set: { 'profile.userMediaError': true } });
-        if (err.message === 'Permission denied') lp.notif.warning('Camera and microphone are required 😢');
-        if (err.message === 'Permission denied by system') lp.notif.warning('Unable to access the camera and microphone');
+    this.destroyStream(streamTypes.main);
 
-        return Promise.reject(err);
-      })
-      .finally(() => { this.streams.main.loading = false; });
+    if (Meteor.user().options?.debug) log('create stream', stream.id);
+    this.streams.main.instance = stream;
+    Meteor.users.update(Meteor.userId(), { $unset: { 'profile.userMediaError': 1 } });
+
+    return stream;
   },
 
   getStreamConstraints(type) {
@@ -130,75 +136,79 @@ userStreams = {
     return constraints;
   },
 
-  requestDisplayMedia() {
+  async requestDisplayMedia() {
     const { instance: currentStream, loading } = this.streams.screen;
-    if (currentStream) return new Promise(resolve => { resolve(currentStream); });
-    if (!currentStream && loading) return waitFor(() => this.streams.screen.instance !== undefined, 20, 1000).then(() => this.streams.screen.instance);
+    if (currentStream) return currentStream;
+    if (!currentStream && loading) {
+      try {
+        await waitFor(() => this.streams.screen.instance !== undefined, 20, 1000);
+        return this.streams.screen.instance;
+      } catch {
+        lp.notif.error(`Unable to access screen after few attempts`);
+      }
+    }
 
     this.streams.screen.loading = true;
-    return navigator.mediaDevices
-      .getDisplayMedia(this.getStreamConstraints(streamTypes.screen))
-      .then(stream => { this.streams.screen.instance = stream; return stream; })
-      .catch(err => {
-        error('requestDisplayMedia failed', err);
-        Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } });
-        return Promise.reject(err);
-      })
-      .finally(() => { this.streams.screen.loading = false; });
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getDisplayMedia(this.getStreamConstraints(streamTypes.screen));
+    } catch (err) {
+      error('requestDisplayMedia failed', err);
+      Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } });
+      throw err;
+    } finally { this.streams.screen.loading = false; }
+
+    this.streams.screen.instance = stream;
+    return stream;
   },
 
-  createStream(forceNew = false) {
+  async createStream(forceNew = false) {
     const { shareVideo, shareAudio } = Meteor.user().profile;
     const constraints = this.getStreamConstraints(streamTypes.main);
     constraints.forceNew = forceNew;
 
-    return this.enumerateDevices().then(({ cams }) => {
-      if (cams.length === 0) delete constraints.video;
+    const { cams } = await this.enumerateDevices();
+    if (cams.length === 0) delete constraints.video;
 
-      // todo: allow streams without video flag to avoid camera's light on mac (should delete the property options.video)
-      // if (!shareVideo) delete constraints.video;
+    // todo: allow streams without video flag to avoid camera's light on mac (should delete the property options.video)
+    // if (!shareVideo) delete constraints.video;
 
-      return this.requestUserMedia(constraints)
-        .then(stream => {
-          if (!stream) return Promise.reject(new Error(`unable to get a valid stream`));
+    const stream = await this.requestUserMedia(constraints);
+    if (!stream) throw new Error(`unable to get a valid stream`);
 
-          // sync video element with the stream
-          const videoElement = this.getVideoElement();
-          if (stream.id !== videoElement.srcObject?.id) videoElement.srcObject = stream;
-          this.showUserPanel();
+    // sync video element with the stream
+    const videoElement = this.getVideoElement();
+    if (stream.id !== videoElement.srcObject?.id) videoElement.srcObject = stream;
+    this.showUserPanel();
 
-          // ensures tracks are up-to-date
-          this.audio(shareAudio);
-          this.video(shareVideo);
+    // ensures tracks are up-to-date
+    this.audio(shareAudio);
+    this.video(shareVideo);
 
-          return stream;
-        });
-    });
+    return stream;
   },
 
-  createScreenStream() {
-    return this.requestDisplayMedia()
-      .then(stream => {
-        if (!stream) return undefined;
+  async createScreenStream() {
+    const stream = await this.requestDisplayMedia();
+    if (!stream) throw new Error('Unable to get a display media');
 
-        let videoElm = document.querySelector('.js-stream-screen-me video');
-        if (!videoElm) {
-          videoElm = document.createElement('video');
-          videoElm.setAttribute('type', 'video/mp4');
+    let videoElm = document.querySelector('.js-stream-screen-me video');
+    if (!videoElm) {
+      videoElm = document.createElement('video');
+      videoElm.setAttribute('type', 'video/mp4');
 
-          const videoElmParent = document.querySelector('.js-stream-screen-me');
-          videoElmParent.style.display = 'block';
-          videoElmParent.appendChild(videoElm);
-        }
+      const videoElmParent = document.querySelector('.js-stream-screen-me');
+      videoElmParent.style.display = 'block';
+      videoElmParent.appendChild(videoElm);
+    }
 
-        videoElm.autoplay = true;
-        videoElm.srcObject = stream;
+    videoElm.autoplay = true;
+    videoElm.srcObject = stream;
 
-        // set framerate after stream creation due to a deprecated constraints issue with the frameRate attribute
-        this.applyConstraints(streamTypes.screen, 'video', this.getStreamConstraints(streamTypes.screen));
+    // set framerate after stream creation due to a deprecated constraints issue with the frameRate attribute
+    this.applyConstraints(streamTypes.screen, 'video', this.getStreamConstraints(streamTypes.screen));
 
-        return stream;
-      });
+    return stream;
   },
 
   applyConstraints(streamType, trackType, constraints) {
@@ -252,16 +262,16 @@ userStreams = {
     if (this.streams.main.instance) videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
   },
 
-  enumerateDevices() {
-    return navigator.mediaDevices.enumerateDevices().then(devices => {
-      const mics = [];
-      const cams = [];
-      devices.forEach(device => {
-        if (device.kind === 'audioinput') mics.push({ deviceId: device.deviceId, kind: device.kind, label: device.label });
-        if (device.kind === 'videoinput') cams.push({ deviceId: device.deviceId, kind: device.kind, label: device.label });
-      });
+  async enumerateDevices() {
+    const devices = await navigator.mediaDevices.enumerateDevices();
 
-      return { mics, cams };
+    const mics = [];
+    const cams = [];
+    devices.forEach(device => {
+      if (device.kind === 'audioinput') mics.push({ deviceId: device.deviceId, kind: device.kind, label: device.label });
+      else if (device.kind === 'videoinput') cams.push({ deviceId: device.deviceId, kind: device.kind, label: device.label });
     });
+
+    return { mics, cams };
   },
 };

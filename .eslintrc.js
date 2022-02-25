@@ -93,6 +93,7 @@ module.exports = {
     kebabCase: 'writable',
     entityActionType: 'writable',
     notify: 'writable',
+    meteorCall: 'writable',
 
     game: 'writable',
     createLevel: 'writable',

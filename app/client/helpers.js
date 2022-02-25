@@ -95,3 +95,10 @@ createFakeShadow = (scene, x, y, scaleX, scaleY) => {
 
   return shadow;
 };
+
+meteorCall = (method, ...args) => new Promise((resolve, reject) => {
+  Meteor.call(method, ...args, (err, result) => {
+    if (err) reject(err);
+    else resolve(result);
+  });
+});

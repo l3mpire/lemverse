@@ -133,7 +133,7 @@ peer = {
     if (debug) log(`peer call: call created!`);
   },
 
-  createPeerCalls(user) {
+  async createPeerCalls(user) {
     const { shareAudio, shareScreen, shareVideo } = Meteor.user().profile;
 
     if (!this.calls[`${user._id}-${streamTypes.main}`] && !this.calls[`${user._id}-${streamTypes.screen}`]) {
@@ -142,10 +142,9 @@ peer = {
       if (userProximitySensor.nearUsersCount() === 1) Meteor.call('addUserInterruption');
     }
 
-    this.getPeer().then(peer => {
-      if (shareAudio || shareVideo) userStreams.createStream().then(stream => this.createPeerCall(peer, stream, user));
-      if (shareScreen) userStreams.createScreenStream().then(stream => this.createPeerCall(peer, stream, user));
-    });
+    const peer = await this.getPeer();
+    if (shareAudio || shareVideo) userStreams.createStream().then(stream => this.createPeerCall(peer, stream, user));
+    if (shareScreen) userStreams.createScreenStream().then(stream => this.createPeerCall(peer, stream, user));
   },
 
   destroy() {
@@ -153,6 +152,7 @@ peer = {
     userStreams.destroyStream(streamTypes.main);
     this.peerInstance?.destroy();
     this.remoteStreamsByUsers.set([]);
+    delete this.peerInstance;
   },
 
   updatePeersStream(stream, type) {
@@ -348,116 +348,113 @@ peer = {
     return true;
   },
 
-  getPeer() {
-    return new Promise(resolve => {
-      if (this.isPeerValid(this.peerInstance)) { resolve(this.peerInstance); return; }
-      const debug = Meteor.user()?.options?.debug;
+  async getPeer() {
+    if (this.isPeerValid(this.peerInstance)) return this.peerInstance;
+    const debug = Meteor.user()?.options?.debug;
 
-      if (this.peerInstance?.disconnected) {
-        let reconnected = true;
+    if (this.peerInstance?.disconnected) {
+      let reconnected = true;
+      try {
+        if (debug) log('Peer disconnected, reconnecting…');
+        this.peerInstance.reconnect();
+      } catch (err) { reconnected = false; }
+
+      // peerjs reconnect doesn't offer a promise or callback so we have to wait a certain time until the reconnection is done
+      if (reconnected) {
         try {
-          if (debug) log('Peer disconnected, reconnecting…');
-          this.peerInstance.reconnect();
-        } catch (err) { reconnected = false; }
-
-        // peerjs reconnect doesn't offer a promise or callback so we have to wait a certain time until the reconnection is done
-        if (reconnected) {
-          waitFor(() => this.isPeerValid(this.peerInstance), 5, 250)
-            .then(() => resolve(this.peerInstance))
-            .catch(() => {
-              this.destroy();
-              lp.notif.error('Unable to reconnect to the peer server');
-            });
-
-          return;
+          await waitFor(() => this.isPeerValid(this.peerInstance), 5, 250);
+        } catch {
+          this.destroy();
+          lp.notif.error('Unable to reconnect to the peer server');
         }
+
+        return this.peerInstance;
+      }
+    }
+
+    if (!this.peerInstance && this.peerLoading) {
+      try {
+        await waitFor(() => this.peerInstance !== undefined, 5, 250);
+      } catch {
+        this.destroy();
+        lp.notif.error('Unable to get a valid peer instance');
       }
 
-      if (!this.peerInstance && this.peerLoading) {
-        waitFor(() => this.peerInstance !== undefined, 5, 250)
-          .then(() => resolve(this.peerInstance))
-          .catch(() => lp.notif.error('Unable to get a valid peer instance'));
+      return this.peerInstance;
+    }
 
+    if (debug) log('Peer invalid, creating new peer…');
+    this.peerInstance = undefined;
+    this.peerLoading = false;
+
+    return this.createMyPeer().catch(error => lp.notif.error(error.message));
+  },
+
+  async createMyPeer(skipConfig = false) {
+    if (this.isPeerValid(this.peerInstance)) return this.peerInstance;
+    if (!Meteor.user()) throw new Error(`an user is required to create a peer`);
+    if (Meteor.user().profile.guest) throw new Error(`peer is forbidden for guest account`);
+
+    this.peerLoading = true;
+    const result = await meteorCall('getPeerConfig');
+
+    const debug = Meteor.user().options?.debug;
+    const { port, url: host, path, config } = result;
+
+    const peerConfig = {
+      debug: debug ? 2 : 0,
+      host,
+      port,
+      path,
+      config,
+    };
+
+    if (skipConfig) delete peerConfig.config;
+    if (this.peerInstance) this.destroy();
+    this.peerInstance = new Peer(Meteor.userId(), peerConfig);
+    this.peerLoading = false;
+
+    if (debug) log(`create peer: created (${this.peerInstance.id})`);
+
+    this.peerInstance.on('connection', connection => connection.on('data', data => userManager.onPeerDataReceived(data)));
+
+    this.peerInstance.on('close', () => {
+      log('peer closed and destroyed');
+      this.peerInstance = undefined;
+
+      if (this.reconnect.autoReconnectOnClose) {
+        // window.setTimeout(() => {
+        //   log('auto-reconnecting peer…');
+        //   this.createMyPeer()
+        //     .then(() => log('peer reconnected'))
+        //     .catch(error => log(`unable to automatically reconnect peer: ${error.message}`));
+        // }, this.reconnect.delayBetweenAttempt);
+      }
+    });
+
+    this.peerInstance.on('error', peerErr => {
+      if (['server-error', 'network'].includes(peerErr.type) && this.peerInstance.disconnected) this.peerInstance.reconnect();
+      else if (peerErr.type === 'unavailable-id') lp.notif.error(`It seems that lemverse is already open in another tab (unavailable-id)`);
+      else if (peerErr.type === 'peer-unavailable') {
+        const userId = peerErr.message.split(' ').pop();
+        const user = Meteor.users.findOne(userId);
+        lp.notif.warning(`User ${user?.profile.name || userId} was unavailable`);
+      } else lp.notif.error(`Peer ${peerErr} (${peerErr.type})`);
+
+      log(`peer error ${peerErr.type}`, peerErr);
+    });
+
+    this.peerInstance.on('call', remoteCall => {
+      if (debug) log(`new call: from ${remoteCall.metadata.userId}`, { userId: remoteCall.metadata.userId });
+      if (meet.api) {
+        log(`new call: ignored (meet is open)`, { userId: remoteCall.metadata.userId, type: remoteCall.metadata.type });
         return;
       }
 
-      if (debug) log('Peer invalid, creating new peer…');
-      this.peerInstance = undefined;
-      this.peerLoading = false;
-
-      this.createMyPeer().then(resolve).catch(error => lp.notif.error(error.message));
+      this.answerCall(remoteCall);
     });
-  },
 
-  createMyPeer(skipConfig = false) {
-    if (this.isPeerValid(this.peerInstance)) return Promise.resolve(this.peerInstance);
-    if (!Meteor.user()) return Promise.reject(new Error(`an user is required to create a peer`));
-    if (Meteor.user().profile?.guest) return Promise.reject(new Error(`peer is forbidden for guest account`));
-
-    this.peerLoading = true;
-    return new Promise((resolve, reject) => {
-      Meteor.call('getPeerConfig', (err, result) => {
-        if (err) { lp.notif.error(err); return reject(new Error(`unable to get peer config`)); }
-
-        const debug = Meteor.user()?.options?.debug;
-        const { port, url: host, path, config } = result;
-
-        const peerConfig = {
-          debug: debug ? 2 : 0,
-          host,
-          port,
-          path,
-          config,
-        };
-
-        if (skipConfig) delete peerConfig.config;
-        if (this.peerInstance) this.destroy();
-        this.peerInstance = new Peer(Meteor.userId(), peerConfig);
-        this.peerLoading = false;
-
-        if (debug) log(`create peer: created (${this.peerInstance.id})`);
-
-        this.peerInstance.on('connection', connection => connection.on('data', data => userManager.onPeerDataReceived(data)));
-
-        this.peerInstance.on('close', () => {
-          log('peer closed and destroyed');
-          this.peerInstance = undefined;
-
-          if (this.reconnect.autoReconnectOnClose) {
-            window.setTimeout(() => {
-              log('auto-reconnecting peer…');
-              this.createMyPeer()
-                .then(() => log('peer reconnected'))
-                .catch(error => log(`unable to automatically reconnect peer: ${error.message}`));
-            }, this.reconnect.delayBetweenAttempt);
-          }
-        });
-
-        this.peerInstance.on('error', peerErr => {
-          if (['server-error', 'network'].includes(peerErr.type) && this.peerInstance.disconnected) this.peerInstance.reconnect();
-          else if (peerErr.type === 'unavailable-id') lp.notif.error(`It seems that lemverse is already open in another tab (unavailable-id)`);
-          else if (peerErr.type === 'peer-unavailable') {
-            const userId = peerErr.message.split(' ').pop();
-            const user = Meteor.users.findOne(userId);
-            lp.notif.warning(`User ${user?.profile.name || userId} was unavailable`);
-          } else lp.notif.error(`Peer ${peerErr} (${peerErr.type})`);
-
-          log(`peer error ${peerErr.type}`, peerErr);
-        });
-
-        this.peerInstance.on('call', remoteCall => {
-          if (debug) log(`new call: from ${remoteCall.metadata.userId}`, { userId: remoteCall.metadata.userId });
-          if (meet.api) {
-            log(`new call: ignored (meet is open)`, { userId: remoteCall.metadata.userId, type: remoteCall.metadata.type });
-            return;
-          }
-
-          this.answerCall(remoteCall);
-        });
-
-        return resolve(this.peerInstance);
-      });
-    });
+    return this.peerInstance;
   },
 
   lockCall(userId, notify = false) {
