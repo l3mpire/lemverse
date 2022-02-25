@@ -93,3 +93,10 @@ Template.notifications.helpers({
     return Notifications.find().fetch().sort((a, b) => b.createdAt - a.createdAt);
   },
 });
+
+notify = async (message) => {
+  if (!("Notification" in window) || Notification.permission === "denied" || !document.hidden) return;
+  if (Notification.permission !== "granted" && (await Notification.requestPermission()) !== "granted") return;
+
+  new Notification(message);
+};
