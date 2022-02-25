@@ -8,7 +8,6 @@ const createQuest = entity => {
   });
 
   Session.set('quests', questId);
-  Session.set('console', true);
 };
 
 const refreshSubscriberList = template => {

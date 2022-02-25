@@ -55,7 +55,7 @@ Items = lp.collectionRegister('items', 'itm', [], {
 });
 
 Quests = lp.collectionRegister('quests', 'qst', [], {
-  insert(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
+  insert() { return true; },
   update(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
   remove(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
 });

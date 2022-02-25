@@ -6,6 +6,7 @@ Meteor.publish('quests', function () {
     {
       $or: [
         { origin: { $in: entitySubscriptionIds } },
+        { targets: this.userId },
         { createdBy: Meteor.userId() },
       ],
     },

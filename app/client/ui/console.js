@@ -16,6 +16,11 @@ const closeAndFocusCanvas = () => {
   game.scene.keys.WorldScene.enableKeyboard(true, false);
 };
 
+const onKeyPressed = e => {
+  if (e.key === 'Escape') closeAndFocusCanvas();
+  else if (e.key === 'Enter') Session.set('console', true);
+};
+
 const onSubmit = () => {
   const fieldValue = document.querySelector(inputSelector).value;
   if (!fieldValue) {
@@ -39,6 +44,8 @@ const onSubmit = () => {
 };
 
 Template.console.onCreated(function () {
+  Session.set('console', false);
+
   this.autorun(() => {
     const console = Session.get('console');
     if (console) {
@@ -47,19 +54,17 @@ Template.console.onCreated(function () {
     }
   });
 
-  hotkeys('enter', scopes.player, () => Session.set('console', true));
-  hotkeys('escape', scopes.player, () => closeAndFocusCanvas());
+  document.addEventListener('keydown', onKeyPressed);
 });
 
 Template.console.onDestroyed(() => {
-  hotkeys.unbind('escape', scopes.form);
-  hotkeys.unbind('enter', scopes.form);
+  Session.set('console', false);
+  document.removeEventListener('keydown', onKeyPressed);
 });
 
 Template.console.events({
   'focus .js-command-input'() { hotkeys.setScope(scopes.form); game.scene.keys.WorldScene.enableKeyboard(false, false); },
   'blur .js-command-input'() { hotkeys.setScope(scopes.player); game.scene.keys.WorldScene.enableKeyboard(true, false); },
-  'keydown .js-command-input'(event) { if (event.which === 27) { closeAndFocusCanvas(); event.preventDefault(); } },
   'click .js-button-submit, submit .js-console-form'(event) {
     onSubmit();
     event.preventDefault();

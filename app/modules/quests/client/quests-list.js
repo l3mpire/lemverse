@@ -2,7 +2,9 @@ const sortFilters = { completed: 1, createdAt: -1 };
 
 const closeInterface = () => Session.set('quests', undefined);
 
-const showQuestsList = () => Session.get('quests') && Session.get('console');
+const onKeyPressed = e => {
+  if (e.key === 'Escape') closeInterface();
+};
 
 const markQuestAsCompleted = questId => {
   if (!questId) throw new Error(`questId is missing`);
@@ -36,25 +38,34 @@ Template.questsList.events({
 });
 
 Template.questsList.onCreated(function () {
+  Session.set('quests', undefined);
   this.selectedQuest = new ReactiveVar(undefined);
 
   this.autorun(() => {
-    if (!showQuestsList()) return;
+    if (!Session.get('quests')) return;
 
-    this.subscribe('quests', () => {
-      const quests = Quests.find().fetch();
-      const userIds = quests.map(quest => quest.createdBy).filter(Boolean);
-      if (userIds?.length) this.subscribe('usernames', userIds);
+    Tracker.nonreactive(() => {
+      Session.set('console', true);
+      this.subscribe('quests', () => {
+        const quests = Quests.find().fetch();
+        const userIds = quests.map(quest => quest.createdBy).filter(Boolean);
+        if (userIds?.length) this.subscribe('usernames', userIds);
 
-      Tracker.nonreactive(() => autoSelectQuest(this));
+        autoSelectQuest(this);
+      });
     });
   });
 
-  hotkeys('escape', scopes.player, () => closeInterface());
+  document.addEventListener('keydown', onKeyPressed);
+});
+
+Template.questsList.onDestroyed(() => {
+  Session.set('quests', undefined);
+  document.removeEventListener('keydown', onKeyPressed);
 });
 
 Template.questsList.helpers({
-  show() { return showQuestsList(); },
+  show() { return Session.get('quests'); },
   hasQuests() { return Quests.find().count(); },
   quests() { return Quests.find({}, { sort: sortFilters }).fetch(); },
   author(id) { return Meteor.users.findOne(id)?.profile.name || '[deleted]'; },

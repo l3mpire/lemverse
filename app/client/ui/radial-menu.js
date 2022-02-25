@@ -30,6 +30,19 @@ const closeMenu = () => {
   menuOpenUsingKey = false;
 };
 
+const createQuestForUser = user => {
+  const questId = Quests.id();
+  Quests.insert({
+    _id: questId,
+    origin: Meteor.userId(),
+    targets: [user._id],
+    createdAt: new Date(),
+    createdBy: Meteor.userId(),
+  });
+
+  Session.set('quests', questId);
+};
+
 const reactionMenuItems = [
   { icon: '🪧', shortcut: 50, action: () => setReaction(Meteor.user().profile.defaultReaction || Meteor.settings.public.defaultReaction), cancel: () => setReaction() },
   { icon: '↩️', shortcut: 49, action: template => buildMenu(mainMenuItems, template.items) },
@@ -87,7 +100,7 @@ const otherUserMenuItems = [
   },
   { icon: '🎙️',
     label: 'Send vocal',
-    shortcut: 52,
+    shortcut: 53,
     action: () => {
       const user = getMenuActiveUser();
       if (!userProximitySensor.isUserNear(user)) {
@@ -98,6 +111,14 @@ const otherUserMenuItems = [
       userVoiceRecorderAbility.recordVoice(true, sendAudioChunksToNearUsers);
     },
     cancel: () => userVoiceRecorderAbility.recordVoice(false, sendAudioChunksToNearUsers),
+  },
+  { icon: '📖',
+    label: 'Create new quest',
+    shortcut: 52,
+    action: () => {
+      const user = getMenuActiveUser();
+      if (user) createQuestForUser(user);
+    },
   },
   { icon: '👤', label: 'Profile', shortcut: 51, action: () => Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId }) },
 ];

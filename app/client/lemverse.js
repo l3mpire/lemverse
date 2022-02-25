@@ -81,7 +81,6 @@ Template.lemverse.onCreated(function () {
   Session.set('editor', 0);
   Session.set('modal', undefined);
   Session.set('menu', undefined);
-  Session.set('console', false);
 
   messagesModule.init(this);
 
