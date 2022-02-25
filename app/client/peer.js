@@ -228,35 +228,34 @@ peer = {
     delete this.callsOpening[userId];
   },
 
-  sendData(userIds, data) {
+  async sendData(userIds, data) {
     userIds = userIds.filter(Boolean); // remove falsy values
-    if (!userIds.length) return Promise.reject(new Error(`no users targeted`));
+    if (!userIds.length) throw new Error(`no users targeted`);
 
-    return this.getPeer().then(peer => {
-      userIds.forEach(userId => {
-        try {
-          const connection = peer.connect(userId);
+    const peer = await this.getPeer();
+    userIds.forEach(userId => {
+      try {
+        const connection = peer.connect(userId);
 
-          connection.on('open', () => {
-            connection.send(data);
+        connection.on('open', () => {
+          connection.send(data);
 
-            // Not sure if we must close the connection for now
-            setTimeout(() => connection.close(), 500);
-          });
+          // Not sure if we must close the connection for now
+          setTimeout(() => connection.close(), 500);
+        });
 
-          connection.on('error', () => {
-            const user = Meteor.users.findOne(userId);
-            if (user) lp.notif.warning(`${user.profile.name} was unavailable`);
-            else lp.notif.warning(`${userId} is offline`);
-          });
-        } catch (err) {
+        connection.on('error', () => {
           const user = Meteor.users.findOne(userId);
-          lp.notif.error(`An error has occured during connection with ${user?.profile.name || userId}`);
-        }
-      });
-
-      return userIds.length;
+          if (user) lp.notif.warning(`${user.profile.name} was unavailable`);
+          else lp.notif.warning(`${userId} is offline`);
+        });
+      } catch (err) {
+        const user = Meteor.users.findOne(userId);
+        lp.notif.error(`An error has occured during connection with ${user?.profile.name || userId}`);
+      }
     });
+
+    return userIds.length;
   },
 
   onStreamSettingsChanged(changedUser) {

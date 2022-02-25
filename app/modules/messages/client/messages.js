@@ -52,24 +52,22 @@ messagesModule = {
     Session.set('messagesChannel', channel); // set console in the new channel
   },
 
-  sendMessage(channel, message) {
+  async sendMessage(channel, message) {
     const isZoneTargeted = channel.includes('zon_');
-    if (message.length >= 4096) return Promise.reject(new Error('The message is too long (> 4096 chars)'));
+    if (message.length >= 4096) throw new Error('The message is too long (> 4096 chars)');
 
-    return new Promise(resolve => {
-      // insert message
-      Messages.insert({ _id: Messages.id(), channel, text: message, createdAt: new Date(), createdBy: Meteor.userId() });
+    Messages.insert({ _id: Messages.id(), channel, text: message, createdAt: new Date(), createdBy: Meteor.userId() });
 
-      // send message using webrtc (note we can ignore webrtc and use meteor observers too)
+    // send message using webrtc (note we can ignore webrtc and use meteor observers too)
+    try {
       const func = isZoneTargeted ? sendDataToUsersInZone : sendDataToNearUsers;
-      func('text', message, Meteor.userId())
-        .then(() => userManager.onPeerDataReceived({ emitter: Meteor.userId(), data: message, type: 'text' }))
-        .catch(e => {
-          if (e.message !== 'no-targets') lp.notif.error(e);
-        });
+      await func('text', message, Meteor.userId());
+    } catch (err) {
+      if (err.message !== 'no-targets') lp.notif.error(err);
+    }
 
-      resolve();
-    });
+    // simulate received message from himself
+    userManager.onPeerDataReceived({ emitter: Meteor.userId(), data: message, type: 'text' });
   },
 
   stopListeningMessagesChannel() {

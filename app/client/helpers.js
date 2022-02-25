@@ -54,27 +54,23 @@ formatURL = url => {
   return formattedURL;
 };
 
-sendDataToNearUsers = (type, data, emitterId) => new Promise((resolve, reject) => {
+sendDataToNearUsers = (type, data, emitterId) => {
   const { nearUsers } = userProximitySensor;
   let targets = [...new Set(_.keys(nearUsers))];
   targets = targets.filter(target => target !== Meteor.userId());
-  if (!targets.length) return reject(new Error('no-targets'));
+  if (!targets.length) throw new Error('no-targets');
 
-  return peer.sendData(targets, { type, emitter: emitterId, data })
-    .then(resolve)
-    .catch(reject);
-});
+  return peer.sendData(targets, { type, emitter: emitterId, data });
+};
 
-sendDataToUsersInZone = (type, data, emitterId) => new Promise((resolve, reject) => {
+sendDataToUsersInZone = (type, data, emitterId) => {
   const user = Meteor.user();
   const usersInZone = zones.usersInZone(zones.currentZone(user));
   const userInZoneIds = usersInZone.map(u => u._id);
-  if (!userInZoneIds.length) return reject(new Error('no-targets'));
+  if (!userInZoneIds.length) throw new Error('no-targets');
 
-  return peer.sendData(userInZoneIds, { type, emitter: emitterId, data })
-    .then(resolve)
-    .catch(reject);
-});
+  return peer.sendData(userInZoneIds, { type, emitter: emitterId, data });
+};
 
 kebabCase = string => string.replace(/([a-z])([A-Z])/g, '$1-$2').replace(/\s+/g, '-').toLowerCase();
 

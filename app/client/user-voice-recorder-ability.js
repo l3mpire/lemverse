@@ -33,37 +33,37 @@ userVoiceRecorderAbility = {
     this.recordingIndicator.destroy();
   },
 
-  initMediaRecorder() {
-    if (this.loading) return Promise.reject(new Error('already loading'));
+  async initMediaRecorder() {
+    if (this.loading) throw new Error('already loading');
     this.loading = true;
 
-    return navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-      this.stream = stream;
-      this.loading = false;
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-      mediaRecorder = new MediaRecorder(stream, {
-        mimeType: this.getSupportedType(),
-        audio: true,
-        video: false,
-      });
+    this.stream = stream;
+    this.loading = false;
 
-      mediaRecorder.onerror = e => error(`An error has occurred during recording: ${e.message}`);
-      mediaRecorder.onstop = this.onStop.bind(this);
-      mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+    mediaRecorder = new MediaRecorder(stream, {
+      mimeType: this.getSupportedType(),
+      audio: true,
+      video: false,
     });
+
+    mediaRecorder.onerror = e => error(`An error has occurred during recording: ${e.message}`);
+    mediaRecorder.onstop = this.onStop.bind(this);
+    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
   },
 
-  start() {
-    if (mediaRecorder?.state === 'recording') return Promise.reject(new Error('already recording'));
+  async start() {
+    if (mediaRecorder?.state === 'recording') throw new Error('already recording');
 
     this.recordingIndicator.getAt(2).setText('⌛');
-    return this.initMediaRecorder().then(() => {
-      recordedChunks = [];
-      this.progress = 0;
-      this.recordingIndicator.getAt(2).setText('📣');
-      this.recordingIndicator.visible = true;
-      mediaRecorder.start();
-    });
+    await this.initMediaRecorder();
+
+    recordedChunks = [];
+    this.progress = 0;
+    this.recordingIndicator.getAt(2).setText('📣');
+    this.recordingIndicator.visible = true;
+    mediaRecorder.start();
   },
 
   stop() {
@@ -75,6 +75,7 @@ userVoiceRecorderAbility = {
     this.stream?.getTracks()?.forEach(track => track.stop());
   },
 
+  // todo: move to sounds.js with generateFromBlob
   playSound(chunks) {
     const audio = new Audio();
     audio.src = this.createAudioURL(chunks);
@@ -162,7 +163,7 @@ userVoiceRecorderAbility = {
       userStreams.audio(false);
       this.start();
     } else {
-      userStreams.audio(Meteor.user()?.profile.shareAudio);
+      userStreams.audio(Meteor.user().profile.shareAudio);
       this.stop();
     }
   },
@@ -185,21 +186,23 @@ const sendAudioChunksToTargets = (chunks, targets) => {
   uploadInstance.start();
 };
 
-sendAudioChunksToUsersInZone = chunks => {
+sendAudioChunksToUsersInZone = async chunks => {
   const user = Meteor.user();
   const usersInZone = zones.usersInZone(zones.currentZone(user));
   const userInZoneIds = usersInZone.map(u => u._id);
-  peer.sendData(userInZoneIds, { type: 'audio', emitter: user._id, data: chunks }).then(() => {
+
+  try {
+    await peer.sendData(userInZoneIds, { type: 'audio', emitter: user._id, data: chunks });
     lp.notif.success(`📣 Everyone has heard your powerful voice`);
-  }).catch(() => lp.notif.warning('❌ No one is there to hear you'));
+  } catch { lp.notif.warning('❌ No one is there to hear you'); }
 };
 
 sendAudioChunksToNearUsers = chunks => {
   const { nearUsers } = userProximitySensor;
   let targets = [...new Set(_.keys(nearUsers))];
   targets = targets.filter(target => target !== Meteor.userId());
-  if (!targets.length) { lp.notif.error(`You need someone near you to whisper`); return; }
+  if (!targets.length) { lp.notif.error(`You need someone near you to whisper`); return undefined; }
 
   lp.notif.success('✉️ Your voice message has been sent!');
-  sendAudioChunksToTargets(chunks, targets);
+  return sendAudioChunksToTargets(chunks, targets);
 };
