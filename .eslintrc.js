@@ -92,6 +92,7 @@ module.exports = {
     stats: 'writable',
     kebabCase: 'writable',
     entityActionType: 'writable',
+    notify: 'writable',
 
     game: 'writable',
     createLevel: 'writable',
