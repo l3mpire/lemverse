@@ -26,7 +26,6 @@ Template.notificationsQuestItem.events({
     markNotificationAsRead(this._id);
     Session.set('modal', undefined);
     Session.set('quests', this.questId);
-    Session.set('console', true);
   },
 });
 
