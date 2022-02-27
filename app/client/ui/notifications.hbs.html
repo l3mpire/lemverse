@@ -1,18 +1,22 @@
 <template name="notificationsQuestItem">
-  <div>
-    <span class="js-quest-name">📖 Quest updated</span>
+  {{> avatarViewer user=user}}
+  <div class="notification-content">
+    <div class="date">{{date}}</div>
+    <div class="name">{{user.profile.name}}</div>
+    <div class="subject">A quest has been updated <span class="js-quest-name">(📖 see the quest)</span></div>
   </div>
-  <div>{{date}}</div>
-  <div>By <b>{{author}}</b></div>
 </template>
 
 <template name="notificationsAudioItem">
-  <div>
-    <button type="button" class="js-play {{#if isPlaying}}playing{{/if}}"></button>
-    <span>{{duration}}</span>
+  {{> avatarViewer user=user}}
+  <div class="notification-content">
+    <div class="date">{{date}}</div>
+    <div class="name">{{user.profile.name}}</div>
+    <div class="subject">
+      <button type="button" class="js-play {{#if isPlaying}}playing{{/if}}"></button>
+      <span>{{duration}}</span>
+    </div>
   </div>
-  <div>{{date}}</div>
-  <div>By <b>{{author}}</b></div>
 </template>
 
 <template name="notifications">
@@ -20,7 +24,7 @@
     <div class="notifications">
       <ul>
         {{#each notification in notifications}}
-          <li class="notification {{#if read}}read{{/if}}">
+          <li class="notification {{#unless read}}read{{/unless}}">
             {{#if notification.fileId}}
               {{> notificationsAudioItem notification}}
             {{else if notification.questId}}

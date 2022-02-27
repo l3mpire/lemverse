@@ -13,9 +13,9 @@ const markNotificationAsRead = notificationId => Meteor.call('markNotificationAs
 
 Template.notificationsQuestItem.helpers({
   date() { return moment(this.createdAt).calendar(); },
-  author() {
+  user() {
     const { createdBy } = Template.instance().data;
-    return Meteor.users.findOne(createdBy)?.profile.name || createdBy;
+    return Meteor.users.findOne(createdBy);
   },
 });
 
@@ -54,9 +54,9 @@ Template.notificationsAudioItem.helpers({
   date() { return moment(this.createdAt).calendar(); },
   duration() { return formatedDuration(Template.instance()._duration.get()); },
   isPlaying() { return Template.instance()._playing.get(); },
-  author() {
+  user() {
     const { createdBy } = Template.instance().data;
-    return Meteor.users.findOne(createdBy)?.profile.name || createdBy;
+    return Meteor.users.findOne(createdBy);
   },
 });
 
@@ -93,9 +93,9 @@ Template.notifications.helpers({
   },
 });
 
-notify = async (message) => {
-  if (!("Notification" in window) || Notification.permission === "denied" || !document.hidden) return;
-  if (Notification.permission !== "granted" && (await Notification.requestPermission()) !== "granted") return;
+notify = async message => {
+  if (!('Notification' in window) || Notification.permission === 'denied' || !document.hidden) throw new Error('User refused notification');
+  if (Notification.permission !== 'granted' && (await Notification.requestPermission()) !== 'granted') throw new Error('Permission not granted');
 
-  new Notification(message);
+  return new Notification(message);
 };
