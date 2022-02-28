@@ -233,7 +233,7 @@ Template.radialMenu.onCreated(function () {
       const copiedMenuItems = [...menuItems];
 
       // add one-to-one quests for users in beta
-      if (lp.isLemverseBeta('1to1Quests')) copiedMenuItems.splice(3, 0, otherUserMenuQuestEntry);
+      if (menuItems === otherUserMenuItems && (lp.isLemverseBeta('1to1Quests') || user.roles?.admin)) copiedMenuItems.splice(3, 0, otherUserMenuQuestEntry);
 
       buildMenu(copiedMenuItems, this.items);
     } else setReaction();
