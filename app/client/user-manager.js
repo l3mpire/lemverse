@@ -232,7 +232,7 @@ userManager = {
     }
     characterBodyContainer.alpha = guest ? 0.7 : 1.0;
 
-    if (!guest && name !== oldUser?.profile?.name) game.scene.getScene('UIScene')?.updateUserName(user._id, name, nameColor);
+    if (!guest && (name !== oldUser?.profile.name || nameColor !== oldUser?.profile.nameColor)) game.scene.getScene('UIScene')?.updateUserName(user._id, name, nameColor);
 
     let hasMoved = false;
     if (oldUser) {
