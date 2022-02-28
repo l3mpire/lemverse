@@ -103,11 +103,17 @@ entityManager = {
 
   onInteraction(tiles, interactionPosition) {
     if (!this.previousNearestEntity || this.previousNearestEntity.actionType === entityActionType.none) return;
-    if (Meteor.user().profile.guest) return;
+
+    const user = Meteor.user();
+    if (user.profile.guest) return;
+    if (!this.allowedToUseEntity(user, this.previousNearestEntity)) {
+      lp.notif.error('You are not allowed to use this item.');
+      return;
+    }
 
     if (this.previousNearestEntity.actionType === entityActionType.pickable) {
       const previousNearestEntityId = this.previousNearestEntity._id;
-      const animation = entityAnimations.picked(Meteor.user().profile.x, Meteor.user().profile.y - 30);
+      const animation = entityAnimations.picked(user.profile.x, user.profile.y - 30);
       this.scene.tweens.add({
         targets: this.entities[previousNearestEntityId],
         ...animation,
@@ -128,8 +134,15 @@ entityManager = {
     }
 
     Entities.find().fetch().forEach(entity => {
-      if (this.isEntityTriggered(entity, interactionPosition)) Meteor.call('useEntity', entity._id);
+      if (entity.states && this.isEntityTriggered(entity, interactionPosition)) Meteor.call('useEntity', entity._id);
     });
+  },
+
+  allowedToUseEntity(user, entity) {
+    if (!entity.requiredItems?.length) return true;
+
+    const userItems = Object.keys(user.inventory || {});
+    return entity.requiredItems.every(item => userItems.includes(item));
   },
 
   postUpdate() {
