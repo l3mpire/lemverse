@@ -113,7 +113,7 @@ const otherUserMenuItems = [
     cancel: () => userVoiceRecorderAbility.recordVoice(false, sendAudioChunksToNearUsers),
   },
   { icon: '📖',
-    label: 'Create new quest',
+    label: 'New quest',
     shortcut: 52,
     action: () => {
       const user = getMenuActiveUser();
