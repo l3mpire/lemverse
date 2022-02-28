@@ -6,9 +6,11 @@ const notifyQuestSubscribersAboutNewMessage = (questId, message) => {
     return;
   }
 
-  const subscribedUsers = subscribedUsersToEntity(quest.origin).filter(u => u._id !== message.createdBy).map(u => u._id);
+  const subscribedUsers = subscribedUsersToEntity(quest.origin).map(u => u._id);
   const targets = (quest.targets || []);
-  const usersToNotify = [...new Set([...subscribedUsers, ...targets])];
+  targets.push(quest.createdBy);
+
+  const usersToNotify = [...new Set([...subscribedUsers, ...targets])].filter(userId => userId !== message.createdBy);
   if (!usersToNotify.length) {
     log('notifyQuestSubscribersAboutNewMessage: no subscribed users or targets');
     return;
