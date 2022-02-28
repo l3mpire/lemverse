@@ -14,6 +14,9 @@ const notifyQuestSubscribersAboutNewMessage = (questId, message) => {
     return;
   }
 
+  // remove all previous notifications for this quest ('upsert' can't be used in a bulk operation and with a custom id)
+  Notifications.remove({ questId }, { multi: true });
+
   const notifications = usersToNotify.map(userId => ({
     _id: Notifications.id(),
     questId,
