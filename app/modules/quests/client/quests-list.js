@@ -8,7 +8,12 @@ const onKeyPressed = e => {
 
 const toggleQuestState = questId => {
   if (!questId) throw new Error(`questId is missing`);
-  Quests.update(questId, { $set: { completed: !Quests.findOne(questId).completed } });
+
+  const newQuestState = !Quests.findOne(questId).completed;
+  Quests.update(questId, { $set: { completed: newQuestState } });
+
+  const message = `${!newQuestState ? 'reopened' : 'closed'} the quest`;
+  messagesModule.sendMessage(questId, message);
 };
 
 const selectQuest = (questId, template) => {
