@@ -5,13 +5,14 @@ const notifyQuestSubscribersAboutNewMessage = (questId, message) => {
     return;
   }
 
-  const subscribedUsers = subscribedUsersToEntity(quest.origin).filter(u => u._id !== message.createdBy);
-  if (!subscribedUsers.length) return;
+  const subscribedUsers = subscribedUsersToEntity(quest.origin).filter(u => u._id !== message.createdBy).map(u => u._id);
+  const targets = (quest.targets || []);
+  const usersToNotify = [...new Set([...subscribedUsers, ...targets])];
 
-  const notifications = subscribedUsers.map(user => ({
+  const notifications = usersToNotify.map(userId => ({
     _id: Notifications.id(),
     questId,
-    userId: user._id,
+    userId,
     read: false,
     createdAt: new Date(),
     createdBy: message.createdBy,
