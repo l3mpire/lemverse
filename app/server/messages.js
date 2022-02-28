@@ -27,7 +27,7 @@ const notifyQuestSubscribersAboutNewMessage = (questId, message) => {
   log('notifyQuestSubscribersAboutNewMessage: done', { amount: usersToNotify.length });
 };
 
-Messages.find().observe({
+Messages.find({ createdAt: { $gte: new Date() } }).observe({
   added(message) {
     if (!message.channel.includes('qst_')) return;
     notifyQuestSubscribersAboutNewMessage(message.channel, message);
