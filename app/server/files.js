@@ -91,14 +91,14 @@ const filesAfterUploadVoiceRecorder = (user, fileRef) => {
   log('filesAfterUploadVoiceRecorder: start', { userId: user._id, fileRef });
   if (!/webm|ogg|mp4/i.test(fileRef.extension || '')) return;
 
-  const { targets } = fileRef.meta;
-  if (!targets.length) return;
+  const { userIds } = fileRef.meta;
+  if (!userIds.length) return;
 
-  _.each(targets, target => {
+  _.each(userIds, userId => {
     Notifications.insert({
       _id: Notifications.id(),
       fileId: fileRef._id,
-      userId: target,
+      userId,
       createdAt: new Date(),
       createdBy: user._id,
       read: false,
@@ -122,7 +122,7 @@ Files.onBeforeUpload = function () {
 
     if (this.meta?.source === 'voice-recorder') {
       if (!type || !_.contains(['audio/webm', 'audio/ogg', 'audio/mp4'], type.mime)) throw new Meteor.Error('invalid-file-type', `Only webm, ogg and mp4 can be uploaded`);
-      if (!this.meta.targets.length) throw new Meteor.Error('invalid-targets', `targets are required to send an audio file`);
+      if (!this.meta.userIds.length) throw new Meteor.Error('missing-users', `userIds are required to send an audio file`);
     }
   }
   return true;
