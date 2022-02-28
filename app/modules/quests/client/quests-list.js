@@ -73,6 +73,13 @@ Template.questsList.helpers({
   show() { return Session.get('quests'); },
   hasQuests() { return Quests.find().count(); },
   quests() { return Quests.find({}, { sort: sortFilters }).fetch(); },
-  author(id) { return Meteor.users.findOne(id)?.profile.name || '[deleted]'; },
+  title(quest) {
+    const isEntityOrigin = quest.origin.includes('ent_');
+    if (quest.createdBy !== Meteor.userId()) return Meteor.users.findOne(quest.createdBy)?.profile.name || '[deleted]';
+
+    if (isEntityOrigin) return '> Entity';
+    else if (quest.targets?.length === 1) return `> ${Meteor.users.findOne(quest.targets[0])?.profile.name || '[deleted]'}`;
+    else return `> ${quest.targets.length} users`;
+  },
   isQuestSelected(id) { return Template.instance().selectedQuest.get() === id; },
 });

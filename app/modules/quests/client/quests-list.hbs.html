@@ -5,7 +5,7 @@
       <ul class="quests">
         {{#each q in quests}}
           <li class="js-quest {{#if isQuestSelected q._id}}selected{{/if}} {{#if q.completed}}completed{{/if}}" data-quest-id="{{q._id}}">
-            <span>{{author q.createdBy}}</span>
+            <span>{{title q}}</span>
             <span class="actions">
               <button type="button" class="button js-toggle-state">✔</button>
             </span>
