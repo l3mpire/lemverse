@@ -1,3 +1,5 @@
+const ignoreChannelAutoSwitch = () => (Session.get('messagesChannel') || '').includes('qst_');
+
 messagesModule = {
   handleMessagesSubscribe: undefined,
   channel: undefined,
@@ -12,6 +14,7 @@ messagesModule = {
       this.lastZoneEntered = zone._id;
       this.changeMessagesChannel(zone._id);
     };
+
     const onZoneLeaved = event => {
       const { zone } = event.detail;
       if (zone._id !== this.lastZoneEntered) return;
@@ -22,10 +25,16 @@ messagesModule = {
 
       this.lastZoneEntered = undefined;
     };
+
     const onUserNear = () => {
+      if (ignoreChannelAutoSwitch()) return;
+
       this.changeMessagesChannel(computeChannelNameFromNearUsers());
     };
+
     const onUserMovedAway = () => {
+      if (ignoreChannelAutoSwitch()) return;
+
       const channel = computeChannelNameFromNearUsers();
       if (!channel.length && this.lastZoneEntered) this.changeMessagesChannel(this.lastZoneEntered);
       else if (channel.length) this.changeMessagesChannel(channel);
