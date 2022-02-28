@@ -6,9 +6,9 @@ const onKeyPressed = e => {
   if (e.key === 'Escape') closeInterface();
 };
 
-const markQuestAsCompleted = questId => {
+const toggleQuestState = questId => {
   if (!questId) throw new Error(`questId is missing`);
-  Quests.update(questId, { $set: { completed: true } });
+  Quests.update(questId, { $set: { completed: !Quests.findOne(questId).completed } });
 };
 
 const selectQuest = (questId, template) => {
@@ -30,10 +30,10 @@ Template.questsList.events({
     e.stopPropagation();
     selectQuest(e.currentTarget.dataset.questId, template);
   },
-  'click .js-mark-as-completed'(e, template) {
+  'click .js-toggle-state'(e, template) {
     e.preventDefault();
     e.stopPropagation();
-    markQuestAsCompleted(template.selectedQuest.get());
+    toggleQuestState(template.selectedQuest.get());
   },
 });
 
@@ -70,5 +70,4 @@ Template.questsList.helpers({
   quests() { return Quests.find({}, { sort: sortFilters }).fetch(); },
   author(id) { return Meteor.users.findOne(id)?.profile.name || '[deleted]'; },
   isQuestSelected(id) { return Template.instance().selectedQuest.get() === id; },
-  canMarkAsCompleted(userId) { return userId === Meteor.userId(); },
 });

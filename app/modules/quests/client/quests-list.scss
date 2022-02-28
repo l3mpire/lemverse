@@ -58,7 +58,7 @@
           margin: 0;
           text-align: center;
 
-          &.js-mark-as-completed {
+          &.js-toggle-state {
             background-color: #C3E991;
             border: 0;
 
@@ -73,13 +73,29 @@
         background-color: lighten(#2b2d3df2, 10%);
       }
 
+      .actions {
+        .js-toggle-state {
+          background-color: #C3E991;
+          border: 0;
+
+          &:hover {
+            background-color: darken(#C3E991, 20%);
+          }
+        }
+      }
+
       &.completed {
         color: #CEDADA;
         font-weight: normal;
 
         .actions {
-          .js-mark-as-completed {
-            display: none;
+          .js-toggle-state {
+            background-color: #91bae9;
+            border: 0;
+
+            &:hover {
+              background-color: darken(#91bae9, 20%);
+            }
           }
         }
       }

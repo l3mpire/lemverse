@@ -7,9 +7,7 @@
           <li class="js-quest {{#if isQuestSelected q._id}}selected{{/if}} {{#if q.completed}}completed{{/if}}" data-quest-id="{{q._id}}">
             <span>{{author q.createdBy}}</span>
             <span class="actions">
-              {{#if canMarkAsCompleted q.createdBy}}
-                <button type="button" class="button js-mark-as-completed">✔</button>
-              {{/if}}
+              <button type="button" class="button js-toggle-state">✔</button>
             </span>
           </li>
         {{/each}}
