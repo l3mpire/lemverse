@@ -4,7 +4,11 @@ Template.userList.onCreated(function () {
 
 Template.userList.helpers({
   users() {
-    const users = Meteor.users.find({ 'profile.guest': { $not: true }, 'status.online': true }, { sort: { 'profile.name': 1 } }).fetch();
+    const users = Meteor.users.find(
+      { 'profile.guest': { $not: true }, 'status.online': true, 'profile.levelId': Meteor.user().profile.levelId },
+      { sort: { 'profile.name': 1 } },
+    ).fetch();
+
     users.map(usr => {
       const zone = Zones.findOne({
         x1: { $lte: usr.profile.x },
@@ -23,7 +27,9 @@ Template.userList.helpers({
   },
   canEditLevel() { return isEditionAllowed(this._id); },
   title() {
-    const usersCount = Meteor.users.find({ 'profile.guest': { $not: true }, 'status.online': true }).count();
+    const usersCount = Meteor.users.find(
+      { 'profile.guest': { $not: true }, 'status.online': true, 'profile.levelId': Meteor.user().profile.levelId },
+    ).count();
     const guestsCount = Meteor.users.find({ 'profile.guest': { $exists: true } }).count();
 
     return `Users (${usersCount}) ${guestsCount > 0 ? `(and ${guestsCount} 👻)` : ''}`;
