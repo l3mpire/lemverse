@@ -342,7 +342,7 @@ Template.lemverse.onCreated(function () {
       log(`loading level: ${levelId || 'unknown'}…`);
       log(`loading level: loading users`);
       this.handleUsersSubscribe = this.subscribe('users', levelId, () => {
-        this.handleObserveUsers = Meteor.users.find({ 'status.online': true }).observe({
+        this.handleObserveUsers = Meteor.users.find({ 'status.online': true, 'profile.levelId': levelId }).observe({
           added(user) {
             window.setTimeout(() => userManager.createUser(user), 0);
           },
