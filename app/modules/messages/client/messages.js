@@ -62,20 +62,22 @@ messagesModule = {
   },
 
   async sendMessage(channel, message) {
-    const isZoneTargeted = channel.includes('zon_');
     if (message.length >= 4096) throw new Error('The message is too long (> 4096 chars)');
 
     Messages.insert({ _id: Messages.id(), channel, text: message, createdAt: new Date(), createdBy: Meteor.userId() });
 
-    // send message using webrtc (note we can ignore webrtc and use meteor observers too)
+    // avoid sending webrtc message when the channel is for a quest
+    const isQuestChannel = channel.includes('qst_');
+    if (isQuestChannel) return;
+
     try {
-      const func = isZoneTargeted ? sendDataToUsersInZone : sendDataToNearUsers;
+      const func = channel.includes('zon_') ? sendDataToUsersInZone : sendDataToNearUsers;
       await func('text', message, Meteor.userId());
     } catch (err) {
       if (err.message !== 'no-targets') lp.notif.error(err);
     }
 
-    // simulate received message from himself
+    // simulate a message from himself to show a pop-in over user's head
     userManager.onPeerDataReceived({ emitter: Meteor.userId(), data: message, type: 'text' });
   },
 
