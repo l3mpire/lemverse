@@ -49,4 +49,5 @@ Template.questEntity.helpers({
     return subscriptions.includes(Template.instance().entity.get()?._id);
   },
   subscribers() { return Template.instance().subscribers.get(); },
+  title() { return Template.instance().entity.get().name || 'Quest builder'; },
 });
