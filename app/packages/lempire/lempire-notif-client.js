@@ -8,7 +8,7 @@ import 'noty/lib/noty.css';
 import 'noty/lib/themes/mint.css';
 
 Noty.overrideDefaults({
-  layout: 'bottomLeft',
+  layout: 'topRight',
   theme: 'mint',
   timeout: 4000,
   animation: {
