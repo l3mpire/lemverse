@@ -75,7 +75,10 @@ Template.questsList.helpers({
   quests() { return Quests.find({}, { sort: sortFilters }).fetch(); },
   title(quest) {
     const isEntityOrigin = quest.origin.includes('ent_');
-    if (quest.createdBy !== Meteor.userId()) return Meteor.users.findOne(quest.createdBy)?.profile.name || '[deleted]';
+    if (quest.createdBy !== Meteor.userId()) {
+      if (isEntityOrigin) return 'Entity';
+      else return Meteor.users.findOne(quest.createdBy)?.profile.name || '[deleted]';
+    }
 
     if (isEntityOrigin) return '> Entity';
     else if (quest.targets?.length === 1) return `> ${Meteor.users.findOne(quest.targets[0])?.profile.name || '[deleted]'}`;
