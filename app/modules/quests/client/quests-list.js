@@ -19,6 +19,10 @@ const toggleQuestState = questId => {
 const selectQuest = (questId, template) => {
   template.selectedQuest.set(questId);
   messagesModule.changeMessagesChannel(questId);
+
+  // mark linked notification as read
+  const notification = Notifications.findOne({ questId, userId: Meteor.userId() });
+  if (notification && !notification.read) Notifications.update(notification._id, { $set: { read: true } });
 };
 
 const autoSelectQuest = template => {

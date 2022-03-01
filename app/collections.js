@@ -44,8 +44,8 @@ Notifications = lp.collectionRegister('notifications', 'not', [], {
 
 Entities = lp.collectionRegister('entities', 'ent', [], {
   insert(userId) { return isEditionAllowed(userId); },
-  update(userId) { return isEditionAllowed(userId); },
-  remove(userId) { return isEditionAllowed(userId); },
+  update(userId, notification) { return notification.userId === userId; },
+  remove(userId, notification) { return notification.userId === userId; },
 });
 
 Items = lp.collectionRegister('items', 'itm', [], {
