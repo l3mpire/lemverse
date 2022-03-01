@@ -53,8 +53,8 @@ Template.questsList.onCreated(function () {
       Session.set('console', true);
       this.subscribe('quests', () => {
         const quests = Quests.find().fetch();
-        const userIds = quests.map(quest => quest.createdBy).filter(Boolean);
-        if (userIds?.length) this.subscribe('usernames', userIds);
+        const userIds = quests.flatMap(quest => [quest.createdBy, ...(quest.targets || [])]).filter(Boolean);
+        if (userIds?.length) this.subscribe('usernames', [...new Set(userIds)]);
 
         autoSelectQuest(this);
       });
