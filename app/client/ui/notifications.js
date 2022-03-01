@@ -94,7 +94,8 @@ Template.notifications.helpers({
 });
 
 notify = async message => {
-  if (!('Notification' in window) || Notification.permission === 'denied' || !document.hidden) throw new Error('User refused notification');
+  if (!document.hidden) return undefined;
+  if (!('Notification' in window) || Notification.permission === 'denied') throw new Error('User refused notification');
   if (Notification.permission !== 'granted' && (await Notification.requestPermission()) !== 'granted') throw new Error('Permission not granted');
 
   return new Notification(message);

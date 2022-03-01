@@ -99,6 +99,15 @@ Template.lemverse.onCreated(function () {
   this.currentLevelId = undefined;
   this.subscribe('characters');
   this.subscribe('notifications');
+
+  this.subscribe('notifications', () => {
+    this.handleObserveNotifications = Notifications.find({ createdAt: { $gte: new Date() } }).observe({
+      added(notification) {
+        notify(notification.questId ? `📖 A quest has been updated` : `📢 You've received a new message`);
+      },
+    });
+  });
+
   this.subscribe('tilesets', () => {
     log('All tilesets loaded');
     Session.set('selectedTilesetId', undefined);
@@ -476,6 +485,7 @@ Template.lemverse.onCreated(function () {
 Template.lemverse.onDestroyed(function () {
   if (this.handleObserveUsers) this.handleObserveUsers.stop();
   if (this.handleObserveEntities) this.handleObserveEntities.stop();
+  if (this.handleObserveNotifications) this.handleObserveNotifications.stop();
   if (this.handleObserveTiles) this.handleObserveTiles.stop();
   if (this.handleObserveTilesets) this.handleObserveTilesets.stop();
   if (this.handleObserveZones) this.handleObserveZones.stop();
