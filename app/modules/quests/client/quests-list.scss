@@ -43,6 +43,7 @@
       position: relative;
       border-left: 5px solid transparent;
       font-weight: bold;
+      background-color: #282A35;
 
       .actions {
         position: absolute;
@@ -87,6 +88,7 @@
       &.completed {
         color: #CEDADA;
         font-weight: normal;
+        background-color: transparent;
 
         .actions {
           .js-toggle-state {
