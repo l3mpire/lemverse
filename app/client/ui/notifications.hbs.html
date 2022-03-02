@@ -24,7 +24,7 @@
     <div class="notifications">
       <ul>
         {{#each notification in notifications}}
-          <li class="notification {{#unless read}}read{{/unless}}">
+          <li class="notification {{#unless notification.read}}read{{/unless}}">
             {{#if notification.fileId}}
               {{> notificationsAudioItem notification}}
             {{else if notification.questId}}
