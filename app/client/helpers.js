@@ -13,6 +13,8 @@ eventTypes = Object.freeze({
   onZoneEntered: 'onZoneEntered',
   onZoneLeaved: 'onZoneLeaved',
   onPopInEvent: 'pop-in-event',
+  beforeSendingMessage: 'beforeSendingMessage',
+  afterSendingMessage: 'afterSendingMessage',
 });
 
 toggleUserProperty = (propertyName, value) => {

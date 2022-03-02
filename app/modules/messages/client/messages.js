@@ -61,10 +61,12 @@ messagesModule = {
     Session.set('messagesChannel', channel); // set console in the new channel
   },
 
-  async sendMessage(channel, message) {
-    if (message.length >= 4096) throw new Error('The message is too long (> 4096 chars)');
+  async sendMessage(channel, content) {
+    if (content.length >= 4096) throw new Error('The message is too long (> 4096 chars)');
 
-    Messages.insert({ _id: Messages.id(), channel, text: message, createdAt: new Date(), createdBy: Meteor.userId() });
+    window.dispatchEvent(new CustomEvent(eventTypes.beforeSendingMessage, { detail: { channel, content } }));
+    const message = Messages.insert({ _id: Messages.id(), channel, text: content, createdAt: new Date(), createdBy: Meteor.userId() });
+    window.dispatchEvent(new CustomEvent(eventTypes.afterSendingMessage, { detail: { channel, message } }));
 
     // avoid sending webrtc message when the channel is for a quest
     const isQuestChannel = channel.includes('qst_');
@@ -72,7 +74,7 @@ messagesModule = {
 
     try {
       const func = channel.includes('zon_') ? sendDataToUsersInZone : sendDataToNearUsers;
-      await func('text', message, Meteor.userId());
+      await func('text', content, Meteor.userId());
     } catch (err) {
       if (err.message !== 'no-targets') lp.notif.error(err);
     }
