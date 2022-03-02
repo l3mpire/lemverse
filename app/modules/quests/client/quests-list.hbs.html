@@ -1,8 +1,11 @@
 <template name="questsList">
   <div class="quests-list {{#if show}}show{{/if}}">
     <h2 class="title">Quests</h2>
-    {{#if hasQuests}}
       <ul class="quests">
+        {{#if newQuest}}
+          <li class="js-quest creating  {{#if isQuestSelected draftQuestId}}selected{{/if}}" data-quest-id="{{draftQuestId}}"><i>(draft) {{newQuest}}</i></li>
+        {{/if}}
+
         {{#each q in quests}}
           <li class="js-quest {{#if isQuestSelected q._id}}selected{{/if}} {{#if q.completed}}completed{{/if}}" data-quest-id="{{q._id}}">
             <span>{{title q}}</span>
@@ -12,8 +15,5 @@
           </li>
         {{/each}}
       </ul>
-    {{else}}
-      <p>--- Empty ---</p>
-    {{/if}}
   </div>
 </template>

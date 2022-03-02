@@ -1,14 +1,4 @@
-const createQuest = entity => {
-  const questId = Quests.id();
-  Quests.insert({
-    _id: questId,
-    origin: entity._id,
-    createdAt: new Date(),
-    createdBy: Meteor.userId(),
-  });
-
-  Session.set('quests', questId);
-};
+const createQuest = entity => Session.set('quests', { questId: Quests.id(), targets: [], origin: entity._id });
 
 const refreshSubscriberList = template => {
   Meteor.call('subscribedUsers', template.data.entity._id, (error, users) => template.subscribers.set(users));
