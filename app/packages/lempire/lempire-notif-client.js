@@ -17,7 +17,7 @@ Noty.overrideDefaults({
       const Timeline = new mojs.Timeline();
       const body = new mojs.Html({
         el: n.barDom,
-        x: { 500: 0, delay: 0, duration: 500, easing: 'elastic.out' },
+        x: { [-500]: 0, delay: 0, duration: 500, easing: 'elastic.out' },
         isForce3d: true,
         onComplete() { promise(resolve => { resolve(); }); },
       });
