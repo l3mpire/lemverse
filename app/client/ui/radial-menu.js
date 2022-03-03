@@ -216,7 +216,9 @@ Template.radialMenu.onCreated(function () {
   this.autorun(() => {
     const menu = Session.get('menu');
 
-    if (menu?.userId) {
+    Tracker.nonreactive(() => {
+      if (!menu?.userId) { setReaction(); return; }
+
       const user = Meteor.user();
       const menuItems = menu.userId === user._id ? mainMenuItems : otherUserMenuItems;
       const copiedMenuItems = [...menuItems];
@@ -225,7 +227,7 @@ Template.radialMenu.onCreated(function () {
       if (menuItems === otherUserMenuItems && (lp.isLemverseBeta('1to1Quests') || user.roles?.admin)) copiedMenuItems.splice(3, 0, otherUserMenuQuestEntry);
 
       buildMenu(copiedMenuItems, this.items);
-    } else setReaction();
+    });
   });
 });
 
