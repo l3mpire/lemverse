@@ -38,14 +38,14 @@ Messages = lp.collectionRegister('messages', 'msg', [], {
 
 Notifications = lp.collectionRegister('notifications', 'not', [], {
   insert(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
-  update(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
-  remove(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
+  update(userId, notification) { return notification.userId === userId; },
+  remove(userId, notification) { return notification.userId === userId; },
 });
 
 Entities = lp.collectionRegister('entities', 'ent', [], {
   insert(userId) { return isEditionAllowed(userId); },
-  update(userId, notification) { return notification.userId === userId; },
-  remove(userId, notification) { return notification.userId === userId; },
+  update(userId) { return isEditionAllowed(userId); },
+  remove(userId) { return isEditionAllowed(userId); },
 });
 
 Items = lp.collectionRegister('items', 'itm', [], {
