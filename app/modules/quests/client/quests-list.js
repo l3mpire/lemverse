@@ -52,6 +52,13 @@ const autoSelectQuest = template => {
     const firstQuest = allQuests.length ? allQuests[0] : undefined;
     if (firstQuest) selectQuest(firstQuest._id, template);
   }
+
+  // auto switch quest-list mode
+  if (questId) {
+    const quest = Quests.findOne(questId);
+    const origin = quest?.origin || Session.get('quests')?.origin || '';
+    template.questListMode.set(!origin.includes('ent_') ? modes.mine : modes.entity);
+  }
 };
 
 const draftQuestId = () => {
@@ -94,6 +101,7 @@ Template.questsList.events({
   'click .js-quest-switch'(e, template) {
     e.preventDefault();
     e.stopPropagation();
+    Session.set('quests', { origin: 'menu' });
     toggleQuestMode(template);
     autoSelectQuest(template);
   },
