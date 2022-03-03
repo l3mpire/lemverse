@@ -1,6 +1,6 @@
 <template name="questsList">
   <div class="quests-list {{#if show}}show{{/if}}">
-    <h2 class="title">Quests</h2>
+    <h2 class="title">Quests <button type="button" class="js-quest-switch">Switch</button></h2>
       <ul class="quests">
         {{#if newQuest}}
           <li class="js-quest creating  {{#if isQuestSelected draftQuestId}}selected{{/if}}" data-quest-id="{{draftQuestId}}"><i>(draft) {{newQuest}}</i></li>
