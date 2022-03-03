@@ -8,7 +8,7 @@ import 'noty/lib/noty.css';
 import 'noty/lib/themes/mint.css';
 
 Noty.overrideDefaults({
-  layout: 'topRight',
+  layout: 'topLeft',
   theme: 'mint',
   timeout: 4000,
   animation: {
@@ -17,7 +17,7 @@ Noty.overrideDefaults({
       const Timeline = new mojs.Timeline();
       const body = new mojs.Html({
         el: n.barDom,
-        x: { [+500]: 0, delay: 0, duration: 500, easing: 'elastic.out' },
+        x: { 500: 0, delay: 0, duration: 500, easing: 'elastic.out' },
         isForce3d: true,
         onComplete() { promise(resolve => { resolve(); }); },
       });
@@ -27,7 +27,7 @@ Noty.overrideDefaults({
         width: 200,
         height: n.barDom.getBoundingClientRect().height,
         radius: 0,
-        x: { 150: 150 },
+        x: { 150: -150 },
         duration: 1.2 * 500,
         isShowStart: true,
       });
@@ -75,7 +75,7 @@ Noty.overrideDefaults({
       const n = this;
       new mojs.Html({
         el: n.barDom,
-        x: { 0: 500, delay: 10, duration: 500, easing: 'cubic.out' },
+        x: { 0: -500, delay: 10, duration: 500, easing: 'cubic.out' },
         skewY: { 0: -10, delay: 10, duration: 500, easing: 'cubic.out' },
         isForce3d: true,
         onComplete() { promise(resolve => { resolve(); }); },
