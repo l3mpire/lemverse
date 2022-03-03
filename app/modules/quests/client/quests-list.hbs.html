@@ -1,19 +1,27 @@
 <template name="questsList">
   <div class="quests-list {{#if show}}show{{/if}}">
-    <h2 class="title">Quests <button type="button" class="js-quest-switch">Switch</button></h2>
-      <ul class="quests">
-        {{#if newQuest}}
-          <li class="js-quest creating  {{#if isQuestSelected draftQuestId}}selected{{/if}}" data-quest-id="{{draftQuestId}}"><i>(draft) {{newQuest}}</i></li>
-        {{/if}}
 
-        {{#each q in quests}}
-          <li class="js-quest {{#if isQuestSelected q._id}}selected{{/if}} {{#if q.completed}}completed{{/if}}" data-quest-id="{{q._id}}">
-            <span>{{title q}}</span>
-            <span class="actions">
-              <button type="button" class="button js-toggle-state">✔</button>
-            </span>
-          </li>
-        {{/each}}
-      </ul>
+    {{#if entityQuestMode}}
+      <button type="button" class="js-quest-switch previous-mode">&laquo;</button>
+      <h2 class="title">Entity quests</h2>
+    {{else}}
+      <button type="button" class="js-quest-switch next-mode">&raquo;</button>
+      <h2 class="title">My quests</h2>
+    {{/if}}
+
+    <ul class="quests">
+      {{#if newQuest}}
+        <li class="js-quest creating  {{#if isQuestSelected draftQuestId}}selected{{/if}}" data-quest-id="{{draftQuestId}}"><i>(draft) {{newQuest}}</i></li>
+      {{/if}}
+
+      {{#each q in quests}}
+        <li class="js-quest {{#if isQuestSelected q._id}}selected{{/if}} {{#if q.completed}}completed{{/if}}" data-quest-id="{{q._id}}">
+          <span>{{title q}}</span>
+          <span class="actions">
+            <button type="button" class="button js-toggle-state">✔</button>
+          </span>
+        </li>
+      {{/each}}
+    </ul>
   </div>
 </template>

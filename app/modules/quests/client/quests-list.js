@@ -158,4 +158,5 @@ Template.questsList.helpers({
     return Meteor.users.findOne(userId)?.profile.name || 'New quest';
   },
   draftQuestId() { return draftQuestId(); },
+  entityQuestMode() { return Template.instance().questListMode.get() === modes.entity; },
 });

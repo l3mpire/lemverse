@@ -14,6 +14,25 @@
   transition: opacity 0.25s linear;
   pointer-events: none;
 
+  .js-quest-switch {
+    position: absolute;
+    appearance: none;
+    top: 11px;
+    background: transparent;
+    border: 0;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+
+    &.next-mode {
+      right: 5px;
+    }
+
+    &.previous-mode {
+      left: 5px;
+    }
+  }
+
   &.show {
     opacity: 1;
     pointer-events: all;
