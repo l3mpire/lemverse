@@ -80,7 +80,7 @@ messagesModule = {
     }
 
     // simulate a message from himself to show a pop-in over user's head
-    userManager.onPeerDataReceived({ emitter: Meteor.userId(), data: message, type: 'text' });
+    userManager.onPeerDataReceived({ emitter: Meteor.userId(), data: content, type: 'text' });
   },
 
   stopListeningMessagesChannel() {
