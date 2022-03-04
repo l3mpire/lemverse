@@ -342,7 +342,8 @@ peer = {
     });
 
     // ensures a call to the other user exists on an answer to avoid one-way calls, do nothing if a call is already started
-    this.createPeerCalls(remoteUser);
+    // note: should not be necessary, disabled for now to avoid multiple calls
+    // this.createPeerCalls(remoteUser);
 
     return true;
   },
