@@ -1,3 +1,5 @@
+const messageMaxLength = 4096;
+
 const ignoreChannelAutoSwitch = () => (Session.get('messagesChannel') || '').includes('qst_');
 
 messagesModule = {
@@ -65,17 +67,7 @@ messagesModule = {
     Session.set('messagesChannel', channel); // set console in the new channel
   },
 
-  async sendMessage(channel, content) {
-    if (content.length >= 4096) throw new Error('The message is too long (> 4096 chars)');
-
-    window.dispatchEvent(new CustomEvent(eventTypes.beforeSendingMessage, { detail: { channel, content } }));
-    const message = Messages.insert({ _id: Messages.id(), channel, text: content, createdAt: new Date(), createdBy: Meteor.userId() });
-    window.dispatchEvent(new CustomEvent(eventTypes.afterSendingMessage, { detail: { channel, message } }));
-
-    // avoid sending webrtc message when the channel is for a quest
-    const isQuestChannel = channel.includes('qst_');
-    if (isQuestChannel) return;
-
+  async sendWebRTCMessage(channel, content) {
     try {
       const func = channel.includes('zon_') ? sendDataToUsersInZone : sendDataToNearUsers;
       await func('text', content, Meteor.userId());
@@ -85,6 +77,16 @@ messagesModule = {
 
     // simulate a message from himself to show a pop-in over user's head
     userManager.onPeerDataReceived({ emitter: Meteor.userId(), data: content, type: 'text' });
+  },
+
+  async sendMessage(channel, content) {
+    if (content.length >= messageMaxLength) throw new Error(`The message is too long (> ${messageMaxLength} chars)`);
+
+    window.dispatchEvent(new CustomEvent(eventTypes.beforeSendingMessage, { detail: { channel, content } }));
+    const message = Messages.insert({ _id: Messages.id(), channel, text: content, createdAt: new Date(), createdBy: Meteor.userId() });
+    window.dispatchEvent(new CustomEvent(eventTypes.afterSendingMessage, { detail: { channel, message } }));
+
+    if (!channel.includes('qst_')) this.sendWebRTCMessage(channel, content);
   },
 
   stopListeningMessagesChannel() {
