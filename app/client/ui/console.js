@@ -34,10 +34,10 @@ const onSubmit = () => {
     return;
   }
 
-  messagesModule
-    .sendMessage(channel, fieldValue)
-    .then(clearAndFocusInputField)
-    .catch(e => lp.notif.error(e));
+  try {
+    messagesModule.sendMessage(channel, fieldValue);
+    clearAndFocusInputField();
+  } catch (e) { lp.notif.error(e); }
 };
 
 Template.console.onCreated(function () {
@@ -63,7 +63,8 @@ Template.console.events({
   'focus .js-command-input'() { hotkeys.setScope(scopes.form); game.scene.keys.WorldScene.enableKeyboard(false, false); },
   'blur .js-command-input'() { hotkeys.setScope(scopes.player); game.scene.keys.WorldScene.enableKeyboard(true, false); },
   'click .js-button-submit, submit .js-console-form'(event) {
-    onSubmit();
     event.preventDefault();
+    event.stopPropagation();
+    onSubmit();
   },
 });

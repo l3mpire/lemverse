@@ -79,7 +79,7 @@ messagesModule = {
     userManager.onPeerDataReceived({ emitter: Meteor.userId(), data: content, type: 'text' });
   },
 
-  async sendMessage(channel, content) {
+  sendMessage(channel, content) {
     if (content.length >= messageMaxLength) throw new Error(`The message is too long (> ${messageMaxLength} chars)`);
 
     window.dispatchEvent(new CustomEvent(eventTypes.beforeSendingMessage, { detail: { channel, content } }));
