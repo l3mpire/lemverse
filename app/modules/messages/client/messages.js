@@ -10,12 +10,16 @@ messagesModule = {
     this.lastZoneEntered = undefined;
 
     const onZoneEntered = event => {
+      if (ignoreChannelAutoSwitch()) return;
+
       const { zone } = event.detail;
       this.lastZoneEntered = zone._id;
       this.changeMessagesChannel(zone._id);
     };
 
     const onZoneLeaved = event => {
+      if (ignoreChannelAutoSwitch()) return;
+
       const { zone } = event.detail;
       if (zone._id !== this.lastZoneEntered) return;
 
