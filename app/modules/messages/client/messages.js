@@ -92,10 +92,4 @@ messagesModule = {
     this.handleMessagesSubscribe?.stop();
     Session.set('messagesChannel', undefined);
   },
-
-  postUpdate() {},
-
-  update() {},
-
-  destroy() {},
 };
