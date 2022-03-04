@@ -50,9 +50,11 @@ Template.messagesList.onCreated(function () {
     if (!Session.get('console')) return;
 
     const messages = Messages.find({}, { fields: { createdBy: 1 } }).fetch();
-    const userIds = messages.map(message => message.createdBy).filter(Boolean);
-    if (userIds?.length) this.subscribe('usernames', userIds, () => scrollToBottom());
-    else scrollToBottom();
+    Tracker.nonreactive(() => {
+      const userIds = messages.map(message => message.createdBy).filter(Boolean);
+      if (userIds?.length) this.subscribe('usernames', userIds, () => scrollToBottom());
+      else scrollToBottom();
+    });
   });
 });
 
