@@ -46,12 +46,17 @@ Template.messagesListMessage.events({
 });
 
 Template.messagesList.onCreated(function () {
+  this.userSubscribeHandler = undefined;
+
   this.autorun(() => {
-    if (!Session.get('console')) return;
+    if (!Session.get('console')) {
+      this.userSubscribeHandler?.stop();
+      return;
+    }
 
     const messages = Messages.find({}, { fields: { createdBy: 1 } }).fetch();
     const userIds = messages.map(message => message.createdBy).filter(Boolean);
-    this.subscribe('usernames', userIds, () => scrollToBottom());
+    this.userSubscribeHandler = this.subscribe('usernames', userIds, () => scrollToBottom());
   });
 });
 
