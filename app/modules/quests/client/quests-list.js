@@ -111,15 +111,19 @@ Template.questsList.onCreated(function () {
   Session.set('quests', undefined);
   this.selectedQuest = new ReactiveVar(undefined);
   this.questListMode = new ReactiveVar(modes.mine);
+  this.userSubscribeHandler = undefined;
 
   this.autorun(() => {
-    if (!Session.get('quests')) return;
+    if (!Session.get('quests')) {
+      this.userSubscribeHandler?.stop();
+      return;
+    }
 
     Tracker.nonreactive(() => {
       Session.set('console', true);
       this.subscribe('quests', () => {
         const userIds = Quests.find().fetch().flatMap(quest => [quest.createdBy, ...(quest.targets || [])]).filter(Boolean);
-        if (userIds?.length) this.subscribe('usernames', [...new Set(userIds)]);
+        if (userIds?.length) this.userSubscribeHandler = this.subscribe('usernames', [...new Set(userIds)]);
 
         autoSelectQuest(this);
       });
