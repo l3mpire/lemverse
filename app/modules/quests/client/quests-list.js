@@ -87,6 +87,8 @@ const beforeSendingMessage = e => {
   });
 };
 
+const entityName = entityId => Entities.findOne(entityId)?.name || 'Entity';
+
 Template.questsList.events({
   'click .js-quest'(e, template) {
     e.preventDefault();
@@ -146,11 +148,11 @@ Template.questsList.helpers({
   title(quest) {
     const isEntityOrigin = quest.origin.includes('ent_');
     if (quest.createdBy !== Meteor.userId()) {
-      if (isEntityOrigin) return 'Entity';
+      if (isEntityOrigin) return entityName(quest.origin);
       else return Meteor.users.findOne(quest.createdBy)?.profile.name || '[deleted]';
     }
 
-    if (isEntityOrigin) return '> Entity';
+    if (isEntityOrigin) return `> ${entityName(quest.origin)}`;
     else if (quest.targets?.length === 1) return `> ${Meteor.users.findOne(quest.targets[0])?.profile.name || '[deleted]'}`;
     else return `> ${quest.targets.length} users`;
   },
@@ -160,7 +162,7 @@ Template.questsList.helpers({
     if (!questId) return undefined;
 
     const { targets, origin } = Session.get('quests');
-    if (!targets || targets.length === 0) return Entities.findOne(origin)?.name || 'Entity';
+    if (!targets || targets.length === 0) return entityName(origin);
 
     if (!targets.length) return undefined;
 
