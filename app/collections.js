@@ -80,8 +80,8 @@ Files = new FilesCollection({
 
       return 'Please upload a valid sound file (webm, ogg or mp4) less than 5MB';
     } else if (file.meta?.source === 'user-console') {
-      if (file.size <= 5000000 && /png|jpe?g/i.test(file.extension)) return true;
-      return 'Please upload an image (png, jpg or jpeg) less than 5MB';
+      if (file.size <= 5000000 && /png|jpg|gif|jpeg/i.test(file.extension)) return true;
+      return 'Please upload an image (png, jpg, gif or jpeg) less than 5MB';
     }
 
     return 'Source of upload not set. Can\'t continue.';
