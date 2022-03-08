@@ -58,12 +58,11 @@ const onSubmit = () => {
   }, false);
 
   uploadedFile.on('end', (error, file) => {
-    if (error) lp.notif.error(`Error during file upload: ${error.reason}`);
-    else {
-      const messageId = sendMessage(channel, text);
-      if (messageId) Messages.update(messageId, { $set: { fileId: file._id } });
-      else Files.remove(file._id);
-    }
+    if (error) { lp.notif.error(`Error during file upload: ${error.reason}`); return; }
+
+    const messageId = sendMessage(channel, text);
+    if (messageId) Messages.update(messageId, { $set: { fileId: file._id } });
+    else Files.remove(file._id);
   });
 
   uploadedFile.start();
