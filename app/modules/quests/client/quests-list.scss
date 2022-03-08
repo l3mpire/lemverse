@@ -69,7 +69,7 @@
         right: 10px;
         transform: translateY(-3px);
         opacity: 0;
-        pointer-events: none;
+        display: none;
 
         .button {
           width: 25px;
@@ -129,7 +129,7 @@
 
         .actions {
           opacity: 1;
-          pointer-events: all;
+          display: inline-block;
         }
       }
     }
