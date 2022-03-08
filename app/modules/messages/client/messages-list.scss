@@ -84,6 +84,15 @@ $separation-color: #E58273;
 
       .message-content {
         width: 450px;
+
+        .files {
+          margin-top: 10px;
+          max-width: 100%;
+
+          img {
+            max-width: 100%;
+          }
+        }
       }
 
       &:hover .actions.show {

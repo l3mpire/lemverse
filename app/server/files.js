@@ -136,3 +136,8 @@ Files.on('afterUpload', fileRef => {
   else if (fileRef.meta?.source === 'editor-characters') filesAfterUploadEditorCharacter(user, fileRef);
   else if (fileRef.meta?.source === 'voice-recorder') filesAfterUploadVoiceRecorder(user, fileRef);
 });
+
+Meteor.publish('files', fileIds => {
+  check(fileIds, [String]);
+  return Files.find({ _id: { $in: fileIds } }).cursor;
+});

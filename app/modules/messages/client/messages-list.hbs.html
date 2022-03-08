@@ -4,6 +4,13 @@
     <div class="message-content">
       <span class="js-username">{{userName}}</span> <span class="time" title="{{date}}">{{time}}</span>
       <p class="text">{{text}}</p>
+      {{#if file}}
+        <div class="files">
+          <a href="{{file.link}}" target="_blank">
+            <img src="{{file.link}}" alt="{{file.name}}">
+          </a>
+        </div>
+      {{/if}}
     </div>
     <div class="actions {{#if showActions}}show{{/if}}">
       <button type="button" class="button js-message-remove">x</button> 

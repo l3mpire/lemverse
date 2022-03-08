@@ -27,6 +27,10 @@ Template.messagesListMessage.helpers({
   user() { return Meteor.users.findOne(this.message.createdBy); },
   userName() { return Meteor.users.findOne(this.message.createdBy)?.profile.name || '[removed]'; },
   text() { return this.message.text; },
+  file() {
+    if (!this.message.fileId) return undefined;
+    return Files.findOne(this.message.fileId);
+  },
   date() { return this.message.createdAt.toDateString(); },
   time() { return this.message.createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); },
   showActions() { return Template.instance().moderationAllowed; },
@@ -47,16 +51,22 @@ Template.messagesListMessage.events({
 
 Template.messagesList.onCreated(function () {
   this.userSubscribeHandler = undefined;
+  this.fileSubscribeHandler = undefined;
 
   this.autorun(() => {
     if (!Session.get('console')) {
+      this.fileSubscribeHandler?.stop();
       this.userSubscribeHandler?.stop();
       return;
     }
 
-    const messages = Messages.find({}, { fields: { createdBy: 1 } }).fetch();
+    const messages = Messages.find({}, { fields: { createdBy: 1, fileId: 1 } }).fetch();
+
     const userIds = messages.map(message => message.createdBy).filter(Boolean);
     this.userSubscribeHandler = this.subscribe('usernames', userIds, () => scrollToBottom());
+
+    const filesIds = messages.map(message => message.fileId).filter(Boolean);
+    this.fileSubscribeHandler = this.subscribe('files', filesIds);
   });
 });
 
