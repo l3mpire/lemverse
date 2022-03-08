@@ -83,10 +83,12 @@ messagesModule = {
     if (content.length >= messageMaxLength) throw new Error(`The message is too long (> ${messageMaxLength} chars)`);
 
     window.dispatchEvent(new CustomEvent(eventTypes.beforeSendingMessage, { detail: { channel, content } }));
-    const message = Messages.insert({ _id: Messages.id(), channel, text: content, createdAt: new Date(), createdBy: Meteor.userId() });
-    window.dispatchEvent(new CustomEvent(eventTypes.afterSendingMessage, { detail: { channel, message } }));
+    const messageId = Messages.insert({ _id: Messages.id(), channel, text: content, createdAt: new Date(), createdBy: Meteor.userId() });
+    window.dispatchEvent(new CustomEvent(eventTypes.afterSendingMessage, { detail: { channel, messageId } }));
 
     if (!channel.includes('qst_')) this.sendWebRTCMessage(channel, content);
+
+    return messageId;
   },
 
   stopListeningMessagesChannel() {

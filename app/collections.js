@@ -69,22 +69,19 @@ Files = new FilesCollection({
   // debug: true,
   onBeforeUpload(file) {
     if (file.meta?.source === 'editor-tilesets') {
-      // quick check executed also on client
       if (file.size <= 5000000 && /png|jpe?g/i.test(file.extension)) return true;
       return 'Please upload an image (png, jpg or jpeg) less than 5MB';
-    }
-
-    if (file.meta?.source === 'editor-characters') {
-      // quick check executed also on client
+    } else if (file.meta?.source === 'editor-characters') {
       if (file.size <= 5000000 && /png|jpe?g/i.test(file.extension)) return true;
       return 'Please upload an image (png, jpg or jpeg) less than 5MB';
-    }
-
-    if (file.meta?.source === 'voice-recorder') {
+    } else if (file.meta?.source === 'voice-recorder') {
       if (file.size <= 5000000 && /webm|ogg|mp4/i.test(file.extension)) return true;
       if (!file.meta.targets.length) return 'Targets required';
 
       return 'Please upload a valid sound file (webm, ogg or mp4) less than 5MB';
+    } else if (file.meta?.source === 'user-console') {
+      if (file.size <= 5000000 && /png|jpe?g/i.test(file.extension)) return true;
+      return 'Please upload an image (png, jpg or jpeg) less than 5MB';
     }
 
     return 'Source of upload not set. Can\'t continue.';

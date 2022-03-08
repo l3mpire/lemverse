@@ -1,4 +1,5 @@
 const inputSelector = '.console .js-command-input';
+const inputFileSelector = '.console .console-file';
 
 const clearAndFocusInputField = () => {
   Tracker.afterFlush(() => {
@@ -12,6 +13,7 @@ const clearAndFocusInputField = () => {
 const closeAndFocusCanvas = () => {
   Session.set('console', false);
   document.querySelector(inputSelector)?.blur();
+  document.querySelector(inputFileSelector).value = '';
   hotkeys.setScope(scopes.player);
   game.scene.keys.WorldScene.enableKeyboard(true, false);
 };
@@ -21,23 +23,50 @@ const onKeyPressed = e => {
   else if (e.key === 'Enter') Session.set('console', true);
 };
 
-const onSubmit = () => {
-  const fieldValue = document.querySelector(inputSelector).value;
-  if (!fieldValue) {
-    closeAndFocusCanvas();
-    return;
-  }
+const sendMessage = (channel, text) => {
+  let messageId;
 
+  try {
+    messageId = messagesModule.sendMessage(channel, text);
+    clearAndFocusInputField();
+  } catch (e) { lp.notif.error(e); }
+
+  return messageId;
+};
+
+const onSubmit = () => {
   const channel = Session.get('messagesChannel');
   if (!channel) {
     lp.notif.error('You have to be in a zone and/or near someone to send a message');
     return;
   }
 
-  try {
-    messagesModule.sendMessage(channel, fieldValue);
-    clearAndFocusInputField();
-  } catch (e) { lp.notif.error(e); }
+  const { files } = document.querySelector(inputFileSelector);
+  const text = document.querySelector(inputSelector).value;
+  if (!text && !files.length) {
+    closeAndFocusCanvas();
+    return;
+  }
+
+  // message without file
+  if (!files.length) { sendMessage(channel, text); return; }
+
+  // upload file and send message
+  const uploadedFile = Files.insert({
+    file: files[0],
+    meta: { source: 'user-console', userId: Meteor.userId() },
+  }, false);
+
+  uploadedFile.on('end', (error, file) => {
+    if (error) lp.notif.error(`Error during file upload: ${error.reason}`);
+    else {
+      const messageId = sendMessage(channel, text);
+      if (messageId) Messages.update(messageId, { $set: { fileId: file._id } });
+      else Files.remove(file._id);
+    }
+  });
+
+  uploadedFile.start();
 };
 
 Template.console.onCreated(function () {

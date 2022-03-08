@@ -45,12 +45,52 @@ $button-text-color: white;
       }
     }
 
+    .js-button-add-file {
+      background-color: #2b2d3de6;
+      color: $button-text-color;
+      width: 60px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: darken(#2b2d3de6, 5%);
+      }
+    }
+
+    .console-file {
+      width: 0.1px;
+      height: 0.1px;
+      opacity: 0;
+      overflow: hidden;
+      position: absolute;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .console-file+label {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      background-color: #2b2d3de6;
+      color: $button-text-color;
+      font-size: 13pt;
+      width: 75px;
+      justify-content: center;
+
+      &:hover {
+        background-color: darken(#2b2d3de6, 5%);
+      }
+    }
+
     .js-button-submit {
       cursor: pointer;
       background-color: $button-background-color;
       color: $button-text-color;
       font-size: 13pt;
       width: 80px;
+
+      &:hover {
+        background-color: darken($button-background-color, 5%);
+      }
     }
   }
 
