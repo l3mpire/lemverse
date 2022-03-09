@@ -27,6 +27,7 @@ const toggleQuestState = questId => {
 const selectQuest = (questId, template) => {
   template.selectedQuest.set(questId);
   messagesModule.changeMessagesChannel(questId);
+  Session.set('console', true);
 
   // mark linked notification as read
   const notification = Notifications.findOne({ questId, userId: Meteor.userId() });
@@ -114,16 +115,17 @@ Template.questsList.onCreated(function () {
   this.selectedQuest = new ReactiveVar(undefined);
   this.questListMode = new ReactiveVar(modes.mine);
   this.userSubscribeHandler = undefined;
+  this.questSubscribeHandler = undefined;
 
   this.autorun(() => {
     if (!Session.get('quests')) {
       this.userSubscribeHandler?.stop();
+      this.questSubscribeHandler?.stop();
       return;
     }
 
     Tracker.nonreactive(() => {
-      Session.set('console', true);
-      this.subscribe('quests', () => {
+      this.questSubscribeHandler = this.subscribe('quests', () => {
         const userIds = Quests.find().fetch().flatMap(quest => [quest.createdBy, ...(quest.targets || [])]).filter(Boolean);
         if (userIds?.length) this.userSubscribeHandler = this.subscribe('usernames', [...new Set(userIds)]);
 
