@@ -18,9 +18,17 @@ const closeAndFocusCanvas = () => {
   game.scene.keys.WorldScene.enableKeyboard(true, false);
 };
 
+const openConsole = () => {
+  if (Session.get('console')) return;
+
+  messagesModule.autoSelectChannel();
+  clearAndFocusInputField();
+  Session.set('console', true);
+};
+
 const onKeyPressed = e => {
   if (e.key === 'Escape') closeAndFocusCanvas();
-  else if (e.key === 'Enter') Session.set('console', true);
+  else if (e.key === 'Enter') openConsole();
 };
 
 const sendMessage = (channel, text) => {
@@ -68,17 +76,8 @@ const onSubmit = () => {
   uploadedFile.start();
 };
 
-Template.console.onCreated(function () {
+Template.console.onCreated(() => {
   Session.set('console', false);
-
-  this.autorun(() => {
-    const console = Session.get('console');
-    if (console) {
-      messagesModule.autoSelectChannel();
-      clearAndFocusInputField();
-    }
-  });
-
   document.addEventListener('keydown', onKeyPressed);
 });
 
