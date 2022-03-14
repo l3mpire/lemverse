@@ -49,7 +49,7 @@ const autoSelectQuest = template => {
   const questId = Session.get('quests')?.questId || '';
   if (questId.includes('qst_')) selectQuest(questId, template);
   else {
-    const allQuests = quests();
+    const allQuests = quests(template.questListMode.get());
     const firstQuest = allQuests.length ? allQuests[0] : undefined;
     if (firstQuest) selectQuest(firstQuest._id, template);
   }
