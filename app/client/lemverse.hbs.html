@@ -39,8 +39,12 @@
 
   {{#unless isGuest}}
     {{> radialMenu }}
-    {{> questsList}}
-    {{> messagesList}}
-    {{> console}}
+    <div class="two-cols-modules">
+      {{> questsList}}
+      <div class="right-content">
+        {{> messagesList}}
+        {{> console}}
+      </div>
+    </div>
   {{/unless}}
 </template>

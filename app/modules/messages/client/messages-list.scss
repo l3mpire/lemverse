@@ -4,14 +4,8 @@ $separation-color: #E58273;
 
 .messages-module {
   display: flex;
+  height: 100%;
   flex-direction: column;
-  position: absolute;
-  bottom: 130px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 750px;
-  height: 500px;
-  z-index: 100;
   opacity: 0;
   transition: opacity 0.25s linear;
   overflow: hidden;

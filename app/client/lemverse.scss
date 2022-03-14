@@ -302,3 +302,24 @@ button.js-notifications {
 #noty_layout__topLeft {
   z-index: 100;
 }
+
+.two-cols-modules {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(calc(-50% - 120px));
+  width: 50%;
+  min-width: 750px;
+  height: 500px;
+  display: flex;
+  gap: 10px;
+  flex-direction: row;
+  align-items: stretch;
+  z-index: 100;
+  pointer-events: none;
+
+  .right-content {
+    position: relative;
+    width: 100%;
+  }
+}

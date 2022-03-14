@@ -1,17 +1,13 @@
 $quest-updated-color: #E58273;
 
 .quests-list {
-  position: absolute;
-  left: 50%;
-  bottom: 130px;
+  position: relative;
   display: flex;
   flex-direction: column;
-  height: 500px;
   width: 240px;
-  z-index: 100;
+  min-width: 240px;
   background-color: #2b2d3df2;
   border-radius: 8px;
-  transform: translateX(-620px);
   opacity: 0;
   transition: opacity 0.25s linear;
   pointer-events: none;
