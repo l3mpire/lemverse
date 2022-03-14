@@ -1,3 +1,5 @@
+$quest-updated-color: #E58273;
+
 .quests-list {
   position: absolute;
   left: 50%;
@@ -131,6 +133,10 @@
           opacity: 1;
           display: inline-block;
         }
+      }
+
+      &.updated {
+        border-left: 5px solid $quest-updated-color;
       }
     }
   }

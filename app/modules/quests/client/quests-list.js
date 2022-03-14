@@ -158,6 +158,12 @@ Template.questsList.helpers({
     else if (quest.targets?.length === 1) return `> ${Meteor.users.findOne(quest.targets[0])?.profile.name || '[deleted]'}`;
     else return `> ${quest.targets.length} users`;
   },
+  hasUpdates(id) {
+    const notification = Notifications.findOne({ questId: id });
+    if (!notification) return false;
+
+    return !notification.read;
+  },
   isQuestSelected(id) { return Template.instance().selectedQuest.get() === id; },
   newQuest() {
     const questId = draftQuestId();

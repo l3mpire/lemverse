@@ -15,7 +15,7 @@
       {{/if}}
 
       {{#each q in quests}}
-        <li class="js-quest {{#if isQuestSelected q._id}}selected{{/if}} {{#if q.completed}}completed{{/if}}" data-quest-id="{{q._id}}">
+        <li class="js-quest {{#if isQuestSelected q._id}}selected{{/if}} {{#if hasUpdates q._id}}updated{{/if}} {{#if q.completed}}completed{{/if}}" data-quest-id="{{q._id}}">
           <span>{{title q}}</span>
           <span class="actions">
             <button type="button" class="button js-toggle-state">✔</button>
