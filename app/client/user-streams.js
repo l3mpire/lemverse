@@ -184,6 +184,7 @@ userStreams = {
     const { shareVideo, shareAudio } = Meteor.user().profile;
     const constraints = this.getStreamConstraints(streamTypes.main);
     constraints.forceNew = forceNew;
+    this.showUserPanel();
 
     const { cams } = await this.enumerateDevices();
     if (cams.length === 0) delete constraints.video;
@@ -192,12 +193,14 @@ userStreams = {
     // if (!shareVideo) delete constraints.video;
 
     const stream = await this.requestUserMedia(constraints);
-    if (!stream) throw new Error(`unable to get a valid stream`);
+    if (!stream) {
+      this.hideUserPanel();
+      throw new Error(`unable to get a valid stream`);
+    }
 
     // sync video element with the stream
     const videoElement = this.getVideoElement();
     if (stream.id !== videoElement.srcObject?.id) videoElement.srcObject = stream;
-    this.showUserPanel();
 
     // ensures tracks are up-to-date
     this.audio(shareAudio);

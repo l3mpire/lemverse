@@ -61,7 +61,10 @@ peer = {
     this.cancelCallClose(userId);
     this.cancelCallOpening(userId);
 
-    if (activeCallsCount && debug) log('closeCall: call was active', { sourceAmount: activeCallsCount });
+    if (debug) {
+      if (activeCallsCount) log('closeCall: call was active', { sourceAmount: activeCallsCount });
+      else log('closeCall: call was inactive');
+    }
 
     let streamsByUsers = this.remoteStreamsByUsers.get();
     streamsByUsers.map(usr => {
@@ -83,17 +86,18 @@ peer = {
     }
 
     $(`.js-video-${userId}-user`).remove();
+    if (debug) log('closeCall: call closed successfully', userId);
 
     if (!activeCallsCount) return;
 
-    if (debug) log('closeCall: call closed successfully', userId);
     sounds.play('webrtc-out.mp3', 0.2);
   },
 
   close(userId, timeout = 0, origin = null) {
+    const debug = Meteor.user()?.options?.debug;
+    if (debug) log(`close: start (${origin})`, { userId });
     this.cancelCallOpening(userId);
     if (this.callsToClose[userId] && timeout !== 0) return;
-    clearTimeout(this.callsToClose[userId]);
     this.callsToClose[userId] = setTimeout(() => this.closeCall(userId, origin), timeout);
   },
 
@@ -211,7 +215,6 @@ peer = {
 
     if (meet.api || Meteor.user()?.profile.guest) return;
 
-    userStreams.showUserPanel();
     this.callsOpening[user._id] = setTimeout(() => this.createPeerCalls(user), Meteor.settings.public.peer.callDelay);
   },
 
