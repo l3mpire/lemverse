@@ -62,11 +62,14 @@ userStreams = {
   },
 
   destroyStream(type) {
-    const { instance: stream } = type === streamTypes.main ? this.streams.main : this.streams.screen;
-    if (!stream) return;
-
     const debug = Meteor.user()?.options?.debug;
-    if (debug) log('destroy stream: start', stream.id);
+    if (debug) log('destroyStream: start');
+    const { instance: stream } = type === streamTypes.main ? this.streams.main : this.streams.screen;
+    if (!stream) {
+      if (debug) log('destroyStream: cancelled (stream was not alive)');
+      return;
+    }
+
     this.stopTracks(stream);
 
     destroyVideoSource(this.getVideoElement());
@@ -75,16 +78,23 @@ userStreams = {
       this.streams.main.instance = undefined;
       this.hideUserPanel();
     } else if (stream === this.streams.screen.instance) this.streams.screen.instance = undefined;
-
-    if (debug) log('destroy stream: done');
   },
 
   async requestUserMedia(constraints = {}) {
+    const debug = Meteor.user().options?.debug;
+
+    if (debug) log('requestUserMedia: start');
     if (constraints.forceNew) this.destroyStream(streamTypes.main);
+
     const { instance: currentStream, loading } = this.streams.main;
-    if (currentStream) return currentStream;
+    if (currentStream) {
+      if (debug) log('requestUserMedia: stream already active');
+      return currentStream;
+    }
+
     if (!currentStream && loading) {
       try {
+        if (debug) log('requestUserMedia: waiting existing stream to load…');
         await waitFor(() => this.streams.main.instance !== undefined, 15, 500);
         return this.streams.main.instance;
       } catch {
@@ -95,6 +105,7 @@ userStreams = {
     this.streams.main.loading = true;
     let stream;
     try {
+      if (debug) log('requestUserMedia: stream is loading');
       stream = await navigator.mediaDevices.getUserMedia(constraints);
     } catch (err) {
       error('requestUserMedia failed', err);
@@ -105,9 +116,10 @@ userStreams = {
       throw err;
     } finally { this.streams.main.loading = false; }
 
+    // todo: remove later, useless function call here
     this.destroyStream(streamTypes.main);
 
-    if (Meteor.user().options?.debug) log('create stream', stream.id);
+    if (debug) log('requestUserMedia: stream created', { streamId: stream.id });
     this.streams.main.instance = stream;
     Meteor.users.update(Meteor.userId(), { $unset: { 'profile.userMediaError': 1 } });
 
@@ -137,10 +149,14 @@ userStreams = {
   },
 
   async requestDisplayMedia() {
+    const debug = Meteor.user().options?.debug;
+    if (debug) log('requestDisplayMedia: start');
+
     const { instance: currentStream, loading } = this.streams.screen;
     if (currentStream) return currentStream;
     if (!currentStream && loading) {
       try {
+        if (debug) log('requestDisplayMedia: waiting existing stream to load…');
         await waitFor(() => this.streams.screen.instance !== undefined, 20, 1000);
         return this.streams.screen.instance;
       } catch {
@@ -158,7 +174,9 @@ userStreams = {
       throw err;
     } finally { this.streams.screen.loading = false; }
 
+    if (debug) log('requestDisplayMedia: stream created', { streamId: stream.id });
     this.streams.screen.instance = stream;
+
     return stream;
   },
 

@@ -39,7 +39,7 @@ peer = {
 
   closeCall(userId, origin) {
     const debug = Meteor.user()?.options?.debug;
-    if (debug) log(`close call: start (${origin})`, userId);
+    if (debug) log(`closeCall: start (${origin})`, userId);
 
     let activeCallsCount = 0;
     const close = (remote, user, type) => {
@@ -61,7 +61,7 @@ peer = {
     this.cancelCallClose(userId);
     this.cancelCallOpening(userId);
 
-    if (activeCallsCount && debug) log('close call: call was active');
+    if (activeCallsCount && debug) log('closeCall: call was active', { sourceAmount: activeCallsCount });
 
     let streamsByUsers = this.remoteStreamsByUsers.get();
     streamsByUsers.map(usr => {
@@ -86,7 +86,7 @@ peer = {
 
     if (!activeCallsCount) return;
 
-    if (debug) log('close call: call closed successfully', userId);
+    if (debug) log('closeCall: call closed successfully', userId);
     sounds.play('webrtc-out.mp3', 0.2);
   },
 
@@ -101,23 +101,23 @@ peer = {
     const debug = Meteor.user()?.options?.debug;
     const type = stream === userStreams.streams.main.instance ? 'main' : 'screen';
 
-    if (debug) log(`peer call: create new peer call with ${user._id}`, { user: user._id, type });
-    if (!stream) { error(`stream is undefined`, { user, stream }); return; }
+    if (debug) log(`createPeerCall: started`, { user: user._id, type });
+    if (!stream) { error(`createPeerCall: stream is undefined`, { user, stream }); return; }
 
     if (this.calls[`${user._id}-${type}`]) {
-      if (debug) log(`peer call: creation cancelled (call already started)`);
+      if (debug) log(`createPeerCall: creation cancelled (call already started)`);
       return;
     }
 
     if (!userProximitySensor.isUserNear(user)) {
-      if (debug) log(`peer call: creation cancelled (user is too far)`);
+      if (debug) log(`createPeerCall: creation cancelled (user is too far)`);
       this.close(user._id, 0, 'far-user');
       return;
     }
 
     const call = peer.call(user._id, stream, { metadata: { userId: Meteor.userId(), type } });
     if (!call) {
-      error(`peer call: an error occured during call creation`);
+      error(`createPeerCall: an error occured during call creation (peerjs error)`);
       this.close(user._id, 0, 'peer-error');
       return;
     }
@@ -129,8 +129,7 @@ peer = {
     // ensures peers are using last stream & tracks available
     this.updatePeersStream(stream, type);
 
-    if (debug) call.on('close', () => { log(`peer call: call with ${user._id} closed`, user._id); });
-    if (debug) log(`peer call: call created!`);
+    if (debug) call.on('close', () => log(`createPeerCall: call closed`, { userId: user._id }));
   },
 
   async createPeerCalls(user) {
@@ -157,36 +156,43 @@ peer = {
 
   updatePeersStream(stream, type) {
     const debug = Meteor.user()?.options?.debug;
-    if (debug) log('update peers stream: start');
+    if (debug) log('updatePeersStream: start');
 
     if (type === streamTypes.main) {
-      if (debug) log(`update peers stream: main stream ${stream.id}`, stream);
+      if (debug) log(`updatePeersStream: main stream ${stream.id}`, stream);
       const audioTrack = stream.getAudioTracks()[0];
       const videoTrack = stream.getVideoTracks()[0];
 
       _.each(this.calls, (call, key) => {
         if (key.indexOf('-screen') !== -1) return;
-        if (debug) log(`update peers stream: sending stream to user ${key}`);
         const senders = call.peerConnection.getSenders();
+        let trackUpdated = false;
 
         _.each(senders, sender => {
           if (sender.track.id === audioTrack.id || sender.track.id === videoTrack.id) return;
           if (sender.track.kind === 'audio') sender.replaceTrack(audioTrack);
           else if (sender.track.kind === 'video') sender.replaceTrack(videoTrack);
+          trackUpdated = true;
         });
+
+        if (debug && trackUpdated) log(`updatePeersStream: stream main track updated for user ${key}`);
       });
     } else if (type === streamTypes.screen) {
-      if (debug) log(`update peers stream: screen share stream ${stream.id}`, stream);
+      if (debug) log(`updatePeersStream: screen share stream ${stream.id}`, stream);
       const screenTrack = stream.getVideoTracks()[0];
 
       _.each(this.calls, (call, key) => {
         if (key.indexOf('-screen') === -1) return;
         const senders = call.peerConnection.getSenders();
+        let trackUpdated = false;
 
         _.each(senders, sender => {
           if (sender.track.id === screenTrack.id || sender.track.kind !== 'video') return;
           sender.replaceTrack(screenTrack);
+          trackUpdated = true;
         });
+
+        if (debug && trackUpdated) log(`updatePeersStream: stream main track updated for user ${key}`);
       });
     }
   },
@@ -299,12 +305,14 @@ peer = {
   },
 
   answerCall(remoteCall) {
-    if (!this.enabled) { log(`answer call: peer is disabled`); return false; }
-
+    const debug = Meteor.user()?.options?.debug;
     const remoteUserId = remoteCall.metadata?.userId;
-    if (!remoteUserId) { log(`answer call: incomplete metadata for the remote call`); return false; }
+    if (debug) log(`answerCall: start`, { userId: remoteUserId, type: remoteCall.metadata.type });
+    if (!this.enabled) { log(`answerCall: peer is disabled`); return false; }
+
+    if (!remoteUserId) { log(`answerCall: incomplete metadata for the remote call`); return false; }
     const remoteUser = Meteor.users.findOne({ _id: remoteUserId });
-    if (!remoteUser) { log(`answer call: user not found "${remoteUserId}"`); return false; }
+    if (!remoteUser) { log(`answerCall: user not found "${remoteUserId}"`); return false; }
 
     // Send global notification
     sendEvent('proximity-started', { user: remoteUser });
@@ -330,14 +338,13 @@ peer = {
     this.createOrUpdateRemoteStream(remoteUser, remoteCall.metadata.type);
 
     // update call's with stream received
-    const debug = Meteor.user()?.options?.debug;
     remoteCall.on('stream', stream => {
-      if (debug) log(`remote call "${remoteUserId}" sent stream (${stream.id})`, { userId: remoteUserId, type: remoteCall.metadata.type, stream: stream.id });
+      if (debug) log(`remoteCall: received stream`, { userId: remoteUserId, type: remoteCall.metadata.type, stream: stream.id });
       this.createOrUpdateRemoteStream(remoteUser, remoteCall.metadata.type, stream);
     });
 
     remoteCall.on('close', () => {
-      if (debug) log(`remote call closed (with ${remoteUserId})`, { userId: remoteUserId, type: remoteCall.metadata.type });
+      if (debug) log(`remoteCall: closed`, { userId: remoteUserId, type: remoteCall.metadata.type });
       this.close(remoteUserId, 0, 'peerjs-event');
     });
 
