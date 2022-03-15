@@ -1,6 +1,16 @@
 <template name="questToolbar">
   <div class="quest-toolbar {{#if show}}show{{/if}}">
     <input type="text" class="js-quest-name" value="{{title}}">
-    <div class="targets">{{userAmount}} 👥</div>
+    <div class="users">
+      <ul class="user-list">
+        {{#each user in users}}
+          <li>
+            {{> avatarViewer user=user}}
+            <span>{{user.profile.name}}</span>
+          </li>
+        {{/each}}
+      </ul>
+      {{userAmount}} 👥
+    </div>
   </div>
 </template>

@@ -6,7 +6,6 @@ $border-radius: 8px;
   width: 100%;
   opacity: 0;
   transition: opacity 0.25s linear;
-  overflow: hidden;
   pointer-events: none;
   background-color: $background-color;
   border-radius: $border-radius $border-radius 0 0;
@@ -28,7 +27,7 @@ $border-radius: 8px;
     border: 0;
   }
 
-  .targets {
+  .users {
     position: absolute;
     right: 10px;
     top: 10px;
@@ -37,5 +36,42 @@ $border-radius: 8px;
     border: 1px solid white;
     padding: 5px;
     border-radius: 5px;
+    cursor: pointer;
+
+    &:hover {
+      .user-list {
+        display: block;
+      }
+    }
+
+    .user-list {
+      display: none;
+      position: absolute;
+      top: 25px;
+      right: 0;
+      width: 150px;
+      height: auto;
+      max-height: 200px;
+      overflow-y: auto;
+      background-color: $background-color;
+      border-radius: 5px;
+      z-index: 200;
+      padding: 5px;
+
+      li {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .avatar-viewer {
+          width: 35px;
+          height: 35px;
+
+          .character-body-part-container {
+            transform: scale(0.35) translate(-17px, -80px);
+          }
+        }
+      }
+    }
   }
 }

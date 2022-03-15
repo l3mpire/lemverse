@@ -13,6 +13,16 @@ const updateTitle = title => {
   else Quests.update(questId, { $set: { name: title } });
 };
 
+const questUserIds = () => {
+  const quest = activeQuest();
+  if (!quest) return [];
+
+  const userIds = quest.targets || [];
+  userIds.push(quest.createdBy);
+
+  return userIds;
+};
+
 Template.questToolbar.events({
   'focus .js-quest-name'(e) {
     e.preventDefault();
@@ -34,13 +44,6 @@ Template.questToolbar.onCreated(() => {
 Template.questToolbar.helpers({
   show() { return Session.get('selectedQuest'); },
   title() { return activeQuest()?.name || 'Messages'; },
-  userAmount() {
-    const quest = activeQuest();
-    if (!quest) return 0;
-
-    const userIds = quest?.targets || [];
-    userIds.push(quest.createdBy);
-
-    return userIds.length;
-  },
+  userAmount() { return questUserIds().length; },
+  users() { return questUserIds().map(userId => Meteor.users.findOne(userId)); },
 });
