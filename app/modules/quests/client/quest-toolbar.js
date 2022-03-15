@@ -45,5 +45,5 @@ Template.questToolbar.helpers({
   show() { return Session.get('selectedQuest'); },
   title() { return activeQuest()?.name || 'Messages'; },
   userAmount() { return questUserIds().length; },
-  users() { return questUserIds().map(userId => Meteor.users.findOne(userId)); },
+  users() { return Meteor.users.find({ _id: { $in: questUserIds() } }); },
 });
