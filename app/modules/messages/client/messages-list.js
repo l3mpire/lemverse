@@ -3,7 +3,7 @@ const getCurrentChannelName = () => {
   if (!channel) return '-';
 
   if (channel.includes('zon_')) return Zones.findOne(channel)?.name || 'Zone';
-  else if (channel.includes('qst_')) return Quests.findOne(channel)?.name || 'Messages';
+  else if (channel.includes('qst_')) return '';
 
   const userIds = channel.split(';');
   const users = Meteor.users.find({ _id: { $in: userIds } }).fetch();

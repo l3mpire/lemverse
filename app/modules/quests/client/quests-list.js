@@ -24,8 +24,8 @@ const toggleQuestState = questId => {
   messagesModule.sendMessage(questId, message);
 };
 
-const selectQuest = (questId, template) => {
-  template.selectedQuest.set(questId);
+const selectQuest = questId => {
+  Session.set('selectedQuest', questId);
   messagesModule.changeMessagesChannel(questId);
   Session.set('console', true);
 
@@ -96,10 +96,10 @@ Template.questsList.events({
     e.stopPropagation();
     selectQuest(e.currentTarget.dataset.questId, template);
   },
-  'click .js-toggle-state'(e, template) {
+  'click .js-toggle-state'(e) {
     e.preventDefault();
     e.stopPropagation();
-    toggleQuestState(template.selectedQuest.get());
+    toggleQuestState(Session.get('selectedQuest'));
   },
   'click .js-quest-switch'(e, template) {
     e.preventDefault();
@@ -112,7 +112,7 @@ Template.questsList.events({
 
 Template.questsList.onCreated(function () {
   Session.set('quests', undefined);
-  this.selectedQuest = new ReactiveVar(undefined);
+  Session.set('selectedQuest', undefined);
   this.questListMode = new ReactiveVar(modes.mine);
   this.userSubscribeHandler = undefined;
   this.questSubscribeHandler = undefined;
@@ -121,6 +121,7 @@ Template.questsList.onCreated(function () {
     if (!Session.get('quests')) {
       this.userSubscribeHandler?.stop();
       this.questSubscribeHandler?.stop();
+      Session.set('selectedQuest', undefined);
       return;
     }
 
@@ -148,6 +149,8 @@ Template.questsList.helpers({
   show() { return Session.get('quests'); },
   quests() { return quests(Template.instance().questListMode.get()); },
   title(quest) {
+    if (quest.name) return quest.name;
+
     const isEntityOrigin = quest.origin.includes('ent_');
     if (quest.createdBy !== Meteor.userId()) {
       if (isEntityOrigin) return entityName(quest.origin);
@@ -164,7 +167,7 @@ Template.questsList.helpers({
 
     return !notification.read;
   },
-  isQuestSelected(id) { return Template.instance().selectedQuest.get() === id; },
+  isQuestSelected(id) { return Session.get('selectedQuest') === id; },
   newQuest() {
     const questId = draftQuestId();
     if (!questId) return undefined;
