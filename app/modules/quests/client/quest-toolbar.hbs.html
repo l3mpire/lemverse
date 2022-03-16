@@ -9,7 +9,7 @@
       <div class="users">
         <ul class="user-list">
           {{#each user in users}}
-            <li>
+            <li class="{{#if createdBy user}}created-by{{/if}}">
               {{> avatarViewer user=user}}
               <span>{{user.profile.name}}</span>
             </li>

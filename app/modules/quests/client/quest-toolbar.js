@@ -57,6 +57,7 @@ Template.questToolbar.helpers({
   show() { return Session.get('selectedQuestId'); },
   title() { return activeQuest()?.name || 'Messages'; },
   users() { return Template.instance().users.get(); },
+  createdBy(user) { return activeQuest()?.createdBy === user._id; },
   showJoinButton() {
     const quest = activeQuest();
     if (!quest) return false;
