@@ -17,7 +17,12 @@ const joinQuest = () => {
   const questId = Session.get('selectedQuestId');
   if (!questId) return;
 
-  Quests.update(questId, { $addToSet: { targets: Meteor.userId() } });
+  Quests.update(questId, { $addToSet: { targets: Meteor.userId() } }, error => {
+    if (error) { lp.notif.error(`Unable to join the quest`); return; }
+
+    const message = `${Meteor.user().profile.name} has joined the quest`;
+    messagesModule.sendMessage(questId, message);
+  });
 };
 
 Template.questToolbar.events({
