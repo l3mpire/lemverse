@@ -13,16 +13,6 @@ const updateTitle = title => {
   else Quests.update(questId, { $set: { name: title } });
 };
 
-const questUserIds = () => {
-  const quest = activeQuest();
-  if (!quest) return [];
-
-  const userIds = quest.targets || [];
-  userIds.push(quest.createdBy);
-
-  return userIds;
-};
-
 Template.questToolbar.events({
   'focus .js-quest-name'(e) {
     e.preventDefault();
@@ -37,13 +27,22 @@ Template.questToolbar.events({
   },
 });
 
-Template.questToolbar.onCreated(() => {
+Template.questToolbar.onCreated(function () {
+  this.users = new ReactiveVar([]);
 
+  this.autorun(() => {
+    const questId = Session.get('selectedQuest');
+    if (!questId) return;
+
+    Meteor.call('questUsers', questId, (error, users) => {
+      if (error) { lp.notif.error(`An error occured while loading quest users`); return; }
+      this.users.set(users);
+    });
+  });
 });
 
 Template.questToolbar.helpers({
   show() { return Session.get('selectedQuest'); },
   title() { return activeQuest()?.name || 'Messages'; },
-  userAmount() { return questUserIds().length; },
-  users() { return Meteor.users.find({ _id: { $in: questUserIds() } }); },
+  users() { return Template.instance().users.get(); },
 });

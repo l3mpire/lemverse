@@ -13,3 +13,19 @@ Meteor.publish('quests', function () {
     { sort: { completed: 1, createdAt: 1 } },
   );
 });
+
+Meteor.methods({
+  questUsers(questId) {
+    check(questId, String);
+
+    const quest = Quests.findOne(questId);
+    if (!quest) throw new Meteor.Error(404, 'Quest not found.');
+
+    if (quest.origin.includes('ent_')) return subscribedUsersToEntity(quest.origin);
+
+    const userIds = quest.targets || [];
+    userIds.push(quest.createdBy);
+
+    return Meteor.users.find({ _id: { $in: userIds } }).fetch();
+  },
+});
