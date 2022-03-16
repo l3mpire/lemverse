@@ -1,12 +1,12 @@
 const activeQuest = () => {
-  const questId = Session.get('selectedQuest');
+  const questId = Session.get('selectedQuestId');
   if (!questId) return undefined;
 
   return Quests.findOne(questId);
 };
 
 const updateTitle = title => {
-  const questId = Session.get('selectedQuest');
+  const questId = Session.get('selectedQuestId');
   if (!questId) return;
 
   if (!title?.length) Quests.update(questId, { $unset: { name: 1 } });
@@ -31,7 +31,7 @@ Template.questToolbar.onCreated(function () {
   this.users = new ReactiveVar([]);
 
   this.autorun(() => {
-    const questId = Session.get('selectedQuest');
+    const questId = Session.get('selectedQuestId');
     if (!questId) return;
 
     Meteor.call('questUsers', questId, (error, users) => {
@@ -42,7 +42,7 @@ Template.questToolbar.onCreated(function () {
 });
 
 Template.questToolbar.helpers({
-  show() { return Session.get('selectedQuest'); },
+  show() { return Session.get('selectedQuestId'); },
   title() { return activeQuest()?.name || 'Messages'; },
   users() { return Template.instance().users.get(); },
 });

@@ -25,7 +25,7 @@ const toggleQuestState = questId => {
 };
 
 const selectQuest = questId => {
-  Session.set('selectedQuest', questId);
+  Session.set('selectedQuestId', questId);
   messagesModule.changeMessagesChannel(questId);
   Session.set('console', true);
 
@@ -99,7 +99,7 @@ Template.questsList.events({
   'click .js-toggle-state'(e) {
     e.preventDefault();
     e.stopPropagation();
-    toggleQuestState(Session.get('selectedQuest'));
+    toggleQuestState(Session.get('selectedQuestId'));
   },
   'click .js-quest-switch'(e, template) {
     e.preventDefault();
@@ -112,7 +112,7 @@ Template.questsList.events({
 
 Template.questsList.onCreated(function () {
   Session.set('quests', undefined);
-  Session.set('selectedQuest', undefined);
+  Session.set('selectedQuestId', undefined);
   this.questListMode = new ReactiveVar(modes.mine);
   this.userSubscribeHandler = undefined;
   this.questSubscribeHandler = undefined;
@@ -121,7 +121,7 @@ Template.questsList.onCreated(function () {
     if (!Session.get('quests')) {
       this.userSubscribeHandler?.stop();
       this.questSubscribeHandler?.stop();
-      Session.set('selectedQuest', undefined);
+      Session.set('selectedQuestId', undefined);
       return;
     }
 
@@ -167,7 +167,7 @@ Template.questsList.helpers({
 
     return !notification.read;
   },
-  isQuestSelected(id) { return Session.get('selectedQuest') === id; },
+  isQuestSelected(id) { return Session.get('selectedQuestId') === id; },
   newQuest() {
     const questId = draftQuestId();
     if (!questId) return undefined;
