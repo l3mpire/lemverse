@@ -1,12 +1,16 @@
 <template name="questsList">
   <div class="quests-list {{#if show}}show{{/if}}">
 
-    {{#if entityQuestMode}}
-      <button type="button" class="js-quest-switch previous-mode">&laquo;</button>
-      <h2 class="title">Available quests</h2>
-    {{else}}
-      <button type="button" class="js-quest-switch next-mode">&raquo;</button>
+    {{#if questListModeIsActive 'mine'}}
       <h2 class="title">My quests</h2>
+      <button type="button" class="js-quest-switch-mode next-mode">&raquo;</button>
+    {{else if questListModeIsActive 'available'}}
+      <button type="button" class="js-quest-switch-mode previous-mode">&laquo;</button>
+      <h2 class="title">Available quests</h2>
+      <button type="button" class="js-quest-switch-mode next-mode">&raquo;</button>
+    {{else}}
+      <button type="button" class="js-quest-switch-mode previous-mode">&laquo;</button>
+      <h2 class="title">Completed quests</h2>
     {{/if}}
 
     <ul class="quests">

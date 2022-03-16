@@ -1,17 +1,26 @@
 const modes = Object.freeze({
   mine: 'mine',
-  entity: 'entity',
+  available: 'available',
+  completed: 'completed',
 });
+
+const switchMode = (template, previous = false) => {
+  const modeArray = Object.keys(modes);
+  const modeCount = modeArray.length;
+  if (modeCount === 0) return;
+
+  let newModeIndex = modeArray.findIndex(mode => mode === template.questListMode.get());
+  newModeIndex += previous ? -1 : 1;
+  if (!previous && newModeIndex >= modeCount) newModeIndex = 0;
+  else if (previous && newModeIndex < 0) newModeIndex = modeCount - 1;
+
+  template.questListMode.set(modeArray[newModeIndex]);
+};
 
 const closeInterface = () => Session.set('quests', undefined);
 
 const onKeyPressed = e => {
   if (e.key === 'Escape') closeInterface();
-};
-
-const toggleQuestMode = template => {
-  const mode = template.questListMode.get();
-  template.questListMode.set(mode === modes.entity ? modes.mine : modes.entity);
 };
 
 const toggleQuestState = questId => {
@@ -35,12 +44,29 @@ const selectQuest = questId => {
 };
 
 const quests = mode => {
-  const filters = mode === modes.mine ? {
-    $or: [
-      { targets: Meteor.userId() },
-      { createdBy: Meteor.userId() },
-    ],
-  } : { targets: { $size: 0 } };
+  let filters = {};
+  if (mode === modes.mine) {
+    filters = {
+      $or: [
+        { targets: Meteor.userId() },
+        { createdBy: Meteor.userId() },
+      ],
+      completed: false,
+    };
+  } else if (mode === modes.available) {
+    filters = {
+      targets: { $size: 0 },
+      completed: false,
+    };
+  } else if (mode === modes.completed) {
+    filters = {
+      $or: [
+        { targets: Meteor.userId() },
+        { createdBy: Meteor.userId() },
+      ],
+      completed: true,
+    };
+  }
 
   return Quests.find(filters, { sort: { completed: 1, createdAt: -1 } }).fetch();
 };
@@ -101,11 +127,11 @@ Template.questsList.events({
     e.stopPropagation();
     toggleQuestState(Session.get('selectedQuestId'));
   },
-  'click .js-quest-switch'(e, template) {
+  'click .js-quest-switch-mode'(e, template) {
     e.preventDefault();
     e.stopPropagation();
     Session.set('quests', { origin: 'menu' });
-    toggleQuestMode(template);
+    switchMode(template, e.target.classList.contains('previous-mode'));
     autoSelectQuest(template);
   },
 });
@@ -183,5 +209,5 @@ Template.questsList.helpers({
     return Meteor.users.findOne(userId)?.profile.name || 'New quest';
   },
   draftQuestId() { return draftQuestId(); },
-  entityQuestMode() { return Template.instance().questListMode.get() === modes.entity; },
+  questListModeIsActive(mode) { return Template.instance().questListMode.get() === mode; },
 });
