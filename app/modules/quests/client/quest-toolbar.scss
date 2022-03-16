@@ -1,5 +1,6 @@
 $background-color: #2c2e3e;
 $border-radius: 8px;
+$quest-join-button-color: #13C4A3;
 
 .quest-toolbar {
   position: absolute;
@@ -27,48 +28,67 @@ $border-radius: 8px;
     border: 0;
   }
 
-  .users {
+  .actions {
+    display: flex;
     position: absolute;
     right: 10px;
     top: 10px;
-    color: white;
-    font-weight: bold;
-    border: 1px solid white;
-    padding: 5px;
-    border-radius: 5px;
-    cursor: pointer;
+    gap: 10px;
 
-    &:hover {
-      .user-list {
-        display: block;
+    .js-quest-join {
+      border-radius: $border-radius;
+      background-color: $quest-join-button-color;
+      border: 0;
+      color: white;
+      font-weight: bold;
+      padding: 0 10px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: darken($quest-join-button-color, 20%);
       }
     }
 
-    .user-list {
-      display: none;
-      position: absolute;
-      top: 25px;
-      right: 0;
-      width: 150px;
-      height: auto;
-      max-height: 200px;
-      overflow-y: auto;
-      background-color: $background-color;
+    .users {
+      color: white;
+      font-weight: bold;
+      border: 1px solid white;
+      padding: 5px 10px;
       border-radius: 5px;
-      z-index: 200;
-      padding: 5px;
+      cursor: pointer;
 
-      li {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
+      &:hover {
+        .user-list {
+          display: block;
+        }
+      }
 
-        .avatar-viewer {
-          width: 35px;
-          height: 35px;
+      .user-list {
+        display: none;
+        position: absolute;
+        top: 25px;
+        right: 0;
+        width: 150px;
+        height: auto;
+        max-height: 200px;
+        overflow-y: auto;
+        background-color: $background-color;
+        border-radius: 5px;
+        z-index: 200;
+        padding: 5px;
 
-          .character-body-part-container {
-            transform: scale(0.35) translate(-17px, -80px);
+        li {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+
+          .avatar-viewer {
+            width: 35px;
+            height: 35px;
+
+            .character-body-part-container {
+              transform: scale(0.35) translate(-17px, -80px);
+            }
           }
         }
       }

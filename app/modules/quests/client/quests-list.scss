@@ -1,4 +1,5 @@
 $quest-updated-color: #E58273;
+$quest-toggle-state-color: #13C4A3;
 
 .quests-list {
   position: relative;
@@ -77,11 +78,11 @@ $quest-updated-color: #E58273;
           text-align: center;
 
           &.js-toggle-state {
-            background-color: #C3E991;
+            background-color: $quest-toggle-state-color;
             border: 0;
 
             &:hover {
-              background-color: darken(#C3E991, 20%);
+              background-color: darken($quest-toggle-state-color, 20%);
             }
           }
         }
@@ -93,11 +94,11 @@ $quest-updated-color: #E58273;
 
       .actions {
         .js-toggle-state {
-          background-color: #C3E991;
+          background-color: $quest-toggle-state-color;
           border: 0;
 
           &:hover {
-            background-color: darken(#C3E991, 20%);
+            background-color: darken($quest-toggle-state-color, 20%);
           }
         }
       }

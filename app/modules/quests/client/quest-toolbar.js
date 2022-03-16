@@ -13,6 +13,13 @@ const updateTitle = title => {
   else Quests.update(questId, { $set: { name: title } });
 };
 
+const joinQuest = () => {
+  const questId = Session.get('selectedQuestId');
+  if (!questId) return;
+
+  Quests.update(questId, { $addToSet: { targets: Meteor.userId() } });
+};
+
 Template.questToolbar.events({
   'focus .js-quest-name'(e) {
     e.preventDefault();
@@ -24,6 +31,11 @@ Template.questToolbar.events({
     e.stopPropagation();
     hotkeys.setScope(scopes.player); game.scene.keys.WorldScene.enableKeyboard(true, false);
     updateTitle(e.currentTarget.value);
+  },
+  'click .js-quest-join'(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    joinQuest();
   },
 });
 
@@ -45,4 +57,10 @@ Template.questToolbar.helpers({
   show() { return Session.get('selectedQuestId'); },
   title() { return activeQuest()?.name || 'Messages'; },
   users() { return Template.instance().users.get(); },
+  showJoinButton() {
+    const quest = activeQuest();
+    if (!quest) return false;
+
+    return quest.origin.includes('ent_') && !quest.targets.includes(Meteor.userId());
+  },
 });

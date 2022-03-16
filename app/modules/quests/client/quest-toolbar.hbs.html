@@ -1,16 +1,22 @@
 <template name="questToolbar">
   <div class="quest-toolbar {{#if show}}show{{/if}}">
     <input type="text" class="js-quest-name" value="{{title}}">
-    <div class="users">
-      <ul class="user-list">
-        {{#each user in users}}
-          <li>
-            {{> avatarViewer user=user}}
-            <span>{{user.profile.name}}</span>
-          </li>
-        {{/each}}
-      </ul>
-      {{users.length}} 👥
+    <div class="actions">
+      {{#if showJoinButton}}
+        <button type="button" class="js-quest-join">Join</button>
+      {{/if}}
+
+      <div class="users">
+        <ul class="user-list">
+          {{#each user in users}}
+            <li>
+              {{> avatarViewer user=user}}
+              <span>{{user.profile.name}}</span>
+            </li>
+          {{/each}}
+        </ul>
+        {{users.length}} 👥
+      </div>
     </div>
   </div>
 </template>
