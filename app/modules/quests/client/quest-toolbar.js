@@ -61,6 +61,6 @@ Template.questToolbar.helpers({
     const quest = activeQuest();
     if (!quest) return false;
 
-    return quest.origin.includes('ent_') && !quest.targets.includes(Meteor.userId());
+    return quest.origin.includes('ent_') && !quest.targets.includes(Meteor.userId()) && quest.createdBy !== Meteor.userId();
   },
 });
