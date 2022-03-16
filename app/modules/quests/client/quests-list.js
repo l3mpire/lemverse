@@ -40,7 +40,7 @@ const quests = mode => {
       { targets: Meteor.userId() },
       { createdBy: Meteor.userId() },
     ],
-  } : { origin: { $regex: /^ent_/ } };
+  } : { targets: { $size: 0 } };
 
   return Quests.find(filters, { sort: { completed: 1, createdAt: -1 } }).fetch();
 };
