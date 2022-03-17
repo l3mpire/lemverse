@@ -26,7 +26,6 @@ const onKeyPressed = e => {
 const selectQuest = questId => {
   Session.set('selectedQuestId', questId);
   messagesModule.changeMessagesChannel(questId);
-  Session.set('console', true);
 
   // mark linked notification as read
   const notification = Notifications.findOne({ questId, userId: Meteor.userId() });
@@ -136,6 +135,7 @@ Template.questsList.onCreated(function () {
       return;
     }
 
+    Session.set('console', true);
     Tracker.nonreactive(() => {
       this.questSubscribeHandler = this.subscribe('quests', () => {
         const userIds = Quests.find().fetch().flatMap(quest => [quest.createdBy, ...(quest.targets || [])]).filter(Boolean);
