@@ -3,13 +3,13 @@
 
     {{#if questListModeIsActive 'mine'}}
       <h2 class="title">My quests</h2>
-      <button type="button" class="js-quest-switch-mode next-mode">&raquo;</button>
+      <button type="button" class="js-quest-switch-mode next-mode">➜</button>
     {{else if questListModeIsActive 'available'}}
-      <button type="button" class="js-quest-switch-mode previous-mode">&laquo;</button>
+      <button type="button" class="js-quest-switch-mode previous-mode">➜</button>
       <h2 class="title">Available quests</h2>
-      <button type="button" class="js-quest-switch-mode next-mode">&raquo;</button>
+      <button type="button" class="js-quest-switch-mode next-mode">➜</button>
     {{else}}
-      <button type="button" class="js-quest-switch-mode previous-mode">&laquo;</button>
+      <button type="button" class="js-quest-switch-mode previous-mode">➜</button>
       <h2 class="title">Completed quests</h2>
     {{/if}}
 
@@ -19,11 +19,8 @@
       {{/if}}
 
       {{#each q in quests}}
-        <li class="js-quest {{#if isQuestSelected q._id}}selected{{/if}} {{#if hasUpdates q._id}}updated{{/if}} {{#if q.completed}}completed{{/if}}" data-quest-id="{{q._id}}">
+        <li class="js-quest {{#if isQuestSelected q._id}}selected{{/if}} {{#if hasUpdates q._id}}updated{{/if}}" data-quest-id="{{q._id}}">
           <span>{{title q}}</span>
-          <span class="actions">
-            <button type="button" class="button js-toggle-state">✔</button>
-          </span>
         </li>
       {{/each}}
     </ul>

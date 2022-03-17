@@ -25,6 +25,17 @@ const joinQuest = () => {
   });
 };
 
+const toggleQuestState = () => {
+  const questId = Session.get('selectedQuestId');
+  if (!questId) return;
+
+  const newQuestState = !Quests.findOne(questId).completed;
+  Quests.update(questId, { $set: { completed: newQuestState } });
+
+  const message = `${!newQuestState ? 'reopened' : 'closed'} the quest`;
+  messagesModule.sendMessage(questId, message);
+};
+
 Template.questToolbar.events({
   'focus .js-quest-name'(e) {
     e.preventDefault();
@@ -42,16 +53,21 @@ Template.questToolbar.events({
     e.stopPropagation();
     joinQuest();
   },
+  'click .js-toggle-state'(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleQuestState();
+  },
 });
 
 Template.questToolbar.onCreated(function () {
   this.users = new ReactiveVar([]);
 
   this.autorun(() => {
-    const questId = Session.get('selectedQuestId');
-    if (!questId) return;
+    const quest = activeQuest();
+    if (!quest) return;
 
-    Meteor.call('questUsers', questId, (error, users) => {
+    Meteor.call('questUsers', quest._id, (error, users) => {
       if (error) { lp.notif.error(`An error occured while loading quest users`); return; }
       this.users.set(users);
     });
@@ -62,6 +78,7 @@ Template.questToolbar.helpers({
   show() { return Session.get('selectedQuestId'); },
   title() { return activeQuest()?.name || 'Messages'; },
   users() { return Template.instance().users.get(); },
+  completed() { return activeQuest()?.completed; },
   createdBy(user) { return activeQuest()?.createdBy === user._id; },
   showJoinButton() {
     const quest = activeQuest();

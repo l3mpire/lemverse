@@ -308,8 +308,9 @@ button.js-notifications {
   bottom: 100px;
   left: 50%;
   transform: translateX(calc(-50% - 120px));
-  width: 50%;
+  width: 70%;
   min-width: 750px;
+  max-width: 1000px;
   height: 500px;
   display: flex;
   gap: 10px;

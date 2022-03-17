@@ -23,16 +23,6 @@ const onKeyPressed = e => {
   if (e.key === 'Escape') closeInterface();
 };
 
-const toggleQuestState = questId => {
-  if (!questId) throw new Error(`questId is missing`);
-
-  const newQuestState = !Quests.findOne(questId).completed;
-  Quests.update(questId, { $set: { completed: newQuestState } });
-
-  const message = `${!newQuestState ? 'reopened' : 'closed'} the quest`;
-  messagesModule.sendMessage(questId, message);
-};
-
 const selectQuest = questId => {
   Session.set('selectedQuestId', questId);
   messagesModule.changeMessagesChannel(questId);
@@ -121,11 +111,6 @@ Template.questsList.events({
     e.preventDefault();
     e.stopPropagation();
     selectQuest(e.currentTarget.dataset.questId, template);
-  },
-  'click .js-toggle-state'(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    toggleQuestState(Session.get('selectedQuestId'));
   },
   'click .js-quest-switch-mode'(e, template) {
     e.preventDefault();

@@ -1,9 +1,12 @@
 <template name="questToolbar">
-  <div class="quest-toolbar {{#if show}}show{{/if}}">
+  <div class="quest-toolbar {{#if show}}show{{/if}} {{#if completed}}completed{{/if}}">
     <input type="text" class="js-quest-name" value="{{title}}">
     <div class="actions">
       {{#if showJoinButton}}
         <button type="button" class="js-quest-join">Join</button>
+      {{else}}
+        <button type="button" class="js-toggle-state">Complete</button>
+        <button type="button" class="js-toggle-state closed">Reopen</button>
       {{/if}}
 
       <div class="users">
@@ -15,7 +18,7 @@
             </li>
           {{/each}}
         </ul>
-        {{users.length}} 👥
+        <span>👤</span> {{users.length}}
       </div>
     </div>
   </div>
