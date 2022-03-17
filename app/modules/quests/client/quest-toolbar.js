@@ -30,10 +30,12 @@ const toggleQuestState = () => {
   if (!questId) return;
 
   const newQuestState = !Quests.findOne(questId).completed;
-  Quests.update(questId, { $set: { completed: newQuestState } });
+  Quests.update(questId, { $set: { completed: newQuestState } }, error => {
+    if (error) { lp.notif.error(`Unable to update the quest`); return; }
 
-  const message = `${!newQuestState ? 'reopened' : 'closed'} the quest`;
-  messagesModule.sendMessage(questId, message);
+    const message = `${!newQuestState ? 'reopened' : 'closed'} the quest`;
+    messagesModule.sendMessage(questId, message);
+  });
 };
 
 Template.questToolbar.events({
