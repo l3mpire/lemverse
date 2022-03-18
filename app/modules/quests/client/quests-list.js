@@ -136,6 +136,8 @@ Template.questsList.onCreated(function () {
     }
 
     Session.set('console', true);
+    messagesModule.stopListeningMessagesChannel();
+
     Tracker.nonreactive(() => {
       this.questSubscribeHandler = this.subscribe('quests', () => {
         const userIds = Quests.find().fetch().flatMap(quest => [quest.createdBy, ...(quest.targets || [])]).filter(Boolean);
