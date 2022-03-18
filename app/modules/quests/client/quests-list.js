@@ -62,7 +62,7 @@ const quests = mode => {
     };
   }
 
-  return Quests.find(filters, { sort: { completed: 1, createdAt: -1 } }).fetch();
+  return Quests.find(filters, { sort: { createdAt: -1 } }).fetch();
 };
 
 const autoSelectQuest = template => {
