@@ -23,6 +23,9 @@
           <span>{{title q}}</span>
         </li>
       {{/each}}
+      {{#unless quests.length}}
+        <li class="js-quest empty">--- empty ---</li>
+      {{/unless}}
     </ul>
   </div>
 </template>

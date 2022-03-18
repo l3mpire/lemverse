@@ -100,6 +100,16 @@ $quest-toggle-state-color: #13C4A3;
       &.updated {
         border-left: 5px solid $quest-updated-color;
       }
+
+      &.empty {
+        text-align: center;
+        background-color: transparent;
+        cursor: default;
+
+        &:hover {
+          background-color: transparent;
+        }
+      }
     }
   }
 }
