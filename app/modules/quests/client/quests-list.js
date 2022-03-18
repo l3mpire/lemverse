@@ -98,6 +98,7 @@ const beforeSendingMessage = e => {
 
   const quest = Quests.findOne(channel);
   if (quest) return;
+  const name = document.querySelector('.js-quest-name')?.value;
 
   Quests.insert({
     _id: channel,
@@ -106,6 +107,7 @@ const beforeSendingMessage = e => {
     createdAt: new Date(),
     createdBy: Meteor.userId(),
     completed: false,
+    name,
   });
 };
 
