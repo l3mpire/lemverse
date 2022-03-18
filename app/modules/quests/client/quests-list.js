@@ -72,6 +72,10 @@ const autoSelectQuest = template => {
     const allQuests = quests(template.questListMode.get());
     const firstQuest = allQuests.length ? allQuests[0] : undefined;
     if (firstQuest) selectQuest(firstQuest._id, template);
+    else {
+      messagesModule.stopListeningMessagesChannel();
+      Session.set('selectedQuestId', undefined);
+    }
   }
 
   // auto switch quest-list mode
