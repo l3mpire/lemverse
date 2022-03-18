@@ -1,12 +1,16 @@
 const inputSelector = '.console .js-command-input';
 const inputFileSelector = '.console .console-file';
 
-const clearAndFocusInputField = () => {
+const clearInputFields = (focus = true) => {
   Tracker.afterFlush(() => {
     const field = document.querySelector(inputSelector);
-    if (!field) return;
-    field.value = '';
-    field.focus();
+    if (field) {
+      field.value = '';
+      if (focus) field.focus();
+    }
+
+    const fileField = document.querySelector(inputFileSelector);
+    if (fileField) fileField.value = '';
   });
 };
 
@@ -22,7 +26,7 @@ const openConsole = () => {
   if (Session.get('console')) return;
 
   messagesModule.autoSelectChannel();
-  clearAndFocusInputField();
+  clearInputFields(true);
   Session.set('console', true);
 };
 
@@ -36,7 +40,7 @@ const sendMessage = (channel, text) => {
 
   try {
     messageId = messagesModule.sendMessage(channel, text);
-    clearAndFocusInputField();
+    clearInputFields(true);
   } catch (e) { lp.notif.error(e); }
 
   return messageId;
