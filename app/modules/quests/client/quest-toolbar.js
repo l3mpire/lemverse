@@ -26,15 +26,16 @@ const joinQuest = () => {
 };
 
 const toggleQuestState = () => {
-  const questId = Session.get('selectedQuestId');
-  if (!questId) return;
+  const quest = activeQuest();
+  if (!quest) return;
 
-  const newQuestState = !Quests.findOne(questId).completed;
-  Quests.update(questId, { $set: { completed: newQuestState } }, error => {
+  const { completed } = quest;
+  const actions = completed ? { $unset: { completed: 1 } } : { $set: { completed: true } };
+  Quests.update(quest._id, actions, error => {
     if (error) { lp.notif.error(`Unable to update the quest`); return; }
 
-    const message = `${!newQuestState ? 'reopened' : 'closed'} the quest`;
-    messagesModule.sendMessage(questId, message);
+    const message = `has ${completed ? 'reopened' : 'completed'} the quest`;
+    messagesModule.sendMessage(quest._id, message);
   });
 };
 

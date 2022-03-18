@@ -43,14 +43,14 @@ const quests = mode => {
             { createdBy: Meteor.userId() },
           ],
         }, {
-          $or: [{ completed: { $exists: false } }, { completed: false }],
+          completed: { $exists: false },
         },
       ],
     };
   } else if (mode === modes.available) {
     filters = {
       targets: { $size: 0 },
-      $or: [{ completed: { $exists: false } }, { completed: false }],
+      completed: { $exists: false },
     };
   } else if (mode === modes.completed) {
     filters = {
@@ -106,7 +106,6 @@ const beforeSendingMessage = e => {
     targets: Session.get('quests').targets || [],
     createdAt: new Date(),
     createdBy: Meteor.userId(),
-    completed: false,
     name,
   });
 };
