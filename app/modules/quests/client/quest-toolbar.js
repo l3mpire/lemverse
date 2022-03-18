@@ -78,7 +78,7 @@ Template.questToolbar.onCreated(function () {
 
 Template.questToolbar.helpers({
   show() { return Session.get('selectedQuestId'); },
-  title() { return activeQuest()?.name || 'Messages'; },
+  title() { return activeQuest()?.name; },
   users() { return Template.instance().users.get(); },
   completed() { return activeQuest()?.completed; },
   createdBy(user) { return activeQuest()?.createdBy === user._id; },

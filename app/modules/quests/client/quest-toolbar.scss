@@ -46,6 +46,10 @@ $quest-uncompleted-color: #02a3ff;
     font-weight: bold;
     border: 0;
     padding-left: 15px;
+
+    &::placeholder {
+      color: white;
+    }
   }
 
   .actions {
