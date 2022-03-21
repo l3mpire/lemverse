@@ -61,16 +61,6 @@ const mainMenuItems = [
   { icon: '⚙️', shortcut: 52, label: 'Settings', action: () => { toggleModal('settingsMain'); closeMenu(); } },
 ];
 
-const otherUserMenuQuestEntry = {
-  icon: '📖',
-  label: 'New quest',
-  shortcut: 52,
-  action: () => {
-    const user = getMenuActiveUser();
-    if (user) createQuest(user);
-  },
-};
-
 const otherUserMenuItems = [
   {
     icon: '❤️',
@@ -110,6 +100,14 @@ const otherUserMenuItems = [
       userVoiceRecorderAbility.recordVoice(true, sendAudioChunksToNearUsers);
     },
     cancel: () => userVoiceRecorderAbility.recordVoice(false, sendAudioChunksToNearUsers),
+  }, {
+    icon: '📖',
+    label: 'New quest',
+    shortcut: 52,
+    action: () => {
+      const user = getMenuActiveUser();
+      if (user) createQuest(user);
+    },
   },
   { icon: '👤', label: 'Profile', shortcut: 51, action: () => Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId }) },
 ];
@@ -219,14 +217,8 @@ Template.radialMenu.onCreated(function () {
     Tracker.nonreactive(() => {
       if (!menu?.userId) { setReaction(); return; }
 
-      const user = Meteor.user();
-      const menuItems = menu.userId === user._id ? mainMenuItems : otherUserMenuItems;
-      const copiedMenuItems = [...menuItems];
-
-      // add one-to-one quests for users in beta
-      if (menuItems === otherUserMenuItems && (lp.isLemverseBeta('1to1Quests') || user.roles?.admin)) copiedMenuItems.splice(3, 0, otherUserMenuQuestEntry);
-
-      buildMenu(copiedMenuItems, this.items);
+      const menuItems = menu.userId === Meteor.userId() ? mainMenuItems : otherUserMenuItems;
+      buildMenu(menuItems, this.items);
     });
   });
 });
