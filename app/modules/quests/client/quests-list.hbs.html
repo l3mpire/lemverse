@@ -15,16 +15,16 @@
 
     <ul class="quests">
       {{#if newQuest}}
-        <li class="js-quest creating  {{#if isQuestSelected draftQuestId}}selected{{/if}}" data-quest-id="{{draftQuestId}}"><i>(draft) {{newQuest}}</i></li>
+        <li class="js-quest quest creating  {{#if isQuestSelected draftQuestId}}selected{{/if}}" data-quest-id="{{draftQuestId}}"><i>(draft) {{newQuest}}</i></li>
       {{/if}}
 
       {{#each q in quests}}
-        <li class="js-quest {{#if isQuestSelected q._id}}selected{{/if}} {{#if hasUpdates q._id}}updated{{/if}}" data-quest-id="{{q._id}}">
+        <li class="js-quest quest {{#if isQuestSelected q._id}}selected{{/if}} {{#if hasUpdates q._id}}updated{{/if}}" data-quest-id="{{q._id}}">
           <span>{{title q}}</span>
         </li>
       {{/each}}
       {{#unless quests.length}}
-        <li class="js-quest empty">--- empty ---</li>
+        <li class="quest empty">--- empty ---</li>
       {{/unless}}
     </ul>
   </div>
