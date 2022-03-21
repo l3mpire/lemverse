@@ -49,16 +49,16 @@ const sendMessage = (channel, text) => {
 };
 
 const onSubmit = () => {
-  const channel = Session.get('messagesChannel');
-  if (!channel) {
-    lp.notif.error('You have to be in a zone and/or near someone to send a message');
-    return;
-  }
-
   const { files } = document.querySelector(inputFileSelector);
   const text = document.querySelector(inputSelector).value;
   if (!text && !files.length) {
     closeAndFocusCanvas();
+    return;
+  }
+
+  const channel = Session.get('messagesChannel');
+  if (!channel) {
+    lp.notif.error('You have to be in a zone and/or near someone to send a message');
     return;
   }
 
