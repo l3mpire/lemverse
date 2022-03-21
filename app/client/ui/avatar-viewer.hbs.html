@@ -1,9 +1,12 @@
 <template name="avatarViewer">
   <div class="avatar-viewer js-show-user-profile">
-    {{#each getAppearance}}
-      <div class="character-body-part-container">
-        <img height="{{zoom height 2}}" width="{{zoom width 2}}" src="{{concat '/api/files/' fileId}}" alt="" class="character-body-part">
-      </div>
-    {{/each}}
+    <div class="avatar">
+      {{#each getAppearance}}
+        <div class="character-body-part-container">
+          <img height="{{zoom height 2}}" width="{{zoom width 2}}" src="{{concat '/api/files/' fileId}}" alt="" class="character-body-part">
+        </div>
+      {{/each}}
+    </div>
+    <span class="username">{{username}}</span>
   </div>
 </template>

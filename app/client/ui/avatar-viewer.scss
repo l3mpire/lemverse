@@ -6,23 +6,53 @@ $frame-height: 85px;
   position: relative;
   width: $frame-width;
   height: $frame-height;
-  overflow: hidden;
 
-  .character-body-part-container {
-    pointer-events: none;
+  .username {
+    transform: translateX(-50%);
     position: absolute;
-    margin: 0;
-    width: $frame-width;
-    height: $frame-height;
+    top: -35px;
+    left: 50%;
+    background-color: rgba(0, 0, 0, 1);
+    text-align: center;
+    padding: 5px;
+    color: white;
+    border-radius: 5px;
+    opacity: 0;
+    transition: opacity 0.2s linear;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  &:hover {
+    .username {
+      opacity: 1;
+    }
+  }
+
+  .avatar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     overflow: hidden;
 
-    .character-body-part {
-      display: block;
+    .character-body-part-container {
+      pointer-events: none;
       position: absolute;
-      top: -200px;
-      left: -865px;
       margin: 0;
-      image-rendering: pixelated;
+      width: $frame-width;
+      height: $frame-height;
+      overflow: hidden;
+
+      .character-body-part {
+        display: block;
+        position: absolute;
+        top: -200px;
+        left: -865px;
+        margin: 0;
+        image-rendering: pixelated;
+      }
     }
   }
 }

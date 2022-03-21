@@ -101,6 +101,7 @@ $quest-uncompleted-color: #02a3ff;
         flex-direction: row;
         padding: 0;
         margin: 0;
+        overflow: inherit;
 
         li {
           display: flex;
