@@ -21,8 +21,6 @@ Meteor.methods({
     const quest = Quests.findOne(questId);
     if (!quest) throw new Meteor.Error(404, 'Quest not found.');
 
-    if (quest.origin.includes('ent_')) return subscribedUsersToEntity(quest.origin);
-
     const userIds = quest.targets || [];
     userIds.push(quest.createdBy);
 

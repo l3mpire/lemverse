@@ -92,55 +92,27 @@ $quest-uncompleted-color: #02a3ff;
 
     .users {
       color: white;
-      border: 1px solid #C6D4FF;
-      padding: 5px 10px;
+      border: 1px solid #71748d;
       border-radius: 5px;
-      cursor: pointer;
-
-      &:hover {
-        border: 1px solid darken(#C6D4FF, 15%);
-
-        .user-list {
-          opacity: 1;
-        }
-      }
-
-      >span {
-        padding-right: 2px;
-      }
+      padding: 0 5px;
 
       .user-list {
-        opacity: 0;
-        position: absolute;
-        top: 30px;
-        right: 0;
-        width: 150px;
-        height: auto;
-        max-height: 200px;
-        overflow-y: auto;
-        background-color: darken($background-color, 5%);
-        border-radius: $border-radius;
-        z-index: 200;
-        padding: 5px;
-        transition: opacity 0.2s linear;
-        pointer-events: none;
+        display: flex;
+        flex-direction: row;
+        padding: 0;
+        margin: 0;
 
         li {
           display: flex;
           flex-direction: row;
           align-items: center;
-          border-radius: $border-radius;
-
-          &.created-by {
-            background-color: darken($background-color, 15%);
-          }
 
           .avatar-viewer {
-            width: 35px;
+            width: 30px;
             height: 35px;
 
             .character-body-part-container {
-              transform: scale(0.35) translate(-17px, -80px);
+              transform: scale(0.35) translate(-25px, -80px);
             }
           }
         }

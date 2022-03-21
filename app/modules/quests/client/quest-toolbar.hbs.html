@@ -14,11 +14,9 @@
           {{#each user in users}}
             <li class="{{#if createdBy user}}created-by{{/if}}">
               {{> avatarViewer user=user}}
-              <span>{{user.profile.name}}</span>
             </li>
           {{/each}}
         </ul>
-        <span>👤</span> {{users.length}}
       </div>
     </div>
   </div>
