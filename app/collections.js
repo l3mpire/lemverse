@@ -56,8 +56,13 @@ Items = lp.collectionRegister('items', 'itm', [], {
 
 Quests = lp.collectionRegister('quests', 'qst', [], {
   insert() { return true; },
-  update(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
-  remove(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
+  update(userId, quest, fields) {
+    if (quest.createdBy === userId) return true;
+    if (fields.length === 1 && ['completed', 'targets'].includes(fields[0])) return true;
+
+    return false;
+  },
+  remove(userId, quest) { return quest.createdBy === userId; },
 });
 
 Files = new FilesCollection({
