@@ -58,7 +58,11 @@ Quests = lp.collectionRegister('quests', 'qst', [], {
   insert() { return true; },
   update(userId, quest, fields) {
     if (quest.createdBy === userId) return true;
-    if (fields.length === 1 && ['completed', 'targets'].includes(fields[0])) return true;
+
+    if (fields.length === 1) {
+      if (fields[0] === 'completed') return quest.targets.includes(userId);
+      if (fields[0] === 'targets') return true;
+    }
 
     return false;
   },
