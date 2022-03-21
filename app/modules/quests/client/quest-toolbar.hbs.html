@@ -1,23 +1,26 @@
 <template name="questToolbar">
   <div class="quest-toolbar {{#if show}}show{{/if}} {{#if completed}}completed{{/if}}">
     <input type="text" class="js-quest-name" value="{{title}}" placeholder="Quest title (✎)">
-    <div class="actions">
-      {{#if showJoinButton}}
-        <button type="button" class="js-quest-join">Join</button>
-      {{else}}
-        <button type="button" class="js-toggle-state">Complete</button>
-        <button type="button" class="js-toggle-state closed">Reopen</button>
-      {{/if}}
+    
+    {{#if showActions}}
+      <div class="actions">
+        {{#if showJoinButton}}
+          <button type="button" class="js-quest-join">Join</button>
+        {{else}}
+          <button type="button" class="js-toggle-state">Complete</button>
+          <button type="button" class="js-toggle-state closed">Reopen</button>
+        {{/if}}
 
-      <div class="users">
-        <ul class="user-list">
-          {{#each user in users}}
-            <li class="{{#if createdBy user}}created-by{{/if}}">
-              {{> avatarViewer user=user}}
-            </li>
-          {{/each}}
-        </ul>
+        <div class="users">
+          <ul class="user-list">
+            {{#each user in users}}
+              <li class="{{#if createdBy user}}created-by{{/if}}">
+                {{> avatarViewer user=user}}
+              </li>
+            {{/each}}
+          </ul>
+        </div>
       </div>
-    </div>
+    {{/if}}
   </div>
 </template>

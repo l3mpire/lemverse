@@ -81,6 +81,7 @@ Template.questToolbar.helpers({
   show() { return Session.get('selectedQuestId'); },
   title() { return activeQuest()?.name; },
   users() { return Template.instance().users.get(); },
+  showActions() { return !!activeQuest(); },
   completed() { return activeQuest()?.completed; },
   createdBy(user) { return activeQuest()?.createdBy === user._id; },
   showJoinButton() {
