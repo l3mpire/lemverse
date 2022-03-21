@@ -15,6 +15,7 @@ eventTypes = Object.freeze({
   onPopInEvent: 'pop-in-event',
   beforeSendingMessage: 'beforeSendingMessage',
   afterSendingMessage: 'afterSendingMessage',
+  consoleClosed: 'consoleClosed',
 });
 
 toggleUserProperty = (propertyName, value) => {

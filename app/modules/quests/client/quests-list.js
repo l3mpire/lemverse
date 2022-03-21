@@ -17,11 +17,7 @@ const switchMode = (template, previous = false) => {
   template.questListMode.set(modeArray[newModeIndex]);
 };
 
-const closeInterface = () => Session.set('quests', undefined);
-
-const onKeyPressed = e => {
-  if (e.key === 'Escape') closeInterface();
-};
+const onConsoleClosed = () => Session.set('quests', undefined);
 
 const selectQuest = questId => {
   Session.set('selectedQuestId', questId);
@@ -159,13 +155,13 @@ Template.questsList.onCreated(function () {
     });
   });
 
-  document.addEventListener('keydown', onKeyPressed);
+  window.addEventListener(eventTypes.consoleClosed, onConsoleClosed);
   window.addEventListener(eventTypes.beforeSendingMessage, beforeSendingMessage);
 });
 
 Template.questsList.onDestroyed(() => {
   Session.set('quests', undefined);
-  document.removeEventListener('keydown', onKeyPressed);
+  window.removeEventListener(eventTypes.consoleClosed, onConsoleClosed);
   window.removeEventListener(eventTypes.beforeSendingMessage, beforeSendingMessage);
 });
 

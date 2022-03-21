@@ -16,6 +16,8 @@ const clearInputFields = (focus = true) => {
 
 const closeAndFocusCanvas = () => {
   Session.set('console', false);
+  window.dispatchEvent(new CustomEvent(eventTypes.consoleClosed));
+
   document.querySelector(inputSelector)?.blur();
   document.querySelector(inputFileSelector).value = '';
   hotkeys.setScope(scopes.player);
