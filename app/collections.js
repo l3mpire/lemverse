@@ -26,7 +26,7 @@ Zones = lp.collectionRegister('zones', 'zon', [], {
 
 Levels = lp.collectionRegister('levels', 'lvl', [], {
   insert(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
-  update(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
+  update(userId) { return isEditionAllowed(userId); },
   remove(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
 });
 
