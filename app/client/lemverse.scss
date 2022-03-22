@@ -181,9 +181,11 @@ button:focus {
     background-size: contain;
     transition: opacity 0.25s linear;
     pointer-events: none;
+    opacity: 0;
 
     &.active {
       pointer-events: all;
+      opacity: 1;
     }
 
     video {
@@ -229,14 +231,6 @@ button:focus {
         }
       }
     }
-
-    &.has-radial-menu {
-      opacity: 0;
-
-      &.active {
-        opacity: 1;
-      }
-    }
   }
 
   .js-stream-screen-me {
@@ -262,8 +256,8 @@ button:focus {
 
 button.js-notifications {
   position: absolute;
-  right: 200px;
-  bottom: 0;
+  bottom: 20px;
+  left: 20px;
   padding: 4px 8px !important;
   font-size: 22px;
   display: none;
@@ -272,11 +266,6 @@ button.js-notifications {
 
   &.visible {
     display: block;
-  }
-
-  &.has-radial-menu {
-    bottom: 20px;
-    left: 20px;
   }
 
   &:after {

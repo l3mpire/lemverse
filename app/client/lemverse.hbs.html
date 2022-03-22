@@ -14,7 +14,7 @@
         </div>
         <div class="user-panel {{#unless isLoading}}visible{{/unless}}">
           <div class="js-stream-screen-me"></div>
-          <div class="js-stream-me has-radial-menu">
+          <div class="js-stream-me">
             <video type="video/mp4" width="160" height="120" autoplay muted></video>
             <div class="buttons">
               <button class="button audio {{#if currentUser.profile.shareAudio}}active{{/if}}" type="button">🎤</button>
@@ -24,7 +24,7 @@
             </div>
           </div>
         </div>
-        <button type="button" class="button js-notifications {{#if pendingNotificationsCount}}visible{{/if}} has-radial-menu" data-count="{{ pendingNotificationsCount }}">🔔</button>
+        <button type="button" class="button js-notifications {{#if pendingNotificationsCount}}visible{{/if}}" data-count="{{ pendingNotificationsCount }}">🔔</button>
       {{/if}}
       <div id="game" class="{{#if neq (Session 'editor') 0}}edit{{/if}} {{#if isLoading}}loading{{/if}}"></div>
     </div>
