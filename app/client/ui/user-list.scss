@@ -1,13 +1,10 @@
-.user-list {
-  overflow-y: auto;
-  height: 100%;
-}
+@import "../_variables";
 
-.user-list,
-.zone-list {
+.user-list {
   padding: 10px 0;
   user-select: none;
-
+  overflow-y: auto;
+  height: 100%;
 
   .list-title {
     font-size: 1.25rem;
@@ -15,25 +12,64 @@
     padding: 4px 5px;
   }
 
-  .user,
-  .zone {
+  .user {
     margin: 2px 10px;
-    padding: 4px 10px;
+    padding: 4px 5px 4px 5px;
     border-radius: 5px;
     line-height: 26px;
-    display: flex;
+    display: grid;
+    grid-template-columns: 250px minmax(200px, auto) minmax(70px, auto) minmax(70px, auto);
     align-items: center;
-    justify-content: space-between;
 
-    .summon {
-      cursor: pointer;
-      border: none;
-      padding: 0;
-      margin: 0;
-      font-size: 1rem;
+    &:hover {
+      background-color: darken($main-color, 5%);
+    }
+
+    .main {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      .js-profile {
+        cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        max-width: 215px;
+      }
+
+      .avatar-viewer {
+        width: 30px;
+        height: 35px;
+        margin-right: 5px;
+
+        .character-body-part-container {
+          transform: scale(0.4) translate(-24px, -70px);
+        }
+
+        .avatar:before {
+          bottom: 4px;
+          right: 4px;
+        }
+      }
+    }
+
+    .zone {
+      max-width: 200px;
+      font-size: 0.9rem;
+      color: darken($main-text-color, 10%);
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .actions,
+    .infos {
+      text-align: center;
     }
 
     .infos {
+      width: 100px;
+
       .js-profile:hover {
         cursor: pointer;
         text-decoration: underline;
@@ -53,10 +89,5 @@
         }
       }
     }
-  }
-
-  .infos:hover,
-  .summon:hover {
-    background-color: #eee;
   }
 }

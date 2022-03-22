@@ -3,19 +3,22 @@
     <div class="user-list">
       {{#each users}}
         <div class="user">
-          <div class="infos">
+          <div class="main">
+            {{> avatarViewer user=this showStatus=true}}
             <span class="js-profile">{{profile.name}}</span>
-            {{#if profile.zoneName}}
-              ({{profile.zoneName}})
-            {{/if}}
+          </div>
+          <div class="zone">
+            <span>{{#if profile.zoneName}}{{profile.zoneName}}{{else}}-{{/if}}</span>
+          </div>
+          <div class="infos">
             {{#if profile.shareAudio}}
-              🎤
+              <span>🎤</span>
             {{/if}}
             {{#if profile.shareVideo}}
-              🎥
+              <span>🎥</span>
             {{/if}}
             {{#if profile.shareScreen}}
-              📺
+              <span>📺</span>
             {{/if}}
             {{#if roles.admin}}
               <span title="Is admin">👑</span>
