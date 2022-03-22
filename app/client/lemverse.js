@@ -103,7 +103,7 @@ Template.lemverse.onCreated(function () {
   this.subscribe('notifications', () => {
     this.handleObserveNotifications = Notifications.find({ createdAt: { $gte: new Date() } }).observe({
       added(notification) {
-        if (notification.questId) sounds.play('trumpet-fanfare.mp3', 0.7);
+        if (notification.questId) sounds.play('trumpet-fanfare.mp3', 0.25);
         notify(notification.questId ? `📖 A quest has been updated` : `📢 You've received a new message`);
       },
     });
