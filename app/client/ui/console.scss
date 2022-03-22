@@ -1,6 +1,6 @@
-$form-background-color: #2b2d3df2;
+@import "../_variables";
+
 $form-text-color: white;
-$button-background-color: #02a3ff;
 $button-text-color: white;
 
 .console {
@@ -23,9 +23,9 @@ $button-text-color: white;
   form {
     display: flex;
     flex-direction: row;
-    border-radius: 8px;
-    background-color: $form-background-color;
-    box-shadow: 0px 0 15px $form-background-color;
+    border-radius: $radius;
+    background-color: rgba($main-color, 0.95);
+    box-shadow: 0px 0 15px $main-color;
     width: 100%;
     overflow: hidden;
 
@@ -46,13 +46,13 @@ $button-text-color: white;
     }
 
     .js-button-add-file {
-      background-color: #2b2d3de6;
+      background-color: rgba($main-color, 0.95);
       color: $button-text-color;
       width: 60px;
       cursor: pointer;
 
       &:hover {
-        background-color: darken(#2b2d3de6, 5%);
+        background-color: darken(rgba($main-color, 0.95), 5%);
       }
     }
 
@@ -70,26 +70,26 @@ $button-text-color: white;
       cursor: pointer;
       display: flex;
       align-items: center;
-      background-color: #2b2d3de6;
+      background-color: rgba($main-color, 0.95);
       color: $button-text-color;
       font-size: 13pt;
       width: 75px;
       justify-content: center;
 
       &:hover {
-        background-color: darken(#2b2d3de6, 5%);
+        background-color: darken(rgba($main-color, 0.95), 5%);
       }
     }
 
     .js-button-submit {
       cursor: pointer;
-      background-color: $button-background-color;
+      background-color: $light-blue;
       color: $button-text-color;
       font-size: 13pt;
       width: 80px;
 
       &:hover {
-        background-color: darken($button-background-color, 5%);
+        background-color: darken($light-blue, 5%);
       }
     }
   }

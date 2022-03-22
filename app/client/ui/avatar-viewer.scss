@@ -1,7 +1,7 @@
+@import "../_variables";
+
 $frame-width: 47px;
 $frame-height: 85px;
-$offline-indicator-color: #E58273;
-$online-indicator-color: #13C4A3;
 
 .avatar-viewer {
   cursor: pointer;
@@ -18,7 +18,7 @@ $online-indicator-color: #13C4A3;
     text-align: center;
     padding: 5px;
     color: white;
-    border-radius: 5px;
+    border-radius: $radius;
     opacity: 0;
     transition: opacity 0.2s linear;
     z-index: 10;
@@ -51,7 +51,7 @@ $online-indicator-color: #13C4A3;
       border-radius: 50%;
       bottom: 0;
       right: 0;
-      background-color: $offline-indicator-color;
+      background-color: $light-red;
       width: 8px;
       height: 8px;
       position: absolute;
@@ -59,7 +59,7 @@ $online-indicator-color: #13C4A3;
     }
 
     &.online:before {
-      background-color: $online-indicator-color;
+      background-color: $light-green;
     }
 
     .character-body-part-container {

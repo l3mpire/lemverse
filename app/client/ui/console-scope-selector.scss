@@ -1,4 +1,4 @@
-$background-color: #2b2d3de6;
+@import "../variables";
 
 .console-scope-selector {
   button.js-scope-selector {
@@ -7,12 +7,12 @@ $background-color: #2b2d3de6;
     height: 100%;
     padding: 0;
     padding: 0 10px 0 15px;
-    background-color: $background-color;
+    background-color: rgba($main-color, 0.95);
     font-size: 21px;
 
     &:hover:enabled {
       cursor: pointer;
-      background-color: lighten($background-color, 15%);
+      background-color: lighten(rgba($main-color, 0.95), 15%);
     }
   }
 }

@@ -1,7 +1,4 @@
-$background-color: #2c2e3e;
-$border-radius: 8px;
-$quest-join-button-color: #13C4A3;
-$quest-uncompleted-color: #02a3ff;
+@import "../../../client/variables";
 
 .quest-toolbar {
   position: absolute;
@@ -9,8 +6,8 @@ $quest-uncompleted-color: #02a3ff;
   opacity: 0;
   transition: opacity 0.25s linear;
   pointer-events: none;
-  background-color: $background-color;
-  border-radius: $border-radius $border-radius 0 0;
+  background-color: $main-color;
+  border-radius: $radius $radius 0 0;
   height: 52px;
 
   &.show {
@@ -22,11 +19,11 @@ $quest-uncompleted-color: #02a3ff;
     .actions {
       button.js-toggle-state {
         display: none;
-        background-color: $quest-uncompleted-color;
+        background-color: $light-blue;
         color: white;
 
         &:hover {
-          background-color: darken($quest-uncompleted-color, 20%);
+          background-color: darken($light-blue, 20%);
         }
 
         &.closed {
@@ -60,18 +57,18 @@ $quest-uncompleted-color: #02a3ff;
     gap: 10px;
 
     button {
-      border-radius: $border-radius;
+      border-radius: $radius;
       border: 0;
       padding: 0 10px;
       cursor: pointer;
 
       &.js-toggle-state {
         display: block;
-        background-color: $quest-join-button-color;
+        background-color: $light-blue;
         color: white;
 
         &:hover {
-          background-color: darken($quest-join-button-color, 10%);
+          background-color: darken($light-blue, 10%);
         }
 
         &.closed {
@@ -80,12 +77,12 @@ $quest-uncompleted-color: #02a3ff;
       }
 
       &.js-quest-join {
-        background-color: $quest-join-button-color;
+        background-color: $light-green;
         color: white;
         font-weight: bold;
 
         &:hover {
-          background-color: darken($quest-join-button-color, 10%);
+          background-color: darken($light-green, 10%);
         }
       }
     }
@@ -93,7 +90,7 @@ $quest-uncompleted-color: #02a3ff;
     .users {
       color: white;
       border: 1px solid #71748d;
-      border-radius: 5px;
+      border-radius: $radius;
       padding: 0 5px;
 
       .user-list {

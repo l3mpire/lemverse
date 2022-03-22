@@ -256,16 +256,16 @@ button:focus {
 
 button.js-notifications {
   position: absolute;
-  bottom: 25px;
-  left: 25px;
+  bottom: 30px;
+  left: 30px;
   padding: 4px 8px !important;
   font-size: 1.8rem;
   display: none;
   z-index: 101;
-  width: 50px;
-  background-color: #2b2d3d;
+  width: 65px;
+  background-color: $main-color;
   border: 0;
-  height: 50px;
+  height: 65px;
   animation: pulse 1s infinite;
 
   &.visible {
@@ -273,18 +273,18 @@ button.js-notifications {
   }
 
   &:hover {
-    background-color: lighten(#2b2d3d, 15%);
+    background-color: lighten($main-color, 15%);
   }
 
   &:after {
     content: attr(data-count);
     color: white;
     position: absolute;
-    bottom: 0;
-    right: 3px;
+    bottom: 7px;
+    right: 5px;
     font-weight: bold;
-    font-size: 16px;
-    background-color: red;
+    font-size: 0.9rem;
+    background-color: darken($light-red, 10%);
     border-radius: 10px;
     width: 20px;
     height: 20px;

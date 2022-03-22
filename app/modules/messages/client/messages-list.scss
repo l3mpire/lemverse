@@ -1,6 +1,4 @@
-$background-color: #2b2d3df2;
-$border-radius: 8px;
-$separation-color: #E58273;
+@import "../../../client/variables";
 
 .messages-module {
   display: flex;
@@ -10,8 +8,8 @@ $separation-color: #E58273;
   transition: opacity 0.25s linear;
   overflow: hidden;
   pointer-events: none;
-  background-color: $background-color;
-  border-radius: $border-radius;
+  background-color: rgba($main-color, 0.95);
+  border-radius: $radius;
 
   &.show {
     opacity: 1;
@@ -22,7 +20,7 @@ $separation-color: #E58273;
     margin: 0;
     padding: 15px 0;
     text-align: center;
-    background-color: #2c2e3e;
+    background-color: $main-color;
     color: white;
     height: 52px;
   }
@@ -46,11 +44,11 @@ $separation-color: #E58273;
         height: 1px;
         width: 100%;
         transform: translateY(-50%);
-        background-color: $separation-color;
+        background-color: $light-red;
       }
 
       .text {
-        color: $separation-color;
+        color: $light-red;
         text-align: center;
         background-color: #343645;
         z-index: 10;
@@ -112,7 +110,7 @@ $separation-color: #E58273;
         transition: opacity 0.25s;
 
         .js-message-remove {
-          background-color: #E58273;
+          background-color: $light-red;
           color: white;
           width: 30px;
           height: 30px;
@@ -123,7 +121,7 @@ $separation-color: #E58273;
           font-weight: bold;
 
           &:hover {
-            background-color: darken(#E58273, 10%);
+            background-color: darken($light-red, 10%);
           }
         }
       }
@@ -131,11 +129,11 @@ $separation-color: #E58273;
       .avatar-viewer {
         width: 70px;
         height: 70px;
-        border-radius: 5px;
-        background-color: #2c2e3e;
+        border-radius: $radius;
+        background-color: $main-color;
 
         &:hover {
-          background-color: lighten(#2c2e3e, 20%);
+          background-color: lighten($main-color, 20%);
         }
 
         .character-body-part-container {
