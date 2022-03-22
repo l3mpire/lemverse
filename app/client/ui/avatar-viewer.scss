@@ -1,5 +1,7 @@
 $frame-width: 47px;
 $frame-height: 85px;
+$offline-indicator-color: #E58273;
+$online-indicator-color: #13C4A3;
 
 .avatar-viewer {
   cursor: pointer;
@@ -23,6 +25,12 @@ $frame-height: 85px;
     pointer-events: none;
   }
 
+  &.show-status {
+    .avatar:before {
+      display: block;
+    }
+  }
+
   &:hover {
     .username {
       opacity: 1;
@@ -36,6 +44,23 @@ $frame-height: 85px;
     right: 0;
     bottom: 0;
     overflow: hidden;
+
+    &:before {
+      display: none;
+      content: '';
+      border-radius: 50%;
+      bottom: 0;
+      right: 0;
+      background-color: $offline-indicator-color;
+      width: 8px;
+      height: 8px;
+      position: absolute;
+      z-index: 5;
+    }
+
+    &.online:before {
+      background-color: $online-indicator-color;
+    }
 
     .character-body-part-container {
       pointer-events: none;

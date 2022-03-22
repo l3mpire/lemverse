@@ -15,7 +15,7 @@
           <ul class="user-list">
             {{#each user in users}}
               <li class="{{#if createdBy user}}created-by{{/if}}">
-                {{> avatarViewer user=user}}
+                {{> avatarViewer user=user showStatus=true}}
               </li>
             {{/each}}
           </ul>

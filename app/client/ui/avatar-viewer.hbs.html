@@ -1,6 +1,6 @@
 <template name="avatarViewer">
-  <div class="avatar-viewer js-show-user-profile">
-    <div class="avatar">
+  <div class="avatar-viewer js-show-user-profile {{#if showStatus}}show-status{{/if}}">
+    <div class="avatar {{#if online}}online{{/if}}">
       {{#each getAppearance}}
         <div class="character-body-part-container">
           <img height="{{zoom height 2}}" width="{{zoom width 2}}" src="{{concat '/api/files/' fileId}}" alt="" class="character-body-part">
