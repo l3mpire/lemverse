@@ -4,19 +4,6 @@ const modes = Object.freeze({
   completed: 'completed',
 });
 
-const switchMode = (template, previous = false) => {
-  const modeArray = Object.keys(modes);
-  const modeCount = modeArray.length;
-  if (modeCount === 0) return;
-
-  let newModeIndex = modeArray.findIndex(mode => mode === template.questListMode.get());
-  newModeIndex += previous ? -1 : 1;
-  if (!previous && newModeIndex >= modeCount) newModeIndex = 0;
-  else if (previous && newModeIndex < 0) newModeIndex = modeCount - 1;
-
-  template.questListMode.set(modeArray[newModeIndex]);
-};
-
 const onConsoleClosed = () => Session.set('quests', undefined);
 
 const selectQuest = questId => {
@@ -92,6 +79,14 @@ const draftQuestId = () => {
   return questId;
 };
 
+const questUnreadAmount = mode => {
+  const modeQuests = quests(mode);
+  if (!modeQuests.length) return 0;
+
+  const questIds = modeQuests.map(quest => quest._id);
+  return Notifications.find({ questId: { $in: questIds }, read: { $exists: false } }).count();
+};
+
 const beforeSendingMessage = e => {
   const { channel } = e.detail;
   if (!channel.includes('qst_')) return;
@@ -122,7 +117,9 @@ Template.questsList.events({
     e.preventDefault();
     e.stopPropagation();
     Session.set('quests', { origin: 'menu' });
-    switchMode(template, e.target.classList.contains('previous-mode'));
+
+    const { mode } = e.target.dataset;
+    template.questListMode.set(modes[mode] || modes.mine);
     autoSelectQuest(template);
   },
 });
@@ -168,6 +165,7 @@ Template.questsList.onDestroyed(() => {
 Template.questsList.helpers({
   show() { return Session.get('quests'); },
   quests() { return quests(Template.instance().questListMode.get()); },
+  unreadAmount(mode) { return questUnreadAmount(mode); },
   title(quest) {
     if (quest.name) return quest.name;
 

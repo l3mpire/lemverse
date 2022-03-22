@@ -1,17 +1,11 @@
 <template name="questsList">
   <div class="quests-list {{#if show}}show{{/if}}">
-
-    {{#if questListModeIsActive 'mine'}}
-      <h2 class="title">My quests</h2>
-      <button type="button" class="js-quest-switch-mode next-mode">➜</button>
-    {{else if questListModeIsActive 'available'}}
-      <button type="button" class="js-quest-switch-mode previous-mode">➜</button>
-      <h2 class="title">Available quests</h2>
-      <button type="button" class="js-quest-switch-mode next-mode">➜</button>
-    {{else}}
-      <button type="button" class="js-quest-switch-mode previous-mode">➜</button>
-      <h2 class="title">Completed quests</h2>
-    {{/if}}
+  
+    <div class="quest-mode-selectors">
+      <button type="button" class="js-quest-switch-mode" data-mode="mine" data-unread="{{unreadAmount "mine"}}">📜</button>
+      <button type="button" class="js-quest-switch-mode" data-mode="available" data-unread="{{unreadAmount "available"}}">🗂</button>
+      <button type="button" class="js-quest-switch-mode" data-mode="completed">🗳</button>
+    </div>
 
     <ul class="quests">
       {{#if newQuest}}
@@ -23,6 +17,7 @@
           <span>{{title q}}</span>
         </li>
       {{/each}}
+
       {{#unless quests.length}}
         <li class="quest empty">--- empty ---</li>
       {{/unless}}
