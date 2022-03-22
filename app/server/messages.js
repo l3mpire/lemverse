@@ -19,12 +19,16 @@ const notifyQuestSubscribersAboutNewMessage = (questId, message) => {
   // remove all previous notifications for this quest ('upsert' can't be used in a bulk operation and with a custom id)
   Notifications.remove({ questId, userId: { $ne: message.createdBy } });
 
+  const questMessageCount = Messages.find({ channel: questId }).count();
+  const type = questMessageCount > 1 ? 'quest-updated' : 'quest-new';
+
   const notifications = usersToNotify.map(userId => ({
     _id: Notifications.id(),
     questId,
     userId,
     createdAt: new Date(),
     createdBy: message.createdBy,
+    type,
   }));
 
   Notifications.rawCollection().insertMany(notifications);
