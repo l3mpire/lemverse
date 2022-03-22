@@ -60,7 +60,7 @@ Quests = lp.collectionRegister('quests', 'qst', [], {
     if (quest.createdBy === userId) return true;
 
     if (fields.length === 1) {
-      if (fields[0] === 'completed') return quest.targets.includes(userId);
+      if (['completed', 'name'].includes(fields[0])) return quest.targets.includes(userId);
       if (fields[0] === 'targets') return true;
     }
 
