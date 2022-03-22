@@ -8,15 +8,17 @@
 .settingsCharacter {
   position: relative;
   display: flex;
-  height: 300px;
-  margin: 2rem auto;
+  height: 100%;
   width: 100%;
+  margin: 0;
+  padding-right: 0;
 
   .renderCharacter {
     width: 75px;
     min-width: 75px;
     display: flex;
     align-items: center;
+    margin-left: 25px;
   }
 
   .customize {
@@ -53,17 +55,17 @@
 
     .customize-selection {
       flex-grow: 1;
-      background-color: $lem-color-4;
-      border: 2px solid $lem-color-9;
+      background-color: lighten($main-color, 10%);
       height: 100%;
       display: flex;
       flex-wrap: wrap;
-      gap: 0.3rem;
+      gap: 0.5rem;
       overflow: scroll;
+      padding: 10px;
 
       .characters-choices {
-        border: 2px solid white;
-        border-radius: 0.5rem;
+        border-radius: $radius;
+        background-color: $main-color;
         cursor: pointer;
 
         margin: 0;
@@ -72,11 +74,15 @@
         height: 120px;
         overflow: hidden;
 
-        &.selected {
-          border-color: $lem-color-6;
+        &:hover {
+          background-color: lighten($main-color, 5%);
         }
 
-        .spriteCharacter {
+        &.selected {
+          background-color: $light-yellow;
+        }
+
+        .sprite-character {
           image-rendering: pixelated;
           margin: 0;
           position: absolute;

@@ -14,36 +14,15 @@
       margin-bottom: 15px;
 
       label {
-        display: block;
-        font-size: 10pt;
+        padding-top: 0;
       }
     }
   }
 
   &.edition-allowed {
-
-    input,
-    textarea {
-      appearance: none;
-      display: inline-block;
-      min-height: 36px;
-      padding: 8px 12px;
-      width: 100%;
-      margin-top: 5px;
-      background: #fff;
-      border: 1px solid #d9d9d9;
-      border-top: 1px solid #c0c0c0;
-      box-sizing: border-box;
-      border-radius: 1px;
-      font-size: 15px;
-      color: #404040;
-      outline: none;
-      max-width: 100%;
-      min-width: 100%;
-    }
-
     textarea {
       min-height: 100px;
+      min-width: 100%;
     }
 
     .website {
@@ -60,6 +39,9 @@
       pointer-events: none;
       resize: none;
       width: 100%;
+      color: #cdcbd2;
+      padding: 0;
+      margin: 0;
     }
 
     textarea {

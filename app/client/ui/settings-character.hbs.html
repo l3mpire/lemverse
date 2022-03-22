@@ -1,6 +1,6 @@
 <template name="settingsCharacter">
   {{#modal title="Character"}}
-    <div class="settings container">
+    <div class="settings">
       <div class="settingsCharacter">
         <div class="renderCharacter">
           {{> avatarViewer user=user}}
@@ -27,12 +27,12 @@
           <div class="customize-selection">
             {{#if or (eq (Session 'settings-character-category') "hair") (eq (Session 'settings-character-category') "accessory")}}
               <div class="characters-choices {{#if isBodyPart this._id}}selected{{/if}}">
-                <div class="js-new-part spriteCharacter empty-choices" data-id="null"></div>
+                <div class="js-new-part sprite-character empty-choices" data-id="null"></div>
               </div>
             {{/if}}
             {{#each getAllImages}}
               <div class="characters-choices {{#if isBodyPart this._id}}selected{{/if}}">
-                <img class="js-new-part spriteCharacter" height="{{zoom height 2}}" width="{{zoom width 2}}" data-id="{{this._id}}" src="{{concat '/api/files/' this.fileId}}" />
+                <img class="js-new-part sprite-character" height="{{zoom height 2}}" width="{{zoom width 2}}" data-id="{{this._id}}" src="{{concat '/api/files/' this.fileId}}" />
               </div>
             {{/each}}
           </div>

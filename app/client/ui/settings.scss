@@ -1,3 +1,5 @@
+@import "../_variables";
+
 div.settings {
   display: flex;
   flex-direction: column;
@@ -22,10 +24,11 @@ div.settings {
     flex-direction: row;
     flex-wrap: wrap;
     padding-bottom: 25px;
+    background-color: lighten($main-color, 5%);
 
     >* {
       &:last-child {
-        margin-top: 17px;
+        margin-top: 15px;
         width: 100%;
       }
     }
@@ -69,6 +72,7 @@ div.settings {
 
     .link {
       padding-bottom: 10px;
+      font-size: 1rem;
     }
   }
 }

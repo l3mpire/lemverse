@@ -1,3 +1,5 @@
+@import "../_variables";
+
 .button {
   box-sizing: border-box;
   cursor: pointer;
@@ -5,10 +7,9 @@
   line-height: normal;
   user-select: none;
   vertical-align: middle;
-  background-color: #b5bed0;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  color: #4e576a;
+  background-color: darken($light-blue, 15%);
+  border: 0;
+  color: white;
   font-size: 100%;
   padding: .5em 1em;
   text-decoration: none;
@@ -17,7 +18,7 @@
   transition: all 0.25s;
 
   &:hover {
-    background-color: darken(hsl(220, 22%, 76%), 15%);
+    background-color: darken($light-blue, 5%);
     color: #fff;
   }
 }
@@ -27,6 +28,8 @@
   display: block;
   padding-top: 15px;
   font-size: 10pt;
+  color: #c7c7cc;
+  cursor: pointer;
 }
 
 .input,
@@ -40,14 +43,17 @@
   padding: 8px 12px;
   width: 100%;
   margin-top: 5px;
-  background: #fff;
-  border: 1px solid #d9d9d9;
-  border-top: 1px solid #c0c0c0;
+  background: #2b2731;
+  border: 1px solid transparent;
   box-sizing: border-box;
-  border-radius: 1px;
-  font-size: 15px;
-  color: #404040;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  color: #b1afb8;
   outline: none;
+
+  &:focus {
+    border: 1px solid $light-blue;
+  }
 
   &[type="range"] {
     appearance: revert;
@@ -59,10 +65,11 @@
   background-color: transparent;
   border: 0;
   text-decoration: underline;
-  color: hsl(209, 100%, 45%);
+  color: $light-blue;
 
   &:hover {
     background-color: transparent;
-    color: hsl(209, 100%, 25%)
+    color: lighten($light-blue, 10%);
+    cursor: pointer;
   }
 }

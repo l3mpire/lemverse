@@ -1,6 +1,4 @@
-$background-color: #eaedf3;
-$background-color-lighter: #f4f7fb;
-$text-color: #4f4f4f;
+@import "../_variables";
 
 .modal-container {
   pointer-events: none;
@@ -12,7 +10,7 @@ $text-color: #4f4f4f;
     right: 0;
     bottom: 0;
     z-index: 200;
-    background-color: black;
+    background-color: $main-color;
     opacity: 0;
     transition: opacity 0.15s linear;
   }
@@ -24,11 +22,12 @@ $text-color: #4f4f4f;
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 201;
-      width: 550px;
+      width: 650px;
       height: 500px;
-      background-color: $background-color;
+      background-color: rgba($main-color, 0.95);
+      color: white;
       border: 0;
-      border-radius: 10px;
+      border-radius: $radius;
       margin: 0;
       overflow: hidden;
       padding: 0;
@@ -42,24 +41,24 @@ $text-color: #4f4f4f;
         overflow: hidden;
 
         .container {
-          padding-left: 20px;
-          padding-right: 20px;
+          padding-left: 15px;
+          padding-right: 15px;
         }
       }
 
       .js-modal-close {
         position: absolute;
         right: 10px;
-        top: 10px;
+        top: 13px;
         appearance: none;
         background: none;
         border: 0;
         cursor: pointer;
-        font-size: 1.5rem;
+        font-size: 1.2rem;
         font-weight: 700;
         line-height: 1;
         opacity: 0.8;
-        color: #4e576a;
+        color: white;
 
         &:hover {
           opacity: 1;
@@ -67,21 +66,17 @@ $text-color: #4f4f4f;
       }
 
       .modal-title {
-        color: #4e576a;
+        color: #cec9d5;
         text-align: left;
-        font-size: 17pt;
+        font-size: 1.15rem;
         margin: 0;
-        padding: 12px 25px;
-        background-color: #d0d6e1;
+        padding: 12px 15px;
+        background-color: $main-color;
         font-weight: bold;
       }
 
-      *.background-lighter {
-        background-color: $background-color-lighter;
-      }
-
       .modal-content {
-        color: $text-color;
+        color: #c7c7cc;
         overflow-y: auto;
         height: 100%;
       }

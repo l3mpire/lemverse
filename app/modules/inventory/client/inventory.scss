@@ -1,3 +1,5 @@
+@import "../../../client/variables";
+
 $inventory-item-size: 80px;
 
 .inventory {
@@ -20,7 +22,8 @@ $inventory-item-size: 80px;
       height: $inventory-item-size;
       width: $inventory-item-size;
       margin: 5px;
-      background-color: #d0d6e1;
+      background-color: darken($main-color, 3%);
+      border: 2px solid lighten($main-color, 10%);
       color: #4e5869;
       border-radius: 8px;
       overflow: hidden;
@@ -28,13 +31,15 @@ $inventory-item-size: 80px;
       align-items: center;
 
       &:hover {
-        background-color: darken(#d0d6e1, 10%);
+        background-color: lighten($main-color, 10%);
+        border: 2px solid darken($main-color, 3%);
       }
 
       .thumbnail {
         max-width: 90%;
         width: 90%;
         height: 90%;
+        object-fit: scale-down;
       }
 
       .amount {
@@ -51,14 +56,14 @@ $inventory-item-size: 80px;
   .inventory-item-panel {
     position: absolute;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     height: 35px;
     margin: 0;
     padding: 10px;
     bottom: 0;
     right: 0;
     left: 0;
-    background-color: #d0d6e1;
+    background-color: $main-color;
     transition: height 0.15s linear;
 
     &.show {
@@ -71,6 +76,7 @@ $inventory-item-size: 80px;
       width: 100%;
       text-align: center;
       font-size: 0.95rem;
+      color: #cec9d5;
     }
 
     >div:first-child {
@@ -84,6 +90,7 @@ $inventory-item-size: 80px;
       img {
         width: 100%;
         height: 100%;
+        object-fit: scale-down;
       }
 
       .amount {
@@ -99,7 +106,8 @@ $inventory-item-size: 80px;
     .item-description {
       display: flex;
       flex-direction: column;
-      width: 370px;
+      width: 100%;
+      color: #cec9d5;
 
       .name {
         display: block;
