@@ -89,7 +89,7 @@ const questUnreadAmount = mode => {
 
 const beforeSendingMessage = e => {
   const { channel } = e.detail;
-  if (!channel.includes('qst_')) return;
+  if (!channel.includes('qst_') || !Session.get('quests')) return;
 
   const quest = Quests.findOne(channel);
   if (quest) return;
