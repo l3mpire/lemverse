@@ -28,8 +28,15 @@ div.settings {
 
     >* {
       &:last-child {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 10px;
         margin-top: 15px;
         width: 100%;
+
+        button {
+          margin-top: 0;
+        }
       }
     }
   }
