@@ -35,10 +35,22 @@ Template.userList.helpers({
     return `Users (${usersCount}) ${guestsCount > 0 ? `(and ${guestsCount} 👻)` : ''}`;
   },
   canAddEditors() { return Template.instance().hasLevelRights; },
+  communicationAllowed() { return this._id !== Meteor.userId(); },
   levelOwner() { return isLevelOwner(this._id); },
 });
 
 Template.userList.events({
   'click .js-toggle-edition'() { Meteor.call('toggleLevelEditionPermission', this._id); },
   'click .js-profile'() { Session.set('modal', { template: 'profile', userId: this._id, append: true }); },
+  'click .js-create-quest'() {
+    Session.set('modal', undefined);
+    Session.set('quests', { questId: Quests.id(), targets: [this._id], origin: Meteor.userId() });
+  },
+  'click .js-send-message'() {
+    Session.set('modal', undefined);
+
+    const channel = [this._id, Meteor.userId()].sort().join(';');
+    messagesModule.changeMessagesChannel(channel);
+    Session.set('console', true);
+  },
 });

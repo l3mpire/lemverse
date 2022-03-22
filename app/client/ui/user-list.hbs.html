@@ -10,6 +10,14 @@
           <div class="zone">
             <span>{{#if profile.zoneName}}{{profile.zoneName}}{{else}}-{{/if}}</span>
           </div>
+          <div class="actions">
+            {{#if communicationAllowed}}
+              <span class="js-send-message">💬</span>
+              <span class="js-create-quest">📜</span>
+            {{else}}
+              <span>-</span>
+            {{/if}}
+          </div>
           <div class="infos">
             {{#if profile.shareAudio}}
               <span>🎤</span>

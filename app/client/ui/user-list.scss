@@ -14,7 +14,7 @@
 
   .user {
     margin: 2px 10px;
-    padding: 4px 5px 4px 5px;
+    padding: 0 5px;
     border-radius: 5px;
     line-height: 26px;
     display: grid;
@@ -65,6 +65,21 @@
     .actions,
     .infos {
       text-align: center;
+      font-size: 1rem;
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+    }
+
+    .actions {
+      span {
+        cursor: pointer;
+        opacity: 0.9;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
     }
 
     .infos {
@@ -83,7 +98,7 @@
           content: '❌';
           position: absolute;
           z-index: 2;
-          top: 0;
+          top: 3px;
           left: 0;
           transform: scale(0.8) translate(0, -5px);
         }
