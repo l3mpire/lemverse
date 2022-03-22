@@ -101,7 +101,6 @@ const filesAfterUploadVoiceRecorder = (user, fileRef) => {
       userId,
       createdAt: new Date(),
       createdBy: user._id,
-      read: false,
     });
   });
 

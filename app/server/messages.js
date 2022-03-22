@@ -23,7 +23,6 @@ const notifyQuestSubscribersAboutNewMessage = (questId, message) => {
     _id: Notifications.id(),
     questId,
     userId,
-    read: false,
     createdAt: new Date(),
     createdBy: message.createdBy,
   }));

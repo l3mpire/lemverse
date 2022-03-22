@@ -512,7 +512,7 @@ Template.lemverse.helpers({
   isLoading: () => Session.get('loading'),
   isGuest: () => Meteor.user()?.profile.guest,
   hasNotifications: () => Notifications.find().count(),
-  pendingNotificationsCount: () => Notifications.find({ read: false }).count(),
+  pendingNotificationsCount: () => Notifications.find({ read: { $exists: false } }).count(),
   screenMode: () => Template.instance().screenMode.get(),
   settingsOpen: () => (!Session.get('modal') ? false : (Session.get('modal').template.indexOf('settings') !== -1)),
 });
