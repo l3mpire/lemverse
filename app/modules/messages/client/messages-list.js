@@ -57,6 +57,7 @@ Template.messagesList.onCreated(function () {
     if (!Session.get('console')) {
       this.fileSubscribeHandler?.stop();
       this.userSubscribeHandler?.stop();
+      messagesModule.stopListeningMessagesChannel();
       return;
     }
 
