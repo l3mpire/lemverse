@@ -11,7 +11,7 @@
       width: 100%;
       padding: 10px 0 1px 0;
       background-color: darken($light-blue, 20%);
-      color: #cec9d5;
+      color: $main-text-color;
 
       &:not(:last-child) {
         border-bottom: 1px dashed #5c5e6b;

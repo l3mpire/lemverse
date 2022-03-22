@@ -1,7 +1,6 @@
 @import "../_variables";
 
 $menu-background-opacity: 0.8;
-$label-text-color: white;
 $z-index: 4;
 
 .radial-menu-container {
@@ -20,7 +19,7 @@ $z-index: 4;
     padding: 3px 10px;
     border-radius: $radius;
     background-color: $main-color;
-    color: $label-text-color;
+    color: $main-text-color;
     opacity: 0;
 
     &.show {

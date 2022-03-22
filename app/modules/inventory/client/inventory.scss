@@ -76,7 +76,7 @@ $inventory-item-size: 80px;
       width: 100%;
       text-align: center;
       font-size: 0.95rem;
-      color: #cec9d5;
+      color: $main-text-color;
     }
 
     >div:first-child {
@@ -107,7 +107,7 @@ $inventory-item-size: 80px;
       display: flex;
       flex-direction: column;
       width: 100%;
-      color: #cec9d5;
+      color: $main-text-color;
 
       .name {
         display: block;

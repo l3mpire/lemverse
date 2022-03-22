@@ -173,9 +173,9 @@ button:focus {
     position: relative;
     width: 164px;
     height: 124px;
-    background-color: #ECEFF4;
+    background-color: $main-color;
     border-radius: 10px;
-    border: 2px solid white;
+    border: 2px solid rgba($main-color, 0.1);
     margin: 5px;
     z-index: 30;
     background-size: contain;
@@ -210,8 +210,7 @@ button:focus {
       justify-content: space-evenly;
 
       .button {
-        background-color: #ECEFF4;
-        border: 1px solid #4C566A;
+        background-color: lighten($main-color, 65%);
         padding-left: 5px;
         padding-right: 2px;
         border-radius: 4px;
@@ -221,13 +220,14 @@ button:focus {
         box-sizing: content-box;
         padding: 2px 5px;
         margin: 0;
+        border-radius: $radius;
 
         &:hover {
-          background-color: #E5E9F0;
+          background-color: lighten($main-color, 70%);
         }
 
         &.active {
-          background-color: green;
+          background-color: $light-green;
         }
       }
     }

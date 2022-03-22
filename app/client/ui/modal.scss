@@ -66,7 +66,7 @@
       }
 
       .modal-title {
-        color: #cec9d5;
+        color: $main-text-color;
         text-align: left;
         font-size: 1.15rem;
         margin: 0;
@@ -76,7 +76,7 @@
       }
 
       .modal-content {
-        color: #c7c7cc;
+        color: $main-text-color;
         overflow-y: auto;
         height: 100%;
       }
@@ -93,7 +93,7 @@
     pointer-events: all;
 
     .background {
-      opacity: 0.3;
+      opacity: 0.25;
     }
 
     .modal .modal-window {

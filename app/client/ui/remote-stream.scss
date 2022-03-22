@@ -1,8 +1,10 @@
+@import "../_variables";
+
 .stream {
   z-index: 5;
-  background-color: hsl(0, 0.0, 8.6);
+  background-color: $main-color;
   border-radius: 10px;
-  border: 2px solid white;
+  border: 2px solid rgba($main-color, 0.1);
   margin: 5px;
   position: relative;
   overflow: hidden;
@@ -11,7 +13,7 @@
   transition: border 0.25s linear;
 
   &.talking {
-    border: 2px solid #008001;
+    border: 2px solid $light-green;
   }
 
   &:before {
@@ -38,11 +40,11 @@
     position: absolute;
     left: 5px;
     top: 5px;
-    background-color: #ECEFF4;
+    background-color: rgba($main-color, 0.75);
     border-radius: 4px;
-    padding: 3px 5px;
-    border: 1px solid black;
+    padding: 3px 10px;
     z-index: 10;
+    color: #e5e4e7;
   }
 
   img,

@@ -28,7 +28,6 @@
       appearance: none;
       background: transparent;
       border: 0;
-      color: white;
       font-size: 1.4rem;
       cursor: pointer;
       transition: opacity 0.15s linear;
@@ -60,7 +59,7 @@
 
   .title {
     cursor: default;
-    color: white;
+    color: $main-text-color;
     text-align: center;
     padding: 16px 0;
     margin: 0;
@@ -76,7 +75,7 @@
 
     .quest {
       display: block;
-      color: white;
+      color: $main-text-color;
       cursor: pointer;
       padding: 10px;
       transition: all linear 0.150s;

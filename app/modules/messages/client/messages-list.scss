@@ -21,7 +21,7 @@
     padding: 15px 0;
     text-align: center;
     background-color: $main-color;
-    color: white;
+    color: $main-text-color;
     height: 52px;
   }
 
@@ -65,7 +65,7 @@
       position: relative;
       display: flex;
       margin-top: 0;
-      color: white;
+      color: $main-text-color;
 
       +.js-message {
         margin-top: 10px;
@@ -153,7 +153,7 @@
       .time {
         cursor: pointer;
         font-size: 0.75em;
-        color: #dedede;
+        color: darken($main-text-color, 10%);
       }
 
       .text {
