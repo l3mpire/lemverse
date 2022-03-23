@@ -139,10 +139,10 @@ Template.questsList.onCreated(function () {
       return;
     }
 
-    Session.set('console', true);
-    messagesModule.stopListeningMessagesChannel();
-
     Tracker.nonreactive(() => {
+      openConsole();
+      messagesModule.stopListeningMessagesChannel();
+
       this.questSubscribeHandler = this.subscribe('quests', () => {
         const userIds = Quests.find().fetch().flatMap(quest => [quest.createdBy, ...(quest.targets || [])]).filter(Boolean);
         if (userIds?.length) this.userSubscribeHandler = this.subscribe('usernames', [...new Set(userIds)]);

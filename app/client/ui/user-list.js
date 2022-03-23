@@ -51,6 +51,6 @@ Template.userList.events({
 
     const channel = [this._id, Meteor.userId()].sort().join(';');
     messagesModule.changeMessagesChannel(channel);
-    Session.set('console', true);
+    openConsole();
   },
 });

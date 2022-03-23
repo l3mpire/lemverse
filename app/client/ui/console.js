@@ -24,17 +24,17 @@ const closeAndFocusCanvas = () => {
   game.scene.keys.WorldScene.enableKeyboard(true, false);
 };
 
-const openConsole = () => {
+openConsole = (autoSelectChannel = false) => {
   if (Session.get('console')) return;
 
-  messagesModule.autoSelectChannel();
+  if (autoSelectChannel) messagesModule.autoSelectChannel();
   clearInputFields(true);
   Session.set('console', true);
 };
 
 const onKeyPressed = e => {
   if (e.key === 'Escape') closeAndFocusCanvas();
-  else if (e.key === 'Enter') openConsole();
+  else if (e.key === 'Enter') openConsole(true);
 };
 
 const sendMessage = (channel, text) => {

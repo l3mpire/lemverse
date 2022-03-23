@@ -94,6 +94,7 @@ module.exports = {
     entityActionType: 'writable',
     notify: 'writable',
     meteorCall: 'writable',
+    openConsole: 'writable',
 
     game: 'writable',
     createLevel: 'writable',
