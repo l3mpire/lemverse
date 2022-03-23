@@ -45,6 +45,8 @@ savePlayer = player => {
 
 const throttledSavePlayer = throttle(savePlayer, userInterpolationInterval, { leading: false });
 
+const allowPhaserMouseInputs = () => !Session.get('editor') && !Session.get('console');
+
 userManager = {
   entityFollowed: undefined,
   inputVector: new Phaser.Math.Vector2(),
@@ -114,7 +116,7 @@ userManager = {
     playerParts.setScale(3);
     playerParts.name = 'body';
     playerParts.on('pointerover', () => {
-      if (Session.get('editor')) return;
+      if (!allowPhaserMouseInputs()) return;
 
       this.setTint(this.players[user._id], 0xFFAAFF);
       Session.set('menu', { userId: user._id });
@@ -123,8 +125,9 @@ userManager = {
     playerParts.on('pointerout', () => this.setTintFromState(this.players[user._id]));
     playerParts.on('pointerup', () => {
       if (Session.get('menu')) Session.set('menu', undefined);
-      else Session.set('menu', { userId: user._id });
+      else if (allowPhaserMouseInputs()) Session.set('menu', { userId: user._id });
     });
+
     playerParts.setInteractive(characterInteractionConfiguration);
     if (guest) playerParts.disableInteractive();
 
