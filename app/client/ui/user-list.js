@@ -35,7 +35,7 @@ Template.userList.helpers({
     return `Users (${usersCount}) ${guestsCount > 0 ? `(and ${guestsCount} 👻)` : ''}`;
   },
   canAddEditors() { return Template.instance().hasLevelRights; },
-  communicationAllowed() { return this._id !== Meteor.userId(); },
+  communicationAllowed() { return this._id !== Meteor.userId() && !Meteor.user().profile.guest; },
   levelOwner() { return isLevelOwner(this._id); },
 });
 
