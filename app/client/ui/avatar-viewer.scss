@@ -23,6 +23,8 @@ $frame-height: 85px;
     transition: opacity 0.2s linear;
     z-index: 10;
     pointer-events: none;
+    display: block;
+    white-space: nowrap;
   }
 
   &.show-status {
