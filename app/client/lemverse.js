@@ -103,6 +103,12 @@ Template.lemverse.onCreated(function () {
   this.subscribe('notifications', () => {
     this.handleObserveNotifications = Notifications.find({ createdAt: { $gte: new Date() } }).observe({
       async added(notification) {
+        const readingQuest = notification.questId && Session.get('quests')?.questId === notification.questId;
+        if (readingQuest) {
+          Notifications.remove(notification._id);
+          return;
+        }
+
         let message;
         if (notification.questId && notification.type === 'quest-new') {
           message = `📜 A new quest is available!`;
