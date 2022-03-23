@@ -1,3 +1,5 @@
+@import "../../../client/variables";
+
 .quest-entity {
 
   .js-quest-create {
@@ -17,24 +19,24 @@
       align-items: center;
 
       .avatar-viewer {
-        width: 70px;
-        height: 70px;
-        border-radius: 5px;
-        background-color: darken(#d0d6e1, 10%);
+        width: 50px;
+        height: 50px;
+        border-radius: $radius;
+        background-color: darken($main-color, 5%);
         transform: scale(0.8);
 
         &:hover {
-          background-color: darken(#d0d6e1, 15%);
+          background-color: darken($main-color, 15%);
         }
 
         .character-body-part-container {
-          transform: scale(0.8) translate(13px, -16px);
+          transform: scale(0.6) translate(3px, -38px)
         }
       }
 
       >span {
         font-size: 1.1rem;
-        padding-left: 10px;
+        padding-left: 5px;
       }
     }
   }
@@ -49,15 +51,15 @@
     bottom: 0;
     right: 0;
     left: 0;
-    background-color: #d0d6e1;
+    background-color: darken($main-color, 5%);
     width: 100%;
     -webkit-appearance: none;
     border: 0;
+    color: $main-text-color;
     cursor: pointer;
 
     &:hover {
-      background-color: darken(#d0d6e1, 30%);
-      color: white;
+      background-color: $main-color;
     }
   }
 }
