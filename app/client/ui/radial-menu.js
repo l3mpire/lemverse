@@ -101,7 +101,7 @@ const otherUserMenuItems = [
     },
     cancel: () => userVoiceRecorderAbility.recordVoice(false, sendAudioChunksToNearUsers),
   }, {
-    icon: '📖',
+    icon: '📜',
     label: 'New quest',
     shortcut: 52,
     action: () => {
