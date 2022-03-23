@@ -6,8 +6,10 @@ const notifyQuestSubscribersAboutNewMessage = (questId, message) => {
     return;
   }
 
-  const subscribedUsers = subscribedUsersToEntity(quest.origin).map(u => u._id);
   const targets = (quest.targets || []);
+
+  // When someone has joined the quest we stop sending notifications to all subscribed users
+  const subscribedUsers = targets.length > 0 ? [] : subscribedUsersToEntity(quest.origin).map(u => u._id);
   targets.push(quest.createdBy);
 
   const usersToNotify = [...new Set([...subscribedUsers, ...targets])].filter(userId => userId !== message.createdBy);
