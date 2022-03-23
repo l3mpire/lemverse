@@ -102,7 +102,7 @@ Template.lemverse.onCreated(function () {
 
   this.subscribe('notifications', () => {
     this.handleObserveNotifications = Notifications.find({ createdAt: { $gte: new Date() } }).observe({
-      added(notification) {
+      async added(notification) {
         let message;
         if (notification.questId && notification.type === 'quest-new') {
           message = `📜 A new quest is available!`;
@@ -110,7 +110,13 @@ Template.lemverse.onCreated(function () {
         } else if (notification.questId && notification.type === 'quest-updated') message = `📜 A quest has been updated`;
         else message = `📢 You have received a new message`;
 
-        if (message) notify(message);
+        const notificationInstance = await notify(message);
+        if (!notificationInstance) return;
+
+        notificationInstance.onclick = e => {
+          e.preventDefault();
+          if (notification.questId) Session.set('quests', { questId: notification.questId, origin: 'notifications' });
+        };
       },
     });
   });
