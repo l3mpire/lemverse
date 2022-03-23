@@ -65,7 +65,7 @@ const autoSelectQuest = template => {
   if (questId) {
     const quest = Quests.findOne(questId);
     const origin = quest?.origin || Session.get('quests')?.origin || '';
-    template.questListMode.set(!origin.includes('ent_') ? modes.mine : modes.entity);
+    template.questListMode.set(!origin.includes('ent_') ? modes.mine : modes.available);
   }
 };
 
