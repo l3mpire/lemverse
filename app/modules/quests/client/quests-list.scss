@@ -31,7 +31,7 @@
       font-size: 1.4rem;
       cursor: pointer;
       transition: opacity 0.15s linear;
-      opacity: 0.9;
+      opacity: 0.5;
 
       &[data-unread]:not([data-unread="0"]):before {
         content: attr(data-unread);
@@ -44,6 +44,11 @@
         height: 15px;
         font-size: 0.8rem;
         text-align: center;
+      }
+
+      &.active {
+        opacity: 1;
+        border-bottom: 2px ridge $light-yellow;
       }
 
       &:hover {

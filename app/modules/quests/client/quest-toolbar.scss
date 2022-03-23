@@ -45,7 +45,7 @@
     padding-left: 15px;
 
     &::placeholder {
-      color: rgb(201, 196, 196);
+      color: rgba($main-text-color, 0.6);
     }
   }
 
@@ -88,8 +88,7 @@
     }
 
     .users {
-      color: white;
-      border: 1px solid #71748d;
+      border: 1px solid lighten($main-color, 35%);
       border-radius: $radius;
       padding: 0 5px;
 

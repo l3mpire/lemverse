@@ -185,6 +185,7 @@ Template.questsList.helpers({
 
     return !notification.read;
   },
+  isActiveMode(mode) { return Template.instance().questListMode.get() === mode; },
   isQuestSelected(id) { return Session.get('selectedQuestId') === id; },
   newQuest() {
     const questId = draftQuestId();

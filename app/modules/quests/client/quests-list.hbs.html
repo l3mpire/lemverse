@@ -2,9 +2,9 @@
   <div class="quests-list {{#if show}}show{{/if}}">
   
     <div class="quest-mode-selectors">
-      <button type="button" class="js-quest-switch-mode" data-mode="mine" data-unread="{{unreadAmount "mine"}}">📜</button>
-      <button type="button" class="js-quest-switch-mode" data-mode="available" data-unread="{{unreadAmount "available"}}">🗂</button>
-      <button type="button" class="js-quest-switch-mode" data-mode="completed">🗳</button>
+      <button type="button" class="js-quest-switch-mode {{#if isActiveMode "mine"}}active{{/if}}" data-mode="mine" data-unread="{{unreadAmount "mine"}}">📜</button>
+      <button type="button" class="js-quest-switch-mode {{#if isActiveMode "available"}}active{{/if}}" data-mode="available" data-unread="{{unreadAmount "available"}}">🗂</button>
+      <button type="button" class="js-quest-switch-mode {{#if isActiveMode "completed"}}active{{/if}}" data-mode="completed">🗳</button>
     </div>
 
     <ul class="quests">
