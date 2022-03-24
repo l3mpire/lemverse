@@ -48,6 +48,12 @@ Entities = lp.collectionRegister('entities', 'ent', [], {
   remove(userId) { return isEditionAllowed(userId); },
 });
 
+Guilds = lp.collectionRegister('guilds', 'gui', [], {
+  insert(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
+  update(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
+  remove(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
+});
+
 Items = lp.collectionRegister('items', 'itm', [], {
   insert(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
   update(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },

@@ -1,4 +1,4 @@
-const mainFields = { options: 1, profile: 1, roles: 1, status: { online: 1 }, beta: 1, inventory: 1, entitySubscriptionIds: 1 };
+const mainFields = { options: 1, profile: 1, roles: 1, status: { online: 1 }, beta: 1, inventory: 1, entitySubscriptionIds: 1, guildId: 1 };
 
 Accounts.onCreateUser((options, user) => {
   log('onCreateUser', { options, user });
@@ -36,10 +36,18 @@ Meteor.publish('users', function (levelId) {
   if (!this.userId) return undefined;
   if (!levelId) levelId = Meteor.settings.defaultLevelId;
 
-  return Meteor.users.find(
-    { 'status.online': true, 'profile.levelId': levelId },
-    { fields: mainFields },
-  );
+  const { guildId } = Meteor.user();
+  let filters = { 'status.online': true, 'profile.levelId': levelId };
+  if (guildId) {
+    filters = {
+      $or: [
+        { 'profile.levelId': levelId, 'status.online': true },
+        { guildId },
+      ],
+    };
+  }
+
+  return Meteor.users.find(filters, { fields: mainFields });
 });
 
 Meteor.publish('selfUser', function () {

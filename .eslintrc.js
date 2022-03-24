@@ -80,6 +80,7 @@ module.exports = {
     Files: 'writable',
     Notifications: 'writable',
     Messages: 'writable',
+    Guilds: 'writable',
     Items: 'writable',
     Quests: 'writable',
     nearestDuration: 'writable',

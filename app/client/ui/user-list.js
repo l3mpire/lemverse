@@ -1,5 +1,6 @@
 Template.userList.onCreated(function () {
   this.hasLevelRights = Meteor.user().roles?.admin || isLevelOwner(Meteor.userId());
+  this.subscribe('guilds');
 });
 
 Template.userList.helpers({
@@ -27,7 +28,7 @@ Template.userList.helpers({
   },
   guild() {
     if (!this.guildId) return '-';
-    return '-';
+    return Guilds.findOne(this.guildId)?.name || '-';
   },
   zone() {
     if (!this.status.online) return '-';
