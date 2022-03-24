@@ -15,6 +15,6 @@ sounds = {
 
     const audio = new Audio(`${this.folder}${name}`);
     audio.volume = volume;
-    audio.addEventListener('canplaythrough', audio.play());
+    audio.addEventListener('canplaythrough', audio.play);
   },
 };
