@@ -21,7 +21,7 @@ Template.questEntity.events({
 
 Template.questEntity.onCreated(function () {
   this.entity = new ReactiveVar();
-  this.subscribers = new ReactiveVar();
+  this.subscribers = new ReactiveVar([]);
 
   this.autorun(() => {
     const modal = Session.get('modal');
