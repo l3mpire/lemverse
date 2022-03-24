@@ -25,16 +25,21 @@ const closeAndFocusCanvas = () => {
 };
 
 openConsole = (autoSelectChannel = false) => {
-  if (Session.get('console')) return;
+  if (Session.get('console')) return false;
 
   if (autoSelectChannel) messagesModule.autoSelectChannel();
   clearInputFields(true);
   Session.set('console', true);
+
+  return true;
 };
 
 const onKeyPressed = e => {
   if (e.key === 'Escape') closeAndFocusCanvas();
-  else if (e.key === 'Enter') openConsole(true);
+  else if (e.key === 'Enter' && openConsole(true)) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
 };
 
 const sendMessage = (channel, text) => {
