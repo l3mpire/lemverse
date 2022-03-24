@@ -27,10 +27,7 @@ Template.userList.helpers({
 
     return users;
   },
-  guild() {
-    if (!this.guildId) return '-';
-    return Guilds.findOne(this.guildId)?.name || '-';
-  },
+  guild() { return Guilds.findOne(this.guildId)?.name; },
   zone() {
     if (!this.status.online) return '-';
     return this.profile.zoneName || '-';
