@@ -8,7 +8,10 @@
             <span class="js-profile">{{profile.name}}</span>
           </div>
           <div class="zone">
-            <span>{{#if profile.zoneName}}{{profile.zoneName}}{{else}}-{{/if}}</span>
+            <span>{{zone}}</span>
+          </div>
+          <div class="guild">
+            <span>{{guild}}</span>
           </div>
           <div class="actions">
             {{#if communicationAllowed}}
@@ -19,15 +22,6 @@
             {{/if}}
           </div>
           <div class="infos">
-            {{#if profile.shareAudio}}
-              <span>🎤</span>
-            {{/if}}
-            {{#if profile.shareVideo}}
-              <span>🎥</span>
-            {{/if}}
-            {{#if profile.shareScreen}}
-              <span>📺</span>
-            {{/if}}
             {{#if roles.admin}}
               <span title="Is admin">👑</span>
             {{else if levelOwner}}

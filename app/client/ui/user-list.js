@@ -5,7 +5,7 @@ Template.userList.onCreated(function () {
 Template.userList.helpers({
   users() {
     const users = Meteor.users.find(
-      { 'profile.guest': { $not: true }, 'status.online': true, 'profile.levelId': Meteor.user().profile.levelId },
+      { 'profile.guest': { $not: true }, 'profile.levelId': Meteor.user().profile.levelId },
       { sort: { 'profile.name': 1 } },
     ).fetch();
 
@@ -24,6 +24,14 @@ Template.userList.helpers({
     users.sort((a, b) => a.profile.name.toLowerCase().localeCompare(b.profile.name.toLowerCase()));
 
     return users;
+  },
+  guild() {
+    if (!this.guildId) return '-';
+    return '-';
+  },
+  zone() {
+    if (!this.status.online) return '-';
+    return this.profile.zoneName || '-';
   },
   canEditLevel() { return isEditionAllowed(this._id); },
   title() {

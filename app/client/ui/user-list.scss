@@ -18,7 +18,7 @@
     border-radius: 5px;
     line-height: 26px;
     display: grid;
-    grid-template-columns: 250px minmax(200px, auto) minmax(70px, auto) minmax(70px, auto);
+    grid-template-columns: 250px minmax(150px, auto) minmax(150px, auto) minmax(70px, auto) 30px;
     align-items: center;
 
     &:hover {
@@ -53,8 +53,9 @@
       }
     }
 
-    .zone {
-      max-width: 200px;
+    .zone,
+    .guild {
+      max-width: 150px;
       font-size: 0.9rem;
       color: darken($main-text-color, 10%);
       text-align: center;
@@ -83,7 +84,7 @@
     }
 
     .infos {
-      width: 100px;
+      width: 30px;
 
       .js-profile:hover {
         cursor: pointer;
