@@ -82,9 +82,13 @@ const onSubmit = () => {
   uploadedFile.start();
 };
 
-Template.console.onCreated(() => {
+Template.console.onCreated(function () {
   Session.set('console', false);
   document.addEventListener('keydown', onKeyPressed);
+
+  this.autorun(() => {
+    if (Session.get('modal')) closeAndFocusCanvas();
+  });
 });
 
 Template.console.onDestroyed(() => {
