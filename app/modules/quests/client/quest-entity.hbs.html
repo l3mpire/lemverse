@@ -6,7 +6,7 @@
       <ul>
         {{#each subscriber in subscribers}}
           <li>
-            {{> avatarViewer user=subscriber}}
+            {{> avatarViewer user=subscriber showStatus=true}}
             <span>{{subscriber.profile.name}}</span>
           </li>
         {{/each}}
