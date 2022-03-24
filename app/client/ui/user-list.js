@@ -5,6 +5,8 @@ Template.userList.onCreated(function () {
 
 Template.userList.helpers({
   users() {
+    const { levelId } = Meteor.user().profile;
+
     const users = Meteor.users.find(
       { 'profile.guest': { $not: true } },
       { sort: { 'profile.name': 1 } },
@@ -18,7 +20,7 @@ Template.userList.helpers({
         y2: { $gte: usr.profile.y },
       });
       if (zone && zone.name && !zone.hideName) usr.profile.zoneName = zone.name;
-      else usr.profile.zoneName = 'In another level';
+      else if (usr.profile.levelId !== levelId) usr.profile.zoneName = 'In another level';
 
       return usr;
     });
