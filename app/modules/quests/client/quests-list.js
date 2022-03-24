@@ -49,8 +49,8 @@ const quests = mode => {
 };
 
 const autoSelectQuest = template => {
-  const questId = Session.get('quests')?.questId || '';
-  if (questId.includes('qst_')) selectQuest(questId, template);
+  const selectedQuestId = Session.get('quests')?.selectedQuestId || '';
+  if (selectedQuestId.includes('qst_')) selectQuest(selectedQuestId, template);
   else {
     const allQuests = quests(template.questListMode.get());
     const firstQuest = allQuests.length ? allQuests[0] : undefined;
@@ -62,21 +62,21 @@ const autoSelectQuest = template => {
   }
 
   // auto switch quest-list mode
-  if (questId) {
-    const quest = Quests.findOne(questId);
+  if (selectedQuestId) {
+    const quest = Quests.findOne(selectedQuestId);
     const origin = quest?.origin || Session.get('quests')?.origin || '';
     template.questListMode.set(!origin.includes('ent_') ? modes.mine : modes.available);
   }
 };
 
 const draftQuestId = () => {
-  const questId = Session.get('quests')?.questId;
-  if (!questId) return undefined;
+  const selectedQuestId = Session.get('quests')?.selectedQuestId;
+  if (!selectedQuestId) return undefined;
 
-  const isNewQuest = !Quests.findOne(questId);
+  const isNewQuest = !Quests.findOne(selectedQuestId);
   if (!isNewQuest) return undefined;
 
-  return questId;
+  return selectedQuestId;
 };
 
 const questUnreadAmount = mode => {
@@ -106,6 +106,8 @@ const beforeSendingMessage = e => {
 };
 
 const entityName = entityId => Entities.findOne(entityId)?.name || 'Entity';
+
+createQuestDraft = (targets, origin) => Session.set('quests', { selectedQuestId: Quests.id(), targets, origin });
 
 Template.questsList.events({
   'click .js-quest'(e, template) {

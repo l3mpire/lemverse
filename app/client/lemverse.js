@@ -103,7 +103,7 @@ Template.lemverse.onCreated(function () {
   this.subscribe('notifications', () => {
     this.handleObserveNotifications = Notifications.find({ createdAt: { $gte: new Date() } }).observe({
       async added(notification) {
-        const readingQuest = notification.questId && Session.get('quests')?.questId === notification.questId;
+        const readingQuest = notification.questId && Session.get('quests')?.selectedQuestId === notification.questId;
         if (readingQuest) {
           Notifications.remove(notification._id);
           return;
@@ -121,7 +121,7 @@ Template.lemverse.onCreated(function () {
 
         notificationInstance.onclick = e => {
           e.preventDefault();
-          if (notification.questId) Session.set('quests', { questId: notification.questId, origin: 'notifications' });
+          if (notification.questId) Session.set('quests', { selectedQuestId: notification.questId, origin: 'notifications' });
         };
       },
     });

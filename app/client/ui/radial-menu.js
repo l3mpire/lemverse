@@ -30,8 +30,6 @@ const closeMenu = () => {
   menuOpenUsingKey = false;
 };
 
-const createQuest = user => Session.set('quests', { questId: Quests.id(), targets: [user._id], origin: Meteor.userId() });
-
 const reactionMenuItems = [
   { icon: '🪧', shortcut: 50, action: () => setReaction(Meteor.user().profile.defaultReaction || Meteor.settings.public.defaultReaction), cancel: () => setReaction() },
   { icon: '↩️', shortcut: 49, action: template => buildMenu(mainMenuItems, template.items) },
@@ -106,7 +104,7 @@ const otherUserMenuItems = [
     shortcut: 52,
     action: () => {
       const user = getMenuActiveUser();
-      if (user) createQuest(user);
+      if (user) createQuestDraft([user._id], Meteor.userId());
     },
   },
   { icon: '👤', label: 'Profile', shortcut: 51, action: () => Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId }) },

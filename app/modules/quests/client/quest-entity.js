@@ -1,5 +1,3 @@
-const createQuest = entity => Session.set('quests', { questId: Quests.id(), targets: [], origin: entity._id });
-
 const refreshSubscriberList = template => {
   Meteor.call('subscribedUsers', template.data.entity._id, (error, users) => template.subscribers.set(users));
 };
@@ -12,7 +10,7 @@ Template.questEntity.events({
     e.stopPropagation();
 
     Session.set('modal', undefined);
-    createQuest(template.data.entity);
+    createQuestDraft([], template.data.entity._id);
   },
   'click .js-quest-subscribe'(e, template) {
     e.preventDefault();

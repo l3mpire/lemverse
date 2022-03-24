@@ -44,7 +44,7 @@ Template.userList.events({
   'click .js-profile'() { Session.set('modal', { template: 'profile', userId: this._id, append: true }); },
   'click .js-create-quest'() {
     Session.set('modal', undefined);
-    Session.set('quests', { questId: Quests.id(), targets: [this._id], origin: Meteor.userId() });
+    createQuestDraft([this._id], Meteor.userId());
   },
   'click .js-send-message'() {
     Session.set('modal', undefined);
