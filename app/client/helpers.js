@@ -57,9 +57,8 @@ formatURL = url => {
   return formattedURL;
 };
 
-sendDataToNearUsers = (type, data, emitterId) => {
-  const { nearUsers } = userProximitySensor;
-  let targets = [...new Set(_.keys(nearUsers))];
+sendDataToUsers = (type, data, emitterId, userIds = []) => {
+  let targets = [...new Set(userIds)];
   targets = targets.filter(target => target !== Meteor.userId());
   if (!targets.length) throw new Error('no-targets');
 

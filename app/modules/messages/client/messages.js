@@ -69,8 +69,8 @@ messagesModule = {
 
   async sendWebRTCMessage(channel, content) {
     try {
-      const func = channel.includes('zon_') ? sendDataToUsersInZone : sendDataToNearUsers;
-      await func('text', content, Meteor.userId());
+      const func = channel.includes('zon_') ? sendDataToUsersInZone : sendDataToUsers;
+      await func('text', content, Meteor.userId(), channel.split(';'));
     } catch (err) {
       if (err.message !== 'no-targets') lp.notif.error(err);
     }

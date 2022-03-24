@@ -160,7 +160,7 @@ module.exports = {
     relativePositionToCamera: 'writable',
     updateViewport: 'writable',
     formatURL: 'writable',
-    sendDataToNearUsers: 'writable',
+    sendDataToUsers: 'writable',
     sendDataToUsersInZone: 'writable',
 
     tileGlobalIndex: 'writable',
