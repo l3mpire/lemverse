@@ -1,0 +1,20 @@
+.guild {
+  .content {
+    display: flex;
+    flex-direction: column;
+
+    .logo {
+      margin: 30px auto 15px auto;
+      text-align: center;
+
+      img {
+        max-width: 250px;
+        max-height: 150px;
+      }
+    }
+
+    p {
+      line-height: 1.7rem;
+    }
+  }
+}

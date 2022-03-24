@@ -53,6 +53,12 @@
       }
     }
 
+    .js-guild:hover {
+      cursor: pointer;
+      font-weight: bold;
+      color: $light-blue;
+    }
+
     .zone,
     .guild {
       max-width: 150px;

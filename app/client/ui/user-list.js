@@ -63,4 +63,5 @@ Template.userList.events({
     messagesModule.changeMessagesChannel(channel);
     openConsole();
   },
+  'click .js-guild'() { Session.set('modal', { template: 'guild', guildId: this.guildId, append: true }); },
 });

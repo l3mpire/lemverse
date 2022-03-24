@@ -8,7 +8,7 @@
             <span class="js-profile">{{profile.name}}</span>
           </div>
           <div class="guild">
-            <span>{{guild}}</span>
+            {{#if guild}}<span class="js-guild">{{guild}}</span>{{else}}<span>-</span>{{/if}}
           </div>
           <div class="zone">
             <span>{{zone}}</span>
