@@ -110,6 +110,16 @@ const otherUserMenuItems = [
   { icon: '👤', label: 'Profile', shortcut: 51, action: () => Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId }) },
 ];
 
+const isolateUserMenuEntry = {
+  icon: '👮‍♀️',
+  label: 'Isolate',
+  shortcut: 54,
+  action: () => {
+    const user = getMenuActiveUser();
+    if (user) Meteor.call('isolateUser', user._id);
+  },
+};
+
 const computeMenuPosition = () => {
   const position = Session.get('menu-position');
   return { x: (position?.x || 0) + menuOffset.x, y: (position.y || 0) + menuOffset.y };
@@ -215,8 +225,17 @@ Template.radialMenu.onCreated(function () {
     Tracker.nonreactive(() => {
       if (!menu?.userId) { setReaction(); return; }
 
-      const menuItems = menu.userId === Meteor.userId() ? mainMenuItems : otherUserMenuItems;
-      buildMenu(menuItems, this.items);
+      const user = Meteor.user();
+      const menuItems = menu.userId === user._id ? mainMenuItems : otherUserMenuItems;
+      const copiedMenuItems = [...menuItems];
+
+      // add cop option for admins on other users
+      if (menuItems === otherUserMenuItems) {
+        const canIsolate = user.roles?.admin && !Meteor.users.findOne(menu.userId).roles?.admin;
+        if (canIsolate) copiedMenuItems.splice(2, 0, isolateUserMenuEntry);
+      }
+
+      buildMenu(copiedMenuItems, this.items);
     });
   });
 });

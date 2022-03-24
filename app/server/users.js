@@ -137,6 +137,15 @@ Meteor.methods({
     check(notificationId, String);
     Notifications.update({ _id: notificationId, userId: this.userId }, { $set: { read: true } });
   },
+  isolateUser(userId) {
+    check(userId, String);
+
+    const { levelId } = Meteor.user().profile;
+    const { isolationPosition } = Levels.findOne(levelId);
+    if (!isolationPosition) throw new Meteor.Error('missing-isolation-position', 'isolationPosition not set on the level');
+
+    Meteor.users.update(userId, { $set: { 'profile.x': +isolationPosition.x, 'profile.y': +isolationPosition.y } });
+  },
 });
 
 Meteor.users.find({ 'status.online': true }).observeChanges({
