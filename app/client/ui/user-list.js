@@ -6,7 +6,7 @@ Template.userList.onCreated(function () {
 Template.userList.helpers({
   users() {
     const users = Meteor.users.find(
-      { 'profile.guest': { $not: true }, 'profile.levelId': Meteor.user().profile.levelId },
+      { 'profile.guest': { $not: true } },
       { sort: { 'profile.name': 1 } },
     ).fetch();
 
@@ -18,6 +18,7 @@ Template.userList.helpers({
         y2: { $gte: usr.profile.y },
       });
       if (zone && zone.name && !zone.hideName) usr.profile.zoneName = zone.name;
+      else usr.profile.zoneName = 'In another level';
 
       return usr;
     });
@@ -37,11 +38,11 @@ Template.userList.helpers({
   canEditLevel() { return isEditionAllowed(this._id); },
   title() {
     const usersCount = Meteor.users.find(
-      { 'profile.guest': { $not: true }, 'status.online': true, 'profile.levelId': Meteor.user().profile.levelId },
+      { 'profile.guest': { $not: true }, 'status.online': true },
     ).count();
     const guestsCount = Meteor.users.find({ 'profile.guest': { $exists: true } }).count();
 
-    return `Users (${usersCount}) ${guestsCount > 0 ? `(and ${guestsCount} 👻)` : ''}`;
+    return `Users (${usersCount} online) ${guestsCount > 0 ? `(and ${guestsCount} 👻)` : ''}`;
   },
   canAddEditors() { return Template.instance().hasLevelRights; },
   communicationAllowed() { return this._id !== Meteor.userId() && !Meteor.user().profile.guest; },
