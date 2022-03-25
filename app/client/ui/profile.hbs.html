@@ -2,6 +2,12 @@
   {{#modal title=title}}
     <div class="profile {{#if editionAllowed}}edition-allowed{{/if}}">
       <div class="content container">
+        {{#if admin}}
+          <div>
+            <label class="label">Identifier</label>
+            <span class="js-copy-identifier">{{id}}</span>
+          </div>
+        {{/if}}
         <div>
           <label for="company" class="label">Company</label>
           <input type="text" id="company" name="company" class="js-company input" value={{profile.company.name}} placeholder="-" />

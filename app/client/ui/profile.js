@@ -6,8 +6,10 @@ Template.profile.onCreated(function () {
 });
 
 Template.profile.helpers({
+  admin() { return Meteor.user().roles?.admin; },
   title() { return getUser(Template.instance()).profile.name; },
   profile() { return getUser(Template.instance()).profile; },
+  id() { return getUser(Template.instance())._id; },
   age() { return moment().diff(getUser(Template.instance()).createdAt, 'days'); },
   editionAllowed() { return Template.instance().data.userId === Meteor.userId(); },
   website() {
@@ -75,5 +77,8 @@ Template.profile.events({
 
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.avatar': avatar } });
     return false;
+  },
+  'click .js-copy-identifier'(event, template) {
+    navigator.clipboard.writeText(getUser(template)._id).then(() => lp.notif.success('✂️ Identifier copied to your clipboard'));
   },
 });
