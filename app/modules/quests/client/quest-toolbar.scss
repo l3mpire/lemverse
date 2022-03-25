@@ -111,6 +111,13 @@
             .character-body-part-container {
               transform: scale(0.35) translate(-25px, -80px);
             }
+
+            .avatar:before {
+              bottom: 4px;
+              right: 4px;
+              width: 6px;
+              height: 6px;
+            }
           }
         }
       }

@@ -139,6 +139,11 @@
         .character-body-part-container {
           transform: scale(0.7) translate(-1px, -28px);
         }
+
+        .avatar:before {
+          width: 6px;
+          height: 6px;
+        }
       }
 
       .js-username {
