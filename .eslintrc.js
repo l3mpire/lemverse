@@ -97,6 +97,7 @@ module.exports = {
     meteorCall: 'writable',
     openConsole: 'writable',
     createQuestDraft: 'writable',
+    isolateUser: 'writable',
 
     game: 'writable',
     createLevel: 'writable',

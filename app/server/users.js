@@ -1,5 +1,15 @@
 const mainFields = { options: 1, profile: 1, roles: 1, status: { online: 1 }, beta: 1, inventory: 1, entitySubscriptionIds: 1, guildId: 1 };
 
+isolateUser = userId => {
+  check(userId, String);
+  if (!isEditionAllowed(Meteor.userId())) throw new Meteor.Error('missing-permissions', `You don't have the permissions`);
+
+  const { levelId } = Meteor.user().profile;
+  const { isolationPosition } = Levels.findOne(levelId);
+  if (!isolationPosition) throw new Meteor.Error('missing-isolation-position', 'isolationPosition not set on the level');
+  Meteor.users.update(userId, { $set: { 'profile.x': +isolationPosition.x, 'profile.y': +isolationPosition.y } });
+};
+
 Accounts.onCreateUser((options, user) => {
   log('onCreateUser', { options, user });
   user._id = `usr_${Random.id()}`;
@@ -136,15 +146,6 @@ Meteor.methods({
     if (!this.userId) return;
     check(notificationId, String);
     Notifications.update({ _id: notificationId, userId: this.userId }, { $set: { read: true } });
-  },
-  isolateUser(userId) {
-    check(userId, String);
-
-    const { levelId } = Meteor.user().profile;
-    const { isolationPosition } = Levels.findOne(levelId);
-    if (!isolationPosition) throw new Meteor.Error('missing-isolation-position', 'isolationPosition not set on the level');
-
-    Meteor.users.update(userId, { $set: { 'profile.x': +isolationPosition.x, 'profile.y': +isolationPosition.y } });
   },
 });
 
