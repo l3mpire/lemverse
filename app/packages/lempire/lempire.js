@@ -133,4 +133,4 @@ lp.waitingInterval = (service, fn, delay, timeout, fnName) => Meteor.setTimeout(
   lp.waitingInterval(service, fn, delay, timeout, fnName);
 }, (timeout === undefined ? delay : timeout) * 1000);
 
-lp.up = poly => (typeof poly === 'string' ? Promise.await(lp.collection(poly).findOne({ _id: poly })) : poly);
+lp.up = poly => (typeof poly === 'string' ? (Meteor.isServer ? Promise.await : doc => doc)(lp.collection(poly).findOne({ _id: poly })) : poly);
