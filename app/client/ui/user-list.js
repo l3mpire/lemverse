@@ -13,14 +13,17 @@ Template.userList.helpers({
     ).fetch();
 
     users.map(usr => {
-      const zone = Zones.findOne({
-        x1: { $lte: usr.profile.x },
-        x2: { $gte: usr.profile.x },
-        y1: { $lte: usr.profile.y },
-        y2: { $gte: usr.profile.y },
-      });
-      if (zone && zone.name && !zone.hideName) usr.profile.zoneName = zone.name;
-      else if (usr.profile.levelId !== levelId) usr.profile.zoneName = 'In another level';
+      if (usr.profile.levelId !== levelId) usr.profile.zoneName = 'In another level';
+      else {
+        const zone = Zones.findOne({
+          x1: { $lte: usr.profile.x },
+          x2: { $gte: usr.profile.x },
+          y1: { $lte: usr.profile.y },
+          y2: { $gte: usr.profile.y },
+        });
+
+        if (zone && zone.name && !zone.hideName) usr.profile.zoneName = zone.name;
+      }
 
       return usr;
     });
