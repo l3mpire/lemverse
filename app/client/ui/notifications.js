@@ -93,10 +93,52 @@ Template.notifications.helpers({
   },
 });
 
-notify = async message => {
+const blobToBase64 = blob => new Promise(resolve => {
+  const reader = new FileReader();
+  reader.onloadend = () => resolve(reader.result);
+  reader.readAsDataURL(blob);
+});
+
+const fileIdToBitmap = async fileId => {
+  const result = await fetch(`/api/files/${fileId}`)
+  const blob = await result.blob();
+  return createImageBitmap(blob);
+};
+
+const userAvatar = async user => {
+  const characterFileIds = Object.keys(charactersParts).flatMap(part => Characters.findOne(user.profile[part])?.fileId);
+
+  const imageBitmaps = await Promise.all(characterFileIds.map(fileIdToBitmap));
+  const canvas = document.createElement('canvas');
+  canvas.width = 32;
+  canvas.height = 32;
+
+  imageBitmaps.forEach(img => canvas.getContext('2d').drawImage(img, 48, 0, 32, 32, 16, 0, 32, 32));
+
+  const blob = await new Promise(resolve => canvas.toBlob(resolve));
+  return blobToBase64(blob);
+};
+
+notify = async (userPoly, message) => {
   if (!document.hidden) return undefined;
   if (!('Notification' in window) || Notification.permission === 'denied') throw new Error('User refused notification');
   if (Notification.permission !== 'granted' && (await Notification.requestPermission()) !== 'granted') throw new Error('Permission not granted');
 
-  return new Notification(message);
+  let title = '';
+  const options = {};
+
+  const user = lp.up(userPoly);
+  if (user) {
+    try {
+      options.icon = await userAvatar(user);
+    } catch (err) {
+      console.error('failed to get user avatar', { err });
+    }
+    title = user.profile.name;
+    options.body = message;
+  } else {
+    title = message;
+  }
+
+  return new Notification(title, options);
 };
