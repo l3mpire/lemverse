@@ -121,9 +121,8 @@ const userAvatar = async user => {
 
 notify = async (userPoly, message) => {
   if (!document.hidden) return undefined;
-  if (!('Notification' in window) || Notification.permission === 'denied') throw new Error('User refused notification');
-  if (Notification.permission !== 'granted' && (await Notification.requestPermission()) !== 'granted') throw new Error('Permission not granted');
-
+  if (!('Notification' in window) || Notification.permission === 'denied') return undefined;
+  if (Notification.permission !== 'granted' && (await Notification.requestPermission()) !== 'granted') return undefined;
   let title = '';
   const options = {};
 

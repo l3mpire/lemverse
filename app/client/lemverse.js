@@ -110,14 +110,17 @@ Template.lemverse.onCreated(function () {
         }
 
         let message;
-        if (notification.questId && notification.type === 'quest-new') {
-          message = `📜 A new quest is available!`;
-          sounds.play('trumpet-fanfare.mp3', 0.25);
-        } else if (notification.questId && notification.type === 'quest-updated') message = `📜 A quest has been updated`;
+        if (notification.questId && notification.type === 'quest-new') message = `📜 A new quest is available!`;
+        else if (notification.questId && notification.type === 'quest-updated') message = `📜 A quest has been updated`;
         else message = `📢 You have received a new message`;
 
         const notificationInstance = await notify(Meteor.users.findOne(notification.createdBy), message);
-        if (!notificationInstance) return;
+        if (!notificationInstance) {
+          if (notification.type === 'quest-new') sounds.play('trumpet-fanfare.mp3', 0.25);
+          else sounds.play('text-sound.wav', 0.5);
+
+          return;
+        }
 
         notificationInstance.onclick = e => {
           e.preventDefault();
