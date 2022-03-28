@@ -107,14 +107,13 @@ const fileIdToBitmap = async fileId => {
 
 const userAvatar = async user => {
   const { frameHeight, frameWidth } = Meteor.settings.public.assets.character;
-  const characterFileIds = Object.keys(charactersParts).flatMap(part => Characters.findOne(user.profile[part])?.fileId);
+  const characterFileIds = Object.keys(charactersParts).flatMap(part => Characters.findOne(user.profile[part])?.fileId).filter(Boolean);
 
   const imageBitmaps = await Promise.all(characterFileIds.map(fileIdToBitmap));
   const canvas = document.createElement('canvas');
-  canvas.width = frameWidth;
-  canvas.height = frameHeight;
-
-  imageBitmaps.forEach(img => canvas.getContext('2d').drawImage(img, 48, 0, frameWidth, frameHeight, 16, 0, 32, 32));
+  canvas.width = 32;
+  canvas.height = 32;
+  imageBitmaps.forEach(img => canvas.getContext('2d').drawImage(img, 48, 0, frameWidth, frameHeight, 16, 0, frameWidth, frameHeight));
 
   const blob = await new Promise(resolve => canvas.toBlob(resolve));
   return blobToBase64(blob);
@@ -132,14 +131,11 @@ notify = async (userPoly, message) => {
   if (user) {
     try {
       options.icon = await userAvatar(user);
-    } catch (err) {
-      console.error('failed to get user avatar', { err });
-    }
+    } catch (err) { console.error('failed to get user avatar', { err }); }
+
     title = user.profile.name;
     options.body = message;
-  } else {
-    title = message;
-  }
+  } else title = message;
 
   return new Notification(title, options);
 };
