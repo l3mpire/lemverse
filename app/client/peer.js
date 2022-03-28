@@ -141,7 +141,7 @@ peer = {
 
     if (!this.calls[`${user._id}-${streamTypes.main}`] && !this.calls[`${user._id}-${streamTypes.screen}`]) {
       sounds.play('webrtc-in.mp3', 0.2);
-      notify(user, `Want to talk to you`);
+      notify(user, `Wants to talk to you`);
       if (userProximitySensor.nearUsersCount() === 1) Meteor.call('addUserInterruption');
     }
 

@@ -100,20 +100,21 @@ const blobToBase64 = blob => new Promise(resolve => {
 });
 
 const fileIdToBitmap = async fileId => {
-  const result = await fetch(`/api/files/${fileId}`)
+  const result = await fetch(`/api/files/${fileId}`);
   const blob = await result.blob();
   return createImageBitmap(blob);
 };
 
 const userAvatar = async user => {
+  const { frameHeight, frameWidth } = Meteor.settings.public.assets.character;
   const characterFileIds = Object.keys(charactersParts).flatMap(part => Characters.findOne(user.profile[part])?.fileId);
 
   const imageBitmaps = await Promise.all(characterFileIds.map(fileIdToBitmap));
   const canvas = document.createElement('canvas');
-  canvas.width = 32;
-  canvas.height = 32;
+  canvas.width = frameWidth;
+  canvas.height = frameHeight;
 
-  imageBitmaps.forEach(img => canvas.getContext('2d').drawImage(img, 48, 0, 32, 32, 16, 0, 32, 32));
+  imageBitmaps.forEach(img => canvas.getContext('2d').drawImage(img, 48, 0, frameWidth, frameHeight, 16, 0, 32, 32));
 
   const blob = await new Promise(resolve => canvas.toBlob(resolve));
   return blobToBase64(blob);
