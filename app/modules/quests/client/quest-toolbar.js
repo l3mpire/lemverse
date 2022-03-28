@@ -32,7 +32,7 @@ const leaveQuest = () => {
   Quests.update(questId, { $pull: { targets: Meteor.userId() } }, error => {
     if (error) { lp.notif.error(`Unable to leave the quest`); return; }
 
-    const message = `${Meteor.user().profile.name} has leaved the quest`;
+    const message = `${Meteor.user().profile.name} left the quest`;
     messagesModule.sendMessage(questId, message);
   });
 };
