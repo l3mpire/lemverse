@@ -116,7 +116,7 @@ Template.lemverse.onCreated(function () {
         } else if (notification.questId && notification.type === 'quest-updated') message = `📜 A quest has been updated`;
         else message = `📢 You have received a new message`;
 
-        const notificationInstance = await notify(message);
+        const notificationInstance = await notify(Meteor.users.findOne(notification.createdBy), message);
         if (!notificationInstance) return;
 
         notificationInstance.onclick = e => {

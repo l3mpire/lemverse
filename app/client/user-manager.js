@@ -697,7 +697,7 @@ userManager = {
         { target: emitterPlayer, className: messageReceived.style, autoClose: messageReceived.duration, parseURL: true, classList: 'copy', offset: characterPopInOffset },
       );
 
-      if (emitterUserId !== Meteor.userId()) notify(`${userEmitter.profile.name}: ${dataReceived.data}`);
+      if (emitterUserId !== Meteor.userId()) notify(userEmitter, `${userEmitter.profile.name}: ${dataReceived.data}`);
     }
   },
 };
