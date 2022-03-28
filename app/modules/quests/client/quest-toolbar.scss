@@ -85,6 +85,16 @@
           background-color: darken($light-green, 10%);
         }
       }
+
+      &.js-quest-leave {
+        background-color: $light-red;
+        color: white;
+        font-weight: bold;
+
+        &:hover {
+          background-color: darken($light-red, 10%);
+        }
+      }
     }
 
     .users {

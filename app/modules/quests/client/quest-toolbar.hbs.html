@@ -6,7 +6,11 @@
       <div class="actions">
         {{#if showJoinButton}}
           <button type="button" class="js-quest-join">Join</button>
-        {{else}}
+        {{else if showLeaveButton}}
+          <button type="button" class="js-quest-leave">leave</button>
+        {{/if}}
+
+        {{#if showActionsButton}}
           <button type="button" class="js-toggle-state">Complete</button>
           <button type="button" class="js-toggle-state closed">Reopen</button>
         {{/if}}

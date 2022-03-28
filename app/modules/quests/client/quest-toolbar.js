@@ -25,6 +25,18 @@ const joinQuest = () => {
   });
 };
 
+const leaveQuest = () => {
+  const questId = Session.get('selectedQuestId');
+  if (!questId) return;
+
+  Quests.update(questId, { $pull: { targets: Meteor.userId() } }, error => {
+    if (error) { lp.notif.error(`Unable to leave the quest`); return; }
+
+    const message = `${Meteor.user().profile.name} has leaved the quest`;
+    messagesModule.sendMessage(questId, message);
+  });
+};
+
 const toggleQuestState = () => {
   const quest = activeQuest();
   if (!quest) return;
@@ -55,6 +67,11 @@ Template.questToolbar.events({
     e.preventDefault();
     e.stopPropagation();
     joinQuest();
+  },
+  'click .js-quest-leave'(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    leaveQuest();
   },
   'click .js-toggle-state'(e) {
     e.preventDefault();
@@ -89,5 +106,17 @@ Template.questToolbar.helpers({
     if (!quest) return false;
 
     return quest.origin.includes('ent_') && !quest.targets.includes(Meteor.userId()) && quest.createdBy !== Meteor.userId();
+  },
+  showLeaveButton() {
+    const quest = activeQuest();
+    if (!quest) return false;
+
+    return quest.origin.includes('ent_') && quest.targets.includes(Meteor.userId()) && quest.createdBy !== Meteor.userId();
+  },
+  showActionsButton() {
+    const quest = activeQuest();
+    if (!quest) return false;
+
+    return quest.targets.includes(Meteor.userId()) || quest.createdBy === Meteor.userId();
   },
 });
