@@ -9,10 +9,6 @@ const onConsoleClosed = () => Session.set('quests', undefined);
 const selectQuest = questId => {
   Session.set('selectedQuestId', questId);
   messagesModule.changeMessagesChannel(questId);
-
-  // mark linked notification as read
-  const notification = Notifications.findOne({ questId, userId: Meteor.userId() });
-  if (notification && !notification.read) Notifications.update(notification._id, { $set: { read: true } });
 };
 
 const quests = mode => {

@@ -1,6 +1,6 @@
 const messageMaxLength = 4096;
 
-const ignoreChannelAutoSwitch = () => (Session.get('messagesChannel') || '').includes('qst_');
+const ignoreChannelAutoSwitch = () => !Session.get('console') || (Session.get('messagesChannel') || '').includes('qst_');
 
 messagesModule = {
   handleMessagesSubscribe: undefined,
@@ -65,6 +65,17 @@ messagesModule = {
     this.handleMessagesSubscribe = this.template.subscribe('messages', channel);
     this.channel = channel;
     Session.set('messagesChannel', channel); // set console in the new channel
+
+    // mark notification or zone as read
+    if (channel.includes('zon_')) {
+      Meteor.call('updateZoneLastSeenDate', channel, () => {
+        const zone = Zones.findOne(channel);
+        if (zone) zones.destroyNewContentIndicator(zone);
+      });
+    } else if (channel.includes('qst_')) {
+      const notification = Notifications.findOne({ questId: channel, userId: Meteor.userId() });
+      if (notification && !notification.read) Notifications.update(notification._id, { $set: { read: true } });
+    }
   },
 
   async sendWebRTCMessage(channel, content) {
