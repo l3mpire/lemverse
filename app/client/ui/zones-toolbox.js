@@ -32,7 +32,7 @@ Template.zonesToolboxProperties.helpers({
     if (!props.inlineURL) props.inlineURL = '';
     if (!props.hideName) props.hideName = false;
     if (!props.disableCommunications) props.disableCommunications = false;
-    if (!props.requiredTags) props.requiredTags = [];
+    if (!props.requiredItems) props.requiredItems = [];
 
     return JSON.stringify(props, ' ', 2);
   },
