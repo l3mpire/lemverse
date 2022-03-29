@@ -8,6 +8,7 @@ const zoneHideProperties = [
   'levelId',
   'createdAt',
   'createdBy',
+  'lastMessageAt',
 ];
 
 const clearZoneRectangles = () => _.each(zoneRectangles, r => r.destroy());

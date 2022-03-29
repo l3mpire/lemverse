@@ -37,9 +37,11 @@ const notifyQuestSubscribersAboutNewMessage = (questId, message) => {
   log('notifyQuestSubscribersAboutNewMessage: done', { amount: usersToNotify.length });
 };
 
+const setZoneLastMessageAtToNow = zoneId => Zones.update(zoneId, { $set: { lastMessageAt: new Date() } });
+
 Messages.find({ createdAt: { $gte: new Date() } }).observe({
   added(message) {
-    if (!message.channel.includes('qst_')) return;
-    notifyQuestSubscribersAboutNewMessage(message.channel, message);
+    if (message.channel.includes('qst_')) notifyQuestSubscribersAboutNewMessage(message.channel, message);
+    else if (message.channel.includes('zon_')) setZoneLastMessageAtToNow(message.channel);
   },
 });
