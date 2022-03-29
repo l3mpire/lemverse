@@ -25,7 +25,7 @@ const closeAndFocusCanvas = () => {
 };
 
 openConsole = (autoSelectChannel = false) => {
-  if (Session.get('console')) return false;
+  if (Session.get('console') || Session.get('editor')) return false;
 
   if (autoSelectChannel) messagesModule.autoSelectChannel();
   clearInputFields(true);
