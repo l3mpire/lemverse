@@ -75,6 +75,13 @@ Template.messagesList.helpers({
   show() { return Session.get('console'); },
   channelName() { return getCurrentChannelName(); },
   messages() { return sortedMessages(); },
+  showSubscribeButton() {
+    const channel = Session.get('messagesChannel');
+    if (!channel?.includes('zon_')) return false;
+
+    const { zoneSubscriptionIds } = Meteor.user();
+    return !zoneSubscriptionIds || !zoneSubscriptionIds[channel];
+  },
   sameDay(index) {
     if (index === 0) return true;
 
@@ -91,5 +98,27 @@ Template.messagesList.helpers({
     if (messageDate.getDate() === date.getDate() - 1) return 'Yesterday';
 
     return messageDate.toDateString();
+  },
+});
+
+Template.messagesList.events({
+  'click .js-channel-subscribe'(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const channelId = Session.get('messagesChannel');
+    if (!channelId.includes('zon_')) return;
+    Meteor.call('updateZoneLastSeenDate', channelId, true, err => {
+      if (err) return;
+      lp.notif.success('🔔 You will be notified of news from this zone');
+    });
+  },
+  'click .js-channel-unsubscribe'(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const channelId = Session.get('messagesChannel');
+    if (!channelId.includes('zon_')) return;
+    Meteor.call('unsubscribeFromZone', channelId);
   },
 });

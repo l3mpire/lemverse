@@ -24,6 +24,7 @@
   <div class="messages-module {{#if show}}show{{/if}}">
     {{#if show}}
       <h3 class="channel-name">{{channelName}}</h3>
+      {{#if showSubscribeButton}}<button type="button" class="js-channel-subscribe">Subscribe</button>{{/if}}
       <div class="messages-list">
         {{#each message in messages}}
           {{#unless sameDay @index}}
