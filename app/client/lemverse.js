@@ -392,6 +392,14 @@ Template.lemverse.onCreated(function () {
             if (zone.popInConfiguration?.autoOpen) characterPopIns.initFromZone(zone);
           },
           changed(zone) {
+            if (zone.lastMessageAt && Session.get('messagesChannel') !== zone._id) {
+              const { zoneSubscriptionIds } = Meteor.user();
+              if (zoneSubscriptionIds) {
+                const userZoneLastSeenAt = zoneSubscriptionIds[zone._id];
+                if (!userZoneLastSeenAt || userZoneLastSeenAt < zone.lastMessageAt) zones.showNewContentIndicator(zone);
+              }
+            }
+
             const currentZone = zones.currentZone(Meteor.user());
             if (!currentZone || currentZone._id !== zone._id) return;
 
