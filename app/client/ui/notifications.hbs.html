@@ -1,36 +1,31 @@
-<template name="notificationsQuestItem">
-  {{> avatarViewer user=user}}
-  <div class="notification-content">
-    <div class="date">{{date}}</div>
-    <div class="name">{{user.profile.name}}</div>
-    <div class="subject">A quest has been updated <span class="js-quest-name">(📖 see the quest)</span></div>
-  </div>
+<template name="notificationsAudioPlayer">
+  <button type="button" class="js-play {{#if isPlaying}}playing{{/if}}"></button>
+  <span>{{duration}}</span>
 </template>
 
-<template name="notificationsAudioItem">
-  {{> avatarViewer user=user}}
-  <div class="notification-content">
-    <div class="date">{{date}}</div>
-    <div class="name">{{user.profile.name}}</div>
-    <div class="subject">
-      <button type="button" class="js-play {{#if isPlaying}}playing{{/if}}"></button>
-      <span>{{duration}}</span>
+<template name="notification">
+  <li class="notification {{#if read}}read{{/if}} {{#unless fileId}}js-notification-clickable{{/unless}}">
+    {{> avatarViewer user=user}}
+    <div class="notification-content">
+      <div class="date">{{date}}</div>
+      <div class="name">{{user.profile.name}}</div>
+      <div class="subject">
+        {{#if fileId}}
+          {{> notificationsAudioPlayer}}
+        {{else if questId}}
+          <div class="subject">A quest has been updated</div>
+        {{/if}}
+      </div>
     </div>
-  </div>
+  </li>
 </template>
 
 <template name="notifications">
   {{#modal id="displayNotificationsPanel" title="Notifications"}}
     <div class="notifications">
       <ul>
-        {{#each notification in notifications}}
-          <li class="notification {{#if notification.read}}read{{/if}}">
-            {{#if notification.fileId}}
-              {{> notificationsAudioItem notification}}
-            {{else if notification.questId}}
-              {{> notificationsQuestItem notification}}
-            {{/if}}
-          </li>
+        {{#each notifications}}
+          {{> notification}}
         {{/each}}
       </ul>
     </div>

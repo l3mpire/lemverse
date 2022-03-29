@@ -17,6 +17,11 @@
         border-bottom: 1px dashed #5c5e6b;
       }
 
+      &.js-notification-clickable:hover {
+        cursor: pointer;
+        background-color: darken($light-blue, 15%) !important;
+      }
+
       &.notification {
         .notification-content {
           width: 100%;

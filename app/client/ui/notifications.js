@@ -11,25 +11,7 @@ const resetPlayButtonState = template => template._playing.set(false);
 
 const markNotificationAsRead = notificationId => Meteor.call('markNotificationAsRead', notificationId);
 
-Template.notificationsQuestItem.helpers({
-  date() { return moment(this.createdAt).calendar(); },
-  user() {
-    const { createdBy } = Template.instance().data;
-    return Meteor.users.findOne(createdBy);
-  },
-});
-
-Template.notificationsQuestItem.events({
-  'click .js-quest-name'(event) {
-    event.preventDefault();
-
-    markNotificationAsRead(this._id);
-    Session.set('modal', undefined);
-    Session.set('quests', { selectedQuestId: this.questId, origin: 'notifications' });
-  },
-});
-
-Template.notificationsAudioItem.onCreated(function () {
+Template.notificationsAudioPlayer.onCreated(function () {
   this._duration = new ReactiveVar(0);
   this._playing = new ReactiveVar(false);
   this.audio = new Audio(`/api/files/${this.data.fileId}`);
@@ -46,21 +28,16 @@ Template.notificationsAudioItem.onCreated(function () {
   this.audio.addEventListener('timeupdate', () => this._duration.set(this.audio.currentTime), false);
 });
 
-Template.notificationsAudioItem.onDestroyed(function () {
+Template.notificationsAudioPlayer.onDestroyed(function () {
   this.audio.pause();
 });
 
-Template.notificationsAudioItem.helpers({
-  date() { return moment(this.createdAt).calendar(); },
+Template.notificationsAudioPlayer.helpers({
   duration() { return formatedDuration(Template.instance()._duration.get()); },
   isPlaying() { return Template.instance()._playing.get(); },
-  user() {
-    const { createdBy } = Template.instance().data;
-    return Meteor.users.findOne(createdBy);
-  },
 });
 
-Template.notificationsAudioItem.events({
+Template.notificationsAudioPlayer.events({
   'click .js-play'(event, template) {
     event.preventDefault();
     markNotificationAsRead(template.data._id);
@@ -81,6 +58,23 @@ Template.notificationsAudioItem.events({
   },
 });
 
+Template.notification.helpers({
+  date() { return moment(this.createdAt).calendar(); },
+  user() { return Meteor.users.findOne(Template.instance().data.createdBy); },
+});
+
+Template.notification.events({
+  'click .js-notification-clickable'(event) {
+    event.preventDefault();
+    markNotificationAsRead(this._id);
+
+    if (this.questId) {
+      Session.set('modal', undefined);
+      Session.set('quests', { selectedQuestId: this.questId, origin: 'notifications' });
+    }
+  },
+});
+
 Template.notifications.onCreated(function () {
   const notifications = Notifications.find({}, { fields: { createdBy: 1 } }).fetch();
   const userIds = notifications.map(notification => notification.createdBy).filter(Boolean);
@@ -88,9 +82,7 @@ Template.notifications.onCreated(function () {
 });
 
 Template.notifications.helpers({
-  notifications() {
-    return Notifications.find().fetch().sort((a, b) => b.createdAt - a.createdAt);
-  },
+  notifications() { return Notifications.find().fetch().sort((a, b) => b.createdAt - a.createdAt); },
 });
 
 const blobToBase64 = blob => new Promise(resolve => {
