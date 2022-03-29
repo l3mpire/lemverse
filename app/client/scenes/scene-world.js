@@ -167,6 +167,7 @@ WorldScene = new Phaser.Class({
     levelManager.destroy();
     entityManager.destroy();
     userManager.destroy();
+    zones.destroy();
     userProximitySensor.callProximityEndedForAllNearUsers();
     peer.closeAll();
 

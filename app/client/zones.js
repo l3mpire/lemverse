@@ -24,6 +24,10 @@ zones = {
     this.scene = scene;
   },
 
+  destroy() {
+    this.newContentSprites = {};
+  },
+
   currentZone(user) {
     if (!user || user === Meteor.user()) return this.activeZone;
 
