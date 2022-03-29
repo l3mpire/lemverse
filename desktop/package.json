@@ -20,9 +20,9 @@
     "electron-updater": "^4.6.5"
   },
   "devDependencies": {
-    "electron": "^17.1.2",
+    "electron": "^18.0.0",
     "electron-builder": "^22.14.13",
-    "electron-notarize": "^1.1.1"
+    "electron-notarize": "^1.2.1"
   },
   "build": {
     "appId": "com.lempire.lemverse",
