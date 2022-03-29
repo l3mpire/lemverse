@@ -9,6 +9,7 @@ BootScene = new Phaser.Class({
 
   preload() {
     this.load.image('circle', 'assets/images/circle_white.png');
+    this.load.image('pixel', 'assets/images/pixel.png');
 
     Tilesets.find().forEach(tileset => this.load.image(tileset.fileId, `/api/files/${tileset.fileId}`));
 

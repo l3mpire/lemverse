@@ -2,12 +2,27 @@ const iframeAllowAttributeSettings = 'accelerometer; autoplay; clipboard-write; 
 
 const getZoneCenter = zone => [(zone.x1 + zone.x2) * 0.5, (zone.y1 + zone.y2) * 0.5];
 
+const newContentAnimation = { duration: 500, ease: 'Linear', yoyo: true, repeat: -1 };
+const zoneAnimations = {
+  newContent: (w, h) => ({
+    scaleX: { ...newContentAnimation, value: w + 20 },
+    scaleY: { ...newContentAnimation, delay: 250, value: h + 20 },
+    alpha: { ...newContentAnimation, value: 0.3 },
+  }),
+};
+
 zones = {
   activeZone: undefined,
   toastTimerInstance: undefined,
   toastBloc: undefined,
   webpageContainer: undefined,
   webpageIframeContainer: undefined,
+  newContentSprites: {},
+  scene: undefined,
+
+  init(scene) {
+    this.scene = scene;
+  },
 
   currentZone(user) {
     if (!user || user === Meteor.user()) return this.activeZone;
@@ -216,6 +231,36 @@ zones = {
   closeIframeElement() {
     this.getIframeElement().src = '';
     this.getWebpageElement().classList.remove('show');
+  },
+
+  showNewContentIndicator(zone) {
+    this.destroyNewContentIndicator(zone);
+
+    const position = this.getCenter(zone);
+    const width = zone.x2 - zone.x1;
+    const height = zone.y2 - zone.y1;
+
+    const sprite = this.scene.add.sprite(position.x, position.y, 'pixel');
+    sprite.setScale(width, height);
+    sprite.alpha = 0.4;
+    sprite.setTint(0x13C4A3);
+
+    const tween = this.scene.tweens.add({
+      targets: sprite,
+      ...zoneAnimations.newContent(width, height),
+    });
+
+    this.newContentSprites[zone._id] = { sprite, tween };
+  },
+
+  destroyNewContentIndicator(zone) {
+    const newContentSprites = this.newContentSprites[zone._id];
+    if (!newContentSprites) return;
+
+    newContentSprites.sprite?.destroy();
+    newContentSprites.tween?.stop();
+
+    delete this.newContentSprites[zone._id];
   },
 
   getIframeElement() {

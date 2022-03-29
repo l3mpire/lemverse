@@ -112,6 +112,7 @@ WorldScene = new Phaser.Class({
     entityManager.init(this);
     levelManager.init(this);
     userManager.init(this);
+    zones.init(this);
     levelManager.createMapFromLevel(level);
 
     // cameras
