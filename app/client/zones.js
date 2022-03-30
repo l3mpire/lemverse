@@ -26,6 +26,28 @@ zones = {
     this.newContentSprites = {};
   },
 
+  onDocumentAdded(zone) {
+    this.checkZoneForNewContent(zone);
+    if (zone.popInConfiguration?.autoOpen) characterPopIns.initFromZone(zone);
+  },
+
+  onDocumentRemoved(zone) {
+    this.destroyNewContentIndicator(zone);
+  },
+
+  onDocumentUpdated(newZone) {
+    this.checkZoneForNewContent(newZone);
+
+    const currentZone = zones.currentZone(Meteor.user());
+    if (!currentZone || currentZone._id !== newZone._id) return;
+
+    if (meet.api) {
+      meet.fullscreen(newZone.fullscreen);
+      const screenMode = newZone.fullscreen ? viewportModes.small : viewportModes.splitScreen;
+      updateViewport(this.scene, screenMode);
+    }
+  },
+
   currentZone(user) {
     if (!user || user === Meteor.user()) return this.activeZone;
 
@@ -263,6 +285,16 @@ zones = {
     newContentSprites.tween?.stop();
 
     delete this.newContentSprites[zone._id];
+  },
+
+  checkZoneForNewContent(zone) {
+    if (!zone.lastMessageAt || Session.get('messagesChannel') === zone._id) return;
+
+    const { zoneLastSeenDates } = Meteor.user();
+    if (!zoneLastSeenDates) return;
+
+    const zoneLastSeenDate = zoneLastSeenDates[zone._id];
+    if (zoneLastSeenDate < zone.lastMessageAt) this.showNewContentIndicator(zone);
   },
 
   getIframeElement() {

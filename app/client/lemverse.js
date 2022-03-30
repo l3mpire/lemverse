@@ -71,16 +71,6 @@ const extractLevelIdFromURL = () => {
   return `lvl_${levelId}`;
 };
 
-const checkZoneForNewContent = zone => {
-  if (!zone.lastMessageAt || Session.get('messagesChannel') === zone._id) return;
-
-  const { zoneLastSeenDates } = Meteor.user();
-  if (!zoneLastSeenDates) return;
-
-  const zoneLastSeenDate = zoneLastSeenDates[zone._id];
-  if (zoneLastSeenDate < zone.lastMessageAt) zones.showNewContentIndicator(zone);
-};
-
 Template.lemverse.onCreated(function () {
   Session.set('selectedTiles', undefined);
   Session.set('selectedTilesetId', undefined);
@@ -398,25 +388,9 @@ Template.lemverse.onCreated(function () {
       log(`loading level: loading zones`);
       this.handleZonesSubscribe = this.subscribe('zones', levelId, () => {
         this.handleObserveZones = Zones.find().observe({
-          added(zone) {
-            checkZoneForNewContent(zone);
-            if (zone.popInConfiguration?.autoOpen) characterPopIns.initFromZone(zone);
-          },
-          changed(zone) {
-            checkZoneForNewContent(zone);
-
-            const currentZone = zones.currentZone(Meteor.user());
-            if (!currentZone || currentZone._id !== zone._id) return;
-
-            if (meet.api) {
-              meet.fullscreen(zone.fullscreen);
-              const screenMode = zone.fullscreen ? viewportModes.small : viewportModes.splitScreen;
-              updateViewport(worldScene, screenMode);
-            }
-          },
-          removed(zone) {
-            zones.destroyNewContentIndicator(zone);
-          },
+          added(zone) { zones.onDocumentAdded(zone); },
+          changed(newZone, oldZone) { zones.onDocumentUpdated(newZone, oldZone); },
+          removed(zone) { zones.onDocumentRemoved(zone); },
         });
 
         log('loading level: all zones loaded');
