@@ -79,8 +79,8 @@ Template.messagesList.helpers({
     const channel = Session.get('messagesChannel');
     if (!channel?.includes('zon_')) return false;
 
-    const { zoneSubscriptionIds } = Meteor.user();
-    return !zoneSubscriptionIds || !zoneSubscriptionIds[channel];
+    const { zoneLastSeenDates } = Meteor.user();
+    return !zoneLastSeenDates || !zoneLastSeenDates[channel];
   },
   sameDay(index) {
     if (index === 0) return true;

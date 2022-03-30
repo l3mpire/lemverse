@@ -74,11 +74,11 @@ const extractLevelIdFromURL = () => {
 const checkZoneForNewContent = zone => {
   if (!zone.lastMessageAt || Session.get('messagesChannel') === zone._id) return;
 
-  const { zoneSubscriptionIds } = Meteor.user();
-  if (!zoneSubscriptionIds) return;
+  const { zoneLastSeenDates } = Meteor.user();
+  if (!zoneLastSeenDates) return;
 
-  const userZoneLastSeenAt = zoneSubscriptionIds[zone._id];
-  if (userZoneLastSeenAt < zone.lastMessageAt) zones.showNewContentIndicator(zone);
+  const zoneLastSeenDate = zoneLastSeenDates[zone._id];
+  if (zoneLastSeenDate < zone.lastMessageAt) zones.showNewContentIndicator(zone);
 };
 
 Template.lemverse.onCreated(function () {

@@ -65,7 +65,7 @@ Meteor.publish('selfUser', function () {
 
   return Meteor.users.find(
     this.userId,
-    { fields: { emails: 1, options: 1, profile: 1, roles: 1, status: 1, beta: 1, entitySubscriptionIds: 1, zoneSubscriptionIds: 1, inventory: 1 } },
+    { fields: { emails: 1, options: 1, profile: 1, roles: 1, status: 1, beta: 1, entitySubscriptionIds: 1, zoneLastSeenDates: 1, inventory: 1 } },
   );
 });
 
@@ -152,13 +152,13 @@ Meteor.methods({
     check(zoneId, String);
     check(create, Boolean);
 
-    const { zoneSubscriptionIds } = Meteor.user();
-    if (create || zoneSubscriptionIds[zoneId]) Meteor.users.update(Meteor.userId(), { $set: { [`zoneSubscriptionIds.${zoneId}`]: new Date() } });
+    const { zoneLastSeenDates } = Meteor.user();
+    if (create || zoneLastSeenDates[zoneId]) Meteor.users.update(Meteor.userId(), { $set: { [`zoneLastSeenDates.${zoneId}`]: new Date() } });
   },
   unsubscribeFromZone(zoneId) {
     if (!this.userId) return;
     check(zoneId, String);
-    Meteor.users.update(Meteor.userId(), { $unset: { [`zoneSubscriptionIds.${zoneId}`]: 1 } });
+    Meteor.users.update(Meteor.userId(), { $unset: { [`zoneLastSeenDates.${zoneId}`]: 1 } });
   },
 });
 
