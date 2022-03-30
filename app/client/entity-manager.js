@@ -72,7 +72,7 @@ entityManager = {
 
   updateEntityFromState(entity, stateName) {
     if (!entity.states) return false;
-    const state = entity.states[stateName];
+    const state = entity.states[stateName || entity.state];
     if (!state) return false;
 
     const entityInstance = this.entities[entity._id];
