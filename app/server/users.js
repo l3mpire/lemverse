@@ -1,4 +1,4 @@
-const mainFields = { options: 1, profile: 1, roles: 1, status: { online: 1 }, beta: 1, inventory: 1, entitySubscriptionIds: 1, guildId: 1 };
+const mainFields = { options: 1, profile: 1, roles: 1, status: { online: 1 }, beta: 1, guildId: 1 };
 
 isolateUser = userId => {
   check(userId, String);
@@ -65,7 +65,7 @@ Meteor.publish('selfUser', function () {
 
   return Meteor.users.find(
     this.userId,
-    { fields: { emails: 1, options: 1, profile: 1, roles: 1, status: 1, beta: 1, entitySubscriptionIds: 1 } },
+    { fields: { emails: 1, options: 1, profile: 1, roles: 1, status: 1, beta: 1, entitySubscriptionIds: 1, zoneSubscriptionIds: 1, inventory: 1 } },
   );
 });
 
@@ -146,6 +146,19 @@ Meteor.methods({
     if (!this.userId) return;
     check(notificationId, String);
     Notifications.update({ _id: notificationId, userId: this.userId }, { $set: { read: true } });
+  },
+  updateZoneLastSeenDate(zoneId, create = false) {
+    if (!this.userId) return;
+    check(zoneId, String);
+    check(create, Boolean);
+
+    const { zoneSubscriptionIds } = Meteor.user();
+    if (create || zoneSubscriptionIds[zoneId]) Meteor.users.update(Meteor.userId(), { $set: { [`zoneSubscriptionIds.${zoneId}`]: new Date() } });
+  },
+  unsubscribeFromZone(zoneId) {
+    if (!this.userId) return;
+    check(zoneId, String);
+    Meteor.users.update(Meteor.userId(), { $unset: { [`zoneSubscriptionIds.${zoneId}`]: 1 } });
   },
 });
 
