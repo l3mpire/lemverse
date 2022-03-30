@@ -260,6 +260,12 @@ zones = {
   showNewContentIndicator(zone) {
     this.destroyNewContentIndicator(zone);
 
+    // use the entity has an indicator, otherwise show an animated area
+    if (zone.entityId) {
+      const entity = Entities.findOne(zone.entityId);
+      if (entity && entityManager.updateEntityFromState(entity, 'on')) return;
+    }
+
     const position = this.getCenter(zone);
     const width = zone.x2 - zone.x1;
     const height = zone.y2 - zone.y1;
@@ -278,6 +284,12 @@ zones = {
   },
 
   destroyNewContentIndicator(zone) {
+    // reset entity linked's state
+    if (zone.entityId) {
+      const entity = Entities.findOne(zone.entityId);
+      if (entity) entityManager.updateEntityFromState(entity, 'off');
+    }
+
     const newContentSprites = this.newContentSprites[zone._id];
     if (!newContentSprites) return;
 
