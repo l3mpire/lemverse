@@ -65,18 +65,18 @@ entityManager = {
     if (!entityInstance) return;
 
     entityInstance.setPosition(newEntity.x, newEntity.y);
-
-    if (newEntity.states && newEntity.state !== oldEntity.state) {
-      const state = newEntity.states[newEntity.state];
-      this.updateEntityFromState(newEntity, state);
-    }
+    if (newEntity.state !== oldEntity.state) this.updateEntityFromState(newEntity, newEntity.state);
 
     window.dispatchEvent(new CustomEvent(eventTypes.onEntityUpdated, { detail: { entity: newEntity } }));
   },
 
-  updateEntityFromState(entity, state) {
+  updateEntityFromState(entity, stateName) {
+    if (!entity.states) return false;
+    const state = entity.states[stateName];
+    if (!state) return false;
+
     const entityInstance = this.entities[entity._id];
-    if (!entityInstance || !state) return;
+    if (!entityInstance) return false;
 
     if (state.sprite) {
       const sprite = entityInstance.getByName('main-sprite');
@@ -99,6 +99,8 @@ entityManager = {
         text.setText(state.text.text || entity.state);
       }
     }
+
+    return true;
   },
 
   onInteraction(tiles, interactionPosition) {
@@ -293,7 +295,7 @@ entityManager = {
           mainSprite.setOrigin(0.5, 1);
         }
 
-        if (entity.states) this.updateEntityFromState(entity, entity.states[entity.state]);
+        this.updateEntityFromState(entity, entity.state);
       });
 
       if (callback) callback();
