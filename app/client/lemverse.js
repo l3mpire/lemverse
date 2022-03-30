@@ -409,6 +409,9 @@ Template.lemverse.onCreated(function () {
               updateViewport(worldScene, screenMode);
             }
           },
+          removed(zone) {
+            zones.destroyNewContentIndicator(zone);
+          },
         });
 
         log('loading level: all zones loaded');
