@@ -71,6 +71,16 @@ const extractLevelIdFromURL = () => {
   return `lvl_${levelId}`;
 };
 
+const checkZoneForNewContent = zone => {
+  if (!zone.lastMessageAt || Session.get('messagesChannel') === zone._id) return;
+
+  const { zoneSubscriptionIds } = Meteor.user();
+  if (!zoneSubscriptionIds) return;
+
+  const userZoneLastSeenAt = zoneSubscriptionIds[zone._id];
+  if (userZoneLastSeenAt < zone.lastMessageAt) zones.showNewContentIndicator(zone);
+};
+
 Template.lemverse.onCreated(function () {
   Session.set('selectedTiles', undefined);
   Session.set('selectedTilesetId', undefined);
@@ -389,16 +399,11 @@ Template.lemverse.onCreated(function () {
       this.handleZonesSubscribe = this.subscribe('zones', levelId, () => {
         this.handleObserveZones = Zones.find().observe({
           added(zone) {
+            checkZoneForNewContent(zone);
             if (zone.popInConfiguration?.autoOpen) characterPopIns.initFromZone(zone);
           },
           changed(zone) {
-            if (zone.lastMessageAt && Session.get('messagesChannel') !== zone._id) {
-              const { zoneSubscriptionIds } = Meteor.user();
-              if (zoneSubscriptionIds) {
-                const userZoneLastSeenAt = zoneSubscriptionIds[zone._id];
-                if (!userZoneLastSeenAt || userZoneLastSeenAt < zone.lastMessageAt) zones.showNewContentIndicator(zone);
-              }
-            }
+            checkZoneForNewContent(zone);
 
             const currentZone = zones.currentZone(Meteor.user());
             if (!currentZone || currentZone._id !== zone._id) return;
