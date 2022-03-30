@@ -151,7 +151,7 @@ sendEvent = (command, data = {}) => {
 subscribedUsersToEntity = entityId => Meteor.users.find(
   { entitySubscriptionIds: entityId },
   {
-    fields: { 'profile.body': 1, 'profile.eyes': 1, 'profile.accessory': 1, 'profile.hair': 1, 'profile.outfit': 1, 'profile.name': 1 },
+    fields: { 'status.online': 1, 'profile.body': 1, 'profile.eyes': 1, 'profile.accessory': 1, 'profile.hair': 1, 'profile.outfit': 1, 'profile.name': 1 },
     sort: { 'profile.name': 1 },
   },
 ).fetch();
