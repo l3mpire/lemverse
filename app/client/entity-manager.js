@@ -224,6 +224,8 @@ entityManager = {
     const bootScene = game.scene.getScene('BootScene');
     bootScene.loadImagesAtRuntime(sprites, () => {
       entities.forEach(entity => {
+        if (this.entities[entity._id]) return;
+
         // the spawn being asynchronous, an entity may have disappeared before being created
         if (!Entities.findOne(entity._id)) return;
 
