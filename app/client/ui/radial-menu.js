@@ -47,7 +47,7 @@ const mainMenuItems = [
   { icon: '🎥', shortcut: 50, label: 'Camera', state: 'shareVideo', action: () => toggleUserProperty('shareVideo') },
   { icon: '🎤', shortcut: 49, label: 'Audio', state: 'shareAudio', action: () => toggleUserProperty('shareAudio') },
   { icon: '😃', shortcut: 57, label: 'Reactions', action: template => buildMenu(reactionMenuItems, template.items) },
-  { icon: '🔔', shortcut: 56, label: 'Voice mail', action: () => { toggleModal('notifications'); closeMenu(); } },
+  { icon: '🔔', shortcut: 56, label: 'Notifications', action: () => { toggleModal('notifications'); closeMenu(); } },
   { icon: '📜', shortcut: 55, label: 'Quests', action: () => { Session.set('quests', { origin: 'menu' }); closeMenu(); } },
   { icon: '💬', shortcut: 54, label: 'Text', action: () => { Session.set('console', true); closeMenu(); } },
   { icon: '📢',
