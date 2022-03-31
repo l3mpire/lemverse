@@ -13,7 +13,7 @@ Template.layout.onRendered(() => {
 let retryTimeDurationInterval;
 Tracker.autorun(() => {
   const { status } = Meteor.status();
-  if (FlowRouter.current()?.path === '/editor') Meteor.subscribe('selfUser', this.userId);
+  Meteor.subscribe('selfUser', this.userId);
 
   Meteor.clearInterval(retryTimeDurationInterval);
   if (status !== 'waiting') Session.set('retryTimeDuration', 0);
