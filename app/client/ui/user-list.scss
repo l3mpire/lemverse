@@ -8,6 +8,7 @@
     margin: 0;
     padding: 0;
     list-style-type: none;
+    font-size: 0.9rem;
 
     .user {
       margin: 2px 10px;
@@ -61,7 +62,7 @@
       .zone,
       .guild {
         max-width: 150px;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
         color: darken($main-text-color, 10%);
         text-align: center;
         white-space: nowrap;
