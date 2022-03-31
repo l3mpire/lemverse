@@ -4,6 +4,42 @@
   overflow-y: auto;
   height: 100%;
 
+  .empty {
+    margin-top: 30px;
+    text-align: center;
+    color: $main-text-color;
+    font-size: 0.8rem;
+  }
+
+  .tabs {
+    display: flex;
+    max-width: 300px;
+    margin: 10px auto;
+    border-radius: $radius;
+    overflow: hidden;
+
+    .button {
+      cursor: default;
+      pointer-events: none;
+      background-color: lighten($main-color, 10%);
+      margin: 0;
+      border-radius: 0;
+      padding: 5px;
+      transition: all 0.25s;
+
+      &.show {
+        cursor: pointer;
+        pointer-events: all;
+        background-color: $light-blue;
+        filter: saturate(70%);
+
+        &:hover {
+          filter: saturate(100%);
+        }
+      }
+    }
+  }
+
   .users {
     margin: 0;
     padding: 0;
@@ -33,6 +69,10 @@
           white-space: nowrap;
           overflow: hidden;
           max-width: 215px;
+
+          &:hover {
+            color: $light-blue;
+          }
         }
   
         .avatar-viewer {

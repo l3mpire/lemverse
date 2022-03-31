@@ -37,11 +37,21 @@
 <template name="userList">
   {{#modal id="displayUserList" title=title}}
     <div class="user-list">
+
+      <div class="tabs">
+        <button type="button" class="button js-toggle-tab {{#unless activeTab "level"}}show{{/unless}}" data-tab="level">Level</button>
+        <button type="button" class="button js-toggle-tab {{#unless activeTab "guild"}}show{{/unless}}" data-tab="guild">Guild</button>
+      </div>
+
       <ul class="users">
         {{#each user in users}}
           {{> userListEntry user=user canEditPermissions=canEditPermissions}}
         {{/each}}
       </ul>
+
+      {{#if showGuildCreationButton}}
+        <div class="empty">Nothing to see here for now 🤫</div>
+      {{/if}}
     </div>
   {{/modal}}
 </template>
