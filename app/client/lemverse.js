@@ -384,35 +384,28 @@ Template.lemverse.onCreated(function () {
         peer.init();
       });
 
-      // Load zones
-      log(`loading level: loading zones`);
-      this.handleZonesSubscribe = this.subscribe('zones', levelId, () => {
-        this.handleObserveZones = Zones.find().observe({
-          added(zone) { zones.onDocumentAdded(zone); },
-          changed(newZone, oldZone) { zones.onDocumentUpdated(newZone, oldZone); },
-          removed(zone) { zones.onDocumentRemoved(zone); },
-        });
-
-        log('loading level: all zones loaded');
-        zones.checkDistances(userManager.player);
-      });
-
       // Load entities
       log(`loading level: loading entities`);
       this.handleEntitiesSubscribe = this.subscribe('entities', levelId, () => {
         this.handleObserveEntities = Entities.find().observe({
-          added(entity) {
-            entityManager.onDocumentAdded(entity);
-          },
-          changed(newEntity, oldEntity) {
-            setTimeout(() => entityManager.onDocumentUpdated(newEntity, oldEntity), 0);
-          },
-          removed(entity) {
-            entityManager.onDocumentRemoved(entity);
-          },
+          added(entity) { entityManager.onDocumentAdded(entity); },
+          changed(newEntity, oldEntity) { entityManager.onDocumentUpdated(newEntity, oldEntity); },
+          removed(entity) { entityManager.onDocumentRemoved(entity); },
         });
-
         log('loading level: all entities loaded');
+
+        // Load zones (after entities because a zone can be linked to an entity and update his appearance)
+        log(`loading level: loading zones`);
+        this.handleZonesSubscribe = this.subscribe('zones', levelId, () => {
+          this.handleObserveZones = Zones.find().observe({
+            added(zone) { zones.onDocumentAdded(zone); },
+            changed(newZone, oldZone) { zones.onDocumentUpdated(newZone, oldZone); },
+            removed(zone) { zones.onDocumentRemoved(zone); },
+          });
+
+          log('loading level: all zones loaded');
+          zones.checkDistances(userManager.player);
+        });
       });
 
       this.currentLevelId = levelId;
