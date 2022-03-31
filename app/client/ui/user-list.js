@@ -1,9 +1,23 @@
+Template.userListEntry.helpers({
+  admin() { return this.user.roles?.admin; },
+  guild() { return Guilds.findOne(this.user.guildId)?.name; },
+  zone() {
+    if (!this.user.status.online) return '-';
+    return this.user.profile.zoneName || '-';
+  },
+  canEditLevel() { return isEditionAllowed(this.user._id); },
+  communicationAllowed() { return this.user._id !== Meteor.userId() && !Meteor.user().profile.guest; },
+  levelOwner() { return isLevelOwner(this.user._id); },
+  user() { return this.user; },
+});
+
 Template.userList.onCreated(function () {
   this.hasLevelRights = Meteor.user().roles?.admin || isLevelOwner(Meteor.userId());
   this.subscribe('guilds');
 });
 
 Template.userList.helpers({
+  canEditPermissions() { return Template.instance().hasLevelRights; },
   users() {
     const { levelId } = Meteor.user().profile;
 
@@ -32,12 +46,6 @@ Template.userList.helpers({
 
     return users;
   },
-  guild() { return Guilds.findOne(this.guildId)?.name; },
-  zone() {
-    if (!this.status.online) return '-';
-    return this.profile.zoneName || '-';
-  },
-  canEditLevel() { return isEditionAllowed(this._id); },
   title() {
     const usersCount = Meteor.users.find(
       { 'profile.guest': { $not: true }, 'status.online': true },
@@ -46,9 +54,6 @@ Template.userList.helpers({
 
     return `Users (${usersCount} online) ${guestsCount > 0 ? `(and ${guestsCount} 👻)` : ''}`;
   },
-  canAddEditors() { return Template.instance().hasLevelRights; },
-  communicationAllowed() { return this._id !== Meteor.userId() && !Meteor.user().profile.guest; },
-  levelOwner() { return isLevelOwner(this._id); },
 });
 
 Template.userList.events({

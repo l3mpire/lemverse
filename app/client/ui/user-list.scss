@@ -1,119 +1,117 @@
 @import "../_variables";
 
 .user-list {
-  padding: 10px 0;
-  user-select: none;
   overflow-y: auto;
   height: 100%;
 
-  .list-title {
-    font-size: 1.25rem;
-    margin: 2px 5px;
-    padding: 4px 5px;
-  }
+  .users {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
 
-  .user {
-    margin: 2px 10px;
-    padding: 0 5px;
-    border-radius: 5px;
-    line-height: 26px;
-    display: grid;
-    grid-template-columns: 220px minmax(180px, auto) minmax(150px, auto) minmax(70px, auto) 30px;
-    align-items: center;
-
-    &:hover {
-      background-color: darken($main-color, 5%);
-    }
-
-    .main {
-      display: flex;
-      flex-direction: row;
+    .user {
+      margin: 2px 10px;
+      padding: 0 5px;
+      border-radius: 5px;
+      line-height: 26px;
+      display: grid;
+      grid-template-columns: 220px minmax(180px, auto) minmax(150px, auto) minmax(70px, auto) 30px;
       align-items: center;
-
-      .js-profile {
+  
+      &:hover {
+        background-color: darken($main-color, 5%);
+      }
+  
+      .main {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+  
+        .js-profile {
+          cursor: pointer;
+          white-space: nowrap;
+          overflow: hidden;
+          max-width: 215px;
+        }
+  
+        .avatar-viewer {
+          width: 30px;
+          height: 35px;
+          margin-right: 5px;
+  
+          .character-body-part-container {
+            transform: scale(0.4) translate(-24px, -70px);
+          }
+  
+          .avatar:before {
+            bottom: 4px;
+            right: 4px;
+            width: 6px;
+            height: 6px;
+          }
+        }
+      }
+  
+      .js-guild:hover {
         cursor: pointer;
+        font-weight: bold;
+        color: $light-blue;
+      }
+  
+      .zone,
+      .guild {
+        max-width: 150px;
+        font-size: 0.9rem;
+        color: darken($main-text-color, 10%);
+        text-align: center;
         white-space: nowrap;
         overflow: hidden;
-        max-width: 215px;
       }
-
-      .avatar-viewer {
+  
+      .guild {
+        max-width: 180px;
+      }
+  
+      .actions,
+      .infos {
+        text-align: center;
+        font-size: 1rem;
+        display: flex;
+        gap: 5px;
+        justify-content: center;
+      }
+  
+      .actions {
+        span {
+          cursor: pointer;
+          opacity: 0.9;
+  
+          &:hover {
+            opacity: 1;
+          }
+        }
+      }
+  
+      .infos {
         width: 30px;
-        height: 35px;
-        margin-right: 5px;
-
-        .character-body-part-container {
-          transform: scale(0.4) translate(-24px, -70px);
+  
+        .js-profile:hover {
+          cursor: pointer;
+          text-decoration: underline;
         }
-
-        .avatar:before {
-          bottom: 4px;
-          right: 4px;
-          width: 6px;
-          height: 6px;
-        }
-      }
-    }
-
-    .js-guild:hover {
-      cursor: pointer;
-      font-weight: bold;
-      color: $light-blue;
-    }
-
-    .zone,
-    .guild {
-      max-width: 150px;
-      font-size: 0.9rem;
-      color: darken($main-text-color, 10%);
-      text-align: center;
-      white-space: nowrap;
-      overflow: hidden;
-    }
-
-    .guild {
-      max-width: 180px;
-    }
-
-    .actions,
-    .infos {
-      text-align: center;
-      font-size: 1rem;
-      display: flex;
-      gap: 5px;
-      justify-content: center;
-    }
-
-    .actions {
-      span {
-        cursor: pointer;
-        opacity: 0.9;
-
-        &:hover {
-          opacity: 1;
-        }
-      }
-    }
-
-    .infos {
-      width: 30px;
-
-      .js-profile:hover {
-        cursor: pointer;
-        text-decoration: underline;
-      }
-
-      .js-toggle-edition {
-        cursor: pointer;
-        position: relative;
-
-        &.denied:after {
-          content: '❌';
-          position: absolute;
-          z-index: 2;
-          top: 3px;
-          left: 0;
-          transform: scale(0.8) translate(0, -5px);
+  
+        .js-toggle-edition {
+          cursor: pointer;
+          position: relative;
+  
+          &.denied:after {
+            content: '❌';
+            position: absolute;
+            z-index: 2;
+            top: 3px;
+            left: 0;
+            transform: scale(0.8) translate(0, -5px);
+          }
         }
       }
     }

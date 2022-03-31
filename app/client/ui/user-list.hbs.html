@@ -1,41 +1,47 @@
+<template name="userListEntry">
+  <li class="user">
+    <div class="main">
+      {{> avatarViewer user=user showStatus=true}}
+      <span class="js-profile">{{user.profile.name}}</span>
+    </div>
+    <div class="guild">
+      {{#if guild}}<span class="js-guild">{{guild}}</span>{{else}}<span>-</span>{{/if}}
+    </div>
+    <div class="zone">
+      <span>{{zone}}</span>
+    </div>
+    <div class="actions">
+      {{#if communicationAllowed}}
+        <span class="js-send-message">💬</span>
+        <span class="js-create-quest">📜</span>
+      {{else}}
+        <span>-</span>
+      {{/if}}
+    </div>
+    <div class="infos">
+      {{#if admin}}
+        <span title="Is admin">👑</span>
+      {{else if levelOwner}}
+        <span title="Is level owner">🗺️</span>
+      {{else if canEditPermissions}}
+        {{#if canEditLevel}}
+          <span class="js-toggle-edition" title="Edition allowed">🔨</span>
+        {{else}}
+          <span class="js-toggle-edition denied" title="Click to allow edition">🔨</span>
+        {{/if}}
+      {{/if}}
+    </div>
+  </li>
+</template>
+
 <template name="userList">
   {{#modal id="displayUserList" title=title}}
     <div class="user-list">
-      {{#each users}}
-        <div class="user">
-          <div class="main">
-            {{> avatarViewer user=this showStatus=true}}
-            <span class="js-profile">{{profile.name}}</span>
-          </div>
-          <div class="guild">
-            {{#if guild}}<span class="js-guild">{{guild}}</span>{{else}}<span>-</span>{{/if}}
-          </div>
-          <div class="zone">
-            <span>{{zone}}</span>
-          </div>
-          <div class="actions">
-            {{#if communicationAllowed}}
-              <span class="js-send-message">💬</span>
-              <span class="js-create-quest">📜</span>
-            {{else}}
-              <span>-</span>
-            {{/if}}
-          </div>
-          <div class="infos">
-            {{#if roles.admin}}
-              <span title="Is admin">👑</span>
-            {{else if levelOwner}}
-              <span title="Is level owner">🗺️</span>
-            {{else if canAddEditors}}
-              {{#if canEditLevel}}
-                <span class="js-toggle-edition" title="Edition allowed">🔨</span>
-              {{else}}
-                <span class="js-toggle-edition denied" title="Click to allow edition">🔨</span>
-              {{/if}}
-            {{/if}}
-          </div>
-        </div>
-      {{/each}}
+      <ul class="users">
+        {{#each user in users}}
+          {{> userListEntry user=user canEditPermissions=canEditPermissions}}
+        {{/each}}
+      </ul>
     </div>
   {{/modal}}
 </template>
