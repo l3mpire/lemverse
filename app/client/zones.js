@@ -150,16 +150,27 @@ zones = {
     return usersInZone;
   },
 
-  toastZoneName(zoneName) {
-    if (!this.toastBloc) this.toastBloc = $('.zone-name-toaster');
+  toastZoneName(zone) {
+    const { name } = zone;
+    const hasNewContent = this.hasNewContent(zone);
 
-    if (zoneName) {
-      this.toastBloc.text(zoneName);
-      this.toastBloc.addClass('show');
+    if (!this.toastBloc) {
+      this.toastBloc = document.querySelector('.zone-name-toaster');
+      this.toastBloc.onclick = () => {
+        openConsole(true);
+        this.toastBloc.classList.remove('show');
+      };
+    }
+
+    if (name) {
+      this.toastBloc.innerHTML = name;
+      this.toastBloc.classList.add('show');
     }
 
     clearTimeout(this.toastTimerInstance);
-    this.toastTimerInstance = setTimeout(() => this.toastBloc.removeClass('show'), 1500);
+
+    this.toastTimerInstance = setTimeout(() => this.toastBloc.classList.remove('show'), hasNewContent ? 5000 : 1500);
+    this.toastBloc.classList.toggle('new-content', hasNewContent);
   },
 
   checkDistances(player) {
@@ -197,7 +208,7 @@ zones = {
       }
 
       this.activeZone = zone;
-      if (zone.name && !zone.hideName) this.toastZoneName(zone.name);
+      if (zone.name && !zone.hideName) this.toastZoneName(zone);
 
       if (zone.url) {
         this.getIframeElement().src = zone.url;
@@ -300,13 +311,17 @@ zones = {
   },
 
   checkZoneForNewContent(zone) {
-    if (!zone.lastMessageAt || Session.get('messagesChannel') === zone._id) return;
+    if (!this.hasNewContent(zone)) return;
+    this.showNewContentIndicator(zone);
+  },
+
+  hasNewContent(zone) {
+    if (!zone.lastMessageAt || Session.get('messagesChannel') === zone._id) return false;
 
     const { zoneLastSeenDates } = Meteor.user();
-    if (!zoneLastSeenDates) return;
+    if (!zoneLastSeenDates) return false;
 
-    const zoneLastSeenDate = zoneLastSeenDates[zone._id];
-    if (zoneLastSeenDate < zone.lastMessageAt) this.showNewContentIndicator(zone);
+    return zoneLastSeenDates[zone._id] < zone.lastMessageAt;
   },
 
   getIframeElement() {

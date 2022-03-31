@@ -1,5 +1,7 @@
+@import "../_variables";
+
 .zone-name-toaster {
-  pointer-events: none;
+  cursor: pointer;
   position: absolute;
   top: 0;
   z-index: 150;
@@ -7,9 +9,9 @@
   width: auto;
   min-width: 250px;
   transform: translate(-50%, -100%);
-  background: rgba(57, 53, 69, 1);
-  border-radius: 0 0 25px 25px;
-  color: white;
+  background: $main-color;
+  border-radius: 0 0 20px 20px;
+  color: $main-text-color;
   padding: 15px;
   text-align: center;
   transition: transform 0.3s cubic-bezier(0.55, 0, 1, 0.45);
@@ -17,5 +19,20 @@
   &.show {
     transition: transform 0.3s cubic-bezier(0, 0.55, 0.45, 1);
     transform: translate(-50%, 0);
+  }
+
+  &:hover {
+    background: lighten($main-color, 10%);
+  }
+
+  &.new-content {
+    font-weight: bold;
+    animation: toaster-background-animation 1.5s infinite;
+  }
+}
+
+@keyframes toaster-background-animation {
+  50% {
+    background-color: lighten($main-color, 10%);
   }
 }
