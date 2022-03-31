@@ -33,7 +33,6 @@ entityManager = {
   scene: undefined,
   previousNearestEntity: undefined,
   entities: {},
-  entitiesToSpawn: [],
 
   init(scene) {
     this.scene = scene;
@@ -42,14 +41,13 @@ entityManager = {
   destroy() {
     this.onSleep();
     this.entities = {};
-    this.entitiesToSpawn = [];
     this.previousNearestEntity = undefined;
   },
 
   onSleep() { },
 
   onDocumentAdded(entity) {
-    this.entitiesToSpawn.push(entity);
+    this.spawnEntities([entity]);
   },
 
   onDocumentRemoved(entity) {
@@ -149,12 +147,6 @@ entityManager = {
 
   postUpdate() {
     escapeA.postUpdate();
-
-    if (this.entitiesToSpawn.length) {
-      const clonedEntities = [...this.entitiesToSpawn];
-      this.entitiesToSpawn = [];
-      this.spawnEntities(clonedEntities);
-    }
 
     const { player, playerWasMoving } = userManager;
     if (player && playerWasMoving && !Meteor.user().profile.guest) this.handleNearestEntityTooltip(player);
