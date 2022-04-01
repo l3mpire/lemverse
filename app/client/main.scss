@@ -11,9 +11,10 @@ body {
   padding: 0;
   color: #2E3440;
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: none;
-  overscroll-behavior-y: none;
+  overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  height: 100vh;
 
   * {
     font-family: 'Roboto', sans-serif;
