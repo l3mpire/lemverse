@@ -20,10 +20,10 @@
   },
   "homepage": "https://github.com/l3mpire/lemverse#readme",
   "devDependencies": {
-    "@babel/core": "^7.17.5",
+    "@babel/core": "^7.17.8",
     "@babel/eslint-parser": "^7.17.0",
-    "@babel/eslint-plugin": "^7.16.5",
-    "eslint": "^8.9.0",
+    "@babel/eslint-plugin": "^7.17.7",
+    "eslint": "^8.12.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.25.4"
   }
