@@ -21,7 +21,7 @@ const characterAnimations = Object.freeze({
 const timeBetweenReactionSound = 500;
 
 const messageReceived = {
-  duration: 10000,
+  duration: 15000,
   style: 'tooltip with-arrow fade-in',
 };
 
