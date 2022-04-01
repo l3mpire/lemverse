@@ -21,8 +21,8 @@
     .button {
       cursor: default;
       pointer-events: none;
-      background-color: lighten($main-color, 10%);
       margin: 0;
+      background-color: $light-blue;
       border-radius: 0;
       padding: 5px;
       transition: all 0.25s;
@@ -30,7 +30,7 @@
       &.show {
         cursor: pointer;
         pointer-events: all;
-        background-color: $light-blue;
+        background-color: lighten($main-color, 10%);
         filter: saturate(70%);
 
         &:hover {
