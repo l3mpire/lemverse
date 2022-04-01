@@ -57,6 +57,20 @@ formatURL = url => {
   return formattedURL;
 };
 
+formatURLs = (text, shortName = false) => text.replace(/(https?:\/\/[^\s]+)/g, url => {
+  const formatedURL = formatURL(url);
+  if (!formatedURL) return url;
+
+  let linkName = url;
+  if (shortName) {
+    const name = formatedURL.hostname.replace('www.', '');
+    const lastDot = name.lastIndexOf('.') || name.length;
+    linkName = lastDot === -1 ? name : name.substring(lastDot, 0);
+  }
+
+  return `<a href="${formatedURL}" target="_blank" title="${formatedURL}">${linkName}</a>`;
+});
+
 sendDataToUsers = (type, data, emitterId, userIds = []) => {
   let targets = [...new Set(userIds)];
   targets = targets.filter(target => target !== Meteor.userId());

@@ -1,13 +1,3 @@
-const transformURL = text => text.replace(/(https?:\/\/[^\s]+)/g, url => {
-  const formatedURL = formatURL(url);
-  if (!formatedURL) return url;
-
-  const name = formatedURL.hostname.replace('www.', '');
-  const lastDot = name.lastIndexOf('.') || name.length;
-
-  return `<a href="${formatedURL}" target="_blank">${lastDot === -1 ? name : name.substring(lastDot, 0)}</a>`;
-});
-
 const dispatchPopInEvent = event => {
   if (characterPopIns.onPopInEvent) characterPopIns.onPopInEvent(event);
 };
@@ -110,7 +100,7 @@ characterPopIns = {
     newText = newText.replace('{{level}}', Levels.findOne(user.profile.levelId).name);
 
     // parse urls
-    if (options.parseURL) newText = transformURL(text);
+    if (options.parseURL) newText = formatURLs(text, true);
 
     return `<p class="${options.classList}">${newText}</p>`;
   },

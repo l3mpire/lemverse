@@ -158,6 +158,7 @@ module.exports = {
     createFakeShadow: 'writable',
     subscribedUsersToEntity: 'writable',
     userLevel: 'writable',
+    formatURLs: 'writable',
 
     relativePositionToCamera: 'writable',
     updateViewport: 'writable',

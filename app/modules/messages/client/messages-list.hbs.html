@@ -4,7 +4,7 @@
       {{> avatarViewer user=user showStatus=true}}
       <div class="message-content">
         <span class="js-username">{{userName}}</span> <span class="time" title="{{date}}">{{time}}</span>
-        <p class="text">{{text}}</p>
+        <p class="text">{{{text}}}</p>
         {{#if file}}
           <div class="files">
             <a href="{{file.link}}" target="_blank">
