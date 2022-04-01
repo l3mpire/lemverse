@@ -25,20 +25,34 @@
     height: 52px;
   }
 
-  .js-channel-subscribe {
-    cursor: pointer;
+  .actions {
     position: absolute;
     top: 12px;
     right: 10px;
-    border-radius: $radius;
-    border: 0;
-    padding: 5px 10px;
-    background-color: $light-green;
-    color: white;
-    font-weight: bold;
 
-    &:hover {
-      background-color: darken($light-green, 10%);
+    button {
+      cursor: pointer;
+      border-radius: $radius;
+      border: 0;
+      padding: 5px 10px;
+      color: white;
+      font-weight: bold;
+
+      &.js-channel-subscribe {
+        background-color: $light-green;
+    
+        &:hover {
+          background-color: darken($light-green, 10%);
+        }
+      }
+
+      &.js-channel-unsubscribe {
+        background-color: $light-red;
+    
+        &:hover {
+          background-color: darken($light-red, 10%);
+        }
+      }
     }
   }
 

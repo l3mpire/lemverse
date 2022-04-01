@@ -75,7 +75,7 @@ Template.messagesList.helpers({
   show() { return Session.get('console'); },
   channelName() { return getCurrentChannelName(); },
   messages() { return sortedMessages(); },
-  showSubscribeButton() {
+  subscribed() {
     const channel = Session.get('messagesChannel');
     if (!channel?.includes('zon_')) return false;
 
@@ -119,6 +119,9 @@ Template.messagesList.events({
 
     const channelId = Session.get('messagesChannel');
     if (!channelId.includes('zon_')) return;
-    Meteor.call('unsubscribeFromZone', channelId);
+    Meteor.call('unsubscribeFromZone', channelId, err => {
+      if (err) return;
+      lp.notif.success('🔔 You will no longer be notified');
+    });
   },
 });
