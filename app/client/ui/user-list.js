@@ -42,8 +42,9 @@ Template.userListEntry.events({
 });
 
 Template.userList.onCreated(function () {
-  this.activeTab = new ReactiveVar(tabs.level);
-  this.hasLevelRights = Meteor.user().roles?.admin || isLevelOwner(Meteor.userId());
+  const user = Meteor.user();
+  this.activeTab = new ReactiveVar(user.guildId ? tabs.guild : tabs.level);
+  this.hasLevelRights = user.roles?.admin || isLevelOwner(user._id);
   this.subscribe('guilds');
 });
 
