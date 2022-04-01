@@ -49,7 +49,7 @@ const mainMenuItems = [
   { icon: '😃', shortcut: 57, label: 'Reactions', action: template => buildMenu(reactionMenuItems, template.items) },
   { icon: '🔔', shortcut: 56, label: 'Notifications', action: () => { toggleModal('notifications'); closeMenu(); } },
   { icon: '📜', shortcut: 55, label: 'Quests', action: () => { Session.set('quests', { origin: 'menu' }); closeMenu(); } },
-  { icon: '💬', shortcut: 54, label: 'Text', action: () => { Session.set('console', true); closeMenu(); } },
+  { icon: '💬', shortcut: 54, label: 'Text', action: () => { openConsole(true); closeMenu(); } },
   { icon: '📢',
     label: 'Shout',
     shortcut: 53,
