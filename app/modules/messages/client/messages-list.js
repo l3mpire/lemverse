@@ -75,6 +75,7 @@ Template.messagesList.helpers({
   show() { return Session.get('console'); },
   channelName() { return getCurrentChannelName(); },
   messages() { return sortedMessages(); },
+  canSubscribe() { return Session.get('messagesChannel')?.includes('zon_'); },
   subscribed() {
     const channel = Session.get('messagesChannel');
     if (!channel?.includes('zon_')) return false;

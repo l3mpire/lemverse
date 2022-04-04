@@ -25,10 +25,12 @@
     {{#if show}}
       <h3 class="channel-name">{{channelName}}</h3>
       <div class="actions">
-        {{#if subscribed}}
-          <button type="button" class="js-channel-subscribe">Subscribe</button>
-        {{else}}
-          <button type="button" class="js-channel-unsubscribe">Unsubscribe</button>
+        {{#if canSubscribe}}
+          {{#if subscribed}}
+            <button type="button" class="js-channel-subscribe">Subscribe</button>
+          {{else}}
+            <button type="button" class="js-channel-unsubscribe">Unsubscribe</button>
+          {{/if}}
         {{/if}}
       </div>
       <div class="messages-list">
