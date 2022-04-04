@@ -11,8 +11,6 @@ const zoneAnimations = {
 
 zones = {
   activeZone: undefined,
-  toastTimerInstance: undefined,
-  toastBloc: undefined,
   webpageContainer: undefined,
   webpageIframeContainer: undefined,
   newContentSprites: {},
@@ -150,29 +148,6 @@ zones = {
     return usersInZone;
   },
 
-  toastZoneName(zone) {
-    const { name } = zone;
-    const hasNewContent = this.hasNewContent(zone);
-
-    if (!this.toastBloc) {
-      this.toastBloc = document.querySelector('.zone-name-toaster');
-      this.toastBloc.onclick = () => {
-        openConsole(true);
-        this.toastBloc.classList.remove('show');
-      };
-    }
-
-    if (name) {
-      this.toastBloc.innerHTML = name;
-      this.toastBloc.classList.add('show');
-    }
-
-    clearTimeout(this.toastTimerInstance);
-
-    this.toastTimerInstance = setTimeout(() => this.toastBloc.classList.remove('show'), hasNewContent ? 5000 : 1500);
-    this.toastBloc.classList.toggle('new-content', hasNewContent);
-  },
-
   checkDistances(player) {
     if (!player) return;
 
@@ -208,7 +183,7 @@ zones = {
       }
 
       this.activeZone = zone;
-      if (zone.name && !zone.hideName) this.toastZoneName(zone);
+      if (zone.name && !zone.hideName) Session.set('showZoneName', zone);
 
       if (zone.url) {
         this.getIframeElement().src = zone.url;
