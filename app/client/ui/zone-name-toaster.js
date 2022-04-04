@@ -1,17 +1,19 @@
 Template.zoneNameToaster.onCreated(function () {
   this.toastTimerInstance = undefined;
-  this.zone = new ReactiveVar();
   this.zoneName = new ReactiveVar('');
+  this.style = new ReactiveVar('');
 
   this.autorun(() => {
-    this.zone.set(Session.get('showZoneName'));
-    if (!this.zone.get()) return;
+    const zone = Session.get('showZoneName');
+    if (!zone) {
+      this.style.set('');
+      return;
+    }
 
     Tracker.nonreactive(() => {
-      const zone = this.zone.get();
-
-      this.zoneName.set(zone.name);
       const hasNewContent = zones.hasNewContent(zone);
+      this.zoneName.set(zone.name);
+      this.style.set(`show ${hasNewContent ? 'new-content' : ''}`);
 
       clearTimeout(this.toastTimerInstance);
       this.toastTimerInstance = setTimeout(() => Session.set('showZoneName', undefined), hasNewContent ? 5000 : 1500);
@@ -21,11 +23,5 @@ Template.zoneNameToaster.onCreated(function () {
 
 Template.zoneNameToaster.helpers({
   name() { return Template.instance().zoneName.get(); },
-  classes() {
-    const zone = Template.instance().zone.get();
-    if (!zone) return '';
-
-    const hasNewContent = zones.hasNewContent(zone);
-    return `show ${hasNewContent ? 'new-content' : ''}`;
-  },
+  style() { return Template.instance().style.get(); },
 });

@@ -65,8 +65,10 @@ messagesModule = {
     this.handleMessagesSubscribe = this.template.subscribe('messages', channel);
     this.channel = channel;
     Session.set('messagesChannel', channel); // set console in the new channel
+    this.markChannelAsRead(channel);
+  },
 
-    // mark notification or zone as read
+  markChannelAsRead(channel) {
     if (channel.includes('zon_')) {
       Meteor.call('updateZoneLastSeenDate', channel, () => {
         const zone = Zones.findOne(channel);
@@ -93,9 +95,12 @@ messagesModule = {
   sendMessage(channel, content) {
     if (content.length >= messageMaxLength) throw new Error(`The message is too long (> ${messageMaxLength} chars)`);
 
+    // console.log('sendMessage', new Date());
+
     window.dispatchEvent(new CustomEvent(eventTypes.beforeSendingMessage, { detail: { channel, content } }));
     const messageId = Messages.insert({ _id: Messages.id(), channel, text: content, createdAt: new Date(), createdBy: Meteor.userId() });
     window.dispatchEvent(new CustomEvent(eventTypes.afterSendingMessage, { detail: { channel, messageId } }));
+    this.markChannelAsRead(channel);
 
     if (!channel.includes('qst_')) this.sendWebRTCMessage(channel, content);
 
