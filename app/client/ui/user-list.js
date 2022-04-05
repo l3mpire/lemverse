@@ -5,8 +5,10 @@ const tabs = Object.freeze({
 
 const users = (mode, guildId) => {
   let filters = { 'profile.guest': { $not: true } };
-  if (mode === tabs.level) filters = { ...filters, 'status.online': true };
-  else if (mode === tabs.guild) filters = { ...filters, $and: [{ guildId: { $exists: true } }, { guildId }] };
+  if (mode === tabs.level) {
+    const { levelId } = Meteor.user().profile;
+    filters = { ...filters, 'status.online': true, 'profile.levelId': levelId };
+  } else if (mode === tabs.guild) filters = { ...filters, $and: [{ guildId: { $exists: true } }, { guildId }] };
 
   return Meteor.users.find(filters, { sort: { 'profile.name': 1 } });
 };
