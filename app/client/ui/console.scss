@@ -75,9 +75,14 @@ $button-text-color: white;
       font-size: 13pt;
       width: 75px;
       justify-content: center;
+      transition: background-color 0.25s linear;
 
       &:hover {
         background-color: darken(rgba($main-color, 0.95), 5%);
+      }
+
+      &.has-content {
+        background-color: darken($light-green, 10%);
       }
     }
 
