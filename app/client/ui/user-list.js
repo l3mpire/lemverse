@@ -3,6 +3,8 @@ const tabs = Object.freeze({
   guild: 'guild',
 });
 
+const userListTabKey = 'userListTab';
+
 const users = (mode, guildId) => {
   let filters = { 'profile.guest': { $not: true } };
   if (mode === tabs.level) {
@@ -45,9 +47,13 @@ Template.userListEntry.events({
 
 Template.userList.onCreated(function () {
   const user = Meteor.user();
-  this.activeTab = new ReactiveVar(user.guildId ? tabs.guild : tabs.level);
+  this.activeTab = new ReactiveVar(localStorage.getItem(userListTabKey) || (user.guildId ? tabs.guild : tabs.level));
   this.hasLevelRights = user.roles?.admin || isLevelOwner(user._id);
   this.subscribe('guilds');
+});
+
+Template.userList.onDestroyed(function () {
+  localStorage.setItem(userListTabKey, this.activeTab.get());
 });
 
 Template.userList.helpers({
