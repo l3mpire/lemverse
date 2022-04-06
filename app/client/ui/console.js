@@ -60,11 +60,11 @@ const onPasteAction = e => {
   markInputFileWithContent(true);
 };
 
-const sendMessage = (channel, text) => {
+const sendMessage = (channel, text, file) => {
   let messageId;
 
   try {
-    messageId = messagesModule.sendMessage(channel, text);
+    messageId = messagesModule.sendMessage(channel, text, file);
     clearInputFields(true);
   } catch (e) { lp.notif.error(e); }
 
@@ -96,10 +96,7 @@ const onSubmit = () => {
 
   uploadedFile.on('end', (error, file) => {
     if (error) { lp.notif.error(`Error during file upload: ${error.reason}`); return; }
-
-    const messageId = sendMessage(channel, text);
-    if (messageId) Messages.update(messageId, { $set: { fileId: file._id } });
-    else Files.remove(file._id);
+    if (!sendMessage(channel, text, file)) Files.remove(file._id);
   });
 
   uploadedFile.start();

@@ -84,25 +84,29 @@ messagesModule = {
     try {
       const func = channel.includes('zon_') ? sendDataToUsersInZone : sendDataToUsers;
       await func('text', content, Meteor.userId(), channel.split(';'));
+
+      // simulate a message from himself to show a pop-in over user's head
+      userManager.onPeerDataReceived({ emitter: Meteor.userId(), data: content, type: 'text' });
     } catch (err) {
       if (err.message !== 'no-targets') lp.notif.error(err);
     }
-
-    // simulate a message from himself to show a pop-in over user's head
-    userManager.onPeerDataReceived({ emitter: Meteor.userId(), data: content, type: 'text' });
   },
 
-  sendMessage(channel, content) {
+  sendMessage(channel, content, file) {
     if (content.length >= messageMaxLength) throw new Error(`The message is too long (> ${messageMaxLength} chars)`);
-
-    // console.log('sendMessage', new Date());
+    content = lp.purify(content);
+    if (!content.length && !file) throw new Error(`Invalid content`);
 
     window.dispatchEvent(new CustomEvent(eventTypes.beforeSendingMessage, { detail: { channel, content } }));
-    const messageId = Messages.insert({ _id: Messages.id(), channel, text: content, createdAt: new Date(), createdBy: Meteor.userId() });
-    window.dispatchEvent(new CustomEvent(eventTypes.afterSendingMessage, { detail: { channel, messageId } }));
-    this.markChannelAsRead(channel);
 
-    if (!channel.includes('qst_')) this.sendWebRTCMessage(channel, content);
+    let messageData = { _id: Messages.id(), channel, text: content, createdAt: new Date(), createdBy: Meteor.userId() };
+    if (file) messageData = { ...messageData, fileId: file._id };
+    const messageId = Messages.insert(messageData);
+
+    window.dispatchEvent(new CustomEvent(eventTypes.afterSendingMessage, { detail: { channel, messageId } }));
+
+    this.markChannelAsRead(channel);
+    if (!channel.includes('qst_') && content.length) this.sendWebRTCMessage(channel, content);
 
     return messageId;
   },
