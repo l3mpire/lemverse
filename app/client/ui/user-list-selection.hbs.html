@@ -1,0 +1,15 @@
+<template name="userListSelection">
+  {{#modal title="User selection"}}
+    <div class="user-list-selection">
+      <ul>
+        {{#each users}}
+          <li class="user js-selectable {{#if selected}}selected{{/if}}" data-user-id="{{this._id}}">
+            {{> avatarViewer user=this showStatus=true}}
+            <span>{{this.profile.name}}</span>
+          </li>
+        {{/each}}
+      </ul>
+      <button type="button" class="button js-submit">Add users ({{amountSelected}})</button>
+    </div>
+  {{/modal}}
+</template>
