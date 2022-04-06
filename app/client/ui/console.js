@@ -25,6 +25,8 @@ const clearInputFields = (focus = true) => {
 };
 
 const closeAndFocusCanvas = () => {
+  if (!Session.get('console')) return;
+
   Session.set('console', false);
   window.dispatchEvent(new CustomEvent(eventTypes.consoleClosed));
 
@@ -108,7 +110,8 @@ Template.console.onCreated(function () {
   document.addEventListener('paste', onPasteAction);
 
   this.autorun(() => {
-    if (Session.get('modal')) closeAndFocusCanvas();
+    if (!Session.get('modal')) return;
+    Tracker.nonreactive(() => closeAndFocusCanvas());
   });
 });
 
