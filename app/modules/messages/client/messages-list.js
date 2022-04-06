@@ -26,7 +26,7 @@ Template.messagesListMessage.onCreated(function () {
 Template.messagesListMessage.helpers({
   user() { return Meteor.users.findOne(this.message.createdBy); },
   userName() { return Meteor.users.findOne(this.message.createdBy)?.profile.name || '[removed]'; },
-  text() { return formatURLs(this.message.text); },
+  text() { return lp.purify(formatURLs(this.message.text)); },
   file() {
     if (!this.message.fileId) return undefined;
     return Files.findOne(this.message.fileId);
