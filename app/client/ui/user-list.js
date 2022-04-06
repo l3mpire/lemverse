@@ -76,12 +76,8 @@ Template.userList.helpers({
       .sort((a, b) => a.profile.name.toLowerCase().localeCompare(b.profile.name.toLowerCase()));
   },
   title() {
-    const usersCount = Meteor.users.find(
-      { 'profile.guest': { $not: true }, 'status.online': true },
-    ).count();
-    const guestsCount = Meteor.users.find({ 'profile.guest': { $exists: true } }).count();
-
-    return `Users (${usersCount} online) ${guestsCount > 0 ? `(and ${guestsCount} 👻)` : ''}`;
+    const userOnlineCount = users(tabs.level).count();
+    return `Users (${userOnlineCount} online)`;
   },
   activeTab(name) { return Template.instance().activeTab.get() === name; },
   showGuildCreationButton() { return Template.instance().activeTab.get() === tabs.guild && !users(tabs.guild, Meteor.user().guildId).count(); },
