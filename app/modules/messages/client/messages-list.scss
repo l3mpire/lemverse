@@ -9,7 +9,7 @@
   overflow: hidden;
   pointer-events: none;
   background-color: rgba($main-color, 0.95);
-  border-radius: $radius;
+  border-radius: $radius $radius 0 0;
 
   &.show {
     opacity: 1;
@@ -18,17 +18,37 @@
 
   .channel-name {
     margin: 0;
-    padding: 15px;
+    padding: 0 15px;
     text-align: left;
     background-color: $main-color;
     color: $main-text-color;
-    height: 52px;
+    height: 45px;
+    line-height: 45px;
+  }
+
+  .js-message-list-close {
+    position: absolute;
+    right: 10px;
+    top: 13px;
+    appearance: none;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1;
+    opacity: 0.8;
+    color: white;
+
+    &:hover {
+      opacity: 1;
+    }
   }
 
   .actions {
     position: absolute;
-    top: 12px;
-    right: 10px;
+    top: 10px;
+    right: 42px;
 
     button {
       cursor: pointer;

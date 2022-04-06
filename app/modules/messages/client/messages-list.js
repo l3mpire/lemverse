@@ -125,4 +125,5 @@ Template.messagesList.events({
       lp.notif.success('🔔 You will no longer be notified');
     });
   },
+  'click .js-message-list-close'() { closeConsole(); },
 });

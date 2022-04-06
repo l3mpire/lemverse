@@ -24,6 +24,9 @@
   <div class="messages-module {{#if show}}show{{/if}}">
     {{#if show}}
       <h3 class="channel-name">{{channelName}}</h3>
+      <button type="button" class="js-message-list-close" title="Close">
+        <span class="simple-modal-close__text">✖</span>
+      </button>
       <div class="actions">
         {{#if canSubscribe}}
           {{#if subscribed}}

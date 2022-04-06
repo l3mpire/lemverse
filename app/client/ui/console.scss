@@ -5,7 +5,7 @@ $button-text-color: white;
 
 .console {
   position: absolute;
-  bottom: -85px;
+  bottom: -50px;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -23,8 +23,8 @@ $button-text-color: white;
   form {
     display: flex;
     flex-direction: row;
-    border-radius: $radius;
-    background-color: rgba($main-color, 0.95);
+    border-radius: 0 0 $radius $radius;
+    background-color: rgba($main-color, 1);
     box-shadow: 0px 0 15px $main-color;
     width: 100%;
     overflow: hidden;
@@ -97,14 +97,5 @@ $button-text-color: white;
         background-color: darken($light-blue, 5%);
       }
     }
-  }
-
-  .close-info {
-    text-align: center;
-    color: #fffefe;
-    font-size: 10pt;
-    margin-top: 10px;
-    box-shadow: 10px;
-    text-shadow: 1px 1px 5px black;
   }
 }

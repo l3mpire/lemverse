@@ -24,7 +24,7 @@ const clearInputFields = (focus = true) => {
   });
 };
 
-const closeAndFocusCanvas = () => {
+closeConsole = () => {
   if (!Session.get('console')) return;
 
   Session.set('console', false);
@@ -47,7 +47,7 @@ openConsole = (autoSelectChannel = false) => {
 };
 
 const onKeyPressed = e => {
-  if (e.key === 'Escape') closeAndFocusCanvas();
+  if (e.key === 'Escape') closeConsole();
   else if (e.key === 'Enter' && openConsole(true)) {
     e.preventDefault();
     e.stopPropagation();
@@ -77,7 +77,7 @@ const onSubmit = () => {
   const { files } = document.querySelector(inputFileSelector);
   const text = document.querySelector(inputSelector).value;
   if (!text && !files.length) {
-    closeAndFocusCanvas();
+    closeConsole();
     return;
   }
 
@@ -111,7 +111,7 @@ Template.console.onCreated(function () {
 
   this.autorun(() => {
     if (!Session.get('modal')) return;
-    Tracker.nonreactive(() => closeAndFocusCanvas());
+    Tracker.nonreactive(() => closeConsole());
   });
 });
 
