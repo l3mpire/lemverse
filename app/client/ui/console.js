@@ -104,15 +104,10 @@ const onSubmit = () => {
   uploadedFile.start();
 };
 
-Template.console.onCreated(function () {
+Template.console.onCreated(() => {
   Session.set('console', false);
   document.addEventListener('keydown', onKeyPressed);
   document.addEventListener('paste', onPasteAction);
-
-  this.autorun(() => {
-    if (!Session.get('modal')) return;
-    Tracker.nonreactive(() => closeConsole());
-  });
 });
 
 Template.console.onDestroyed(() => {
