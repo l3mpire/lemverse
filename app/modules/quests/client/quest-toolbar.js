@@ -138,6 +138,12 @@ Template.questToolbar.helpers({
 
     return quest.origin.includes('ent_') && quest.targets.includes(Meteor.userId()) && quest.createdBy !== Meteor.userId();
   },
+  showInviteButton() {
+    const quest = activeQuest();
+    if (!quest) return false;
+
+    return quest.createdBy === Meteor.userId() || quest.targets.includes(Meteor.userId());
+  },
   showActionsButton() {
     const quest = activeQuest();
     if (!quest) return false;

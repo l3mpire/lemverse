@@ -15,7 +15,9 @@
           <button type="button" class="js-toggle-state closed">Reopen</button>
         {{/if}}
 
-        <button type="button" class="js-quest-invite">Invite</button>
+        {{#if showInviteButton}}
+          <button type="button" class="js-quest-invite">Invite</button>
+        {{/if}}
 
         <div class="users">
           <ul class="user-list">
