@@ -21,7 +21,10 @@ Template.userListSelection.events({
     const { userId } = e.currentTarget.dataset;
     toggleUserSelection(userId, template);
   },
-  'click .js-submit'() { Session.set('modal', undefined); },
+  'click .js-submit'(e, template) {
+    Session.set('usersSelected', Object.keys(template.selectedUsers.get()));
+    Session.set('modal', undefined);
+  },
 });
 
 Template.userListSelection.onCreated(function () {
@@ -29,10 +32,6 @@ Template.userListSelection.onCreated(function () {
 
   const defaultUsersSelected = (this.data.selectedUsers || []).reduce((acc, curr) => ({ ...acc, [curr]: true }), {});
   this.selectedUsers = new ReactiveVar(defaultUsersSelected);
-});
-
-Template.userListSelection.onDestroyed(function () {
-  Session.set('usersSelected', Object.keys(this.selectedUsers.get()));
 });
 
 Template.userListSelection.helpers({
