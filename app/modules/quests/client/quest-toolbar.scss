@@ -95,6 +95,16 @@
           background-color: darken($light-red, 10%);
         }
       }
+
+      &.js-quest-invite {
+        background-color: $light-yellow;
+        color: lighten($main-color, 10%);
+        font-weight: bold;
+
+        &:hover {
+          background-color: darken($light-yellow, 10%);
+        }
+      }
     }
 
     .users {

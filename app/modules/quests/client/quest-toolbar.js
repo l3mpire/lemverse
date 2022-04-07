@@ -51,6 +51,15 @@ const toggleQuestState = () => {
   });
 };
 
+const setTargets = targets => {
+  if (!targets.length) return;
+
+  const questId = Session.get('selectedQuestId');
+  if (!questId) return;
+
+  Quests.update(questId, { $set: { targets } });
+};
+
 Template.questToolbar.events({
   'focus .js-quest-name'(e) {
     e.preventDefault();
@@ -72,6 +81,22 @@ Template.questToolbar.events({
     e.preventDefault();
     e.stopPropagation();
     leaveQuest();
+  },
+  'click .js-quest-invite'(e, template) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const quest = activeQuest();
+    Session.set('modal', { template: 'userListSelection', selectedUsers: quest.targets, ignoredUsers: [quest.createdBy] });
+
+    // we can't send callback to Session.set, so:
+    // open the user selection modal then wait for the close action to add the selected users to the quest
+    template.autorun(computation => {
+      if (Session.get('modal')) return;
+      computation.stop();
+
+      Tracker.nonreactive(() => setTargets(Session.get('usersSelected') || []));
+    });
   },
   'click .js-toggle-state'(e) {
     e.preventDefault();
