@@ -1,6 +1,6 @@
-const users = () => {
+const users = (ignoredUsers = []) => {
   const { guildId } = Meteor.user();
-  const filters = { 'profile.guest': { $not: true }, $and: [{ guildId: { $exists: true } }, { guildId }] };
+  const filters = { _id: { $nin: ignoredUsers }, 'profile.guest': { $not: true }, $and: [{ guildId: { $exists: true } }, { guildId }] };
 
   return Meteor.users.find(filters, { sort: { 'profile.name': 1 } });
 };
@@ -21,18 +21,22 @@ Template.userListSelection.events({
     const { userId } = e.currentTarget.dataset;
     toggleUserSelection(userId, template);
   },
-  'click .js-submit'() {
-    Session.set('modal', undefined);
-    // todo: save selected users somewhere
-  },
+  'click .js-submit'() { Session.set('modal', undefined); },
 });
 
 Template.userListSelection.onCreated(function () {
-  this.selectedUsers = new ReactiveVar({});
+  Session.set('usersSelected', []);
+
+  const defaultUsersSelected = (this.data.selectedUsers || []).reduce((acc, curr) => ({ ...acc, [curr]: true }), {});
+  this.selectedUsers = new ReactiveVar(defaultUsersSelected);
+});
+
+Template.userListSelection.onDestroyed(function () {
+  Session.set('usersSelected', Object.keys(this.selectedUsers.get()));
 });
 
 Template.userListSelection.helpers({
-  users() { return users().fetch().sort((a, b) => a.profile.name.toLowerCase().localeCompare(b.profile.name.toLowerCase())); },
+  users() { return users(this.ignoredUsers).fetch().sort((a, b) => a.profile.name.toLowerCase().localeCompare(b.profile.name.toLowerCase())); },
   selected() { return !!Template.instance().selectedUsers.get()[this._id]; },
   amountSelected() { return Object.keys(Template.instance().selectedUsers.get()).length; },
 });

@@ -34,7 +34,11 @@
       }
 
       &.selected {
-        background-color: darken($light-green, 15%);
+        background-color: rgba($light-green, 0.35);
+  
+        &:hover {
+          background-color: rgba($light-green, 0.5);
+        }
       }
 
       .avatar-viewer {
