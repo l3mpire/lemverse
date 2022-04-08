@@ -39,9 +39,26 @@ const notifyQuestSubscribersAboutNewMessage = (questId, message) => {
 
 const setZoneLastMessageAtToNow = zoneId => Zones.update(zoneId, { $set: { lastMessageAt: new Date() } });
 
+const notifyUsers = (channel, message) => {
+  log('notifyUsers: start', { channel });
+  const userIds = channel.split(';').filter(userId => userId !== message.createdBy);
+
+  const notifications = userIds.map(userId => ({
+    _id: Notifications.id(),
+    channelId: channel,
+    userId,
+    createdAt: new Date(),
+    createdBy: message.createdBy,
+  }));
+  Notifications.rawCollection().insertMany(notifications);
+
+  log('notifyUsers: done', { userIds });
+};
+
 Messages.find({ createdAt: { $gte: new Date() } }).observe({
   added(message) {
     if (message.channel.includes('qst_')) notifyQuestSubscribersAboutNewMessage(message.channel, message);
     else if (message.channel.includes('zon_')) setZoneLastMessageAtToNow(message.channel);
+    else if (message.channel.includes('usr_')) notifyUsers(message.channel, message);
   },
 });
