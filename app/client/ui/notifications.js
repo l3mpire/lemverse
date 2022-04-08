@@ -11,6 +11,8 @@ const resetPlayButtonState = template => template._playing.set(false);
 
 const markNotificationAsRead = notificationId => Meteor.call('markNotificationAsRead', notificationId);
 
+const isQuestNotification = notification => notification.questId || notification.channelId?.includes('qst_');
+
 Template.notificationsAudioPlayer.onCreated(function () {
   this._duration = new ReactiveVar(0);
   this._playing = new ReactiveVar(false);
@@ -61,6 +63,8 @@ Template.notificationsAudioPlayer.events({
 Template.notification.helpers({
   date() { return moment(this.createdAt).calendar(); },
   user() { return Meteor.users.findOne(Template.instance().data.createdBy); },
+  quest() { return isQuestNotification(this); },
+  newQuest() { return this.type === 'quest-new'; },
 });
 
 Template.notification.events({
@@ -68,9 +72,13 @@ Template.notification.events({
     event.preventDefault();
     markNotificationAsRead(this._id);
 
-    if (this.questId) {
+    if (isQuestNotification(this)) {
       Session.set('modal', undefined);
-      Session.set('quests', { selectedQuestId: this.questId, origin: 'notifications' });
+      Session.set('quests', { selectedQuestId: this.questId || this.channelId, origin: 'notifications' });
+    } else if (!this.fileId) {
+      Session.set('modal', undefined);
+      messagesModule.changeMessagesChannel(this.channelId);
+      openConsole();
     }
   },
 });

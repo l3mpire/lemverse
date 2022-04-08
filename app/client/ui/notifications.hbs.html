@@ -12,8 +12,10 @@
       <div class="subject">
         {{#if fileId}}
           {{> notificationsAudioPlayer}}
-        {{else if questId}}
-          <div class="subject">A quest has been updated</div>
+        {{else if quest}}
+          <div class="subject">{{#if newQuest}}has a new quest for you{{else}}has updated a quest{{/if}}</div>
+        {{else}}
+          <div class="subject">sent you a message</div>
         {{/if}}
       </div>
     </div>
