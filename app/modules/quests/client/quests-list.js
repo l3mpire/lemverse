@@ -60,8 +60,11 @@ const autoSelectQuest = template => {
   // auto switch quest-list mode
   if (selectedQuestId) {
     const quest = Quests.findOne(selectedQuestId);
-    const origin = quest?.origin || Session.get('quests')?.origin || '';
-    template.questListMode.set(!origin.includes('ent_') ? modes.mine : modes.available);
+
+    let mode = modes.mine;
+    if (quest.completed) mode = modes.completed;
+    else if (!quest.targets.length) mode = modes.available;
+    template.questListMode.set(mode);
   }
 };
 
