@@ -142,7 +142,7 @@ Template.questToolbar.helpers({
     const quest = activeQuest();
     if (!quest) return false;
 
-    return quest.createdBy === Meteor.userId() || quest.targets.includes(Meteor.userId());
+    return !quest.completed;
   },
   showActionsButton() {
     const quest = activeQuest();
