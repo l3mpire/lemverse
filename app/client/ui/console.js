@@ -46,14 +46,6 @@ openConsole = (autoSelectChannel = false) => {
   return true;
 };
 
-const onKeyPressed = e => {
-  if (e.key === 'Escape') closeConsole();
-  else if (e.key === 'Enter' && openConsole(true)) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
-};
-
 const onPasteAction = e => {
   const consoleFileInput = document.querySelector('.console-file');
   if (!consoleFileInput) return;
@@ -104,6 +96,20 @@ const onSubmit = () => {
   uploadedFile.start();
 };
 
+const onKeyPressed = e => {
+  if (e.key === 'Escape') closeConsole();
+  else if (e.key === 'Enter') {
+    if (Session.get('console') && !e.shiftKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      onSubmit();
+    } else if (openConsole(true)) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }
+};
+
 Template.console.onCreated(() => {
   Session.set('console', false);
   document.addEventListener('keydown', onKeyPressed);
@@ -120,7 +126,7 @@ Template.console.events({
   'focus .js-command-input'() { hotkeys.setScope(scopes.form); game.scene.keys.WorldScene.enableKeyboard(false, false); },
   'blur .js-command-input'() { hotkeys.setScope(scopes.player); game.scene.keys.WorldScene.enableKeyboard(true, false); },
   'change .console-file'(event) { markInputFileWithContent(!!event.currentTarget.files.length); },
-  'click .js-button-submit, submit .js-console-form'(event) {
+  'click .js-button-submit'(event) {
     event.preventDefault();
     event.stopPropagation();
     onSubmit();

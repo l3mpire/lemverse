@@ -19,6 +19,8 @@ const scrollToBottom = () => {
   if (messagesElement) messagesElement.scrollTop = messagesElement.scrollHeight;
 };
 
+const formatText = text => formatURLs(lp.purify(text)).replace(/(?:\r\n|\r|\n)/g, '<br>');
+
 Template.messagesListMessage.onCreated(function () {
   this.moderationAllowed = messageModerationAllowed(Meteor.userId(), this.data.message);
 });
@@ -26,7 +28,7 @@ Template.messagesListMessage.onCreated(function () {
 Template.messagesListMessage.helpers({
   user() { return Meteor.users.findOne(this.message.createdBy); },
   userName() { return Meteor.users.findOne(this.message.createdBy)?.profile.name || '[removed]'; },
-  text() { return formatURLs(lp.purify(this.message.text)); },
+  text() { return formatText(this.message.text); },
   file() {
     if (!this.message.fileId) return undefined;
     return Files.findOne(this.message.fileId);
