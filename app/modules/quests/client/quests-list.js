@@ -167,27 +167,7 @@ Template.questsList.helpers({
   show() { return Session.get('quests'); },
   quests() { return quests(Template.instance().questListMode.get()); },
   unreadAmount(mode) { return questUnreadAmount(mode); },
-  title(quest) {
-    if (quest.name) return quest.name;
-
-    const isEntityOrigin = quest.origin.includes('ent_');
-    if (quest.createdBy !== Meteor.userId()) {
-      if (isEntityOrigin) return entityName(quest.origin);
-      else return Meteor.users.findOne(quest.createdBy)?.profile.name || '[deleted]';
-    }
-
-    if (isEntityOrigin) return `> ${entityName(quest.origin)}`;
-    else if (quest.targets?.length === 1) return `> ${Meteor.users.findOne(quest.targets[0])?.profile.name || '[deleted]'}`;
-    else return `> ${quest.targets.length} users`;
-  },
-  hasUpdates(id) {
-    const notification = Notifications.findOne({ channelId: id });
-    if (!notification) return false;
-
-    return !notification.read;
-  },
   isActiveMode(mode) { return Template.instance().questListMode.get() === mode; },
-  isQuestSelected(id) { return Session.get('selectedQuestId') === id; },
   newQuest() {
     const questId = draftQuestId();
     if (!questId) return undefined;
@@ -204,4 +184,31 @@ Template.questsList.helpers({
   },
   draftQuestId() { return draftQuestId(); },
   questListModeIsActive(mode) { return Template.instance().questListMode.get() === mode; },
+});
+
+Template.questListEntry.helpers({
+  title() {
+    if (this.name) return this.name;
+
+    const fromEntity = this.origin.includes('ent_');
+    if (this.createdBy !== Meteor.userId()) {
+      if (fromEntity) return entityName(this.origin);
+      else return Meteor.users.findOne(this.createdBy)?.profile.name || '[deleted]';
+    }
+
+    if (fromEntity) return `> ${entityName(this.origin)}`;
+    else if (this.targets?.length === 1) return `> ${Meteor.users.findOne(this.targets[0])?.profile.name || '[deleted]'}`;
+    else return `> ${this.targets.length} users`;
+  },
+  hasUpdates() {
+    const notification = Notifications.findOne({ channelId: this._id });
+    if (!notification) return false;
+
+    return !notification.read;
+  },
+  selected() { return Session.get('selectedQuestId') === this._id; },
+  author() {
+    if (this.createdBy === Meteor.userId()) return 'Me';
+    return Meteor.users.findOne(this.createdBy).profile.name;
+  },
 });

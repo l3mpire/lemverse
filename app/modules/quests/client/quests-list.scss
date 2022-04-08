@@ -79,27 +79,23 @@
     overflow: auto;
 
     .quest {
-      display: block;
+      display: flex;
+      flex-direction: column;
       color: $main-text-color;
       cursor: pointer;
       padding: 10px;
       transition: all linear 0.150s;
       position: relative;
       border-left: 5px solid transparent;
+      
+      .author {
+        font-size: 0.8rem;
+        margin-top: 2px;
+        color: #cdc9d0;
+      }
 
       &:hover {
         background-color: lighten(rgba($main-color, 0.95), 15%);
-      }
-
-      .actions {
-        .js-toggle-state {
-          background-color: $light-green;
-          border: 0;
-
-          &:hover {
-            background-color: darken($light-green, 20%);
-          }
-        }
       }
 
       &.selected {
@@ -108,9 +104,8 @@
         font-weight: bold;
         border-left: 5px solid darken($light-yellow, 20%);
 
-        .actions {
-          opacity: 1;
-          display: inline-block;
+        .author {
+          color: lighten($main-color, 20%);
         }
       }
 
