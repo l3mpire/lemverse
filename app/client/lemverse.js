@@ -103,15 +103,14 @@ Template.lemverse.onCreated(function () {
   this.subscribe('notifications', () => {
     this.handleObserveNotifications = Notifications.find({ createdAt: { $gte: new Date() } }).observe({
       async added(notification) {
-        const readingQuest = notification.questId && Session.get('quests')?.selectedQuestId === notification.questId;
-        if (readingQuest) {
+        if (notification.channelId === Session.get('messagesChannel')) {
           Notifications.remove(notification._id);
           return;
         }
 
         let message;
-        if (notification.questId && notification.type === 'quest-new') message = `📜 A new quest is available!`;
-        else if (notification.questId && notification.type === 'quest-updated') message = `📜 A quest has been updated`;
+        if (notification.type === 'quest-new') message = `📜 A new quest is available!`;
+        else if (notification.type === 'quest-updated') message = `📜 A quest has been updated`;
         else message = `📢 You have received a new message`;
 
         const notificationInstance = await notify(Meteor.users.findOne(notification.createdBy), message);

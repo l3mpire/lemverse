@@ -80,7 +80,7 @@ const questUnreadAmount = mode => {
   if (!modeQuests.length) return 0;
 
   const questIds = modeQuests.map(quest => quest._id);
-  return Notifications.find({ questId: { $in: questIds }, read: { $exists: false } }).count();
+  return Notifications.find({ channelId: { $in: questIds }, read: { $exists: false } }).count();
 };
 
 const beforeSendingMessage = e => {
@@ -178,7 +178,7 @@ Template.questsList.helpers({
     else return `> ${quest.targets.length} users`;
   },
   hasUpdates(id) {
-    const notification = Notifications.findOne({ questId: id });
+    const notification = Notifications.findOne({ channelId: id });
     if (!notification) return false;
 
     return !notification.read;

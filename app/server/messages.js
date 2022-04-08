@@ -26,7 +26,7 @@ const notifyQuestSubscribersAboutNewMessage = (questId, message) => {
 
   const notifications = usersToNotify.map(userId => ({
     _id: Notifications.id(),
-    questId,
+    channelId: questId,
     userId,
     createdAt: new Date(),
     createdBy: message.createdBy,
