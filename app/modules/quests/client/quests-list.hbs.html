@@ -16,7 +16,7 @@
 
     <ul class="quests">
       {{#if newQuest}}
-        <li class="js-quest quest creating  {{#if isQuestSelected draftQuestId}}selected{{/if}}" data-quest-id="{{draftQuestId}}"><i>(draft) {{newQuest}}</i></li>
+        <li class="js-quest quest creating  {{#if draftQuestSelected}}selected{{/if}}" data-quest-id="{{draftQuestId}}"><i>(draft) {{newQuest}}</i></li>
       {{/if}}
 
       {{#each quests}}

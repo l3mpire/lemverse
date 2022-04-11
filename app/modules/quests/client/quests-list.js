@@ -62,7 +62,8 @@ const autoSelectQuest = template => {
     const quest = Quests.findOne(selectedQuestId);
 
     let mode = modes.mine;
-    if (quest.completed) mode = modes.completed;
+    if (!quest) mode = modes.mine;
+    else if (quest.completed) mode = modes.completed;
     else if (!quest.targets.length) mode = modes.available;
     template.questListMode.set(mode);
   }
@@ -71,9 +72,7 @@ const autoSelectQuest = template => {
 const draftQuestId = () => {
   const selectedQuestId = Session.get('quests')?.selectedQuestId;
   if (!selectedQuestId) return undefined;
-
-  const isNewQuest = !Quests.findOne(selectedQuestId);
-  if (!isNewQuest) return undefined;
+  if (Quests.findOne(selectedQuestId)) return undefined;
 
   return selectedQuestId;
 };
@@ -184,6 +183,7 @@ Template.questsList.helpers({
   },
   draftQuestId() { return draftQuestId(); },
   questListModeIsActive(mode) { return Template.instance().questListMode.get() === mode; },
+  draftQuestSelected() { return Session.get('selectedQuestId') === draftQuestId(); },
 });
 
 Template.questListEntry.helpers({
