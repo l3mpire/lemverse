@@ -1,11 +1,13 @@
 /* eslint-disable no-use-before-define */
 
 let menuOpenUsingKey = false;
+const metaKeyCode = 91;
 const keyToOpen = 'shift';
 const keyToOpenDelay = 200;
 const menuOffset = { x: 0, y: -6 };
 const horizontalMenuItemDistance = { x: 45, y: -90 };
 const radialMenuRadius = 72;
+const radialMenuOffsetY = 38;
 const mouseDistanceToCloseMenu = 105;
 const itemAmountRequiredForBackground = 2;
 let menuHandler;
@@ -46,6 +48,7 @@ const mainMenuItems = [
   { icon: '📺', shortcut: 51, label: 'Screen', state: 'shareScreen', action: () => toggleUserProperty('shareScreen') },
   { icon: '🎥', shortcut: 50, label: 'Camera', state: 'shareVideo', action: () => toggleUserProperty('shareVideo') },
   { icon: '🎤', shortcut: 49, label: 'Audio', state: 'shareAudio', action: () => toggleUserProperty('shareAudio') },
+  { icon: '📦', shortcut: 73, label: 'Inventory', action: () => { toggleModal('inventory'); closeMenu(); } },
   { icon: '😃', shortcut: 57, label: 'Reactions', action: template => buildMenu(reactionMenuItems, template.items) },
   { icon: '🔔', shortcut: 56, label: 'Notifications', action: () => { toggleModal('notifications'); closeMenu(); } },
   { icon: '📜', shortcut: 55, label: 'Quests', action: () => { Session.set('quests', { origin: 'menu' }); closeMenu(); } },
@@ -147,8 +150,7 @@ const onMouseMove = event => {
   if (!Session.get('menu') || menuOpenUsingKey) return;
   const menuPosition = computeMenuPosition();
   const mousePosition = { x: event.clientX, y: event.clientY };
-  const offsetY = 38;
-  const distance = Math.sqrt((menuPosition.x - mousePosition.x) ** 2 + ((menuPosition.y - offsetY) - mousePosition.y) ** 2);
+  const distance = Math.sqrt((menuPosition.x - mousePosition.x) ** 2 + ((menuPosition.y - radialMenuOffsetY) - mousePosition.y) ** 2);
   if (distance >= mouseDistanceToCloseMenu) closeMenu();
 };
 
@@ -174,8 +176,6 @@ Template.radialMenu.onCreated(function () {
   hotkeys('space', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
 
   hotkeys('*', { keyup: true, scope: scopes.player }, e => {
-    const metaKeyCode = 91;
-
     // show/hide shortcuts
     if (e.key.toLowerCase() === keyToOpen && !hotkeys.isPressed(metaKeyCode)) {
       this.showShortcuts.set(e.type === 'keydown');
