@@ -119,8 +119,10 @@ entityManager = {
         ...animation,
         onComplete: () => {
           Meteor.call('useEntity', previousNearestEntityId, error => {
-            if (error) lp.notif.error(itemAlreadyPickedText);
-            else lp.notif.success(itemAddedToInventoryText);
+            if (error) { lp.notif.error(itemAlreadyPickedText); return; }
+
+            lp.notif.success(itemAddedToInventoryText);
+            this.handleNearestEntityTooltip(userManager.player);
           });
         },
       });
