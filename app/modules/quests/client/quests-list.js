@@ -22,7 +22,16 @@ const quests = mode => {
             { createdBy: Meteor.userId() },
           ],
         }, {
-          completed: { $exists: false },
+          $or: [
+            {
+              createdBy: Meteor.userId(),
+              completed: { $exists: false },
+            },
+            {
+              targets: { $size: 0 },
+              completed: { $exists: false },
+            },
+          ],
         },
       ],
     };
@@ -41,7 +50,8 @@ const quests = mode => {
     };
   }
 
-  return Quests.find(filters, { sort: { createdAt: -1 } }).fetch();
+  const allQuests = Quests.find(filters, { sort: { createdAt: -1 } }).fetch();
+  return _.groupBy(allQuests, qst => (qst.origin.includes('ent_') ? qst.origin : 'mine'));
 };
 
 const autoSelectQuest = template => {
@@ -77,14 +87,6 @@ const draftQuestId = () => {
   return selectedQuestId;
 };
 
-const questUnreadAmount = mode => {
-  const modeQuests = quests(mode);
-  if (!modeQuests.length) return 0;
-
-  const questIds = modeQuests.map(quest => quest._id);
-  return Notifications.find({ channelId: { $in: questIds }, read: { $exists: false } }).count();
-};
-
 const beforeSendingMessage = e => {
   const { channel } = e.detail;
   if (!channel.includes('qst_') || !Session.get('quests')) return;
@@ -103,7 +105,7 @@ const beforeSendingMessage = e => {
   });
 };
 
-const entityName = entityId => Entities.findOne(entityId)?.name || 'Entity';
+const entityName = (entityId, defaultName = 'Entity') => Entities.findOne(entityId)?.name || defaultName;
 
 createQuestDraft = (targets, origin) => Session.set('quests', { selectedQuestId: Quests.id(), targets, origin });
 
@@ -164,8 +166,12 @@ Template.questsList.onDestroyed(() => {
 
 Template.questsList.helpers({
   show() { return Session.get('quests'); },
-  quests() { return quests(Template.instance().questListMode.get()); },
-  unreadAmount(mode) { return questUnreadAmount(mode); },
+  questsCategorized() {
+    const categorizedQuests = quests(Template.instance().questListMode.get());
+
+    const categoryDefaultName = Template.instance().questListMode.get() === modes.completed ? 'Done' : 'Todo';
+    return _.map(categorizedQuests, (val, key) => ({ name: entityName(key, categoryDefaultName), count: val.length, quests: val }));
+  },
   isActiveMode(mode) { return Template.instance().questListMode.get() === mode; },
   newQuest() {
     const questId = draftQuestId();

@@ -9,9 +9,8 @@
   <div class="quests-list {{#if show}}show{{/if}}">
   
     <div class="quest-mode-selectors">
-      <button type="button" class="js-quest-switch-mode {{#if isActiveMode "mine"}}active{{/if}}" data-mode="mine" data-unread="{{unreadAmount "mine"}}">📜</button>
-      <button type="button" class="js-quest-switch-mode {{#if isActiveMode "available"}}active{{/if}}" data-mode="available" data-unread="{{unreadAmount "available"}}">🗂</button>
-      <button type="button" class="js-quest-switch-mode {{#if isActiveMode "completed"}}active{{/if}}" data-mode="completed">🗳</button>
+      <button type="button" class="js-quest-switch-mode {{#if isActiveMode "mine"}}active{{/if}}" data-mode="mine">📜 Todo</button>
+      <button type="button" class="js-quest-switch-mode {{#if isActiveMode "completed"}}active{{/if}}" data-mode="completed">✅ Completed</button>
     </div>
 
     <ul class="quests">
@@ -19,13 +18,12 @@
         <li class="js-quest quest creating  {{#if draftQuestSelected}}selected{{/if}}" data-quest-id="{{draftQuestId}}"><i>(draft) {{newQuest}}</i></li>
       {{/if}}
 
-      {{#each quests}}
-        {{> questListEntry}}
+      {{#each questsCategorized}}
+        <li class="js-category-name">{{name}} ({{count}})</li>
+        {{#each quests}}
+          {{> questListEntry}}
+        {{/each}}
       {{/each}}
-
-      {{#unless quests.length}}
-        <li class="quest empty">--- empty ---</li>
-      {{/unless}}
     </ul>
   </div>
 </template>
