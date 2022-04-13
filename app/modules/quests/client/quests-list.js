@@ -169,7 +169,7 @@ Template.questsList.helpers({
   questsCategorized() {
     const categorizedQuests = quests(Template.instance().questListMode.get());
 
-    const categoryDefaultName = Template.instance().questListMode.get() === modes.completed ? 'Done' : 'Todo';
+    const categoryDefaultName = Template.instance().questListMode.get() === modes.completed ? 'Done' : 'My quests';
     return _.map(categorizedQuests, (val, key) => ({ name: entityName(key, categoryDefaultName), count: val.length, quests: val }));
   },
   isActiveMode(mode) { return Template.instance().questListMode.get() === mode; },
@@ -213,8 +213,8 @@ Template.questListEntry.helpers({
     return !notification.read;
   },
   selected() { return Session.get('selectedQuestId') === this._id; },
-  author() {
-    if (this.createdBy === Meteor.userId()) return 'Me';
-    return Meteor.users.findOne(this.createdBy).profile.name;
+  user() {
+    if (this.createdBy === Meteor.userId()) return Meteor.user();
+    return Meteor.users.findOne(this.createdBy);
   },
 });

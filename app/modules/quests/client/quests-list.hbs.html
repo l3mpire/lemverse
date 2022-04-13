@@ -1,7 +1,7 @@
 <template name="questListEntry">
   <li class="js-quest quest {{#if selected}}selected{{/if}} {{#if hasUpdates}}updated{{/if}}" data-quest-id="{{this._id}}">
+    {{> avatarViewer user=user}}
     <span>{{title}}</span>
-    <span class="author">By {{author}}</span>
   </li>
 </template>
 

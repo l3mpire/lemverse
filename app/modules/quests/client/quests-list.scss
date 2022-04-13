@@ -22,7 +22,6 @@
     justify-content: center;
     background-color: $main-color;
     border-radius: $radius;
-    gap: 10px;
 
     .js-quest-switch-mode {
       position: relative;
@@ -33,7 +32,13 @@
       cursor: pointer;
       transition: opacity 0.15s linear;
       color: $main-text-color;
-      border-bottom: 2px ridge transparent;
+      border-bottom: 3px ridge transparent;
+      flex: 1 1 auto;
+      height: 100%;
+
+      &:first-child {
+        flex: 3 1 auto;
+      }
 
       &[data-unread]:not([data-unread="0"]):before {
         content: attr(data-unread);
@@ -50,7 +55,7 @@
 
       &.active {
         opacity: 1;
-        border-bottom: 2px ridge $light-yellow;
+        border-bottom: 3px solid $light-yellow;
       }
 
       &:hover {
@@ -81,27 +86,45 @@
     overflow: auto;
 
     .js-category-name {
-      color: $main-text-color;
-      background-color: darken($main-color, 10%);
-      border-left: 5px solid transparent;
       cursor: pointer;
-      padding: 5px;
+      color: $main-text-color;
+      background-color: darken($main-color, 3%);
+      border-left: 5px solid transparent;
+      padding: 10px 5px;
+      font-size: 0.9rem;
+      font-weight: bold;
     }
 
     .quest {
-      display: flex;
-      flex-direction: column;
-      color: $main-text-color;
       cursor: pointer;
-      padding: 10px;
+      display: flex;
+      flex-direction: row;
+      color: $main-text-color;
+      padding: 5px;
       transition: all linear 0.150s;
       position: relative;
       border-left: 5px solid transparent;
-      
-      .author {
-        font-size: 0.8rem;
-        margin-top: 2px;
-        color: #cdc9d0;
+      font-size: 0.85rem;
+
+      .avatar-viewer {
+        width: 20px;
+        height: 25px;
+        margin-right: 5px;
+
+        .character-body-part-container {
+          transform: scale(0.35) translate(-37px, -95px);
+        }
+
+        .avatar:before {
+          bottom: 4px;
+          right: 4px;
+          width: 6px;
+          height: 6px;
+        }
+      }
+
+      span {
+        line-height: 25px;
       }
 
       &:hover {
