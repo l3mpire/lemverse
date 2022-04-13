@@ -15,25 +15,12 @@ const quests = mode => {
   let filters = {};
   if (mode === modes.mine) {
     filters = {
-      $and: [
-        {
-          $or: [
-            { targets: Meteor.userId() },
-            { createdBy: Meteor.userId() },
-          ],
-        }, {
-          $or: [
-            {
-              createdBy: Meteor.userId(),
-              completed: { $exists: false },
-            },
-            {
-              targets: { $size: 0 },
-              completed: { $exists: false },
-            },
-          ],
-        },
+      $or: [
+        { createdBy: Meteor.userId() },
+        { targets: Meteor.userId() },
+        { targets: { $size: 0 } },
       ],
+      completed: { $exists: false },
     };
   } else if (mode === modes.available) {
     filters = {
