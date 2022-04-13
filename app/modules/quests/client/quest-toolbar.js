@@ -60,6 +60,13 @@ const setTargets = targets => {
   Quests.update(questId, { $set: { targets } });
 };
 
+const showActionsButton = () => {
+  const quest = activeQuest();
+  if (!quest) return false;
+
+  return quest.targets.includes(Meteor.userId()) || quest.createdBy === Meteor.userId();
+};
+
 Template.questToolbar.events({
   'focus .js-quest-name'(e) {
     e.preventDefault();
@@ -138,16 +145,6 @@ Template.questToolbar.helpers({
 
     return quest.origin.includes('ent_') && quest.targets.includes(Meteor.userId()) && quest.createdBy !== Meteor.userId();
   },
-  showInviteButton() {
-    const quest = activeQuest();
-    if (!quest) return false;
-
-    return !quest.completed;
-  },
-  showActionsButton() {
-    const quest = activeQuest();
-    if (!quest) return false;
-
-    return quest.targets.includes(Meteor.userId()) || quest.createdBy === Meteor.userId();
-  },
+  showInviteButton() { return showActionsButton() && !activeQuest()?.completed; },
+  showActionsButton() { return showActionsButton(); },
 });

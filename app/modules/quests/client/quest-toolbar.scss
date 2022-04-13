@@ -97,17 +97,18 @@
       }
 
       &.js-quest-invite {
-        background-color: $light-yellow;
-        color: lighten($main-color, 10%);
+        background-color: transparent;
+        color: $light-yellow;
         font-weight: bold;
 
         &:hover {
-          background-color: darken($light-yellow, 10%);
+          color: darken($light-yellow, 10%);
         }
       }
     }
 
     .users {
+      display: flex;
       border: 1px solid lighten($main-color, 35%);
       border-radius: $radius;
       padding: 0 2px;
