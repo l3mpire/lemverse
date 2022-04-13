@@ -167,10 +167,11 @@ Template.questsList.onDestroyed(() => {
 Template.questsList.helpers({
   show() { return Session.get('quests'); },
   questsCategorized() {
-    const categorizedQuests = quests(Template.instance().questListMode.get());
-
     const categoryDefaultName = Template.instance().questListMode.get() === modes.completed ? 'Done' : 'My quests';
-    return _.map(categorizedQuests, (val, key) => ({ name: entityName(key, categoryDefaultName), count: val.length, quests: val }));
+    const questsArray = quests(Template.instance().questListMode.get());
+    const categorizedQuests = _.map(questsArray, (val, key) => ({ name: entityName(key, categoryDefaultName), count: val.length, quests: val, order: key === 'mine' ? -1 : 0 }));
+
+    return _.sortBy(categorizedQuests, questGroup => questGroup.order);
   },
   isActiveMode(mode) { return Template.instance().questListMode.get() === mode; },
   newQuest() {

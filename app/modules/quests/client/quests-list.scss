@@ -28,13 +28,17 @@
       appearance: none;
       background: transparent;
       border: 0;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       cursor: pointer;
       transition: opacity 0.15s linear;
       color: $main-text-color;
       border-bottom: 3px ridge transparent;
       flex: 1 1 auto;
       height: 100%;
+
+      span {
+        padding-right: 4px;
+      }
 
       &:first-child {
         flex: 3 1 auto;
@@ -55,6 +59,7 @@
 
       &.active {
         opacity: 1;
+        font-weight: bold;
         border-bottom: 3px solid $light-yellow;
       }
 
