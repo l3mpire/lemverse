@@ -40,7 +40,7 @@ const autoSelectQuest = template => {
   if (selectedQuestId.includes('qst_')) selectQuest(selectedQuestId, template);
   else {
     const allQuests = quests(template.questListMode.get());
-    const firstQuest = allQuests.length ? allQuests[0] : undefined;
+    const firstQuest = Object.keys(allQuests).length ? Object.values(allQuests)[0][0] : undefined;
     if (firstQuest) selectQuest(firstQuest._id, template);
     else {
       messagesModule.stopListeningMessagesChannel();
