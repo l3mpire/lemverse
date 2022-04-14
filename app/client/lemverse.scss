@@ -259,14 +259,14 @@ button.js-notifications {
   bottom: 30px;
   left: 30px;
   padding: 4px 8px !important;
-  font-size: 1.8rem;
+  font-size: 2.5rem;
   display: none;
   z-index: 101;
-  width: 65px;
-  background-color: $main-color;
+  width: 75px;
+  background-color: $light-orange;
   border: 0;
   border-radius: $radius;
-  height: 65px;
+  height: 75px;
   animation: pulse 1s infinite;
 
   &.visible {
@@ -274,7 +274,7 @@ button.js-notifications {
   }
 
   &:hover {
-    background-color: lighten($main-color, 15%);
+    background-color: lighten($light-orange, 15%);
   }
 
   &:after {
@@ -284,12 +284,12 @@ button.js-notifications {
     bottom: 7px;
     right: 5px;
     font-weight: bold;
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     background-color: darken($light-red, 10%);
-    border-radius: 10px;
-    width: 20px;
-    height: 20px;
-    line-height: 22px;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
   }
 
   &[data-count="0"]:after {
@@ -326,16 +326,16 @@ button.js-notifications {
 @keyframes pulse {
   0% {
     transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+    box-shadow: 0 0 0 0 rgba($light-orange, 0.7);
   }
 
   70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+    transform: scale(1.2);
+    box-shadow: 0 0 0 10px rgba($light-orange, 0);
   }
 
   100% {
     transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+    box-shadow: 0 0 0 0 rgba($light-orange, 0);
   }
 }
