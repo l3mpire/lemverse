@@ -2,10 +2,10 @@ const iframeAllowAttributeSettings = 'accelerometer; autoplay; clipboard-write; 
 
 const getZoneCenter = zone => [(zone.x1 + zone.x2) * 0.5, (zone.y1 + zone.y2) * 0.5];
 
-const newContentAnimation = { duration: 1000, ease: 'Cubic', yoyo: true, repeat: -1 };
+const newContentAnimation = { duration: 250, ease: 'Cubic', yoyo: true, hold: 2000, repeat: -1 };
 const zoneAnimations = {
   newContent: () => ({
-    alpha: { ...newContentAnimation, value: 0.4 },
+    alpha: { ...newContentAnimation, value: 0.05 },
   }),
 };
 
@@ -258,8 +258,8 @@ zones = {
 
     const sprite = this.scene.add.sprite(position.x, position.y, 'pixel');
     sprite.setScale(width, height);
-    sprite.alpha = 0.1;
-    sprite.setTint(0x13C4A3);
+    sprite.alpha = 0.8;
+    sprite.setTint(0xFFBB04);
 
     const tween = this.scene.tweens.add({
       targets: sprite,
