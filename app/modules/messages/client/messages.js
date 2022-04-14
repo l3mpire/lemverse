@@ -75,7 +75,7 @@ messagesModule = {
         if (zone) zones.destroyNewContentIndicator(zone);
       });
     } else if (channel.includes('qst_')) {
-      const notification = Notifications.findOne({ questId: channel, userId: Meteor.userId() });
+      const notification = Notifications.findOne({ $or: [{ questId: channel }, { channelId: channel }], userId: Meteor.userId() });
       if (notification && !notification.read) Notifications.update(notification._id, { $set: { read: true } });
     }
   },
