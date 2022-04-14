@@ -1,6 +1,5 @@
 const modes = Object.freeze({
   mine: 'mine',
-  available: 'available',
   completed: 'completed',
 });
 
@@ -20,11 +19,6 @@ const quests = mode => {
         { targets: Meteor.userId() },
         { targets: { $size: 0 } },
       ],
-      completed: { $exists: false },
-    };
-  } else if (mode === modes.available) {
-    filters = {
-      targets: { $size: 0 },
       completed: { $exists: false },
     };
   } else if (mode === modes.completed) {
@@ -61,7 +55,7 @@ const autoSelectQuest = template => {
     let mode = modes.mine;
     if (!quest) mode = modes.mine;
     else if (quest.completed) mode = modes.completed;
-    else if (!quest.targets.length) mode = modes.available;
+    else if (!quest.targets.length) mode = modes.mine;
     template.questListMode.set(mode);
   }
 };
