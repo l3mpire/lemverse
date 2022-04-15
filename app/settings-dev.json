@@ -12,6 +12,8 @@
 
     "debug": false,
 
+    "lowlevelJitsi": false,
+
     "defaultReaction": "❤️",
 
     "zoom": 1,
