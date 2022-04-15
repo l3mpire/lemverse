@@ -1,3 +1,8 @@
+// todo: remove the old "questId" attribute from notifications (the new field is "channelId") + simplify notifications queries
+const removePreviousNotifications = ({ channel, createdBy }) => {
+  Notifications.remove({ $or: [{ questId: channel }, { channelId: channel }], userId: { $ne: createdBy } });
+};
+
 const notifyQuestSubscribersAboutNewMessage = (questId, message) => {
   log('notifyQuestSubscribersAboutNewMessage: start', { questId, message });
   const quest = Quests.findOne(questId);
@@ -18,8 +23,7 @@ const notifyQuestSubscribersAboutNewMessage = (questId, message) => {
     return;
   }
 
-  // remove all previous notifications for this quest ('upsert' can't be used in a bulk operation and with a custom id)
-  Notifications.remove({ questId, userId: { $ne: message.createdBy } });
+  removePreviousNotifications(message);
 
   const questMessageCount = Messages.find({ channel: questId }).count();
   const type = questMessageCount > 1 ? 'quest-updated' : 'quest-new';
@@ -41,8 +45,10 @@ const setZoneLastMessageAtToNow = zoneId => Zones.update(zoneId, { $set: { lastM
 
 const notifyUsers = (channel, message) => {
   log('notifyUsers: start', { channel });
-  const userIds = channel.split(';').filter(userId => userId !== message.createdBy);
 
+  removePreviousNotifications(message);
+
+  const userIds = channel.split(';').filter(userId => userId !== message.createdBy);
   const notifications = userIds.map(userId => ({
     _id: Notifications.id(),
     channelId: channel,
