@@ -82,11 +82,16 @@ messagesModule = {
 
   async sendWebRTCMessage(channel, content) {
     try {
-      const func = channel.includes('zon_') ? sendDataToUsersInZone : sendDataToUsers;
-      await func('text', content, Meteor.userId(), channel.split(';'));
+      let showPopInOverEmitter = true;
+      if (channel.includes('zon_')) await sendDataToUsersInZone('text', content, Meteor.userId());
+      else {
+        const userIds = userProximitySensor.filterNearUsers(channel.split(';'));
+        showPopInOverEmitter = !!userIds.length;
+        await sendDataToUsers('text', content, Meteor.userId(), userIds);
+      }
 
       // simulate a message from himself to show a pop-in over user's head
-      userManager.onPeerDataReceived({ emitter: Meteor.userId(), data: content, type: 'text' });
+      if (showPopInOverEmitter) userManager.onPeerDataReceived({ emitter: Meteor.userId(), data: content, type: 'text' });
     } catch (err) {
       if (err.message !== 'no-targets') lp.notif.error(err);
     }
