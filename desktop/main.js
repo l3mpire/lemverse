@@ -100,7 +100,8 @@ const toggleWindow = (value, autoFocus = false) => {
   if (value !== undefined) {
     if (value) showWindow(autoFocus);
     else mainWindow.hide();
-  } else if (mainWindow?.isVisible()) mainWindow.hide();
+  } else if (mainWindow?.isFullScreen()) showWindow(autoFocus);
+  else if (mainWindow?.isVisible()) mainWindow.hide();
   else showWindow(autoFocus);
 };
 
