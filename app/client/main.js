@@ -16,6 +16,10 @@ Template.layout.onRendered(() => {
   });
 });
 
+Template.layout.helpers({
+  settings() { return Meteor.settings; },
+});
+
 let retryTimeDurationInterval;
 Tracker.autorun(() => {
   const { status } = Meteor.status();

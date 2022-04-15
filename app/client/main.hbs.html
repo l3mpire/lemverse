@@ -18,6 +18,10 @@
 <body></body>
 
 <template name="layout">
+  {{#if settings.public.lowlevelJitsi}}
+    <div class="tracks"></div>
+  {{/if}}
+
   {{> onlineStatus}}
   {{> Template.dynamic template=main data=layoutData}}
 </template>
