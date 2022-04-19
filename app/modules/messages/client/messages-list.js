@@ -49,6 +49,7 @@ Template.messagesListMessage.events({
     const messageId = instance.data.message._id;
     lp.notif.confirm('Delete message', `Do you really want to delete this message?`, () => Messages.remove(messageId));
   },
+  'load .files img'() { scrollToBottom(); },
 });
 
 Template.messagesList.onCreated(function () {
