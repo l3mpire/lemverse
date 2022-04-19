@@ -38,15 +38,19 @@ if (Meteor.settings.public.lowlevelJitsi) {
           deviceId => l(`track audio output device was changed to ${deviceId}`),
         );
 
-        if (tracks[i].getType() === 'video') {
-          $('.tracks').append(`<video autoplay='1' id='${id}' />`);
-        } else {
-          $('.tracks').append(
-            `<audio autoplay='1' muted='true' id='${id}' />`,
-          );
-        }
-        tracks[i].attach($(`#${id}`)[0]);
-        if (meet.isJoined) meet.room.addTrack(tracks[i]);
+        let x = '';
+        // for (let x = 0; x < 10; x++) {
+          if (tracks[i].getType() === 'video') {
+            $('.tracks').append(`<video autoplay='1' id='${id+x}' />`);
+          } else {
+            $('.tracks').append(
+              `<audio autoplay='1' muted='true' id='${id+x}' />`,
+            );
+          }
+          tracks[i].attach($(`#${id+x}`)[0]);
+
+          if (meet.isJoined) meet.room.addTrack(tracks[i]);
+        // }
       }
     },
 

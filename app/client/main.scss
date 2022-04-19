@@ -49,12 +49,24 @@ body,
 .tracks {
   position: absolute;
   top: 0;
-  right: 0;
-  width: 300px;
-  height: 300px;
+  bottom: 0;
+  left: 20%;
+  right: 20%;
+  overflow: scroll;
   z-index: 10;
+  flex-wrap: wrap;
+
+  display: flex;
+  justify-content: space-evenly;
+
+  pointer-events: none;
 
   video {
-    width: 200px;
+    width: 340px;
+    height: 200px;
+    object-fit: scale-down;
+    transform: scale(-1, 1);
+    border: 1px solid white;
+    background-color: black;
   }
 }
