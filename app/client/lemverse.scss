@@ -299,6 +299,11 @@ button.js-notifications {
 
 #noty_layout__topLeft {
   z-index: 100;
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+  }
 }
 
 .two-cols-modules {
