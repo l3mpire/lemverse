@@ -111,6 +111,7 @@
       position: relative;
       border-left: 5px solid transparent;
       font-size: 0.85rem;
+      align-items: center;
 
       .avatar-viewer {
         width: 20px;
@@ -131,6 +132,7 @@
 
       span {
         line-height: 25px;
+        max-width: 200px;
       }
 
       &:hover {
