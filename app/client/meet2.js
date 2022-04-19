@@ -13,13 +13,21 @@ if (Meteor.settings.public.lowlevelJitsi) {
       l('onLocalTracks', arguments);
       meet.localTracks = tracks;
       for (let i = 0; i < tracks.length; i++) {
+        const id = `local${tracks[i].getType()}${i}`;
+
         // meet.localTracks[i].addEventListener(
         //   meet.api.events.track.TRACK_AUDIO_LEVEL_CHANGED,
         //   audioLevel => l(`Audio Level local: ${audioLevel}`),
         // );
         meet.localTracks[i].addEventListener(
           meet.api.events.track.TRACK_MUTE_CHANGED,
-          () => l('local track muted'),
+          // eslint-disable-next-line no-loop-func
+          t => {
+            l('local track muted', t);
+
+            if (t.isMuted()) $(`#${id}`).hide();
+            else $(`#${id}`).show();
+          },
         );
         meet.localTracks[i].addEventListener(
           meet.api.events.track.LOCAL_TRACK_STOPPED,
@@ -31,17 +39,14 @@ if (Meteor.settings.public.lowlevelJitsi) {
         );
 
         if (tracks[i].getType() === 'video') {
-          $('.tracks').append(`<video autoplay='1' id='localVideo${i}' />`);
-          tracks[i].attach($(`#localVideo${i}`)[0]);
+          $('.tracks').append(`<video autoplay='1' id='${id}' />`);
         } else {
           $('.tracks').append(
-            `<audio autoplay='1' muted='true' id='localAudio${i}' />`,
+            `<audio autoplay='1' muted='true' id='${id}' />`,
           );
-          tracks[i].attach($(`#localAudio${i}`)[0]);
         }
-        if (meet.isJoined) {
-          meet.room.addTrack(tracks[i]);
-        }
+        tracks[i].attach($(`#${id}`)[0]);
+        if (meet.isJoined) meet.room.addTrack(tracks[i]);
       }
     },
 
@@ -57,27 +62,32 @@ if (Meteor.settings.public.lowlevelJitsi) {
         meet.remoteTracks[participant] = [];
       }
       const idx = meet.remoteTracks[participant].push(track);
+      const id = participant + track.getType() + idx;
 
       // track.addEventListener(meet.api.events.track.TRACK_AUDIO_LEVEL_CHANGED, audioLevel => l(`Audio Level remote: ${audioLevel}`));
       track.addEventListener(
         meet.api.events.track.TRACK_MUTE_CHANGED,
-        () => l('remote track muted'),
+        t => {
+          l('remote track muted', t.isMuted());
+
+          if (t.isMuted()) $(`#${id}`).hide();
+          else $(`#${id}`).show();
+        },
       );
       track.addEventListener(
         meet.api.events.track.LOCAL_TRACK_STOPPED,
-        () => l('remote track stoped'),
+        t => l('remote track stoped', t),
       );
       track.addEventListener(
         meet.api.events.track.TRACK_AUDIO_OUTPUT_CHANGED,
         deviceId => l(`track audio output device was changed to ${deviceId}`),
       );
 
-      const id = participant + track.getType() + idx;
 
       if (track.getType() === 'video') {
-        $('.tracks').append(`<video autoplay='1' id='${participant}video${idx}' />`);
+        $('.tracks').append(`<video autoplay='1' id='${id}' />`);
       } else {
-        $('.tracks').append(`<audio autoplay='1' id='${participant}audio${idx}' />`);
+        $('.tracks').append(`<audio autoplay='1' id='${id}' />`);
       }
       track.attach($(`#${id}`)[0]);
     },
@@ -162,7 +172,7 @@ if (Meteor.settings.public.lowlevelJitsi) {
     close() {
       meet.connection.removeEventListener(meet.api.events.connection.CONNECTION_ESTABLISHED, meet.onConnectionSuccess);
       meet.connection.removeEventListener(meet.api.events.connection.CONNECTION_FAILED, meet.onConnectionFailed);
-      meet.connection.removeEventListener(meet.api.events.connection.CONNECTION_DISCONNECTED, meet.disconnect);
+      meet.connection.removeEventListener(meet.api.events.connection.CONNECTION_DISCONNECTED, meet.onDisconnected);
 
       for (let i = 0; i < meet.localTracks.length; i++) {
         meet.localTracks[i].dispose();
@@ -189,39 +199,41 @@ if (Meteor.settings.public.lowlevelJitsi) {
     },
 
     mute() {
-      meet.api.isAudioMuted().then(muted => {
-        if (muted) return;
-        this.toggleAudio();
-      });
+      const track = meet.localTracks.find(t => t.getType() === 'audio');
+      if (!track) return;
+      if (!track.isMuted()) track.mute();
     },
 
     unmute() {
-      meet.api.isAudioMuted().then(muted => {
-        if (!muted) return;
-        this.toggleAudio();
-      });
+      const track = meet.localTracks.find(t => t.getType() === 'audio');
+      if (!track) return;
+      if (track.isMuted()) track.unmute();
     },
 
     hide() {
-      meet.api.isVideoMuted().then(muted => {
-        if (muted) return;
-        this.toggleVideo();
-      });
+      const track = meet.localTracks.find(t => t.getType() === 'video');
+      if (!track) return;
+      if (!track.isMuted()) track.mute();
     },
 
     unhide() {
-      meet.api.isVideoMuted().then(muted => {
-        if (!muted) return;
-        this.toggleVideo();
-      });
+      const track = meet.localTracks.find(t => t.getType() === 'video');
+      if (!track) return;
+      if (track.isMuted()) track.unmute();
     },
 
     toggleAudio() {
-      meet.api.executeCommand('toggleAudio');
+      const track = meet.localTracks.find(t => t.getType() === 'audio');
+      if (!track) return;
+      if (track.isMuted()) track.unmute();
+      else track.mute();
     },
 
     toggleVideo() {
-      meet.api.executeCommand('toggleVideo');
+      const track = meet.localTracks.find(t => t.getType() === 'video');
+      if (!track) return;
+      if (track.isMuted()) track.unmute();
+      else track.mute();
     },
 
     nodeElement() {
