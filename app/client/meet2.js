@@ -13,7 +13,7 @@ if (Meteor.settings.public.lowlevelJitsi) {
       l('onLocalTracks', arguments);
       meet.localTracks = tracks;
       for (let i = 0; i < tracks.length; i++) {
-        const id = `local${tracks[i].getType()}${i}`;
+        const id = `local${tracks[i].getType()}${tracks[i].rtcId}`;
 
         // meet.localTracks[i].addEventListener(
         //   meet.api.events.track.TRACK_AUDIO_LEVEL_CHANGED,
@@ -54,8 +54,8 @@ if (Meteor.settings.public.lowlevelJitsi) {
       }
     },
 
-    onRemoteTrack(track) {
-      l('onRemoteTrack', arguments);
+    onTrackAdded(track) {
+      l('onTrackAdded', arguments);
 
       if (track.isLocal()) {
         return;
@@ -87,13 +87,27 @@ if (Meteor.settings.public.lowlevelJitsi) {
         deviceId => l(`track audio output device was changed to ${deviceId}`),
       );
 
-
       if (track.getType() === 'video') {
         $('.tracks').append(`<video autoplay='1' id='${id}' />`);
       } else {
         $('.tracks').append(`<audio autoplay='1' id='${id}' />`);
       }
       track.attach($(`#${id}`)[0]);
+    },
+
+    onTrackRemoved(track) {
+      l('onTrackRemoved', arguments);
+
+      let id;
+      if (track.isLocal()) {
+        id = `local${track.getType()}${track.rtcId}`;
+      } else {
+        const participant = track.getParticipantId();
+        const idx = meet.remoteTracks[participant].indexOf(track);
+        id = participant + track.getType() + idx;
+      }
+      l({id});
+      $(`#${id}`).remove();
     },
 
     onUserLeft(id) {
@@ -112,10 +126,8 @@ if (Meteor.settings.public.lowlevelJitsi) {
       l('onConnectionSuccess', arguments);
 
       meet.room = meet.connection.initJitsiConference(kebabCase(meet.roomName), {});
-      meet.room.on(meet.api.events.conference.TRACK_ADDED, meet.onRemoteTrack);
-      meet.room.on(meet.api.events.conference.TRACK_REMOVED, track => {
-        l(`track removed!!!${track}`);
-      });
+      meet.room.on(meet.api.events.conference.TRACK_ADDED, meet.onTrackAdded);
+      meet.room.on(meet.api.events.conference.TRACK_REMOVED, meet.onTrackRemoved);
       meet.room.on(meet.api.events.conference.CONFERENCE_JOINED, meet.onConferenceJoined);
       meet.room.on(meet.api.events.conference.USER_JOINED, id => {
         l('user join', arguments);
@@ -173,16 +185,18 @@ if (Meteor.settings.public.lowlevelJitsi) {
       meet.connection.connect();
     },
 
-    close() {
+    async close() {
+      l('meet.close');
+
       meet.connection.removeEventListener(meet.api.events.connection.CONNECTION_ESTABLISHED, meet.onConnectionSuccess);
       meet.connection.removeEventListener(meet.api.events.connection.CONNECTION_FAILED, meet.onConnectionFailed);
       meet.connection.removeEventListener(meet.api.events.connection.CONNECTION_DISCONNECTED, meet.onDisconnected);
 
-      for (let i = 0; i < meet.localTracks.length; i++) {
-        meet.localTracks[i].dispose();
-      }
+      await Promise.all(meet.localTracks.map(t => t.dispose()));
+      meet.localTracks = [];
+
       if (meet.room) {
-        meet.room.leave();
+        await meet.room.leave();
         meet.room = undefined;
       }
       if (meet.connection) {
