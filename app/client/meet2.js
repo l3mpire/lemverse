@@ -62,11 +62,10 @@ if (Meteor.settings.public.lowlevelJitsi) {
       }
       const participant = track.getParticipantId();
 
-      if (!meet.remoteTracks[participant]) {
-        meet.remoteTracks[participant] = [];
-      }
-      const idx = meet.remoteTracks[participant].push(track);
-      const id = participant + track.getType() + idx;
+      if (!meet.remoteTracks[participant]) meet.remoteTracks[participant] = [];
+
+      meet.remoteTracks[participant].push(track);
+      const id = track.getId();
 
       // track.addEventListener(meet.api.events.track.TRACK_AUDIO_LEVEL_CHANGED, audioLevel => l(`Audio Level remote: ${audioLevel}`));
       track.addEventListener(
@@ -101,25 +100,29 @@ if (Meteor.settings.public.lowlevelJitsi) {
       let id;
       if (track.isLocal()) {
         id = `local${track.getType()}${track.rtcId}`;
+        meet.localTracks = _.without(meet.localTracks, track);
       } else {
         const participant = track.getParticipantId();
-        const idx = meet.remoteTracks[participant].indexOf(track);
-        id = participant + track.getType() + idx;
+        id = track.getId();
+        meet.remoteTracks[participant] = _.without(meet.remoteTracks[participant], track);
       }
-      l({id});
+
+      track.detach($(`#${id}`)[0]);
       $(`#${id}`).remove();
     },
 
-    onUserLeft(id) {
+    onUserLeft(participant) {
       l('user left', arguments);
-      if (!meet.remoteTracks[id]) {
-        return;
-      }
-      const tracks = meet.remoteTracks[id];
+      if (!meet.remoteTracks[participant]) return;
+
+      const tracks = meet.remoteTracks[participant];
 
       for (let i = 0; i < tracks.length; i++) {
-        tracks[i].detach($(`#${id}${tracks[i].getType()}`));
+        tracks[i].detach($(`#${tracks[i].getId()}`)[0]);
+        $(`#${tracks[i].getId()}`).remove();
       }
+
+      delete meet.remoteTracks[participant];
     },
 
     onConnectionSuccess() {
