@@ -39,6 +39,8 @@ relativePositionToCamera = (position, camera) => {
 updateViewport = (scene, mode) => {
   if (typeof mode !== 'string') mode = scene.viewportMode;
 
+  if (Meteor.settings.public.lowlevelJitsi) return;
+
   if (mode === viewportModes.small) scene.cameras.main.setViewport(0, 0, window.innerWidth / 3, window.innerHeight);
   else if (mode === viewportModes.splitScreen) scene.cameras.main.setViewport(0, 0, window.innerWidth / 2, window.innerHeight);
   else scene.cameras.main.setViewport(0, 0, window.innerWidth, window.innerHeight);
