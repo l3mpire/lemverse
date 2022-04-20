@@ -219,20 +219,23 @@ levelManager = {
     if (!this.scene || !lp.isLemverseBeta('cachedMap')) return;
 
     if (value) {
-      const mapWidthInPixel = defaultMapConfig.width * defaultMapConfig.tileWidth;
-      const mapHeightInPixel = defaultMapConfig.height * defaultMapConfig.tileHeight;
+      if (!this.mapRenderTextures.length) {
+        const mapWidthInPixel = defaultMapConfig.width * defaultMapConfig.tileWidth;
+        const mapHeightInPixel = defaultMapConfig.height * defaultMapConfig.tileHeight;
 
-      const bellowMapRT = this.scene.add.renderTexture(0, 0, mapWidthInPixel, mapHeightInPixel);
-      bellowMapRT.setDepth(0);
-      this.mapRenderTextures.push(bellowMapRT);
+        const bellowMapRT = this.scene.add.renderTexture(0, 0, mapWidthInPixel, mapHeightInPixel);
+        bellowMapRT.setDepth(0);
+        this.mapRenderTextures.push(bellowMapRT);
 
-      const aboveMapRT = this.scene.add.renderTexture(0, 0, mapWidthInPixel, mapHeightInPixel);
-      aboveMapRT.setDepth(10000);
-      this.mapRenderTextures.push(aboveMapRT);
+        const aboveMapRT = this.scene.add.renderTexture(0, 0, mapWidthInPixel, mapHeightInPixel);
+        aboveMapRT.setDepth(10000);
+        this.mapRenderTextures.push(aboveMapRT);
+      }
 
       this.refreshRenderTextures();
-    } else this.mapRenderTextures.forEach(mapRenderTexture => mapRenderTexture.destroy());
+    }
 
+    this.mapRenderTextures.forEach(mapRenderTexture => mapRenderTexture.setVisible(value));
     this.layers.forEach(layer => layer.setVisible(!value));
   },
 
