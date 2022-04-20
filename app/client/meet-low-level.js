@@ -161,7 +161,11 @@ meetLowLevel = {
     // );
     meet.room.on(meet.api.events.conference.PHONE_NUMBER_CHANGED, () => l(`${meet.room.getPhoneNumber()} - ${meet.room.getPhonePin()}`));
 
-    meet.api.createLocalTracks({ devices: ['audio', 'video'] }).then(meet.onLocalTracks);
+    meet.api.createLocalTracks({
+      cameraDeviceId: Meteor?.user()?.profile?.videoRecorder,
+      micDeviceId: Meteor?.user()?.profile?.audioRecorder,
+      devices: ['audio', 'video'],
+    }).then(meet.onLocalTracks);
     meet.room.join();
   },
 
