@@ -124,6 +124,7 @@ WorldScene = new Phaser.Class({
   },
 
   update() {
+    levelManager.update();
     userManager.update();
   },
 

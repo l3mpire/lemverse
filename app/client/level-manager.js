@@ -5,11 +5,14 @@ const defaultLayer = 2;
 const defaultLayerCount = 9;
 const defaultLayerDepth = { 6: 10000, 7: 10001, 8: 10002 };
 const defaultTileset = { layer: defaultLayer, firstgid: 0, tileProperties: {} };
+const timeBeforeRefreshingRenderTexture = 1000;
 
 levelManager = {
   layers: [],
   map: undefined,
   mapRenderTextures: [],
+  mapRenderTexturesDirty: false,
+  mapRenderTexturesTimeOut: 0,
   scene: undefined,
   teleporterGraphics: [],
 
@@ -37,17 +40,28 @@ levelManager = {
     const layer = this.tileLayer(tile);
     this.map.putTileAt(this.tileGlobalIndex(tile), tile.x, tile.y, false, layer);
     window.dispatchEvent(new CustomEvent(eventTypes.onTileAdded, { detail: { tile, layer } }));
+    this.mapRenderTexturesDirty = timeBeforeRefreshingRenderTexture;
   },
 
   onDocumentRemoved(tile) {
     const layer = this.tileLayer(tile);
     this.map.removeTileAt(tile.x, tile.y, false, false, layer);
+    this.mapRenderTexturesDirty = timeBeforeRefreshingRenderTexture;
   },
 
   onDocumentUpdated(newTile) {
     const layer = this.tileLayer(newTile);
     this.map.putTileAt(this.tileGlobalIndex(newTile), newTile.x, newTile.y, false, layer);
     window.dispatchEvent(new CustomEvent(eventTypes.onTileChanged, { detail: { tile: newTile, layer } }));
+    this.mapRenderTexturesDirty = timeBeforeRefreshingRenderTexture;
+  },
+
+  update() {
+    if (this.mapRenderTexturesDirty >= 0 && !Session.get('editor')) {
+      clearTimeout(this.mapRenderTexturesTimeOut);
+      this.mapRenderTexturesTimeOut = setTimeout(() => this.refreshRenderTextures(), this.mapRenderTexturesDirty);
+      this.mapRenderTexturesDirty = -1;
+    }
   },
 
   addTilesetsToLayers(tilesets) {
@@ -249,7 +263,7 @@ levelManager = {
         this.mapRenderTextures.push(aboveMapRT);
       }
 
-      this.refreshRenderTextures();
+      this.mapRenderTexturesDirty = 1;
     }
 
     this.mapRenderTextures.forEach(mapRenderTexture => mapRenderTexture.setVisible(value));
