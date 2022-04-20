@@ -5,14 +5,13 @@ Template.layout.onRendered(() => {
   $(document).ready(() => {
     const script = document.createElement('script');
     script.type = 'text/javascript';
-
-    if (Meteor.settings.public.lowlevelJitsi) {
-      script.src = `https://${Meteor.settings.public.meet.serverURL}/libs/lib-jitsi-meet.min.js`;
-    } else {
-      script.src = `https://${Meteor.settings.public.meet.serverURL}/external_api.js`;
-    }
-
+    script.src = `https://${Meteor.settings.public.meet.serverURL}/external_api.js`;
     $('head').append(script);
+
+    const scriptLowLevel = document.createElement('script');
+    scriptLowLevel.type = 'text/javascript';
+    scriptLowLevel.src = `https://${Meteor.settings.public.meet.serverURL}/libs/lib-jitsi-meet.min.js`;
+    $('head').append(scriptLowLevel);
   });
 });
 

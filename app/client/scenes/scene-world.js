@@ -13,6 +13,8 @@ const onZoneEntered = e => {
   const { targetedLevelId, inlineURL, roomName, url, fullscreen, disableCommunications } = zone;
   sendEvent('zone-entered', { zone });
 
+  meet = zone.jitsiLowLevel ? meetLowLevel : meetHighLevel;
+
   if (targetedLevelId) levelManager.loadLevel(targetedLevelId);
   else if (inlineURL) characterPopIns.initFromZone(zone);
 

@@ -29,16 +29,14 @@ Meteor.methods({
 // http-bind proxy because jitsi.lemverse.com don't accept CORS
 //
 
-if (Meteor.settings.public.lowlevelJitsi) {
-  Picker.route('/http-bind', (params, req, res) => {
-    let content = '';
-    req.on('data', chunk => { content += chunk; });
+Picker.route('/http-bind', (params, req, res) => {
+  let content = '';
+  req.on('data', chunk => { content += chunk; });
 
-    req.on('end', Meteor.bindEnvironment(() => {
-      const page = HTTP.call(req.method, `https://${Meteor.settings.public.meet.serverURL}/http-bind`, { content });
-      // res.writeHead(200, { 'Content-Type': 'text/plain' });
-      res.writeHead(page.statusCode);
-      res.end(page.content);
-    }));
-  });
-}
+  req.on('end', Meteor.bindEnvironment(() => {
+    const page = HTTP.call(req.method, `https://${Meteor.settings.public.meet.serverURL}/http-bind`, { content });
+    // res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.writeHead(page.statusCode);
+    res.end(page.content);
+  }));
+});

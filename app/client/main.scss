@@ -49,21 +49,21 @@ body,
 .tracks {
   position: absolute;
   top: 0;
-  bottom: 0;
+  max-height: 100vh;
   left: 20%;
   right: 20%;
   overflow: scroll;
-  z-index: 10;
   flex-wrap: wrap;
 
   display: flex;
   justify-content: space-evenly;
-
-  pointer-events: none;
+  z-index: 10;
+  // pointer-events: none;
 
   video {
     width: 340px;
     height: 200px;
+    margin: 10px;
     object-fit: scale-down;
     transform: scale(-1, 1);
     border: 1px solid white;

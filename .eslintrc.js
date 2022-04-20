@@ -120,6 +120,8 @@ module.exports = {
     settings: 'writable',
     sounds: 'writable',
     meet: 'writable',
+    meetLowLevel: 'writable',
+    meetHighLevel: 'writable',
     savePlayer: 'writable',
     zones: 'writable',
     notificationMessage: 'writable',
