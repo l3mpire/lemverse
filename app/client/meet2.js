@@ -13,7 +13,7 @@ if (Meteor.settings.public.lowlevelJitsi) {
       l('onLocalTracks', arguments);
       meet.localTracks = tracks;
       for (let i = 0; i < tracks.length; i++) {
-        const id = `local${tracks[i].getType()}${tracks[i].rtcId}`;
+        const id = tracks[i].getId();
 
         // meet.localTracks[i].addEventListener(
         //   meet.api.events.track.TRACK_AUDIO_LEVEL_CHANGED,
@@ -99,7 +99,7 @@ if (Meteor.settings.public.lowlevelJitsi) {
 
       let id;
       if (track.isLocal()) {
-        id = `local${track.getType()}${track.rtcId}`;
+        id = track.getId();
         meet.localTracks = _.without(meet.localTracks, track);
       } else {
         const participant = track.getParticipantId();
