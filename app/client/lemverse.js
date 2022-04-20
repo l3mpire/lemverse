@@ -344,20 +344,9 @@ Template.lemverse.onCreated(function () {
         log(`loading level: loading tiles`);
         this.handleTilesSubscribe = this.subscribe('tiles', levelId, () => {
           this.handleObserveTiles = Tiles.find().observe({
-            added(tile) {
-              const layer = levelManager.tileLayer(tile);
-              levelManager.map.putTileAt(levelManager.tileGlobalIndex(tile), tile.x, tile.y, false, layer);
-              window.dispatchEvent(new CustomEvent(eventTypes.onTileAdded, { detail: { tile, layer } }));
-            },
-            changed(tile) {
-              const layer = levelManager.tileLayer(tile);
-              levelManager.map.putTileAt(levelManager.tileGlobalIndex(tile), tile.x, tile.y, false, layer);
-              window.dispatchEvent(new CustomEvent(eventTypes.onTileChanged, { detail: { tile, layer } }));
-            },
-            removed(tile) {
-              const layer = levelManager.tileLayer(tile);
-              levelManager.map.removeTileAt(tile.x, tile.y, false, false, layer);
-            },
+            added(tile) { levelManager.onDocumentAdded(tile); },
+            changed(newTile, oldTile) { levelManager.onDocumentUpdated(newTile, oldTile); },
+            removed(tile) { levelManager.onDocumentRemoved(tile); },
           });
 
           log('loading level: all tiles loaded');

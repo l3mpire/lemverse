@@ -33,6 +33,23 @@ levelManager = {
     this.map?.destroy();
   },
 
+  onDocumentAdded(tile) {
+    const layer = this.tileLayer(tile);
+    this.map.putTileAt(this.tileGlobalIndex(tile), tile.x, tile.y, false, layer);
+    window.dispatchEvent(new CustomEvent(eventTypes.onTileAdded, { detail: { tile, layer } }));
+  },
+
+  onDocumentRemoved(tile) {
+    const layer = this.tileLayer(tile);
+    this.map.removeTileAt(tile.x, tile.y, false, false, layer);
+  },
+
+  onDocumentUpdated(newTile) {
+    const layer = this.tileLayer(newTile);
+    this.map.putTileAt(this.tileGlobalIndex(newTile), newTile.x, newTile.y, false, layer);
+    window.dispatchEvent(new CustomEvent(eventTypes.onTileChanged, { detail: { tile: newTile, layer } }));
+  },
+
   addTilesetsToLayers(tilesets) {
     if (!this.map) return;
 
