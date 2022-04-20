@@ -35,7 +35,7 @@ levelManager = {
     if (!this.map) return;
 
     const newTilesets = [];
-    _.each(tilesets, tileset => {
+    tilesets.forEach(tileset => {
       if (this.findTileset(tileset._id)) return;
       const tilesetImage = this.map.addTilesetImage(tileset._id, tileset.fileId, tileset.tileWidth || 16, tileset.tileHeight || 16, tileset.tileMargin || 0, tileset.tileSpacing || 0, tileset.gid);
       if (!tilesetImage) {
@@ -47,22 +47,28 @@ levelManager = {
       newTilesets.push(tilesetImage);
 
       const collisionTileIndexes = _.map(tileset.collisionTileIndexes, i => i + tileset.gid);
-      _.each(this.layers, layer => layer.setCollision(collisionTileIndexes));
+      this.layers.forEach(layer => layer.setCollision(collisionTileIndexes));
     });
 
-    if (newTilesets.length) _.each(this.layers, layer => layer.setTilesets([...layer.tileset, ...newTilesets]));
+    if (newTilesets.length) this.layers.forEach(layer => layer.setTilesets([...layer.tileset, ...newTilesets]));
   },
 
   initMapLayers() {
     this.destroyMapLayers();
-    _.times(defaultLayerCount, i => this.layers.push(this.map.createBlankLayer(`${i}`)));
-    _.each(defaultLayerDepth, (value, key) => this.layers[key].setDepth(value));
-    _.each(this.layers, layer => layer.setCullPadding(2, 2));
+
+    Array.from({ length: defaultLayerCount }, (_, i) => {
+      const layer = this.map.createBlankLayer(`${i}`);
+      layer.setCullPadding(2, 2);
+      if (defaultLayerDepth[i]) layer.setDepth(defaultLayerDepth[i]);
+      this.layers.push(layer);
+
+      return i;
+    });
   },
 
   destroyMapLayers() {
     const { world: physicWorld } = this.scene.physics;
-    _.each(this.layers, layer => {
+    this.layers.forEach(layer => {
       if (layer.playerCollider) physicWorld?.removeCollider(layer.playerCollider);
       layer.destroy();
     });
@@ -97,7 +103,7 @@ levelManager = {
   },
 
   tileRefresh(x, y) {
-    for (let i = 0; i < this.layers.length; i++) this.map.removeTileAt(x, y, false, false, i);
+    this.layers.forEach((layer, i) => this.map.removeTileAt(x, y, false, false, i));
 
     Tiles.find({ x, y }).forEach(tile => {
       this.map.putTileAt(this.tileGlobalIndex(tile), tile.x, tile.y, false, this.tileLayer(tile));
@@ -168,7 +174,7 @@ levelManager = {
     const enabledCollisionGlobalIndexes = _.map(enabledCollisionIndexes, i => this.tileGlobalIndex({ index: i, tilesetId: newTileset._id }));
     const disabledCollisionGlobalIndexes = _.map(disabledCollisionIndexes, i => this.tileGlobalIndex({ index: i, tilesetId: newTileset._id }));
 
-    _.each(this.map.layers, layer => {
+    this.map.layers.forEach(layer => {
       this.map.setCollision(enabledCollisionGlobalIndexes, true, false, layer.tilemapLayer, true);
       this.map.setCollision(disabledCollisionGlobalIndexes, false, false, layer.tilemapLayer, true);
     });
@@ -176,14 +182,14 @@ levelManager = {
 
   drawTriggers(state) {
     // clean previous
-    _.each(this.teleporterGraphics, zoneGraphic => zoneGraphic.destroy());
+    this.teleporterGraphics.forEach(zoneGraphic => zoneGraphic.destroy());
     this.teleporterGraphics = [];
 
     if (!state) return;
 
     // create zones
     const zones = Zones.find({ targetedLevelId: { $exists: true, $ne: '' } }).fetch();
-    _.each(zones, zone => {
+    zones.forEach(zone => {
       const graphic = this.scene.add.rectangle(zone.x1, zone.y1, zone.x2 - zone.x1, zone.y2 - zone.y1, 0x9966ff, 0.2);
       graphic.setOrigin(0, 0);
       graphic.setStrokeStyle(1, 0xefc53f);
@@ -193,7 +199,7 @@ levelManager = {
 
     // create entities trigger areas
     const entities = Entities.find().fetch();
-    _.each(entities, entity => {
+    entities.forEach(entity => {
       if (!entity.triggerArea) return;
 
       const x1 = entity.x + entity.triggerArea.x;
