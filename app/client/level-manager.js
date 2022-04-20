@@ -9,6 +9,7 @@ const defaultTileset = { layer: defaultLayer, firstgid: 0, tileProperties: {} };
 levelManager = {
   layers: [],
   map: undefined,
+  mapRenderTextures: [],
   scene: undefined,
   teleporterGraphics: [],
 
@@ -28,6 +29,7 @@ levelManager = {
 
   destroy() {
     this.destroyMapLayers();
+    this.enableRenderTexture(false);
     this.map?.destroy();
   },
 
@@ -73,6 +75,7 @@ levelManager = {
       layer.destroy();
     });
 
+    this.enableRenderTexture(false);
     this.map.removeAllLayers();
     this.layers = [];
   },
@@ -127,6 +130,7 @@ levelManager = {
 
     // simulate a first frame update to avoid weirds visual effects with characters animation and direction
     this.scene.update(0, 0);
+    this.enableRenderTexture(true);
     setTimeout(() => game.scene.keys.LoadingScene.hide(() => this.scene.enableKeyboard(true)), 0);
 
     if (Meteor.settings.public.debug) {
@@ -208,6 +212,48 @@ levelManager = {
       graphic.setStrokeStyle(1, 0xFFFF00);
       graphic.setDepth(20000);
       this.teleporterGraphics.push(graphic);
+    });
+  },
+
+  enableRenderTexture(value) {
+    if (!this.scene || !lp.isLemverseBeta('cachedMap')) return;
+
+    if (value) {
+      const mapWidthInPixel = defaultMapConfig.width * defaultMapConfig.tileWidth;
+      const mapHeightInPixel = defaultMapConfig.height * defaultMapConfig.tileHeight;
+
+      const bellowMapRT = this.scene.add.renderTexture(0, 0, mapWidthInPixel, mapHeightInPixel);
+      bellowMapRT.setDepth(0);
+      this.mapRenderTextures.push(bellowMapRT);
+
+      const aboveMapRT = this.scene.add.renderTexture(0, 0, mapWidthInPixel, mapHeightInPixel);
+      aboveMapRT.setDepth(10000);
+      this.mapRenderTextures.push(aboveMapRT);
+
+      this.refreshRenderTextures();
+    } else this.mapRenderTextures.forEach(mapRenderTexture => mapRenderTexture.destroy());
+
+    this.layers.forEach(layer => layer.setVisible(!value));
+  },
+
+  refreshRenderTextures() {
+    if (!this.mapRenderTextures.length) return;
+    const playerLayer = 2;
+
+    const bellowLayers = this.layers.filter(layer => layer.depth <= playerLayer);
+    this.drawLayersToTarget(bellowLayers, this.mapRenderTextures[0]);
+
+    const aboveLayers = this.layers.filter(layer => layer.depth > playerLayer);
+    this.drawLayersToTarget(aboveLayers, this.mapRenderTextures[1]);
+  },
+
+  drawLayersToTarget(layers, target) {
+    target.clear();
+
+    layers.forEach(layer => {
+      layer.setVisible(true);
+      target.draw(layer);
+      layer.setVisible(false);
     });
   },
 };
