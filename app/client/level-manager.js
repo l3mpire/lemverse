@@ -36,7 +36,7 @@ levelManager = {
 
     const newTilesets = [];
     tilesets.forEach(tileset => {
-      if (this.findTileset(tileset._id)) return;
+      if (this.map.getTileset(tileset._id)) return;
       const tilesetImage = this.map.addTilesetImage(tileset._id, tileset.fileId, tileset.tileWidth || 16, tileset.tileHeight || 16, tileset.tileMargin || 0, tileset.tileSpacing || 0, tileset.gid);
       if (!tilesetImage) {
         log('unable to load tileset', tileset._id);
@@ -67,18 +67,14 @@ levelManager = {
   },
 
   destroyMapLayers() {
-    const { world: physicWorld } = this.scene.physics;
+    const { world } = this.scene.physics;
     this.layers.forEach(layer => {
-      if (layer.playerCollider) physicWorld?.removeCollider(layer.playerCollider);
+      if (layer.playerCollider) world?.removeCollider(layer.playerCollider);
       layer.destroy();
     });
 
     this.map.removeAllLayers();
     this.layers = [];
-  },
-
-  findTileset(tilesetId) {
-    return this.map.getTileset(tilesetId);
   },
 
   loadLevel(levelId) {
@@ -111,13 +107,13 @@ levelManager = {
   },
 
   tileGlobalIndex(tile) {
-    const tileset = this.findTileset(tile.tilesetId);
+    const tileset = this.map.getTileset(tile.tilesetId);
     return (tileset?.firstgid || 0) + tile.index;
   },
 
   tileProperties(tile) {
     if (!tile.tilesetId) return defaultTileset;
-    const tileset = this.findTileset(tile.tilesetId);
+    const tileset = this.map.getTileset(tile.tilesetId);
     if (!tileset) return defaultTileset;
     return tileset.tileProperties?.[tile.index];
   },
@@ -147,7 +143,7 @@ levelManager = {
   onTilesetUpdated(newTileset, oldTileset) {
     if (!this.map) return;
 
-    const tileset = this.findTileset(newTileset._id);
+    const tileset = this.map.getTileset(newTileset._id);
     if (newTileset.fileId !== oldTileset.fileId) {
       this.scene.load.image(newTileset.fileId, `/api/files/${newTileset.fileId}`);
       this.scene.load.once(Phaser.Loader.Events.COMPLETE, () => {
