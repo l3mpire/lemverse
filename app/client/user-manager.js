@@ -80,7 +80,7 @@ userManager = {
 
   rename(name, color) {
     game.scene.getScene('UIScene')?.updateUserName(this.player.userId, name, color);
-    if (meet.api) meet.api.executeCommand('displayName', name);
+    if (meet.api) meet.userName(name);
   },
 
   computeGuestSkin(user) {

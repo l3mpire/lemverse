@@ -92,6 +92,10 @@ meetHighLevel = {
     if (!this.node) this.node = document.querySelector('#meet');
     return this.node;
   },
+
+  userName(name) {
+    meet.api.executeCommand('displayName', name);
+  },
 };
 
 meet = meetHighLevel;
