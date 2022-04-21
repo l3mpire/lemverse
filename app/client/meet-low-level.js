@@ -244,7 +244,7 @@ meetLowLevel = {
   },
 
   hide() {
-    const track = meet.localTracks.find(t => t.getType() === 'video');
+    const track = meet.localTracks.find(t => t.getType() === 'video' && t.getVideoType() === 'camera');
     if (!track) return;
     track.dispose();
   },
@@ -254,6 +254,18 @@ meetLowLevel = {
       cameraDeviceId: Meteor?.user()?.profile?.videoRecorder,
       devices: ['video'],
     }).then(meet.onLocalTracks);
+  },
+
+  shareScreen() {
+    l('shareScreen', arguments);
+    window.JitsiMeetJS.createLocalTracks({ devices: ['desktop'] }).then(meet.onLocalTracks);
+  },
+
+  unshareScreen() {
+    l('unshareScreen', arguments);
+    const track = meet.localTracks.find(t => t.getType() === 'video' && t.getVideoType() === 'desktop');
+    if (!track) return;
+    track.dispose();
   },
 
   nodeElement() {

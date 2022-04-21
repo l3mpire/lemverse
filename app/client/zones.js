@@ -219,6 +219,7 @@ zones = {
       if (meet.api) {
         toggleUserProperty('shareAudio', zone.unmute || false);
         toggleUserProperty('shareVideo', zone.unhide || false);
+        toggleUserProperty('shareScreen', zone.shareScreen || false);
 
         meet.fullscreen(zone.fullscreen);
       }

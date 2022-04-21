@@ -88,6 +88,10 @@ meetHighLevel = {
     });
   },
 
+  shareScreen() {},
+
+  unshareScreen() {},
+
   nodeElement() {
     if (!this.node) this.node = document.querySelector('#meet');
     return this.node;

@@ -237,8 +237,14 @@ Template.lemverse.onCreated(function () {
     const user = Meteor.user({ fields: { 'profile.shareScreen': 1 } });
     if (!user) return;
     Tracker.nonreactive(() => {
-      if (user.profile.shareScreen) userStreams.createScreenStream().then(() => userStreams.screen(true));
-      else userStreams.screen(false);
+      if (meet.api) {
+        if (user.profile.shareScreen) meet.shareScreen();
+        else meet.unshareScreen();
+      } else if (user.profile.shareScreen) {
+        userStreams.createScreenStream().then(() => userStreams.screen(true));
+      } else {
+        userStreams.screen(false);
+      }
     });
   });
 
