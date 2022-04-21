@@ -14,16 +14,18 @@ meetLowLevel = {
 
   onLocalTracks(tracks) {
     l('onLocalTracks', arguments);
-    meet.localTracks = tracks;
+
     for (let i = 0; i < tracks.length; i++) {
       const id = tracks[i].getId();
 
+      meet.localTracks.push(tracks[i]);
+
       // meet.localTracks[i].addEventListener(
-      //   meet.api.events.track.TRACK_AUDIO_LEVEL_CHANGED,
+      //   window.JitsiMeetJS.events.track.TRACK_AUDIO_LEVEL_CHANGED,
       //   audioLevel => l(`Audio Level local: ${audioLevel}`),
       // );
       meet.localTracks[i].addEventListener(
-        meet.api.events.track.TRACK_MUTE_CHANGED,
+        window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
         // eslint-disable-next-line no-loop-func
         t => {
           l('local track muted', t);
@@ -33,11 +35,11 @@ meetLowLevel = {
         },
       );
       meet.localTracks[i].addEventListener(
-        meet.api.events.track.LOCAL_TRACK_STOPPED,
+        window.JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED,
         () => l('local track stoped'),
       );
       meet.localTracks[i].addEventListener(
-        meet.api.events.track.TRACK_AUDIO_OUTPUT_CHANGED,
+        window.JitsiMeetJS.events.track.TRACK_AUDIO_OUTPUT_CHANGED,
         deviceId => l(`track audio output device was changed to ${deviceId}`),
       );
 
@@ -71,9 +73,8 @@ meetLowLevel = {
   onTrackAdded(track) {
     l('onTrackAdded', arguments);
 
-    if (track.isLocal()) {
-      return;
-    }
+    if (track.isLocal()) return;
+
     const participant = track.getParticipantId();
 
     if (!meet.remoteTracks[participant]) meet.remoteTracks[participant] = [];
@@ -81,9 +82,9 @@ meetLowLevel = {
     meet.remoteTracks[participant].push(track);
     const id = track.getId();
 
-    // track.addEventListener(meet.api.events.track.TRACK_AUDIO_LEVEL_CHANGED, audioLevel => l(`Audio Level remote: ${audioLevel}`));
+    // track.addEventListener(window.JitsiMeetJS.events.track.TRACK_AUDIO_LEVEL_CHANGED, audioLevel => l(`Audio Level remote: ${audioLevel}`));
     track.addEventListener(
-      meet.api.events.track.TRACK_MUTE_CHANGED,
+      window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
       t => {
         l('remote track muted', t.isMuted());
 
@@ -92,11 +93,11 @@ meetLowLevel = {
       },
     );
     track.addEventListener(
-      meet.api.events.track.LOCAL_TRACK_STOPPED,
+      window.JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED,
       t => l('remote track stoped', t),
     );
     track.addEventListener(
-      meet.api.events.track.TRACK_AUDIO_OUTPUT_CHANGED,
+      window.JitsiMeetJS.events.track.TRACK_AUDIO_OUTPUT_CHANGED,
       deviceId => l(`track audio output device was changed to ${deviceId}`),
     );
 
@@ -143,29 +144,29 @@ meetLowLevel = {
     l('onConnectionSuccess', arguments);
 
     meet.room = meet.connection.initJitsiConference(kebabCase(meet.roomName), {});
-    meet.room.on(meet.api.events.conference.TRACK_ADDED, meet.onTrackAdded);
-    meet.room.on(meet.api.events.conference.TRACK_REMOVED, meet.onTrackRemoved);
-    meet.room.on(meet.api.events.conference.CONFERENCE_JOINED, meet.onConferenceJoined);
-    meet.room.on(meet.api.events.conference.USER_JOINED, id => {
+    meet.room.on(window.JitsiMeetJS.events.conference.TRACK_ADDED, meet.onTrackAdded);
+    meet.room.on(window.JitsiMeetJS.events.conference.TRACK_REMOVED, meet.onTrackRemoved);
+    meet.room.on(window.JitsiMeetJS.events.conference.CONFERENCE_JOINED, meet.onConferenceJoined);
+    meet.room.on(window.JitsiMeetJS.events.conference.USER_JOINED, id => {
       l('user join', arguments);
       meet.remoteTracks[id] = [];
     });
-    meet.room.on(meet.api.events.conference.USER_LEFT, meet.onUserLeft);
-    meet.room.on(meet.api.events.conference.TRACK_MUTE_CHANGED, track => {
+    meet.room.on(window.JitsiMeetJS.events.conference.USER_LEFT, meet.onUserLeft);
+    meet.room.on(window.JitsiMeetJS.events.conference.TRACK_MUTE_CHANGED, track => {
       l(`${track.getType()} - ${track.isMuted()}`);
     });
-    meet.room.on(meet.api.events.conference.DISPLAY_NAME_CHANGED, (userID, displayName) => l(`${userID} - ${displayName}`));
+    meet.room.on(window.JitsiMeetJS.events.conference.DISPLAY_NAME_CHANGED, (userID, displayName) => l(`${userID} - ${displayName}`));
     // meet.room.on(
-    //   meet.api.events.conference.TRACK_AUDIO_LEVEL_CHANGED,
+    //   window.JitsiMeetJS.events.conference.TRACK_AUDIO_LEVEL_CHANGED,
     //   (userID, audioLevel) => l(`${userID} - ${audioLevel}`),
     // );
-    meet.room.on(meet.api.events.conference.PHONE_NUMBER_CHANGED, () => l(`${meet.room.getPhoneNumber()} - ${meet.room.getPhonePin()}`));
+    meet.room.on(window.JitsiMeetJS.events.conference.PHONE_NUMBER_CHANGED, () => l(`${meet.room.getPhoneNumber()} - ${meet.room.getPhonePin()}`));
 
-    meet.api.createLocalTracks({
-      cameraDeviceId: Meteor?.user()?.profile?.videoRecorder,
-      micDeviceId: Meteor?.user()?.profile?.audioRecorder,
-      devices: ['audio', 'video'],
-    }).then(meet.onLocalTracks);
+    // meet.api.createLocalTracks({
+    //   cameraDeviceId: Meteor?.user()?.profile?.videoRecorder,
+    //   micDeviceId: Meteor?.user()?.profile?.audioRecorder,
+    //   devices: ['audio', 'video'],
+    // }).then(meet.onLocalTracks);
     meet.room.join();
   },
 
@@ -195,11 +196,11 @@ meetLowLevel = {
       bosh: `${Meteor.absoluteUrl()}/http-bind`,
     });
 
-    meet.connection.addEventListener(meet.api.events.connection.CONNECTION_ESTABLISHED, meet.onConnectionSuccess);
-    meet.connection.addEventListener(meet.api.events.connection.CONNECTION_FAILED, meet.onConnectionFailed);
-    meet.connection.addEventListener(meet.api.events.connection.CONNECTION_DISCONNECTED, meet.onDisconnected);
+    meet.connection.addEventListener(window.JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED, meet.onConnectionSuccess);
+    meet.connection.addEventListener(window.JitsiMeetJS.events.connection.CONNECTION_FAILED, meet.onConnectionFailed);
+    meet.connection.addEventListener(window.JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, meet.onDisconnected);
 
-    // meet.connection.addEventListener(meet.api.events.connection.DEVICE_LIST_CHANGED, meet.onDisconnected);
+    // meet.connection.addEventListener(window.JitsiMeetJS.events.connection.DEVICE_LIST_CHANGED, meet.onDisconnected);
 
     meet.roomName = roomName;
 
@@ -209,9 +210,9 @@ meetLowLevel = {
   async close() {
     l('meet.close');
 
-    meet.connection.removeEventListener(meet.api.events.connection.CONNECTION_ESTABLISHED, meet.onConnectionSuccess);
-    meet.connection.removeEventListener(meet.api.events.connection.CONNECTION_FAILED, meet.onConnectionFailed);
-    meet.connection.removeEventListener(meet.api.events.connection.CONNECTION_DISCONNECTED, meet.onDisconnected);
+    meet.connection.removeEventListener(window.JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED, meet.onConnectionSuccess);
+    meet.connection.removeEventListener(window.JitsiMeetJS.events.connection.CONNECTION_FAILED, meet.onConnectionFailed);
+    meet.connection.removeEventListener(window.JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, meet.onDisconnected);
 
     await Promise.all(meet.localTracks.map(t => t.dispose()));
     meet.localTracks = [];
@@ -238,41 +239,54 @@ meetLowLevel = {
   },
 
   mute() {
+    l('mute');
+
     const track = meet.localTracks.find(t => t.getType() === 'audio');
     if (!track) return;
-    if (!track.isMuted()) track.mute();
+    l({track});
+    track.dispose();
+
+    // const track = meet.localTracks.find(t => t.getType() === 'audio');
+    // if (!track) return;
+    // if (!track.isMuted()) track.mute();
   },
 
   unmute() {
-    const track = meet.localTracks.find(t => t.getType() === 'audio');
-    if (!track) return;
-    if (track.isMuted()) track.unmute();
+    l('unmute');
+
+    window.JitsiMeetJS.createLocalTracks({
+      micDeviceId: Meteor?.user()?.profile?.audioRecorder,
+      devices: ['audio'],
+    }).then(meet.onLocalTracks);
+
+    // const track = meet.localTracks.find(t => t.getType() === 'audio');
+    // if (!track) return;
+    // if (track.isMuted()) track.unmute();
   },
 
   hide() {
+    l('hide');
+
     const track = meet.localTracks.find(t => t.getType() === 'video');
     if (!track) return;
-    if (!track.isMuted()) track.mute();
+    track.dispose();
+
+    // const track = meet.localTracks.find(t => t.getType() === 'video');
+    // if (!track) return;
+    // if (!track.isMuted()) track.mute();
   },
 
   unhide() {
-    const track = meet.localTracks.find(t => t.getType() === 'video');
-    if (!track) return;
-    if (track.isMuted()) track.unmute();
-  },
+    l('unhide');
 
-  toggleAudio() {
-    const track = meet.localTracks.find(t => t.getType() === 'audio');
-    if (!track) return;
-    if (track.isMuted()) track.unmute();
-    else track.mute();
-  },
+    window.JitsiMeetJS.createLocalTracks({
+      cameraDeviceId: Meteor?.user()?.profile?.videoRecorder,
+      devices: ['video'],
+    }).then(meet.onLocalTracks);
 
-  toggleVideo() {
-    const track = meet.localTracks.find(t => t.getType() === 'video');
-    if (!track) return;
-    if (track.isMuted()) track.unmute();
-    else track.mute();
+    // const track = meet.localTracks.find(t => t.getType() === 'video');
+    // if (!track) return;
+    // if (track.isMuted()) track.unmute();
   },
 
   nodeElement() {
