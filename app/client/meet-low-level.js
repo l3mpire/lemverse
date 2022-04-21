@@ -39,14 +39,13 @@ meetLowLevel = {
         deviceId => l(`track audio output device was changed to ${deviceId}`),
       );
 
-      if (tracks[i].getType() === 'video') {
-        $('.tracks').append(`<video autoplay='1' id='${id}' />`);
+      if (tracks[i].getType() === 'audio') {
+        $('.tracks').append(`<div id='${id}'><audio class="st" autoplay='1' id='${id}'></audio></div>`);
       } else {
-        $('.tracks').append(
-          `<audio autoplay='1' muted='true' id='${id}' />`,
-        );
+        const name = Meteor.user().profile.name || '';
+        $('.tracks').append(`<div id='${id}' class="stream"><div class="stream-name">${name}</div><div class="webcam"><video class="st" autoplay='1'></video></div></div>`);
       }
-      tracks[i].attach($(`#${id}`)[0]);
+      tracks[i].attach($(`#${id} .st`)[0]);
 
       if (meet.isJoined) meet.room.addTrack(tracks[i]);
 
@@ -66,16 +65,16 @@ meetLowLevel = {
     }
   },
 
-  onTrackAdded(track) {
-    l('onTrackAdded', arguments);
+  onRemoteTrackAdded(track) {
+    l('onRemoteTrackAdded', arguments);
 
     if (track.isLocal()) return;
 
-    const participant = track.getParticipantId();
+    const participantId = track.getParticipantId();
 
-    if (!meet.remoteTracks[participant]) meet.remoteTracks[participant] = [];
+    if (!meet.remoteTracks[participantId]) meet.remoteTracks[participantId] = [];
 
-    meet.remoteTracks[participant].push(track);
+    meet.remoteTracks[participantId].push(track);
     const id = track.getId();
 
     track.addEventListener(
@@ -97,12 +96,14 @@ meetLowLevel = {
     );
 
     if (track.getType() === 'audio') {
-      $('.tracks').append(`<audio autoplay='1' id='${id}' />`);
+      $('.tracks').append(`<div id='${id}'><audio class="st" autoplay='1' id='${id}'></audio></div>`);
     } else {
-      $('.tracks').append(`<video autoplay='1' id='${id}' />`);
+      const participant = meet.room.getParticipants().find(p => p.getId() === participantId);
+      const name = participant.getDisplayName() || '';
+      $('.tracks').append(`<div id='${id}' class="stream"><div class="stream-name">${name}</div><div class="webcam"><video class="st" autoplay='1'></video></div></div>`);
     }
 
-    track.attach($(`#${id}`)[0]);
+    track.attach($(`#${id} .st`)[0]);
   },
 
   onTrackRemoved(track) {
@@ -118,7 +119,7 @@ meetLowLevel = {
       meet.remoteTracks[participant] = _.without(meet.remoteTracks[participant], track);
     }
 
-    track.detach($(`#${id}`)[0]);
+    track.detach($(`#${id} .st`)[0]);
     $(`#${id}`).remove();
   },
 
@@ -129,7 +130,7 @@ meetLowLevel = {
     const tracks = meet.remoteTracks[participant];
 
     for (let i = 0; i < tracks.length; i++) {
-      tracks[i].detach($(`#${tracks[i].getId()}`)[0]);
+      tracks[i].detach($(`#${tracks[i].getId()} .st`)[0]);
       $(`#${tracks[i].getId()}`).remove();
     }
 
@@ -140,7 +141,7 @@ meetLowLevel = {
     l('onConnectionSuccess', arguments);
 
     meet.room = meet.connection.initJitsiConference(kebabCase(meet.roomName), {});
-    meet.room.on(window.JitsiMeetJS.events.conference.TRACK_ADDED, meet.onTrackAdded);
+    meet.room.on(window.JitsiMeetJS.events.conference.TRACK_ADDED, meet.onRemoteTrackAdded);
     meet.room.on(window.JitsiMeetJS.events.conference.TRACK_REMOVED, meet.onTrackRemoved);
     meet.room.on(window.JitsiMeetJS.events.conference.CONFERENCE_JOINED, meet.onConferenceJoined);
     meet.room.on(window.JitsiMeetJS.events.conference.USER_JOINED, id => {
@@ -157,6 +158,8 @@ meetLowLevel = {
     //   (userID, audioLevel) => l(`${userID} - ${audioLevel}`),
     // );
     meet.room.on(window.JitsiMeetJS.events.conference.PHONE_NUMBER_CHANGED, () => l(`${meet.room.getPhoneNumber()} - ${meet.room.getPhonePin()}`));
+
+    meet.room.setDisplayName(Meteor.user().profile.name);
 
     meet.room.join();
   },
@@ -215,6 +218,8 @@ meetLowLevel = {
       meet.connection = undefined;
     }
     if (meet.api) meet.api = undefined;
+
+    meet.isJoined = false;
   },
 
   show(value) {
@@ -254,5 +259,9 @@ meetLowLevel = {
   nodeElement() {
     if (!this.node) this.node = document.querySelector('#meet');
     return this.node;
+  },
+
+  userName(name) {
+    meet.room.setDisplayName(name);
   },
 };

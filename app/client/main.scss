@@ -57,16 +57,31 @@ body,
 
   display: flex;
   justify-content: space-evenly;
-  z-index: 10;
+  z-index: 1;
   // pointer-events: none;
 
-  video {
-    width: 340px;
-    height: 200px;
-    margin: 10px;
-    object-fit: scale-down;
-    transform: scale(-1, 1);
-    border: 1px solid white;
-    background-color: black;
-  }
+  // video {
+  //   width: 340px;
+  //   height: 200px;
+  //   object-fit: scale-down;
+  //   transform: scale(-1, 1);
+  // }
+
+  // div {
+  //   position: relative;
+  //   margin: 10px;
+  //   border: 1px solid white;
+  //   background-color: black;
+  // }
+
+  // div span {
+  //   position: absolute;
+  //   left: 5px;
+  //   top: 5px;
+  //   background-color: rgba($main-color, 0.75);
+  //   border-radius: 4px;
+  //   padding: 3px 10px;
+  //   z-index: 10;
+  //   color: #e5e4e7;
+  // }
 }
