@@ -50,7 +50,10 @@ const onPasteAction = e => {
   const consoleFileInput = document.querySelector('.console-file');
   if (!consoleFileInput) return;
 
-  consoleFileInput.files = e.clipboardData.files;
+  const { files } = e.clipboardData;
+  if (!files.length) return;
+
+  consoleFileInput.files = files;
   markInputFileWithContent(true);
 };
 
