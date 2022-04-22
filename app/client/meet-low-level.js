@@ -20,7 +20,7 @@ meetLowLevel = {
   isJoined: false,
 
   onLocalTracks(tracks) {
-    l('onLocalTracks', arguments);
+    log('onLocalTracks', arguments);
 
     for (let i = 0; i < tracks.length; i++) {
       const id = tracks[i].getId();
@@ -31,7 +31,7 @@ meetLowLevel = {
         window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
         // eslint-disable-next-line no-loop-func
         t => {
-          l('local track muted', t);
+          log('local track muted', t);
 
           if (t.isMuted()) $(`#${id}`).hide();
           else $(`#${id}`).show();
@@ -39,7 +39,7 @@ meetLowLevel = {
       );
       meet.localTracks[i].addEventListener(
         window.JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED,
-        () => l('local track stoped'),
+        () => log('local track stoped'),
       );
       meet.localTracks[i].addEventListener(
         window.JitsiMeetJS.events.track.TRACK_AUDIO_OUTPUT_CHANGED,
@@ -72,7 +72,7 @@ meetLowLevel = {
   },
 
   onRemoteTrackAdded(track) {
-    l('onRemoteTrackAdded', arguments);
+    log('onRemoteTrackAdded', arguments);
 
     if (track.isLocal()) return;
 
@@ -86,7 +86,7 @@ meetLowLevel = {
     track.addEventListener(
       window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
       t => {
-        l('remote track muted', t.isMuted());
+        log('remote track muted', t.isMuted());
 
         if (t.isMuted()) $(`#${id}`).hide();
         else $(`#${id}`).show();
@@ -94,7 +94,7 @@ meetLowLevel = {
     );
     track.addEventListener(
       window.JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED,
-      t => l('remote track stoped', t),
+      t => log('remote track stoped', t),
     );
     track.addEventListener(
       window.JitsiMeetJS.events.track.TRACK_AUDIO_OUTPUT_CHANGED,
@@ -113,7 +113,7 @@ meetLowLevel = {
   },
 
   onTrackRemoved(track) {
-    l('onTrackRemoved', arguments);
+    log('onTrackRemoved', arguments);
 
     let id;
     if (track.isLocal()) {
@@ -130,7 +130,7 @@ meetLowLevel = {
   },
 
   onUserLeft(participant) {
-    l('user left', arguments);
+    log('user left', arguments);
     if (!meet.remoteTracks[participant]) return;
 
     const tracks = meet.remoteTracks[participant];
@@ -144,14 +144,14 @@ meetLowLevel = {
   },
 
   onConnectionSuccess() {
-    l('onConnectionSuccess', arguments);
+    log('onConnectionSuccess', arguments);
 
     meet.room = meet.connection.initJitsiConference(kebabCase(meet.roomName), {});
     meet.room.on(window.JitsiMeetJS.events.conference.TRACK_ADDED, meet.onRemoteTrackAdded);
     meet.room.on(window.JitsiMeetJS.events.conference.TRACK_REMOVED, meet.onTrackRemoved);
     meet.room.on(window.JitsiMeetJS.events.conference.CONFERENCE_JOINED, meet.onConferenceJoined);
     meet.room.on(window.JitsiMeetJS.events.conference.USER_JOINED, id => {
-      l('user join', arguments);
+      log('user join', arguments);
       meet.remoteTracks[id] = [];
     });
     meet.room.on(window.JitsiMeetJS.events.conference.USER_LEFT, meet.onUserLeft);
@@ -170,11 +170,11 @@ meetLowLevel = {
     meet.room.join();
   },
 
-  onConnectionFailed() { l('onConnectionFailed', arguments); },
-  onDisconnected() { l('onDisconnected', arguments); },
+  onConnectionFailed() { log('onConnectionFailed', arguments); },
+  onDisconnected() { log('onDisconnected', arguments); },
 
   onConferenceJoined() {
-    l('onConferenceJoined', arguments);
+    log('onConferenceJoined', arguments);
     meet.isJoined = true;
     for (let i = 0; i < meet.localTracks.length; i++) {
       meet.room.addTrack(meet.localTracks[i]);
@@ -263,12 +263,12 @@ meetLowLevel = {
   },
 
   shareScreen() {
-    l('shareScreen', arguments);
+    log('shareScreen', arguments);
     window.JitsiMeetJS.createLocalTracks({ devices: ['desktop'] }).then(meet.onLocalTracks);
   },
 
   unshareScreen() {
-    l('unshareScreen', arguments);
+    log('unshareScreen', arguments);
     const track = meet.localTracks.find(t => t.getType() === 'video' && t.getVideoType() === 'desktop');
     if (!track) return;
     track.dispose();
