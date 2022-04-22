@@ -2,15 +2,14 @@
 
 .quests-list {
   position: relative;
-  display: flex;
+  display: none;
   flex-direction: column;
   width: 240px;
   min-width: 240px;
   background-color: rgba($main-color, 0.95);
   border-radius: $radius;
-  opacity: 0;
-  transition: opacity 0.25s linear;
   pointer-events: none;
+  height: 100%;
 
   .quest-mode-selectors {
     display: flex;
@@ -71,7 +70,7 @@
   }
 
   &.show {
-    opacity: 1;
+    display: flex;
     pointer-events: all;
   }
 

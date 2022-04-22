@@ -1,6 +1,21 @@
 @import "../variables";
 
 .console-scope-selector {
+  position: relative;
+  display: none;
+  flex-direction: column;
+  width: 240px;
+  min-width: 240px;
+  background-color: rgba($main-color, 0.95);
+  border-radius: $radius;
+  height: 100%;
+  pointer-events: none;
+
+  &.show {
+    display: block;
+    pointer-events: all;
+  }
+
   button.js-scope-selector {
     display: inline-block;
     text-align: center;

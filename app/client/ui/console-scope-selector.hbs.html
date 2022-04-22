@@ -1,5 +1,5 @@
 <template name="consoleScopeSelector">
-  <div class="console-scope-selector">
+  <div class="console-scope-selector {{#if show}}show{{/if}}">
     <button type="button" class="js-scope-selector" disabled="{{#if disabledScopeSelected}}disabled{{/if}}">{{icon}}</button>
   </div>
 </template>

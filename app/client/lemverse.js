@@ -520,6 +520,7 @@ Template.lemverse.helpers({
   pendingNotificationsCount: () => Notifications.find({ read: { $exists: false } }).count(),
   screenMode: () => Template.instance().screenMode.get(),
   settingsOpen: () => (!Session.get('modal') ? false : (Session.get('modal').template.indexOf('settings') !== -1)),
+  showTwoColsLayout: () => Session.get('console'),
 });
 
 Template.lemverse.events({

@@ -10,15 +10,7 @@ $button-text-color: white;
   transform: translateX(-50%);
   width: 100%;
   z-index: 100;
-  opacity: 0;
-  transition: opacity 0.25s linear;
   overflow: hidden;
-  pointer-events: none;
-
-  &.show {
-    opacity: 1;
-    pointer-events: all;
-  }
 
   form {
     display: flex;

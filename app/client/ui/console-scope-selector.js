@@ -53,6 +53,7 @@ Template.consoleScopeSelector.events({
 });
 
 Template.consoleScopeSelector.helpers({
+  show() { return Session.get('console') && !Session.get('quests'); },
   icon() {
     const channel = Session.get('messagesChannel');
     if (!channel) return channelIcons.none;

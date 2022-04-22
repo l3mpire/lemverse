@@ -321,10 +321,17 @@ button.js-notifications {
   align-items: stretch;
   z-index: 100;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s linear;
 
   .right-content {
     position: relative;
     width: 100%;
+  }
+
+  &.show {
+    opacity: 1;
+    pointer-events: all;
   }
 }
 

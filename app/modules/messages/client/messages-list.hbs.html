@@ -21,31 +21,29 @@
 </template>
 
 <template name="messagesList">
-  <div class="messages-module {{#if show}}show{{/if}}">
-    {{#if show}}
-      <h3 class="channel-name">{{channelName}}</h3>
-      <button type="button" class="js-message-list-close" title="Close">
-        <span class="simple-modal-close__text">✖</span>
-      </button>
-      <div class="actions">
-        {{#if canSubscribe}}
-          {{#if subscribed}}
-            <button type="button" class="js-channel-subscribe">Subscribe</button>
-          {{else}}
-            <button type="button" class="js-channel-unsubscribe">Unsubscribe</button>
-          {{/if}}
+  <div class="messages-module">
+    <h3 class="channel-name">{{channelName}}</h3>
+    <button type="button" class="js-message-list-close" title="Close">
+      <span class="simple-modal-close__text">✖</span>
+    </button>
+    <div class="actions">
+      {{#if canSubscribe}}
+        {{#if subscribed}}
+          <button type="button" class="js-channel-subscribe">Subscribe</button>
+        {{else}}
+          <button type="button" class="js-channel-unsubscribe">Unsubscribe</button>
         {{/if}}
-      </div>
-      <div class="messages-list">
-        {{#each message in messages}}
-          {{#unless sameDay @index}}
-            <div class="separation-day">
-              <div class="text">{{formattedSeparationDate @index}}</div>
-            </div>
-          {{/unless}}
-          {{> messagesListMessage message=message }}
-        {{/each}}
-      </div>
-    {{/if}}
+      {{/if}}
+    </div>
+    <div class="messages-list">
+      {{#each message in messages}}
+        {{#unless sameDay @index}}
+          <div class="separation-day">
+            <div class="text">{{formattedSeparationDate @index}}</div>
+          </div>
+        {{/unless}}
+        {{> messagesListMessage message=message }}
+      {{/each}}
+    </div>
   </div>
 </template>

@@ -1,9 +1,6 @@
 <template name="console">
-  <div class="console {{#if Session 'console'}}show{{/if}}">
+  <div class="console">
     <form class="js-console-form">
-      {{#if Session 'console'}}
-        {{> consoleScopeSelector}}
-      {{/if}}
       <textarea class="js-command-input" name="js-command-input" placeholder="Talk here" autocomplete="off"></textarea>
 
       <input type="file" name="file" id="console-file" class="console-file" accept="image/png, image/jpeg, image/gif" />

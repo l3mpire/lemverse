@@ -39,8 +39,11 @@
 
   {{#unless isGuest}}
     {{> radialMenu }}
-    <div class="two-cols-modules">
-      {{> questsList}}
+    <div class="two-cols-modules {{#if showTwoColsLayout}}show{{/if}}">
+      <div class="left-content">
+        {{> consoleScopeSelector}}
+        {{> questsList}}
+      </div>
       <div class="right-content">
         {{> questToolbar}}
         {{> messagesList}}
