@@ -14,7 +14,7 @@ const allChannels = () => {
   return [...sortedZones, nearUsersChannel].filter(Boolean);
 };
 
-Template.consoleScopeSelector.events({
+Template.messagesChannelSelector.events({
   'click .js-channel-selector'(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -24,7 +24,7 @@ Template.consoleScopeSelector.events({
   },
 });
 
-Template.consoleScopeSelector.helpers({
+Template.messagesChannelSelector.helpers({
   show() { return show(); },
   channels() { return allChannels(); },
   active() { return Session.get('messagesChannel') === this._id; },
