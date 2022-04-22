@@ -38,6 +38,19 @@ $z-index: 4;
   opacity: 0;
   pointer-events: none;
 
+  .username {
+    position: absolute;
+    top: -10px;
+    text-align: center;
+    width: 100%;
+    display: block;
+    font-size: 1.15rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
+    transform: translateY(-100%);
+  }
+
   &.show {
     transform: scale(1.0) translate(-50%, -65%);
     opacity: 1;

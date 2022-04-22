@@ -14,11 +14,12 @@
   }
 
   &.is-over> :first-child {
-    display: none;
+    opacity: 0;
   }
 
   &.is-over> :last-child {
-    display: initial;
+    opacity: 1;
+    pointer-events: all;
   }
 
   .button.small {
@@ -27,8 +28,20 @@
   }
 
   .drop-zone {
-    display: none;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
     text-align: center;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    text-align: center;
+    pointer-events: none;
 
     .drop-title {
       color: $lem-color-1;
@@ -37,6 +50,10 @@
     .drop-info {
       color: $gray500;
       font-weight: bold;
+    }
+
+    p {
+      margin: 0;
     }
   }
 

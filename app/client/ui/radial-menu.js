@@ -13,7 +13,10 @@ const itemAmountRequiredForBackground = 2;
 let menuHandler;
 
 const getMenuActiveUser = () => {
-  const { userId } = Session.get('menu');
+  const menu = Session.get('menu');
+  if (!menu) return undefined;
+
+  const { userId } = menu;
   if (!userId) return undefined;
 
   return Meteor.users.findOne(userId);
@@ -248,4 +251,5 @@ Template.radialMenu.helpers({
   position() { return computeMenuPosition(); },
   showBackground() { return Template.instance().items.get().length > itemAmountRequiredForBackground; },
   showShortcuts() { return Template.instance().showShortcuts.get(); },
+  username() { return getMenuActiveUser()?.profile.name; },
 });
