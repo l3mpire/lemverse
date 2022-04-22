@@ -205,7 +205,7 @@ meetLowLevel = {
         domain: Meteor.settings.public.meet.serverURL,
         muc: 'conference.jitsi.lemverse.com',
       },
-      bosh: `${Meteor.absoluteUrl()}/http-bind`,
+      bosh: `${Meteor.absoluteUrl()}http-bind`,
     });
 
     meet.connection.addEventListener(window.JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED, meet.onConnectionSuccess);
