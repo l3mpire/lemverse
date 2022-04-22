@@ -1,5 +1,12 @@
 /* eslint-disable prefer-rest-params */
 
+Template.meetLowLevelTracks.events({
+  'click .js-fullscreen'(e) {
+    e.target.parentElement.classList.toggle('active');
+    $('.meet-low-level-tracks').toggleClass('fullscreen');
+  },
+});
+
 // https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-ljm-api/
 meetLowLevel = {
   lowLevel: true,
@@ -40,10 +47,10 @@ meetLowLevel = {
       );
 
       if (tracks[i].getType() === 'audio') {
-        $('.tracks').append(`<div id='${id}'><audio class="st" autoplay='1' id='${id}'></audio></div>`);
+        $('.meet-low-level-tracks').append(`<div id="${id}" class="hide"><audio class="st" autoplay="1" id="${id}"></audio></div>`);
       } else {
         const name = Meteor.user().profile.name || '';
-        $('.tracks').append(`<div id='${id}' class="stream"><div class="stream-name">${name}</div><div class="webcam"><video class="st" autoplay='1'></video></div></div>`);
+        $('.meet-low-level-tracks').append(`<div id="${id}" class="stream"><div class="stream-name">${name}</div><div class="webcam js-fullscreen"><video class="st" autoplay="1"></video></div></div>`);
       }
       tracks[i].attach($(`#${id} .st`)[0]);
 
@@ -51,14 +58,13 @@ meetLowLevel = {
 
       // debug: create tons of track to test the tracks dom layout
       // for (let x = 0; x < 20; x++) {
-      //   if (tracks[i].getType() === 'video') {
-      //     $('.tracks').append(`<video autoplay='1' id='${id + x}' />`);
+      //   if (tracks[i].getType() === 'audio') {
+      //     $('.meet-low-level-tracks').append(`<div id="${id}" class="hide"><audio class="st" autoplay="1" id="${id}"></audio></div>`);
       //   } else {
-      //     $('.tracks').append(
-      //       `<audio autoplay='1' muted='true' id='${id + x}' />`,
-      //     );
+      //     const name = Meteor.user().profile.name || '';
+      //     $('.meet-low-level-tracks').append(`<div id="${id}" class="stream"><div class="stream-name">${name}</div><div class="webcam js-fullscreen"><video class="st" autoplay="1"></video></div></div>`);
       //   }
-      //   tracks[i].attach($(`#${id + x}`)[0]);
+      //   tracks[i].attach($(`#${id} .st`)[0]);
 
       //   if (meet.isJoined) meet.room.addTrack(tracks[i]);
       // }
@@ -96,11 +102,11 @@ meetLowLevel = {
     );
 
     if (track.getType() === 'audio') {
-      $('.tracks').append(`<div id='${id}'><audio class="st" autoplay='1' id='${id}'></audio></div>`);
+      $('.meet-low-level-tracks').append(`<div id="${id}" class="hide"><audio class="st" autoplay="1" id="${id}"></audio></div>`);
     } else {
       const participant = meet.room.getParticipants().find(p => p.getId() === participantId);
       const name = participant.getDisplayName() || '';
-      $('.tracks').append(`<div id='${id}' class="stream"><div class="stream-name">${name}</div><div class="webcam"><video class="st" autoplay='1'></video></div></div>`);
+      $('.meet-low-level-tracks').append(`<div id='${id}' class="stream"><div class="stream-name">${name}</div><div class="webcam js-fullscreen"><video class="st" autoplay="1"></video></div></div>`);
     }
 
     track.attach($(`#${id} .st`)[0]);

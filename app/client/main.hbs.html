@@ -20,7 +20,7 @@
 <template name="layout">
   {{> onlineStatus}}
   {{> Template.dynamic template=main data=layoutData}}
-  <div class="tracks js-streams"></div>
+  {{> meetLowLevelTracks}}
 </template>
 
 <template name="onlineStatus">

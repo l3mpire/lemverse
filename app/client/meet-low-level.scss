@@ -1,0 +1,43 @@
+.meet-low-level-tracks {
+  position: absolute;
+  top: 0;
+  max-height: 100vh;
+  left: 20%;
+  right: 20%;
+  overflow: scroll;
+  flex-wrap: wrap;
+
+  display: flex;
+  justify-content: space-evenly;
+  z-index: 1;
+  // pointer-events: none;
+
+  .hide {
+    display: none;
+  }
+
+  &.fullscreen {
+    right: 0;
+    left: 80%;
+
+    .stream.active {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: calc(80% - 10px);
+      height: calc(100vh - 10px);
+
+      .webcam {
+        width: 100%;
+        height: 100%;
+
+        video {
+          width: 100%;
+          height: 100%;
+          object-fit: scale-down;
+        }
+      }
+
+    }
+  }
+}
