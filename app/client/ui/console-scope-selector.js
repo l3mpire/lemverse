@@ -1,67 +1,31 @@
-const channelIcons = {
-  none: '❌',
-  zone: '📍',
-  quest: '📖',
-  nearUsers: '👥',
-};
+const show = () => Session.get('console') && !Session.get('quests');
 
-const getAllChannels = () => {
-  const sortedZones = zones.currentZones(Meteor.user()).map(zone => zone._id);
+const allChannels = () => {
+  if (!show()) return [];
+
+  const user = Meteor.user();
+  if (!user) return [];
+
+  const sortedZones = zones.currentZones(Meteor.user()).map(zone => ({ _id: zone._id, name: zone.name }));
   const nearUsers = computeChannelNameFromNearUsers();
+  let nearUsersChannel;
+  if (nearUsers.length) nearUsersChannel = { _id: nearUsers, name: 'Near users' };
 
-  return [...sortedZones, nearUsers].filter(Boolean);
+  return [...sortedZones, nearUsersChannel].filter(Boolean);
 };
-
-const selectNextChannel = template => {
-  const channels = getAllChannels();
-  const channelCount = channels.length;
-  if (channelCount === 0) return;
-
-  template.currentChannelIndex += 1;
-  if (template.currentChannelIndex >= channelCount) template.currentChannelIndex = 0;
-  messagesModule.changeMessagesChannel(channels[template.currentChannelIndex]);
-};
-
-const autoBindChannelIndex = (template, channel) => {
-  const channels = getAllChannels();
-  const channelCount = channels.length;
-  if (channelCount === 0) {
-    template.currentChannelIndex = 0;
-    return;
-  }
-
-  const index = channels.findIndex(c => c === channel);
-  template.currentChannelIndex = index !== -1 ? index : 0;
-};
-
-Template.consoleScopeSelector.onCreated(function () {
-  this.currentChannelIndex = 0;
-
-  this.autorun(() => {
-    const channel = Session.get('messagesChannel');
-    if (!channel) this.currentChannelIndex = 0;
-    else autoBindChannelIndex(this, channel);
-  });
-});
 
 Template.consoleScopeSelector.events({
-  'click .js-scope-selector'(event) {
-    selectNextChannel(Template.instance());
+  'click .js-channel-selector'(event) {
     event.preventDefault();
     event.stopPropagation();
+
+    const { channelId } = event.currentTarget.dataset;
+    messagesModule.changeMessagesChannel(channelId);
   },
 });
 
 Template.consoleScopeSelector.helpers({
-  show() { return Session.get('console') && !Session.get('quests'); },
-  icon() {
-    const channel = Session.get('messagesChannel');
-    if (!channel) return channelIcons.none;
-
-    if (channel.includes('zon_')) return channelIcons.zone;
-    else if (channel.includes('qst_')) return channelIcons.quest;
-
-    return channelIcons.nearUsers;
-  },
-  disabledScopeSelected() { return (Session.get('messagesChannel') || '').includes('qst_'); },
+  show() { return show(); },
+  channels() { return allChannels(); },
+  active() { return Session.get('messagesChannel') === this._id; },
 });
