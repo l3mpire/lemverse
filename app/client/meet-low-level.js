@@ -1,5 +1,7 @@
 /* eslint-disable prefer-rest-params */
 
+Session.setDefault('meetLowLevelTracks', []);
+
 Template.meetLowLevelTracks.events({
   'click .js-fullscreen'(e) {
     e.target.parentElement.classList.toggle('active');
@@ -26,6 +28,10 @@ meetLowLevel = {
       const id = tracks[i].getId();
 
       meet.localTracks.push(tracks[i]);
+
+      const meetLowLevelTracks = Session.get('meetLowLevelTracks');
+      meetLowLevelTracks.push(tracks[i].getId());
+      Session.set('meetLowLevelTracks', meetLowLevelTracks);
 
       meet.localTracks[i].addEventListener(
         window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
@@ -83,6 +89,10 @@ meetLowLevel = {
     meet.remoteTracks[participantId].push(track);
     const id = track.getId();
 
+    const meetLowLevelTracks = Session.get('meetLowLevelTracks');
+    meetLowLevelTracks.push(id);
+    Session.set('meetLowLevelTracks', meetLowLevelTracks);
+
     track.addEventListener(
       window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
       t => {
@@ -115,15 +125,17 @@ meetLowLevel = {
   onTrackRemoved(track) {
     log('onTrackRemoved', arguments);
 
-    let id;
+    const id = track.getId();
+
     if (track.isLocal()) {
-      id = track.getId();
       meet.localTracks = _.without(meet.localTracks, track);
     } else {
       const participant = track.getParticipantId();
-      id = track.getId();
       meet.remoteTracks[participant] = _.without(meet.remoteTracks[participant], track);
     }
+
+    const meetLowLevelTracks = Session.get('meetLowLevelTracks');
+    Session.set('meetLowLevelTracks', _.without(meetLowLevelTracks, id));
 
     track.detach($(`#${id} .st`)[0]);
     $(`#${id}`).remove();
@@ -226,6 +238,8 @@ meetLowLevel = {
     if (meet.api) meet.api = undefined;
 
     meet.isJoined = false;
+
+    Session.set('meetLowLevelTracks', []);
   },
 
   show(value) {
