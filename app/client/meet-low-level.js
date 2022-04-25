@@ -105,11 +105,6 @@ meetLowLevel = {
     meet.room.on(window.JitsiMeetJS.events.conference.CONFERENCE_JOINED, meet.onConferenceJoined);
     meet.room.on(window.JitsiMeetJS.events.conference.USER_JOINED, () => { log('user join', arguments); });
     meet.room.on(window.JitsiMeetJS.events.conference.USER_LEFT, meet.onUserLeft);
-    meet.room.on(window.JitsiMeetJS.events.conference.TRACK_MUTE_CHANGED, track => {
-      l(`${track.getType()} - ${track.isMuted()}`);
-    });
-    meet.room.on(window.JitsiMeetJS.events.conference.DISPLAY_NAME_CHANGED, (userID, displayName) => l(`${userID} - ${displayName}`));
-    meet.room.on(window.JitsiMeetJS.events.conference.PHONE_NUMBER_CHANGED, () => l(`${meet.room.getPhoneNumber()} - ${meet.room.getPhonePin()}`));
 
     meet.room.setDisplayName(Meteor.user().profile.name);
 
