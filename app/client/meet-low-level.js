@@ -1,9 +1,10 @@
 /* eslint-disable prefer-rest-params */
 
+// https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-ljm-api/
+
 Template.meetLowLevelTracks.events({
-  'click .js-fullscreen'(e) {
-    e.target.parentElement.classList.toggle('active');
-    $('.meet-low-level-tracks').toggleClass('fullscreen');
+  'click .js-fullscreen'() {
+    Session.set('meetLowLevelFullscreenTrackId', Session.get('meetLowLevelFullscreenTrackId') === this.getId() ? undefined : this.getId());
   },
 });
 
@@ -34,7 +35,6 @@ const trackDetach = () => {
 Template.meetLowLevelAudioTrack.onDestroyed(trackDetach);
 Template.meetLowLevelVideoTrack.onDestroyed(trackDetach);
 
-// https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-ljm-api/
 meetLowLevel = {
   lowLevel: true,
 
@@ -105,6 +105,8 @@ meetLowLevel = {
     meet.tracks = [];
     Session.set('meetLowLevelTracks', meet.tracks.map(t => t.getId()));
 
+    Session.set('meetLowLevelFullscreenTrackId', undefined);
+
     meet.connection = new meet.api.JitsiConnection(null, null, {
       hosts: {
         domain: Meteor.settings.public.meet.serverURL,
@@ -145,13 +147,8 @@ meetLowLevel = {
     meet.isJoined = false;
   },
 
-  show(value) {
-    this.nodeElement().classList.toggle('show', !!value);
-  },
-
-  fullscreen(value) {
-    this.nodeElement().classList.toggle('fullscreen', !!value);
-  },
+  show() {},
+  fullscreen() {},
 
   mute() {
     const track = meet.tracks.find(t => t.isLocal() && t.getType() === 'audio');
@@ -159,16 +156,18 @@ meetLowLevel = {
     track.dispose();
   },
 
+  onLocalTracksCreated(tracks) {
+    tracks.forEach(track => {
+      if (!meet.isJoined) return;
+      meet.room.addTrack(track);
+    });
+  },
+
   unmute() {
     window.JitsiMeetJS.createLocalTracks({
       micDeviceId: Meteor?.user()?.profile?.audioRecorder,
       devices: ['audio'],
-    }).then(tracks => {
-      tracks.forEach(track => {
-        if (!meet.isJoined) return;
-        meet.room.addTrack(track);
-      });
-    });
+    }).then(meet.onLocalTracksCreated);
   },
 
   hide() {
@@ -181,34 +180,19 @@ meetLowLevel = {
     window.JitsiMeetJS.createLocalTracks({
       cameraDeviceId: Meteor?.user()?.profile?.videoRecorder,
       devices: ['video'],
-    }).then(tracks => {
-      tracks.forEach(track => {
-        if (!meet.isJoined) return;
-        meet.room.addTrack(track);
-      });
-    });
+    }).then(meet.onLocalTracksCreated);
   },
 
   shareScreen() {
     window.JitsiMeetJS.createLocalTracks({
       devices: ['desktop'],
-    }).then(tracks => {
-      tracks.forEach(track => {
-        if (!meet.isJoined) return;
-        meet.room.addTrack(track);
-      });
-    });
+    }).then(meet.onLocalTracksCreated);
   },
 
   unshareScreen() {
     const track = meet.tracks.find(t => t.isLocal() && t.getType() === 'video' && t.getVideoType() === 'desktop');
     if (!track) return;
     track.dispose();
-  },
-
-  nodeElement() {
-    if (!this.node) this.node = document.querySelector('#meet');
-    return this.node;
   },
 
   userName(name) {
