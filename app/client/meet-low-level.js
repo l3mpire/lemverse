@@ -1,13 +1,38 @@
 /* eslint-disable prefer-rest-params */
 
-Session.setDefault('meetLowLevelTracks', []);
-
 Template.meetLowLevelTracks.events({
   'click .js-fullscreen'(e) {
     e.target.parentElement.classList.toggle('active');
     $('.meet-low-level-tracks').toggleClass('fullscreen');
   },
 });
+
+Template.meetLowLevelTracks.helpers({
+  track() { return meet.tracks.find(t => t.getId() === `${this}`); },
+});
+
+Template.meetLowLevelVideoTrack.helpers({
+  name() {
+    const participant = meet.room.getParticipants().find(p => p.getId() === this.getParticipantId());
+    return participant?.getDisplayName() || Meteor.user().profile.name || '';
+  },
+});
+
+const trackAttach = () => {
+  const track = Template.currentData();
+  track.attach($(`#${track.getId()} .st`)[0]);
+};
+
+Template.meetLowLevelAudioTrack.onRendered(trackAttach);
+Template.meetLowLevelVideoTrack.onRendered(trackAttach);
+
+const trackDetach = () => {
+  const track = Template.currentData();
+  track.detach($(`#${track.getId()} .st`)[0]);
+};
+
+Template.meetLowLevelAudioTrack.onDestroyed(trackDetach);
+Template.meetLowLevelVideoTrack.onDestroyed(trackDetach);
 
 // https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-ljm-api/
 meetLowLevel = {
@@ -24,76 +49,22 @@ meetLowLevel = {
   onTrackAdded(track) {
     log('onTrackAdded', arguments);
 
-    const id = track.getId();
-
     meet.tracks.push(track);
-
-    const meetLowLevelTracks = Session.get('meetLowLevelTracks');
-    meetLowLevelTracks.push(id);
-    Session.set('meetLowLevelTracks', meetLowLevelTracks);
-
-    track.addEventListener(
-      window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
-      t => {
-        log('track muted', t.isMuted());
-
-        if (t.isMuted()) $(`#${id}`).hide();
-        else $(`#${id}`).show();
-      },
-    );
-    track.addEventListener(
-      window.JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED,
-      t => log('track stoped', t),
-    );
-
-    if (track.getType() === 'audio') {
-      $('.meet-low-level-tracks').append(`<div id="${id}" class="hide"><audio class="st" autoplay="1" id="${id}" ${track.isLocal() ? 'muted="true"' : ''}></audio></div>`);
-    } else {
-      const participant = meet.room.getParticipants().find(p => p.getId() === track.getParticipantId());
-      const name = participant?.getDisplayName() || Meteor.user().profile.name || '';
-
-      $('.meet-low-level-tracks').append(`<div id='${id}' class="stream"><div class="stream-name">${name}</div><div class="webcam js-fullscreen"><video class="st" autoplay="1"></video></div></div>`);
-    }
-
-    track.attach($(`#${id} .st`)[0]);
-
-    // debug: create tons of track to test the tracks dom layout
-    // for (let x = 0; x < 20; x++) {
-    //   if (track.getType() === 'audio') {
-    //     $('.meet-low-level-tracks').append(`<div id="${id}" class="hide"><audio class="st" autoplay="1" id="${id}"></audio></div>`);
-    //   } else {
-    //     const participant = meet.room.getParticipants().find(p => p.getId() === track.getParticipantId());
-    //     const name = participant?.getDisplayName() || Meteor.user().profile.name || '';
-    //     $('.meet-low-level-tracks').append(`<div id="${id}" class="stream"><div class="stream-name">${name}</div><div class="webcam js-fullscreen"><video class="st" autoplay="1"></video></div></div>`);
-    //   }
-    //   track.attach($(`#${id} .st`)[0]);
-    // }
+    Session.set('meetLowLevelTracks', meet.tracks.map(t => t.getId()));
   },
 
   onTrackRemoved(track) {
     log('onTrackRemoved', arguments);
 
-    const id = track.getId();
-
     meet.tracks = _.without(meet.tracks, track);
-
-    const meetLowLevelTracks = Session.get('meetLowLevelTracks');
-    Session.set('meetLowLevelTracks', _.without(meetLowLevelTracks, id));
-
-    track.detach($(`#${id} .st`)[0]);
-    $(`#${id}`).remove();
+    Session.set('meetLowLevelTracks', meet.tracks.map(t => t.getId()));
   },
 
   onUserLeft(participantId) {
     log('user left', arguments);
 
-    meet.tracks.forEach(t => {
-      if (t.getParticipantId() !== participantId) return;
-      t.detach($(`#${t.getId()} .st`)[0]);
-      $(`#${t.getId()}`).remove();
-    });
-
     meet.tracks = meet.tracks.filter(t => t.getParticipantId() !== participantId);
+    Session.set('meetLowLevelTracks', meet.tracks.map(t => t.getId()));
   },
 
   onConnectionSuccess() {
@@ -131,6 +102,9 @@ meetLowLevel = {
 
     meet.api.setLogLevel(meet.api.logLevels.ERROR);
 
+    meet.tracks = [];
+    Session.set('meetLowLevelTracks', meet.tracks.map(t => t.getId()));
+
     meet.connection = new meet.api.JitsiConnection(null, null, {
       hosts: {
         domain: Meteor.settings.public.meet.serverURL,
@@ -156,7 +130,7 @@ meetLowLevel = {
     await Promise.all(meet.tracks.filter(t => t.isLocal()).map(t => t.dispose()));
 
     meet.tracks = [];
-    Session.set('meetLowLevelTracks', []);
+    Session.set('meetLowLevelTracks', meet.tracks.map(t => t.getId()));
 
     if (meet.room) {
       await meet.room.leave();

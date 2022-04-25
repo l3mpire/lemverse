@@ -1,3 +1,32 @@
 <template name="meetLowLevelTracks">
-  <div class="meet-low-level-tracks js-streams"></div>
+  <div class="meet-low-level-tracks js-streams">
+    {{#each Session "meetLowLevelTracks"}}
+      {{#with track}}
+        {{> meetLowLevelTrack}}
+      {{/with}}
+    {{/each}}
+  </div>
+</template>
+
+<template name="meetLowLevelTrack">
+  {{#if eq getType "audio"}}
+    {{> meetLowLevelAudioTrack}}
+  {{else}}
+    {{> meetLowLevelVideoTrack}}
+  {{/if}}
+</template>
+
+<template name="meetLowLevelAudioTrack">
+  <div id="{{getId}}" class="hide">
+    <audio class="st" autoplay="1" id="{{getId}}" muted={{isLocal}}></audio>
+  </div>
+</template>
+
+<template name="meetLowLevelVideoTrack">
+  <div id="{{getId}}" class="stream">
+    <div class="stream-name">{{name}}</div>
+    <div class="webcam js-fullscreen">
+      <video class="st" autoplay="1"></video>
+    </div>
+  </div>
 </template>
