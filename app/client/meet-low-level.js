@@ -47,7 +47,7 @@ meetLowLevel = {
     );
 
     if (track.getType() === 'audio') {
-      $('.meet-low-level-tracks').append(`<div id="${id}" class="hide"><audio class="st" autoplay="1" id="${id}"></audio></div>`);
+      $('.meet-low-level-tracks').append(`<div id="${id}" class="hide"><audio class="st" autoplay="1" id="${id}" ${track.isLocal() ? 'muted="true"' : ''}></audio></div>`);
     } else {
       const participant = meet.room.getParticipants().find(p => p.getId() === track.getParticipantId());
       const name = participant?.getDisplayName() || Meteor.user().profile.name || '';
@@ -196,7 +196,8 @@ meetLowLevel = {
       devices: ['audio'],
     }).then(tracks => {
       tracks.forEach(track => {
-        if (meet.isJoined) meet.room.addTrack(track);
+        if (!meet.isJoined) return;
+        meet.room.addTrack(track);
       });
     });
   },
@@ -213,7 +214,8 @@ meetLowLevel = {
       devices: ['video'],
     }).then(tracks => {
       tracks.forEach(track => {
-        if (meet.isJoined) meet.room.addTrack(track);
+        if (!meet.isJoined) return;
+        meet.room.addTrack(track);
       });
     });
   },
@@ -223,7 +225,8 @@ meetLowLevel = {
       devices: ['desktop'],
     }).then(tracks => {
       tracks.forEach(track => {
-        if (meet.isJoined) meet.room.addTrack(track);
+        if (!meet.isJoined) return;
+        meet.room.addTrack(track);
       });
     });
   },
