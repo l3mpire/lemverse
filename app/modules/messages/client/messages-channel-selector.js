@@ -26,6 +26,6 @@ Template.messagesChannelSelector.events({
 
 Template.messagesChannelSelector.helpers({
   show() { return show(); },
-  channels() { return allChannels(); },
+  channels() { return allChannels().sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase())); },
   active() { return Session.get('messagesChannel') === this._id; },
 });
