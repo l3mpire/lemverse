@@ -36,6 +36,16 @@
   user-select: none;
   overflow-y: scroll;
 
+  .drop-tileset {
+    margin: 0 9px;
+    padding: 0 9px;
+    border: dashed 2px transparent;
+
+    &.is-over {
+      border-color: black;
+    }
+  }
+
   div.js-tilesets-select {
     cursor: pointer;
     display: flex;

@@ -124,14 +124,14 @@ Template.editorTilesets.helpers({
 
 Template.editorTilesets.events({
   'dragover .js-drop-tileset, dragenter .js-drop-tileset'({ currentTarget }) {
-    currentTarget.classList.add('is-over');
+    Session.set('showDropZone', true);
   },
   'drag .js-drop-tileset, dragstart .js-drop-tileset, dragend .js-drop-tileset, dragover .js-drop-tileset, dragenter .js-drop-tileset, dragleave .js-drop-tileset, drop .js-drop-tileset'(e) {
     e.preventDefault();
     e.stopPropagation();
   },
   'dragleave .js-drop-tileset, dragend .js-drop-tileset, drop .js-drop-tileset'({ currentTarget }) {
-    currentTarget.classList.remove('is-over');
+    Session.set('showDropZone', false);
   },
   'drop .js-drop-tileset'({ originalEvent }) {
     const uploadedFiles = originalEvent.dataTransfer.files;

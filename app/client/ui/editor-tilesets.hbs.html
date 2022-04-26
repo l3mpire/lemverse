@@ -1,4 +1,3 @@
-
 <template name="marker">
   <div class="marker" style="left:{{tile2domX tileIndex}}px; top:{{tile2domY tileIndex}}px; width:{{zoom 16 w}}px; height:{{zoom 16 h}}px; border-color:{{color}}; {{#if bg}}background-color:{{bg}}; opacity: 0.2;{{/if}}"></div>
 </template>
@@ -46,7 +45,7 @@
       selected: {{index}}
     {{/with}}
     <hr>
-    <div class="js-drop-tileset">
+    <div class="drop-tileset js-drop-tileset {{#if Session 'showDropZone'}}is-over{{/if}}">
       <h3>Drag &amp; Drop file here</h3>
     </div>
     <hr>
