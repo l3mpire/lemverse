@@ -18,5 +18,5 @@ Template.entityToolboxEntry.helpers({
 });
 
 Template.entityToolboxEntry.events({
-  'click .entity-entry': () => { },
+  'click .js-entity-entry'() { Meteor.call('spawnEntityFromPrefab', this._id); },
 });
