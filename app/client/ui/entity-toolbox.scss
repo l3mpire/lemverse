@@ -1,0 +1,40 @@
+@import "../_variables";
+
+.entity-toolbox {
+  padding: 10px;
+
+  .list {
+    max-width: 100%;
+    list-style-type: none;
+
+    li.entity-entry {
+      display: flex;
+      justify-content: center;
+      padding: 10px;
+      height: 100px;
+      width: 100px;
+      overflow: hidden;
+      background-color: $main-color;
+      border-radius: $radius;
+      color: $main-text-color;
+      flex-direction: column;
+
+      &:hover {
+        cursor: pointer;
+        background-color: lighten($main-color, 10%);
+      }
+
+      .thumbnail {
+        flex-grow: 1;
+        width: 90%;
+        height: 90%;
+        object-fit: scale-down;
+      }
+
+      .name {
+        text-align: center;
+        margin-bottom: auto;
+      }
+    }
+  }
+}

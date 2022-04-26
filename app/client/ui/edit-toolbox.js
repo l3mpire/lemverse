@@ -11,6 +11,7 @@ Template.editToolbox.onCreated(() => {
   hotkeys('shift+1', { scope: scopes.editor }, () => Session.set('editorSelectedMenu', 1));
   hotkeys('shift+2', { scope: scopes.editor }, () => Session.set('editorSelectedMenu', 2));
   hotkeys('shift+3', { scope: scopes.editor }, () => Session.set('editorSelectedMenu', 3));
+  hotkeys('shift+4', { scope: scopes.editor }, () => Session.set('editorSelectedMenu', 4));
   hotkeys('shift+0', { scope: scopes.editor }, event => {
     if (event.repeat) return;
     levelManager.drawTriggers(!levelManager.teleporterGraphics.length);
@@ -27,6 +28,7 @@ Template.editToolbox.onDestroyed(() => {
   hotkeys.unbind('shift+1', scopes.editor);
   hotkeys.unbind('shift+2', scopes.editor);
   hotkeys.unbind('shift+3', scopes.editor);
+  hotkeys.unbind('shift+4', scopes.editor);
   hotkeys.unbind('shift+0', scopes.editor);
   hotkeys.setScope(scopes.player);
 

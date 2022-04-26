@@ -1,0 +1,16 @@
+<template name="entityToolboxEntry">
+  <li class="entity-entry">
+    <img src="{{thumbnail}}" class="thumbnail">
+    <span class="name">{{name}}</span>
+  </li>
+</template>
+
+<template name="entityToolbox">
+  <div class="entity-toolbox">
+    <div class="list">
+      {{#each entities}}
+        {{> entityToolboxEntry}}
+      {{/each}}
+    </div>
+  </div>
+</template>
