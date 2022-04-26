@@ -1,12 +1,7 @@
 zoom = 1.5;
 selectedCharactersPart = () => Characters.findOne(Session.get('selectedCharacterId')) || {};
 findFirstCharacters = () => {
-  const filter = {};
-  if (Session.get('editorCharactersFilter')) {
-    filter.category = Session.get('editorCharactersFilter');
-  } else {
-    filter.category = { $exists: false };
-  }
+  const filter = { category: Session.get('editorCharactersFilter') || { $exists: false } }; 
   return Characters.findOne(filter);
 };
 
@@ -24,12 +19,7 @@ Template.editorCharacters.helpers({
     return Characters.find({}).fetch();
   },
   charactersList() {
-    const filter = {};
-    if (Session.get('editorCharactersFilter')) {
-      filter.category = Session.get('editorCharactersFilter');
-    } else {
-      filter.category = { $exists: false };
-    }
+    const filter = { category: Session.get('editorCharactersFilter') || { $exists: false } };
     return Characters.find(filter).fetch();
   },
   getCurrentFilter() {
