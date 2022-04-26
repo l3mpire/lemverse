@@ -388,7 +388,7 @@ Template.lemverse.onCreated(function () {
       // Load entities
       log(`loading level: loading entities`);
       this.handleEntitiesSubscribe = this.subscribe('entities', levelId, () => {
-        this.handleObserveEntities = Entities.find().observe({
+        this.handleObserveEntities = Entities.find({ levelId, prefab: { $exists: false } }).observe({
           added(entity) { entityManager.onDocumentAdded(entity); },
           changed(newEntity, oldEntity) { entityManager.onDocumentUpdated(newEntity, oldEntity); },
           removed(entity) { entityManager.onDocumentRemoved(entity); },
