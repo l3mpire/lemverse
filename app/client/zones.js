@@ -203,12 +203,6 @@ zones = {
       return;
     }
 
-    if (zone.adminOnly && !user.roles?.admin && !user.profile.guest) {
-      const [x, y] = zone.teleportEndpoint ? zone.teleportEndpoint.split(',') : [73, 45];
-      userManager.teleportMainUser(+x, +y);
-      lp.notif.error('This zone is reserved');
-    }
-
     if (meet.api && !zone.roomName) {
       meet.close();
       userManager.clearMediaStates();
