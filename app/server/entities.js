@@ -8,6 +8,32 @@ const applyEntityState = (entity, stateActions) => {
   stateActions.replace?.forEach(t => Tiles.update({ levelId, x: t.x, y: t.y }, { $set: { tilesetId: t.newTilesetId, index: t.newIndex } }));
 };
 
+const spawnEntityFromPrefab = (entityId, data = {}) => {
+  check(entityId, String);
+  check(data, Object);
+
+  log('spawnEntityFromPrefab: start', { entityId });
+
+  const entityPrefab = Entities.findOne(entityId);
+  if (!entityPrefab) throw new Error(`The entity does not exists (${entityId})`);
+
+  const { levelId, x, y } = Meteor.user().profile;
+  const spawnedEntityId = Entities.insert({
+    ...entityPrefab,
+    _id: Entities.id(),
+    levelId: data.levelId || levelId,
+    x: data.x || x,
+    y: data.y || y,
+    createdBy: Meteor.userId(),
+    createdAt: new Date(),
+    prefab: undefined,
+  });
+
+  log('spawnEntityFromPrefab: done', { entityId });
+
+  return spawnedEntityId;
+};
+
 switchEntityState = (entity, forcedState = undefined) => {
   check(forcedState, Match.Maybe(String));
   log('switchEntityState: start', { entity, forcedState });
@@ -36,19 +62,7 @@ createEntityFromItem = (item, data = {}) => {
   log('createEntityFromItem: start', { item });
   if (!item.entityId) throw new Error(`The item isn't linked to an entity`);
 
-  const entityPrefab = Entities.findOne(item.entityId);
-  if (!entityPrefab) throw new Error(`The entity linked to the item doesn't exists (${item.entityId})`);
-
-  const { levelId, x, y } = Meteor.user().profile;
-  Entities.insert({
-    ...entityPrefab,
-    _id: Entities.id(),
-    levelId: data.levelId || levelId,
-    x: data.x || x,
-    y: data.y || y,
-    createdBy: Meteor.userId(),
-    createdAt: new Date(),
-  });
+  spawnEntityFromPrefab(item.entityId, data);
 };
 
 const pickEntityInventory = entity => {
@@ -79,12 +93,28 @@ Meteor.methods({
 
     return entity;
   },
-  subscribedUsers(entityId) { return subscribedUsersToEntity(entityId); },
+  subscribedUsers(entityId) {
+    check(entityId, String);
+
+    return subscribedUsersToEntity(entityId);
+  },
+  spawnEntityFromPrefab(entityId, data = {}) {
+    check(entityId, String);
+    check(data, Object);
+
+    spawnEntityFromPrefab(entityId, data);
+  },
 });
 
 Meteor.publish('entities', function (levelId) {
   if (!this.userId) return undefined;
   if (!levelId) levelId = Meteor.settings.defaultLevelId;
 
-  return Entities.find({ levelId });
+  return Entities.find({ levelId, prefab: { $exists: false } });
+});
+
+Meteor.publish('entityPrefabs', function () {
+  if (!this.userId) return undefined;
+
+  return Entities.find({ prefab: true, actionType: { $ne: entityActionType.pickable } });
 });
