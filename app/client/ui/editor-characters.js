@@ -12,6 +12,11 @@ findFirstCharacters = () => {
 
 Template.editorCharacters.onCreated(function () {
   this.subscribe('characters');
+
+  Session.set('showDropZone', false);
+  Tracker.autorun(() => {
+    Session.set('showDropZone', !Characters.find({}).count());
+  });
 });
 
 Template.editorCharacters.helpers({
@@ -56,7 +61,7 @@ Template.editorCharacters.events({
     Session.set('selectedCharacterId', findFirstCharacters()?._id || null);
   },
   'dragover .js-drop-zone, dragenter .js-drop-zone'({ currentTarget }) {
-    currentTarget.classList.add('is-over');
+    Session.set('showDropZone', true);
   },
 
   'drag .js-drop-zone, dragstart .js-drop-zone, dragend .js-drop-zone, dragover .js-drop-zone, dragenter .js-drop-zone, dragleave .js-drop-zone, drop .js-drop-zone'(e) {
@@ -64,8 +69,8 @@ Template.editorCharacters.events({
     e.stopPropagation();
   },
 
-  'dragleave .js-drop-zone, dragend .js-drop-zone, drop .js-drop-zone'({ currentTarget }) {
-    currentTarget.classList.remove('is-over');
+  'dragleave .js-drop-zone, dragend .js-drop-zone, drop .js-drop-zone'({ currentTarget, target }) {
+    Session.set('showDropZone', false);
   },
 
   'drop .js-drop-zone'({ currentTarget, originalEvent }) {
@@ -82,12 +87,8 @@ Template.editorCharacters.events({
       }, false);
 
       uploadInstance.on('end', error => {
-        if (error) {
-          lp.notif.error(`Error during upload: ${error.reason}`);
-        }
-        if (Characters.find({}).count() === 0) {
-          currentTarget.classList.add('is-over');
-        }
+        if (error) lp.notif.error(`Error during upload: ${error.reason}`);
+        if (Characters.find({}).count() === 0) Session.set('showDropZone', false);
       });
 
       uploadInstance.start();
