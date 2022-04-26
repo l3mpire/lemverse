@@ -170,59 +170,59 @@ zones = {
       return mz;
     }, {});
 
-    if (this.activeZone?._id !== zone._id) {
-      // notify about zone change
-      if (!_.isEmpty(this.activeZone)) {
-        const zoneLeavedEvent = new CustomEvent(eventTypes.onZoneLeaved, { detail: { zone: this.activeZone } });
-        window.dispatchEvent(zoneLeavedEvent);
-      }
+    if (this.activeZone?.name === zone.name) return;
 
-      if (!_.isEmpty(zone)) {
-        const zoneEnteredEvent = new CustomEvent(eventTypes.onZoneEntered, { detail: { zone, previousZone: this.activeZone } });
-        window.dispatchEvent(zoneEnteredEvent);
-      }
+    // notify about zone changes
+    if (!_.isEmpty(this.activeZone)) {
+      const zoneLeavedEvent = new CustomEvent(eventTypes.onZoneLeaved, { detail: { zone: this.activeZone } });
+      window.dispatchEvent(zoneLeavedEvent);
+    }
 
-      this.activeZone = zone;
-      if (zone.name && !zone.hideName) Session.set('showZoneName', zone);
+    if (!_.isEmpty(zone)) {
+      const zoneEnteredEvent = new CustomEvent(eventTypes.onZoneEntered, { detail: { zone, previousZone: this.activeZone } });
+      window.dispatchEvent(zoneEnteredEvent);
+    }
 
-      if (zone.url) {
-        this.getIframeElement().src = zone.url;
-        if (zone.yt) this.getIframeElement().allow = iframeAllowAttributeSettings;
-        this.getWebpageElement().classList.add('show');
-      } else if (!zone.url && !meet.api) this.closeIframeElement();
+    this.activeZone = zone;
+    if (zone.name && !zone.hideName) Session.set('showZoneName', zone);
 
-      const user = Meteor.users.findOne(player.userId);
-      if (!user) return;
+    if (zone.url) {
+      this.getIframeElement().src = zone.url;
+      if (zone.yt) this.getIframeElement().allow = iframeAllowAttributeSettings;
+      this.getWebpageElement().classList.add('show');
+    } else if (!zone.url && !meet.api) this.closeIframeElement();
 
-      if (!this.isUserAllowed(user, zone)) {
-        const [x, y] = zone.teleportEndpoint ? zone.teleportEndpoint.split(',') : [73, 45];
-        userManager.teleportMainUser(+x, +y);
-        lp.notif.error('This zone is reserved');
+    const user = Meteor.user();
+    if (!user) return;
 
-        return;
-      }
+    if (!this.isUserAllowed(user, zone)) {
+      const [x, y] = zone.teleportEndpoint ? zone.teleportEndpoint.split(',') : [73, 45];
+      userManager.teleportMainUser(+x, +y);
+      lp.notif.error('This zone is reserved');
 
-      if (zone.adminOnly && !user.roles?.admin && !user.profile.guest) {
-        const [x, y] = zone.teleportEndpoint ? zone.teleportEndpoint.split(',') : [73, 45];
-        userManager.teleportMainUser(+x, +y);
-        lp.notif.error('This zone is reserved');
-      }
+      return;
+    }
 
-      if (meet.api && !zone.roomName) {
-        meet.close();
-        userManager.clearMediaStates();
-      } else if (!meet.api && zone.roomName && !user.profile.guest) {
-        userManager.saveMediaStates();
-        meet.open(`${zone.levelId}-${zone.roomName}`);
-      }
+    if (zone.adminOnly && !user.roles?.admin && !user.profile.guest) {
+      const [x, y] = zone.teleportEndpoint ? zone.teleportEndpoint.split(',') : [73, 45];
+      userManager.teleportMainUser(+x, +y);
+      lp.notif.error('This zone is reserved');
+    }
 
-      if (meet.api) {
-        toggleUserProperty('shareAudio', zone.unmute || false);
-        toggleUserProperty('shareVideo', zone.unhide || false);
-        toggleUserProperty('shareScreen', zone.shareScreen || false);
+    if (meet.api && !zone.roomName) {
+      meet.close();
+      userManager.clearMediaStates();
+    } else if (!meet.api && zone.roomName && !user.profile.guest) {
+      userManager.saveMediaStates();
+      meet.open(`${zone.levelId}-${zone.roomName}`);
+    }
 
-        meet.fullscreen(zone.fullscreen);
-      }
+    if (meet.api) {
+      toggleUserProperty('shareAudio', zone.unmute || false);
+      toggleUserProperty('shareVideo', zone.unhide || false);
+      toggleUserProperty('shareScreen', zone.shareScreen || false);
+
+      meet.fullscreen(zone.fullscreen);
     }
   },
 
