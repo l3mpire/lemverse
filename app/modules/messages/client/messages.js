@@ -19,7 +19,7 @@ messagesModule = {
       this.changeMessagesChannel(zone._id);
     };
 
-    const onZoneLeaved = event => {
+    const onZoneLeft = event => {
       if (ignoreChannelAutoSwitch()) return;
 
       const { zone } = event.detail;
@@ -48,7 +48,7 @@ messagesModule = {
     };
 
     window.addEventListener(eventTypes.onZoneEntered, onZoneEntered);
-    window.addEventListener(eventTypes.onZoneLeaved, onZoneLeaved);
+    window.addEventListener(eventTypes.onZoneLeft, onZoneLeft);
     window.addEventListener(eventTypes.onUserNear, onUserNear);
     window.addEventListener(eventTypes.onUserMovedAway, onUserMovedAway);
   },

@@ -22,10 +22,10 @@ const onZoneEntered = e => {
   if (disableCommunications) userManager.setUserInDoNotDisturbMode(true);
 };
 
-const onZoneLeaved = e => {
+const onZoneLeft = e => {
   const { zone } = e.detail;
   const { popInConfiguration, roomName, url, disableCommunications } = zone;
-  sendEvent('zone-leaved', { zone });
+  sendEvent('zone-left', { zone });
 
   if (!popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(`${Meteor.userId()}-${zone._id}`);
 
@@ -102,7 +102,7 @@ WorldScene = new Phaser.Class({
 
     // custom events
     window.addEventListener(eventTypes.onZoneEntered, onZoneEntered);
-    window.addEventListener(eventTypes.onZoneLeaved, onZoneLeaved);
+    window.addEventListener(eventTypes.onZoneLeft, onZoneLeft);
 
     this.scene.sleep();
     this.physics.disableUpdate();
@@ -165,7 +165,7 @@ WorldScene = new Phaser.Class({
     this.events.off('sleep', this.sleepMethod, this);
     this.scale.off('resize', this.updateViewportMethod);
     window.removeEventListener(eventTypes.onZoneEntered, onZoneEntered);
-    window.removeEventListener(eventTypes.onZoneLeaved, onZoneLeaved);
+    window.removeEventListener(eventTypes.onZoneLeft, onZoneLeft);
 
     levelManager.destroy();
     entityManager.destroy();

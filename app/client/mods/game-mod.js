@@ -72,7 +72,7 @@ const onZoneEntered = e => {
   }
 };
 
-const onZoneLeaved = e => {
+const onZoneLeft = e => {
   const { zone } = e.detail;
 
   if (!zone.popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(`${Meteor.userId()}-${zone._id}`);
@@ -114,7 +114,7 @@ const onEntityUpdated = e => {
 
 Template.gameMod.onCreated(() => {
   window.addEventListener(eventTypes.onZoneEntered, onZoneEntered);
-  window.addEventListener(eventTypes.onZoneLeaved, onZoneLeaved);
+  window.addEventListener(eventTypes.onZoneLeft, onZoneLeft);
   window.addEventListener(eventTypes.onTileAdded, onTileAdded);
   window.addEventListener(eventTypes.onTileChanged, onTileChanged);
   window.addEventListener(eventTypes.onEntityUpdated, onEntityUpdated);
@@ -122,7 +122,7 @@ Template.gameMod.onCreated(() => {
 
 Template.gameMod.onDestroyed(() => {
   window.removeEventListener(eventTypes.onZoneEntered, onZoneEntered);
-  window.removeEventListener(eventTypes.onZoneLeaved, onZoneLeaved);
+  window.removeEventListener(eventTypes.onZoneLeft, onZoneLeft);
   window.removeEventListener(eventTypes.onTileAdded, onTileAdded);
   window.removeEventListener(eventTypes.onTileChanged, onTileChanged);
   window.removeEventListener(eventTypes.onEntityUpdated, onEntityUpdated);

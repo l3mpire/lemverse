@@ -11,7 +11,7 @@ eventTypes = Object.freeze({
   onUserNear: 'onUserNear',
   onUserMovedAway: 'onUserMovedAway',
   onZoneEntered: 'onZoneEntered',
-  onZoneLeaved: 'onZoneLeaved',
+  onZoneLeft: 'onZoneLeft',
   onPopInEvent: 'pop-in-event',
   beforeSendingMessage: 'beforeSendingMessage',
   afterSendingMessage: 'afterSendingMessage',

@@ -174,8 +174,8 @@ zones = {
 
     // notify about zone changes
     if (!_.isEmpty(this.activeZone)) {
-      const zoneLeavedEvent = new CustomEvent(eventTypes.onZoneLeaved, { detail: { zone: this.activeZone } });
-      window.dispatchEvent(zoneLeavedEvent);
+      const zoneLeftEvent = new CustomEvent(eventTypes.onZoneLeft, { detail: { zone: this.activeZone } });
+      window.dispatchEvent(zoneLeftEvent);
     }
 
     if (!_.isEmpty(zone)) {
