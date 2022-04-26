@@ -4,6 +4,10 @@
   padding: 10px;
 
   .list {
+    display: flex;
+    flex-direction: row;
+    column-gap: 10px;
+    overflow-x: scroll;
     max-width: 100%;
     list-style-type: none;
 
@@ -12,6 +16,7 @@
       justify-content: center;
       padding: 10px;
       height: 100px;
+      min-width: 100px;
       width: 100px;
       overflow: hidden;
       background-color: $main-color;
