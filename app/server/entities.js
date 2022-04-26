@@ -116,5 +116,5 @@ Meteor.publish('entities', function (levelId) {
 Meteor.publish('entityPrefabs', function () {
   if (!this.userId) return undefined;
 
-  return Entities.find({ prefab: true, actionType: 1 });
+  return Entities.find({ prefab: true, actionType: { $ne: entityActionType.pickable } });
 });
