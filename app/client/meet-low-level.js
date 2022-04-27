@@ -10,6 +10,7 @@ Template.meetLowLevelTracks.events({
 
 Template.meetLowLevelTracks.helpers({
   track() { return meet.tracks.find(t => t.getId() === `${this}`); },
+  sessionMeetLowLevelTracks() { return Session.get('meetLowLevelTracks'); },
 });
 
 Template.meetLowLevelVideoTrack.helpers({
