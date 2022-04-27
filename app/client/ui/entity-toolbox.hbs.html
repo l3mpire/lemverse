@@ -1,3 +1,10 @@
+<template name="entityEditor">
+  <div class="entity-editor">
+    <h2>{{entity.name}}</h2>
+    <button type="button" class="button js-entity-delete">Delete</button>
+  </div>
+</template>
+
 <template name="entityToolboxEntry">
   <li class="js-entity-entry">
     <img src="{{thumbnail}}" class="thumbnail">
@@ -7,10 +14,14 @@
 
 <template name="entityToolbox">
   <div class="entity-toolbox">
-    <div class="list">
-      {{#each entities}}
-        {{> entityToolboxEntry}}
-      {{/each}}
-    </div>
+    {{#if showEntityList}}
+      <div class="list">
+        {{#each entities}}
+          {{> entityToolboxEntry}}
+        {{/each}}
+      </div>
+    {{else}}
+      {{> entityEditor}}
+    {{/if}}
   </div>
 </template>

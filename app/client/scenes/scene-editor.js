@@ -12,6 +12,7 @@ EditorScene = new Phaser.Class({
     this.marker = game.scene.keys.WorldScene.add.graphics();
     this.undoTiles = [];
     this.redoTiles = [];
+    this.mode = 1;
     this.areaSelector = game.scene.keys.WorldScene.add.graphics();
     this.areaSelector.visible = false;
     this.keys = this.input.keyboard.addKeys({
@@ -24,13 +25,14 @@ EditorScene = new Phaser.Class({
 
     this.events.on('wake', () => {
       Session.set('console', false);
-      this.marker.visible = true;
-      this.updateEditionMarker(Session.get('selectedTiles'));
+      this.onEditorModeChanged(Session.get('editorSelectedMenu'));
     });
 
     this.events.on('sleep', () => {
       this.marker.visible = false;
       this.areaSelector.visible = false;
+      entityManager.enableEdition(false);
+      Session.set('selectedEntity', undefined);
     });
   },
 
@@ -48,7 +50,7 @@ EditorScene = new Phaser.Class({
     Session.set('pointerY', worldPoint.y | 0);
 
     const zoneId = Session.get('selectedZoneId');
-    if (Session.get('editorSelectedMenu') === 2) {
+    if (this.mode === 2) {
       if (this.input.manager.activePointer.isDown && this.input.manager.activePointer.downElement.nodeName === 'CANVAS') this.isMouseDown = true;
 
       if (this.isMouseDown && !this.input.manager.activePointer.isDown) {
@@ -87,7 +89,7 @@ EditorScene = new Phaser.Class({
 
         this.showSelection(startPosition.x, startPosition.y, size.x, size.y);
       }
-    } else if (Session.get('editorSelectedMenu') === 1) {
+    } else if (this.mode === 1) {
       // Snap to tile coordinates, but in world space
       this.marker.x = map.tileToWorldX(pointerTileX);
       this.marker.y = map.tileToWorldY(pointerTileY);
@@ -242,6 +244,12 @@ EditorScene = new Phaser.Class({
       startPosition,
       endPosition,
     };
+  },
+
+  onEditorModeChanged(mode) {
+    this.updateEditionMarker(Session.get('selectedTiles'));
+    this.marker.setVisible(mode === 1);
+    entityManager.enableEdition(mode === 4);
   },
 
   snapToTile(x, y) {
