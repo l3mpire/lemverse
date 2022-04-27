@@ -21,7 +21,10 @@ Template.meetLowLevelVideoTrack.helpers({
 
 const trackAttach = () => {
   const track = Template.currentData();
-  track.attach($(`#${track.getId()} .st`)[0]);
+  const el = $(`#${track.getId()} .st`)[0];
+  // force muted property to be sync with attribute
+  el.muted = el.getAttribute('muted');
+  track.attach(el);
 };
 
 Template.meetLowLevelAudioTrack.onRendered(trackAttach);
