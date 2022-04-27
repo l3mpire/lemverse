@@ -1,3 +1,5 @@
+import Phaser from 'phaser';
+
 const entityAnimations = {
   drop: (x, y) => ({
     y,
@@ -24,6 +26,21 @@ const entityTooltipConfig = {
   proximityRequired: 100 ** 2, // Distance without using sqrt
   style: 'tooltip with-arrow fade-in',
 };
+
+const entityInteractionConfiguration = {
+  hitArea: new Phaser.Geom.Circle(0, 0, 20),
+  hitAreaCallback: Phaser.Geom.Circle.Contains,
+  cursor: 'pointer',
+  draggable: true,
+};
+
+const onDrag = function (pointer, dragX, dragY) {
+  this.x = dragX;
+  this.y = dragY;
+  this.setDepth(this.y);
+};
+
+const onDragEnd = function () { Entities.update(this.getData('id'), { $set: { x: this.x, y: this.y } }); };
 
 const floatingDistance = 20;
 const itemAddedToInventoryText = 'Item added to your inventory';
@@ -232,10 +249,13 @@ entityManager = {
         if (!Entities.findOne(entity._id)) return;
 
         const pickable = entity.actionType === entityActionType.pickable;
-        const gameObject = this.scene.add.container(entity.x, entity.y);
-        gameObject.setData('id', entity._id);
-        gameObject.setData('actionType', entity.actionType);
-        gameObject.setDepth(entity.y);
+        const gameObject = this.scene.add.container(entity.x, entity.y)
+          .setData('id', entity._id)
+          .setData('actionType', entity.actionType)
+          .setDepth(entity.y)
+          .on('drag', onDrag)
+          .on('dragend', onDragEnd);
+
         this.entities[entity._id] = gameObject;
 
         if (!entity.gameObject) return;
@@ -307,5 +327,13 @@ entityManager = {
     const pickable = entity.actionType === entityActionType.pickable;
 
     return { x: 0, y: -(mainSprite.displayHeight + (pickable ? floatingDistance : 0)) };
+  },
+
+  enableEdition(value) {
+    let func;
+    if (value) func = key => this.entities[key].setInteractive(entityInteractionConfiguration);
+    else func = key => this.entities[key].disableInteractive();
+
+    Object.keys(this.entities).forEach(func);
   },
 };

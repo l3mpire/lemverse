@@ -26,11 +26,13 @@ EditorScene = new Phaser.Class({
       Session.set('console', false);
       this.marker.visible = true;
       this.updateEditionMarker(Session.get('selectedTiles'));
+      entityManager.enableEdition(true);
     });
 
     this.events.on('sleep', () => {
       this.marker.visible = false;
       this.areaSelector.visible = false;
+      entityManager.enableEdition(false);
     });
   },
 
