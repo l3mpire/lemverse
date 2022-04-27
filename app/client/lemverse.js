@@ -255,6 +255,11 @@ Template.lemverse.onCreated(function () {
 
   this.autorun(() => {
     if (!Session.get('sceneWorldReady')) return;
+    game.scene.getScene('EditorScene')?.onEditorModeChanged(Session.get('editorSelectedMenu'));
+  });
+
+  this.autorun(() => {
+    if (!Session.get('sceneWorldReady')) return;
     const bootScene = game.scene.getScene('BootScene');
 
     Tracker.nonreactive(() => {
