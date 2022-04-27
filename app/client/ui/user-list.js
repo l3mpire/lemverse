@@ -79,7 +79,10 @@ Template.userList.helpers({
 
         return usr;
       })
-      .sort((a, b) => a.profile.name.toLowerCase().localeCompare(b.profile.name.toLowerCase()));
+      .sort((a, b) => {
+        if (a.status.online === b.status.online) return a.profile.name.toLowerCase().localeCompare(b.profile.name.toLowerCase());
+        return a.status.online ? -1 : 1;
+      });
   },
   title() {
     const userOnlineCount = users(tabs.level).count();
