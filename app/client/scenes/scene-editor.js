@@ -248,8 +248,8 @@ EditorScene = new Phaser.Class({
 
   onEditorModeChanged(mode) {
     this.updateEditionMarker(Session.get('selectedTiles'));
-    this.marker.setVisible(mode === 1);
-    entityManager.enableEdition(mode === 4);
+    this.marker.setVisible(mode === editorModes.tiles);
+    entityManager.enableEdition(mode === editorModes.entities);
   },
 
   snapToTile(x, y) {
