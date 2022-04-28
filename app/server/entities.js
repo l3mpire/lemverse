@@ -45,7 +45,7 @@ switchEntityState = (entity, forcedState = undefined) => {
   let stateActions;
   // todo: remove this condition once the migration to the new format is done in production
   if (Array.isArray(entity.states)) stateActions = newState === 'on' ? entity.states[1] : entity.states[0];
-  else stateActions = entity.state[newState];
+  else stateActions = entity.states[newState];
 
   if (!stateActions) {
     log('Invalid state', { entity, newState });
