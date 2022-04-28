@@ -195,7 +195,7 @@ zones = {
     const user = Meteor.user();
     if (!user) return;
 
-    if (!this.isUserAllowed(user, zone)) {
+    if (!userAllowedInZone(user, zone)) {
       const [x, y] = zone.teleportEndpoint ? zone.teleportEndpoint.split(',') : [73, 45];
       userManager.teleportMainUser(+x, +y);
       lp.notif.error('This zone is reserved');
@@ -208,7 +208,10 @@ zones = {
       userManager.clearMediaStates();
     } else if (!meet.api && zone.roomName && !user.profile.guest) {
       userManager.saveMediaStates();
-      meet.open(`${zone.levelId}-${zone.roomName}`);
+      Meteor.call('computeRoomName', zone._id, (err, data) => {
+        if (err) { lp.notif.error('You cannot access this zone'); return; }
+        meet.open(data);
+      });
     }
 
     if (meet.api) {
@@ -218,19 +221,6 @@ zones = {
 
       meet.fullscreen(zone.fullscreen);
     }
-  },
-
-  isUserAllowed(user, zone) {
-    if (zone.adminOnly && !user.roles?.admin) return false;
-
-    if (zone.requiredItems?.length) {
-      if (user.profile.guest) return false;
-
-      const userItems = Object.keys(user.inventory || {});
-      return zone.requiredItems.every(tag => userItems.includes(tag));
-    }
-
-    return true;
   },
 
   closeIframeElement() {

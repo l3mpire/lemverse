@@ -162,6 +162,7 @@ module.exports = {
     subscribedUsersToEntity: 'writable',
     userLevel: 'writable',
     formatURLs: 'writable',
+    userAllowedInZone: 'writable',
 
     relativePositionToCamera: 'writable',
     updateViewport: 'writable',

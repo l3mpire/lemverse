@@ -155,3 +155,16 @@ subscribedUsersToEntity = entityId => Meteor.users.find(
     sort: { 'profile.name': 1 },
   },
 ).fetch();
+
+userAllowedInZone = (user, zone) => {
+  if (zone.adminOnly && !user.roles?.admin) return false;
+
+  if (zone.requiredItems?.length) {
+    if (user.profile.guest) return false;
+
+    const userItems = Object.keys(user.inventory || {});
+    return zone.requiredItems.every(tag => userItems.includes(tag));
+  }
+
+  return true;
+};
