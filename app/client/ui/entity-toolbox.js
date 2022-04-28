@@ -6,7 +6,7 @@ Template.entityToolbox.onRendered(function () {
 
 Template.entityToolbox.helpers({
   entities() { return prefabEntities(); },
-  showEntityList() { return !Session.get('selectedEntity'); },
+  showEntityList() { return !Session.get('selectedEntityId'); },
 });
 
 Template.entityToolboxEntry.helpers({
@@ -23,14 +23,14 @@ Template.entityToolboxEntry.events({
 });
 
 Template.entityEditor.helpers({
-  entity() { return Entities.findOne(Session.get('selectedEntity')); },
+  entity() { return Entities.findOne(Session.get('selectedEntityId')); },
 });
 
 Template.entityEditor.events({
   'click .js-entity-delete'() {
     lp.notif.confirm('Entity deletion', `Are you sure to delete this entity?`, () => {
-      Entities.remove(Session.get('selectedEntity'));
-      Session.set('selectedEntity', undefined);
+      Entities.remove(Session.get('selectedEntityId'));
+      Session.set('selectedEntityId', undefined);
     }, null);
   },
 });

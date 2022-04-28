@@ -41,7 +41,7 @@ const onDrag = function (pointer, dragX, dragY) {
 };
 
 const onDragEnd = function () { Entities.update(this.getData('id'), { $set: { x: this.x, y: this.y } }); };
-const onPointerDown = function () { Session.set('selectedEntity', this.getData('id')); };
+const onPointerDown = function () { Session.set('selectedEntityId', this.getData('id')); };
 
 const floatingDistance = 20;
 const itemAddedToInventoryText = 'Item added to your inventory';

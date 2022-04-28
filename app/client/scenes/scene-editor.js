@@ -32,7 +32,7 @@ EditorScene = new Phaser.Class({
       this.marker.visible = false;
       this.areaSelector.visible = false;
       entityManager.enableEdition(false);
-      Session.set('selectedEntity', undefined);
+      Session.set('selectedEntityId', undefined);
     });
   },
 
