@@ -12,11 +12,7 @@ Template.entityToolbox.helpers({
 
 Template.entityToolboxEntry.helpers({
   name() { return this.name || 'Entity'; },
-  thumbnail() {
-    if (this.thumbnail) return this.thumbnail;
-
-    return this.gameObject?.sprite?.path;
-  },
+  thumbnail() { return this.thumbnail || this.gameObject?.sprite?.path; },
 });
 
 Template.entityToolboxEntry.events({
