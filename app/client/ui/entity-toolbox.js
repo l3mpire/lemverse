@@ -1,3 +1,4 @@
+const closeInterface = () => Session.set('selectedEntityId', undefined);
 const prefabEntities = () => Entities.find({ prefab: true }).fetch();
 
 Template.entityToolbox.onRendered(function () {
@@ -30,7 +31,8 @@ Template.entityEditor.events({
   'click .js-entity-delete'() {
     lp.notif.confirm('Entity deletion', `Are you sure to delete this entity?`, () => {
       Entities.remove(Session.get('selectedEntityId'));
-      Session.set('selectedEntityId', undefined);
+      closeInterface();
     }, null);
   },
+  'click .js-close-entity-editor'() { closeInterface(); },
 });
