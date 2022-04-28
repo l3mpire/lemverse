@@ -8,10 +8,10 @@ const hideMenu = event => {
 
 Template.editToolbox.onCreated(() => {
   hotkeys('h', { scope: scopes.editor }, hideMenu);
-  hotkeys('shift+1', { scope: scopes.editor }, () => Session.set('editorSelectedMenu', 1));
-  hotkeys('shift+2', { scope: scopes.editor }, () => Session.set('editorSelectedMenu', 2));
-  hotkeys('shift+3', { scope: scopes.editor }, () => Session.set('editorSelectedMenu', 3));
-  hotkeys('shift+4', { scope: scopes.editor }, () => Session.set('editorSelectedMenu', 4));
+  hotkeys('shift+1', { scope: scopes.editor }, () => Session.set('editorSelectedMenu', editorModes.tiles));
+  hotkeys('shift+2', { scope: scopes.editor }, () => Session.set('editorSelectedMenu', editorModes.zones));
+  hotkeys('shift+3', { scope: scopes.editor }, () => Session.set('editorSelectedMenu', editorModes.level));
+  hotkeys('shift+4', { scope: scopes.editor }, () => Session.set('editorSelectedMenu', editorModes.entities));
   hotkeys('shift+0', { scope: scopes.editor }, event => {
     if (event.repeat) return;
     levelManager.drawTriggers(!levelManager.teleporterGraphics.length);
@@ -19,7 +19,7 @@ Template.editToolbox.onCreated(() => {
 
   hotkeys.setScope(scopes.editor);
 
-  if (!Session.get('editorSelectedMenu')) Session.set('editorSelectedMenu', 1);
+  if (!Session.get('editorSelectedMenu')) Session.set('editorSelectedMenu', editorModes.tiles);
   game.scene.keys.EditorScene.scene.wake();
 });
 
@@ -37,11 +37,6 @@ Template.editToolbox.onDestroyed(() => {
 });
 
 Template.editToolbox.events({
-  'click .js-menus-select'(e) {
-    Session.set('editorSelectedMenu', Number(e.currentTarget.dataset.menu));
-  },
-  'click .js-menus-shrink'() {
-    const editToolbox = document.querySelector('.edit-toolbox');
-    editToolbox.classList.toggle('minimize');
-  },
+  'click .js-menus-select'(e) { Session.set('editorSelectedMenu', Number(e.currentTarget.dataset.menu)); },
+  'click .js-menus-shrink'() { document.querySelector('.edit-toolbox')?.classList.toggle('minimize'); },
 });

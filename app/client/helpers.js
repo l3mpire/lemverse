@@ -4,6 +4,13 @@ viewportModes = Object.freeze({
   splitScreen: 'split-screen',
 });
 
+editorModes = Object.freeze({
+  entities: 'entities',
+  tiles: 'tiles',
+  zones: 'zones',
+  level: 'level',
+});
+
 eventTypes = Object.freeze({
   onEntityUpdated: 'onEntityUpdated',
   onTileAdded: 'onTileAdded',
