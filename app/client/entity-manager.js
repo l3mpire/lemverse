@@ -316,6 +316,9 @@ entityManager = {
         this.updateEntityFromState(entity, entity.state);
       });
 
+      // ensures spawned entities are editable if the entity editor is open
+      if (Session.get('editor', 0) && Session.get('editorSelectedMenu') === 4) this.enableEdition(true);
+
       if (callback) callback();
     });
   },
