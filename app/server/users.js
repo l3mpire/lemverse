@@ -170,7 +170,7 @@ Meteor.users.find({ 'status.online': true }).observeChanges({
     const { respawnDelay } = Meteor.settings;
     if (!respawnDelay) return;
 
-    const diffInMinutes = ((new Date()).getTime() - new Date(user.status.lastLogoutAt).getTime()) / 60000;
+    const diffInMinutes = (Date.now() - new Date(user.status.lastLogoutAt).getTime()) / 60000;
     if (diffInMinutes < respawnDelay) return;
 
     const levelId = user.profile.levelId || Meteor.settings.defaultLevelId;

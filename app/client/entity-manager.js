@@ -346,6 +346,6 @@ entityManager = {
   },
 
   entityRecentlyCreated(entity) {
-    return (new Date()).getTime() - entity.createdAt.getTime() <= entityCreatedThreshold;
+    return Date.now() - entity.createdAt.getTime() <= entityCreatedThreshold;
   },
 };
