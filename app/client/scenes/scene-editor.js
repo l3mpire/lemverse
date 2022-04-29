@@ -160,6 +160,7 @@ EditorScene = new Phaser.Class({
 
   redo() {
     if (!this.redoTiles.length) return;
+    console.log('this.redoTiles', this.redoTiles);
     const tile = this.redoTiles.pop();
 
     const currentTile = Tiles.findOne(tile._id);
@@ -177,6 +178,7 @@ EditorScene = new Phaser.Class({
 
   undo() {
     if (!this.undoTiles.length) return;
+    console.log('this.undoTiles', this.undoTiles);
     const tile = this.undoTiles.pop();
 
     const currentTile = Tiles.findOne(tile._id);

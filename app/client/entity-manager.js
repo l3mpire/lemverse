@@ -1,6 +1,10 @@
 import Phaser from 'phaser';
 
 const entityAnimations = {
+  spawn: () => ({
+    scaleX: { value: 1, duration: 300, ease: 'Bounce.easeOut' },
+    scaleY: { value: 1, duration: 300, ease: 'Bounce.easeOut' },
+  }),
   drop: (x, y) => ({
     y,
     duration: 500,
@@ -43,6 +47,7 @@ const onDrag = function (pointer, dragX, dragY) {
 const onDragEnd = function () { Entities.update(this.getData('id'), { $set: { x: this.x, y: this.y } }); };
 const onPointerDown = function () { Session.set('selectedEntityId', this.getData('id')); };
 
+const entityCreatedThreshold = 1000; // In ms
 const floatingDistance = 20;
 const itemAddedToInventoryText = 'Item added to your inventory';
 const itemAlreadyPickedText = 'Someone just picked up this item 😢';
@@ -311,6 +316,10 @@ entityManager = {
           });
 
           mainSprite.setOrigin(0.5, 1);
+        } else if (mainSprite && this.entityRecentlyCreated(entity)) {
+          mainSprite.scaleY = 1.25;
+          mainSprite.scaleX = 0.8;
+          this.scene.tweens.add({ targets: mainSprite, ...entityAnimations.spawn() });
         }
 
         this.updateEntityFromState(entity, entity.state);
@@ -340,5 +349,9 @@ entityManager = {
     else func = key => this.entities[key].disableInteractive();
 
     Object.keys(this.entities).forEach(func);
+  },
+
+  entityRecentlyCreated(entity) {
+    return (new Date()).getTime() - entity.createdAt.getTime() <= entityCreatedThreshold;
   },
 };
