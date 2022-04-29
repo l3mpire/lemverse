@@ -2,11 +2,20 @@
 
 let linkedZoneId;
 
+const updateMeetStates = zone => {
+  const { unmute, unhide, shareScreen } = zone;
+
+  toggleUserProperty('shareAudio', unmute || false);
+  toggleUserProperty('shareVideo', unhide || false);
+  toggleUserProperty('shareScreen', shareScreen || false);
+};
+
 const onZoneEntered = e => {
   const user = Meteor.user();
   if (user.profile.guest) return;
 
-  const { roomName, fullscreen, unmute, unhide, shareScreen, jitsiLowLevel, _id } = e.detail.zone;
+  const { zone } = e.detail;
+  const { _id, roomName, fullscreen, jitsiLowLevel } = zone;
   const meet = jitsiLowLevel ? meetLowLevel : meetHighLevel;
 
   if (!meet.api && roomName) {
@@ -15,18 +24,11 @@ const onZoneEntered = e => {
       if (err) { lp.notif.error('You cannot access this zone'); return; }
       meet.open(data);
       linkedZoneId = _id;
+      updateViewport(game.scene.keys.WorldScene, fullscreen ? viewportModes.small : viewportModes.splitScreen);
+      updateMeetStates(zone);
+      meet.fullscreen(fullscreen);
     });
-  }
-
-  if (meet.api) {
-    toggleUserProperty('shareAudio', unmute || false);
-    toggleUserProperty('shareVideo', unhide || false);
-    toggleUserProperty('shareScreen', shareScreen || false);
-
-    meet.fullscreen(fullscreen);
-  }
-
-  if (roomName) updateViewport(game.scene.keys.WorldScene, fullscreen ? viewportModes.small : viewportModes.splitScreen);
+  } else if (meet.api) updateMeetStates(zone);
 };
 
 const onZoneLeft = e => {
@@ -39,17 +41,10 @@ const onZoneLeft = e => {
 
     userManager.clearMediaStates();
     updateViewport(game.scene.keys.WorldScene, viewportModes.fullscreen);
+    meet.fullscreen(false);
   }
 
-  if (meet.api) {
-    const { unmute, unhide, shareScreen, fullscreen } = newZone;
-
-    toggleUserProperty('shareAudio', unmute || false);
-    toggleUserProperty('shareVideo', unhide || false);
-    toggleUserProperty('shareScreen', shareScreen || false);
-
-    meet.fullscreen(fullscreen);
-  }
+  if (meet.api) updateMeetStates(newZone);
 };
 
 window.addEventListener(eventTypes.onZoneEntered, onZoneEntered);
