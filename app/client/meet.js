@@ -118,28 +118,28 @@ meetHighLevel = {
   mute() {
     meet.api.isAudioMuted().then(muted => {
       if (muted) return;
-      meet.api.executeCommand('toggleVideo');
+      meet.api.executeCommand('toggleAudio');
     });
   },
 
   unmute() {
     meet.api.isAudioMuted().then(muted => {
       if (!muted) return;
-      meet.api.executeCommand('toggleVideo');
+      meet.api.executeCommand('toggleAudio');
     });
   },
 
   hide() {
     meet.api.isVideoMuted().then(muted => {
       if (muted) return;
-      meet.api.executeCommand('toggleAudio');
+      meet.api.executeCommand('toggleVideo');
     });
   },
 
   unhide() {
     meet.api.isVideoMuted().then(muted => {
       if (!muted) return;
-      meet.api.executeCommand('toggleAudio');
+      meet.api.executeCommand('toggleVideo');
     });
   },
 
