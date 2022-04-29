@@ -11,6 +11,7 @@ const zoneAnimations = {
 
 zones = {
   activeZone: undefined,
+  previousAvailableZones: [],
   webpageContainer: undefined,
   webpageIframeContainer: undefined,
   newContentSprites: {},
@@ -77,6 +78,14 @@ zones = {
       x: zone.x1 + (zone.x2 - zone.x1) / 2,
       y: zone.y1 + (zone.y2 - zone.y1) / 2,
     };
+  },
+
+  openZoneURL(zone) {
+    this.getIframeElement().src = zone.url;
+    if (zone.yt) this.getIframeElement().allow = iframeAllowAttributeSettings;
+    this.getWebpageElement().classList.add('show');
+
+    updateViewport(game.scene.keys.WorldScene, zone.fullscreen ? viewportModes.small : viewportModes.splitScreen);
   },
 
   sortByNearest(zones, x, y) {
@@ -151,7 +160,6 @@ zones = {
   checkDistances(player) {
     if (!player) return;
 
-    // check if we are in a new zone
     const availableZones = Zones.find({
       x1: { $lte: player.x },
       x2: { $gte: player.x },
@@ -159,38 +167,52 @@ zones = {
       y2: { $gte: player.y },
     }).fetch();
 
-    const zone = _.reduce(availableZones, (mz, z) => {
-      if (mz.name) mz.name = `${mz.name} | ${z.name}`;
-      else mz.name = z.name;
+    // todo: check if both arrays have same values
+    const hasChangedZone = availableZones.length !== this.previousAvailableZones.length;
+    if (!hasChangedZone) return;
 
-      _.each(_.keys(z), k => {
-        if (k === 'name') return;
-        if (z[k]) mz[k] = z[k];
-      });
-      return mz;
-    }, {});
+    const availableZonesId = availableZones.map(zone => zone._id);
+    const previousAvailableZonesId = this.previousAvailableZones.map(zone => zone._id);
+    const zonesLeft = this.previousAvailableZones.filter(zone => !availableZonesId.includes(zone._id));
+    const zonesEntered = availableZones.filter(zone => !previousAvailableZonesId.includes(zone._id));
 
-    if (this.activeZone?.name === zone.name) return;
+    let activeZone;
+    if (zonesEntered.length) activeZone = zonesEntered[zonesEntered.length - 1];
+    else if (this.activeZone && !availableZonesId.includes(this.activeZone._id)) activeZone = availableZones[availableZones.length - 1];
+    this.setActiveZone(activeZone);
 
-    // notify about zone changes
-    if (!_.isEmpty(this.activeZone)) {
-      const zoneLeftEvent = new CustomEvent(eventTypes.onZoneLeft, { detail: { zone: this.activeZone } });
-      window.dispatchEvent(zoneLeftEvent);
+    // compute zone toaster
+    if (activeZone) {
+      const zone = _.reduce(availableZones, (mz, z) => {
+        if (mz.name) mz.name = `${mz.name} | ${z.name}`;
+        else mz.name = z.name;
+        _.each(_.keys(z), k => {
+          if (k === 'name') return;
+          if (z[k]) mz[k] = z[k];
+        });
+        return mz;
+      }, {});
+
+      Session.set('showZoneName', zone);
     }
 
-    if (!_.isEmpty(zone)) {
-      const zoneEnteredEvent = new CustomEvent(eventTypes.onZoneEntered, { detail: { zone, previousZone: this.activeZone } });
-      window.dispatchEvent(zoneEnteredEvent);
-    }
+    // notify external modules
+    zonesLeft.forEach(zone => {
+      window.dispatchEvent(new CustomEvent(eventTypes.onZoneLeft, { detail: { zone, newZone: this.activeZone } }));
+      sendEvent('zone-entered', { zone });
+    });
 
+    zonesEntered.forEach(zone => {
+      window.dispatchEvent(new CustomEvent(eventTypes.onZoneEntered, { detail: { zone, previousZone: this.activeZone } }));
+      sendEvent('zone-left', { zone });
+    });
+
+    this.previousAvailableZones = availableZones;
+  },
+
+  setActiveZone(zone) {
     this.activeZone = zone;
-    if (zone.name && !zone.hideName) Session.set('showZoneName', zone);
-
-    if (zone.url) {
-      this.getIframeElement().src = zone.url;
-      if (zone.yt) this.getIframeElement().allow = iframeAllowAttributeSettings;
-      this.getWebpageElement().classList.add('show');
-    } else if (!zone.url && !meet.api) this.closeIframeElement();
+    if (!zone) return;
 
     const user = Meteor.user();
     if (!user) return;
@@ -199,27 +221,6 @@ zones = {
       const [x, y] = zone.teleportEndpoint ? zone.teleportEndpoint.split(',') : [73, 45];
       userManager.teleportMainUser(+x, +y);
       lp.notif.error('This zone is reserved');
-
-      return;
-    }
-
-    if (meet.api && !zone.roomName) {
-      meet.close();
-      userManager.clearMediaStates();
-    } else if (!meet.api && zone.roomName && !user.profile.guest) {
-      userManager.saveMediaStates();
-      Meteor.call('computeRoomName', zone._id, (err, data) => {
-        if (err) { lp.notif.error('You cannot access this zone'); return; }
-        meet.open(data);
-      });
-    }
-
-    if (meet.api) {
-      toggleUserProperty('shareAudio', zone.unmute || false);
-      toggleUserProperty('shareVideo', zone.unhide || false);
-      toggleUserProperty('shareScreen', zone.shareScreen || false);
-
-      meet.fullscreen(zone.fullscreen);
     }
   },
 

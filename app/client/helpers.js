@@ -26,16 +26,18 @@ eventTypes = Object.freeze({
 });
 
 toggleUserProperty = (propertyName, value) => {
+  const user = Meteor.user();
+
   // the user must not be able to deactivate his microphone in the unmute zones
-  if (propertyName === 'shareAudio' && (value || (value === undefined && !Meteor.user().profile.shareAudio))) {
+  if (propertyName === 'shareAudio' && (value || (value === undefined && !user.profile.shareAudio))) {
     if (meet.api && !zones.currentZone()?.unmute) {
       lp.notif.warning(`Your microphone is only accessible on stage`);
       return;
     }
   }
 
-  if (typeof value === 'boolean') Meteor.users.update(Meteor.userId(), { $set: { [`profile.${propertyName}`]: !!value } });
-  else Meteor.users.update(Meteor.userId(), { $set: { [`profile.${propertyName}`]: !Meteor.user().profile[propertyName] } });
+  if (typeof value === 'boolean') Meteor.users.update(user._id, { $set: { [`profile.${propertyName}`]: !!value } });
+  else Meteor.users.update(user._id, { $set: { [`profile.${propertyName}`]: !user.profile[propertyName] } });
 };
 
 relativePositionToCamera = (position, camera) => {

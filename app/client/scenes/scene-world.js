@@ -8,28 +8,26 @@ const zoomConfig = Object.freeze({
 });
 
 const onZoneEntered = e => {
-  const { guest } = Meteor.user().profile;
   const { zone } = e.detail;
-  const { targetedLevelId, inlineURL, roomName, url, fullscreen, disableCommunications } = zone;
-  sendEvent('zone-entered', { zone });
-
-  meet = zone.jitsiLowLevel ? meetLowLevel : meetHighLevel;
+  const { targetedLevelId, inlineURL, url, disableCommunications } = zone;
 
   if (targetedLevelId) levelManager.loadLevel(targetedLevelId);
   else if (inlineURL) characterPopIns.initFromZone(zone);
 
-  if ((roomName && !guest) || url) updateViewport(game.scene.keys.WorldScene, fullscreen ? viewportModes.small : viewportModes.splitScreen);
+  if (url) zones.openZoneURL(zone);
   if (disableCommunications) userManager.setUserInDoNotDisturbMode(true);
 };
 
 const onZoneLeft = e => {
   const { zone } = e.detail;
-  const { popInConfiguration, roomName, url, disableCommunications } = zone;
-  sendEvent('zone-left', { zone });
+  const { popInConfiguration, disableCommunications, url } = zone;
 
   if (!popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(`${Meteor.userId()}-${zone._id}`);
 
-  if (roomName || url) updateViewport(game.scene.keys.WorldScene, viewportModes.fullscreen);
+  if (url) {
+    updateViewport(game.scene.keys.WorldScene, viewportModes.fullscreen);
+    zones.closeIframeElement();
+  }
   if (disableCommunications) userManager.setUserInDoNotDisturbMode(false);
 };
 
