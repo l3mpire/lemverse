@@ -5,12 +5,6 @@ const entityAnimations = {
     scaleX: { value: 1, duration: 300, ease: 'Bounce.easeOut' },
     scaleY: { value: 1, duration: 300, ease: 'Bounce.easeOut' },
   }),
-  drop: (x, y) => ({
-    y,
-    duration: 500,
-    repeat: 0,
-    ease: 'Bounce.easeOut',
-  }),
   floating: (x, y) => ({
     y: { value: y, duration: 1300, ease: 'Sine.easeIn', yoyo: true, repeat: -1 },
   }),
