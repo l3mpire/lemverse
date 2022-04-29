@@ -1,10 +1,15 @@
 import Phaser from 'phaser';
 
 const entityAnimations = {
-  spawn: () => ({
-    scaleX: { value: 1, duration: 300, ease: 'Bounce.easeOut' },
-    scaleY: { value: 1, duration: 300, ease: 'Bounce.easeOut' },
-  }),
+  spawn: (sprite, scene) => {
+    sprite.scaleY = 1.35;
+    sprite.scaleX = 0.75;
+    scene.tweens.add({
+      targets: sprite,
+      scaleX: { value: 1, duration: 300, ease: 'Bounce.easeOut' },
+      scaleY: { value: 1, duration: 300, ease: 'Bounce.easeOut' },
+    });
+  },
   floating: (x, y) => ({
     y: { value: y, duration: 1300, ease: 'Sine.easeIn', yoyo: true, repeat: -1 },
   }),
@@ -311,9 +316,7 @@ entityManager = {
 
           mainSprite.setOrigin(0.5, 1);
         } else if (mainSprite && this.entityRecentlyCreated(entity)) {
-          mainSprite.scaleY = 1.25;
-          mainSprite.scaleX = 0.8;
-          this.scene.tweens.add({ targets: mainSprite, ...entityAnimations.spawn() });
+          entityAnimations.spawn(mainSprite, this.scene);
         }
 
         this.updateEntityFromState(entity, entity.state);
