@@ -12,7 +12,7 @@ EditorScene = new Phaser.Class({
     this.marker = game.scene.keys.WorldScene.add.graphics();
     this.undoTiles = [];
     this.redoTiles = [];
-    this.mode = 1;
+    this.mode = editorModes.tiles;
     this.areaSelector = game.scene.keys.WorldScene.add.graphics();
     this.areaSelector.visible = false;
     this.keys = this.input.keyboard.addKeys({
@@ -51,7 +51,7 @@ EditorScene = new Phaser.Class({
     Session.set('pointerY', worldPoint.y | 0);
 
     const zoneId = Session.get('selectedZoneId');
-    if (this.mode === 2) {
+    if (this.mode === editorModes.zones) {
       if (this.input.manager.activePointer.isDown && this.input.manager.activePointer.downElement.nodeName === 'CANVAS') this.isMouseDown = true;
 
       if (this.isMouseDown && !this.input.manager.activePointer.isDown) {
@@ -90,7 +90,7 @@ EditorScene = new Phaser.Class({
 
         this.showSelection(startPosition.x, startPosition.y, size.x, size.y);
       }
-    } else if (this.mode === 1) {
+    } else if (this.mode === editorModes.tiles) {
       // Snap to tile coordinates, but in world space
       this.marker.x = map.tileToWorldX(pointerTileX);
       this.marker.y = map.tileToWorldY(pointerTileY);
@@ -251,6 +251,7 @@ EditorScene = new Phaser.Class({
     this.updateEditionMarker(Session.get('selectedTiles'));
     this.marker.setVisible(mode === editorModes.tiles);
     entityManager.enableEdition(mode === editorModes.entities);
+    this.mode = mode;
   },
 
   snapToTile(x, y) {
