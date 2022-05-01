@@ -182,7 +182,7 @@ zones = {
     this.setActiveZone(activeZone);
 
     // compute zone toaster
-    if (activeZone) {
+    if (activeZone && !activeZone.hideName) {
       const zone = _.reduce(availableZones, (mz, z) => {
         if (mz.name) mz.name = `${mz.name} | ${z.name}`;
         else mz.name = z.name;
