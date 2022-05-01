@@ -167,9 +167,7 @@ zones = {
       y2: { $gte: player.y },
     }).fetch();
 
-    // todo: check if both arrays have same values
-    const hasChangedZone = availableZones.length !== this.previousAvailableZones.length;
-    if (!hasChangedZone) return;
+    if (availableZones.length === this.previousAvailableZones.length && availableZones.every((zone, i) => zone._id === this.previousAvailableZones[i]._id)) return;
 
     const availableZonesId = availableZones.map(zone => zone._id);
     const previousAvailableZonesId = this.previousAvailableZones.map(zone => zone._id);
