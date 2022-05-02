@@ -1,5 +1,10 @@
 import Phaser from 'phaser';
 
+const insertTile = data => {
+  const user = Meteor.user();
+  return Tiles.insert({ _id: Tiles.id(), createdAt: new Date(), createdBy: user._id, levelId: user.profile.levelId, ...data });
+};
+
 EditorScene = new Phaser.Class({
   Extends: Phaser.Scene,
 
@@ -148,8 +153,12 @@ EditorScene = new Phaser.Class({
                 this.undoTiles.push(tile);
                 Tiles.update(tile._id, { $set: { createdAt: new Date(), createdBy: user._id, index: selectedTileIndex, tilesetId: selectedTileset._id } });
               } else if (!tile) {
-                const { levelId } = user.profile;
-                const tileId = Tiles.insert({ _id: Tiles.id(), createdAt: new Date(), createdBy: user._id, x: pointerTileX + x, y: pointerTileY + y, index: selectedTileIndex, tilesetId: selectedTileset._id, levelId });
+                const tileId = insertTile({
+                  x: pointerTileX + x,
+                  y: pointerTileY + y,
+                  index: selectedTileIndex,
+                  tilesetId: selectedTileset._id,
+                });
                 this.undoTiles.push({ _id: tileId, index: -1 });
               }
             }
@@ -171,8 +180,8 @@ EditorScene = new Phaser.Class({
       this.undoTiles.push(currentTile);
       Tiles.update(tile._id, { $set: tile });
     } else {
-      Tiles.insert(tile);
-      this.undoTiles.push({ _id: tile._id, index: -1 });
+      const tileId = insertTile(tile);
+      this.undoTiles.push({ _id: tileId, index: -1 });
     }
   },
 
@@ -189,7 +198,7 @@ EditorScene = new Phaser.Class({
       Tiles.update(tile._id, { $set: tile });
     } else {
       this.redoTiles.push({ _id: tile._id, index: -1 });
-      Tiles.insert(tile);
+      insertTile(tile);
     }
   },
 
