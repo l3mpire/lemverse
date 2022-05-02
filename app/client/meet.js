@@ -16,7 +16,7 @@ const onZoneEntered = e => {
 
   const { zone } = e.detail;
   const { _id, roomName, fullscreen, jitsiLowLevel } = zone;
-  const meet = jitsiLowLevel ? meetLowLevel : meetHighLevel;
+  meet = jitsiLowLevel ? meetLowLevel : meetHighLevel;
 
   if (!meet.api && roomName) {
     userManager.saveMediaStates();
@@ -36,7 +36,7 @@ const onZoneLeft = e => {
   const { _id, jitsiLowLevel } = zone;
 
   if (linkedZoneId === _id) {
-    const meet = jitsiLowLevel ? meetLowLevel : meetHighLevel;
+    meet = jitsiLowLevel ? meetLowLevel : meetHighLevel;
     meet.close();
 
     userManager.clearMediaStates();
@@ -44,7 +44,7 @@ const onZoneLeft = e => {
     meet.fullscreen(false);
   }
 
-  if (meet.api) updateMeetStates(newZone);
+  if (meet.api && newZone) updateMeetStates(newZone);
 };
 
 window.addEventListener(eventTypes.onZoneEntered, onZoneEntered);
