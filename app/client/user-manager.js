@@ -242,11 +242,10 @@ userManager = {
       const { x: oldX, y: oldY } = oldUser.profile;
       hasMoved = x !== oldX || y !== oldY;
     }
-    const mainUser = Meteor.user();
+    const loggedUser = Meteor.user();
     const shouldCheckDistance = hasMoved && !guest;
 
-    const isMe = user._id === Meteor.userId();
-    if (isMe) {
+    if (user._id === loggedUser._id) {
       // Check distance between players
       const dist = Math.sqrt(((player.x - x) ** 2) + ((player.y - y) ** 2));
       if (dist >= 160) {
@@ -255,26 +254,25 @@ userManager = {
       }
 
       // ensures this.player is assigned to the logged user
-      if (this.player?.userId !== Meteor.userId() || !this.player.body) this.setAsMainPlayer(Meteor.userId());
-
-      // check zone and near users on move
-      if (hasMoved) zones.checkDistances(this.player);
+      if (this.player?.userId !== loggedUser._id || !this.player.body) this.setAsMainPlayer(loggedUser._id);
 
       if (user.profile.avatar !== oldUser?.profile.avatar) userStreams.refreshVideoElementAvatar(userStreams.getVideoElement());
 
+      if (hasMoved) zones.checkDistances(this.player);
+
       if (shouldCheckDistance) {
-        const otherUsers = Meteor.users.find({ _id: { $ne: mainUser._id }, 'status.online': true, 'profile.levelId': mainUser.profile.levelId }).fetch();
-        userProximitySensor.checkDistances(mainUser, otherUsers);
+        const otherUsers = Meteor.users.find({ _id: { $ne: loggedUser._id }, 'status.online': true, 'profile.levelId': loggedUser.profile.levelId }).fetch();
+        userProximitySensor.checkDistances(loggedUser, otherUsers);
       }
     } else {
       if (hasMoved) {
         player.lwOriginX = player.x;
         player.lwOriginY = player.y;
-        player.lwOriginDate = moment();
+        player.lwOriginDate = Date.now();
         player.lwTargetX = user.profile.x;
         player.lwTargetY = user.profile.y;
-        player.lwTargetDate = moment().add(userInterpolationInterval, 'milliseconds');
-        if (shouldCheckDistance) userProximitySensor.checkDistance(mainUser, user);
+        player.lwTargetDate = player.lwOriginDate + userInterpolationInterval;
+        if (shouldCheckDistance) userProximitySensor.checkDistance(loggedUser, user);
       }
 
       if (!guest && user.profile.shareScreen !== oldUser?.profile.shareScreen) peer.onStreamSettingsChanged(user);
@@ -384,7 +382,7 @@ userManager = {
   },
 
   interpolatePlayerPositions() {
-    const now = moment();
+    const now = Date.now();
     Object.values(this.players).forEach(player => {
       if (player.userId === this.player.userId) return;
 
