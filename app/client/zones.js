@@ -48,7 +48,7 @@ zones = {
   },
 
   currentZone(user) {
-    if (!user || user === Meteor.user()) return this.activeZone;
+    if (!user || user._id === Meteor.userId()) return this.activeZone;
 
     const zones = this.currentZones(user);
     if (!zones.length) return undefined;
