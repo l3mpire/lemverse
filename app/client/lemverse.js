@@ -453,12 +453,6 @@ Template.lemverse.onCreated(function () {
     userVoiceRecorderAbility.recordVoice(event.type === 'keydown', sendAudioChunksToNearUsers);
   });
 
-  hotkeys('i', { scope: scopes.player }, e => {
-    e.preventDefault();
-    e.stopPropagation();
-    toggleModal('inventory');
-  });
-
   hotkeys('tab', { scope: scopes.player }, e => {
     e.preventDefault();
     e.stopPropagation();

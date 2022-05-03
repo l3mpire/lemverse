@@ -1,5 +1,13 @@
 const dropItemDistance = 45;
 
+window.addEventListener('load', () => {
+  hotkeys('i', { scope: scopes.player }, e => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleModal('inventory');
+  });
+});
+
 Template.inventoryItemPanel.helpers({
   exist() { return Session.get('selectedInventoryItem'); },
   name() { return Session.get('selectedInventoryItem')?.name; },
