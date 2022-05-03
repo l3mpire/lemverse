@@ -86,21 +86,6 @@ Meteor.publish('userProfile', function (userId) {
   return Meteor.users.find(userId, { fields: { ...mainFields, createdAt: 1 } });
 });
 
-const dropInventoryItem = (itemId, data = {}) => {
-  log('dropInventoryItem: start', { itemId, data });
-  const item = Items.findOne(itemId);
-  if (!item) throw new Meteor.Error(404, 'Item not found.');
-
-  const user = Meteor.user();
-  if (!user.inventory || user.inventory[itemId] < 1) throw new Meteor.Error(404, 'Item not found in the inventory.');
-
-  const itemsEdited = removeFromInventory(user, [{ itemId, amount: data.amount || 1 }]);
-  if (Object.keys(itemsEdited).length === 1) createEntityFromItem(item, data);
-  else throw new Meteor.Error(404, 'Inventory not updated: item not found in the user inventory.');
-
-  return itemsEdited;
-};
-
 Meteor.methods({
   toggleEntitySubscription(entityId) {
     if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
@@ -108,12 +93,6 @@ Meteor.methods({
     const entitySubscriptionIds = Meteor.user().entitySubscriptionIds || [];
     if (entitySubscriptionIds.includes(entityId)) Meteor.users.update(this.userId, { $pull: { entitySubscriptionIds: entityId } });
     else Meteor.users.update(this.userId, { $push: { entitySubscriptionIds: entityId } });
-  },
-  dropInventoryItem(itemId, data = {}) {
-    check(itemId, String);
-    check(data, Object);
-
-    return dropInventoryItem(itemId, data);
   },
   convertGuestAccountToRealAccount(email, name, password) {
     if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');

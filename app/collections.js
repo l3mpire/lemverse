@@ -48,12 +48,6 @@ Guilds = lp.collectionRegister('guilds', 'gui', [], {
   remove(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
 });
 
-Items = lp.collectionRegister('items', 'itm', [], {
-  insert(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
-  update(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
-  remove(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
-});
-
 Files = new FilesCollection({
   collectionName: 'Files',
   storagePath: '/var/tmp/lemverse',
