@@ -10,6 +10,7 @@ const radialMenuRadius = 72;
 const radialMenuOffsetY = 38;
 const mouseDistanceToCloseMenu = 105;
 const itemAmountRequiredForBackground = 2;
+const radialMenuStartingAngle = 3.8; // in radians
 let menuHandler;
 Session.set('radialMenuAdditionalShortcuts', []);
 
@@ -144,7 +145,7 @@ const buildMenuFromOptions = options => {
     const offset = Math.PI / 2 - theta;
 
     for (let i = 0; i < allOptions.length; i++) {
-      const currentAngle = (i * theta + offset) + 3.8;
+      const currentAngle = (i * theta + offset) + radialMenuStartingAngle;
       const x = radialMenuRadius * Math.cos(currentAngle);
       const y = radialMenuRadius * Math.sin(currentAngle);
       newOptions.push({ ...allOptions[i], x, y });
