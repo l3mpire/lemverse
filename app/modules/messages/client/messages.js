@@ -5,11 +5,10 @@ const ignoreChannelAutoSwitch = () => !Session.get('console') || (Session.get('m
 messagesModule = {
   handleMessagesSubscribe: undefined,
   channel: undefined,
-  template: undefined,
+  lastZoneEntered: undefined,
 
-  init(template) {
-    this.template = template;
-    this.lastZoneEntered = undefined;
+  init() {
+    Session.set('messagesChannel', undefined);
 
     const onZoneEntered = event => {
       if (ignoreChannelAutoSwitch()) return;
@@ -62,7 +61,7 @@ messagesModule = {
     if (!channel || channel === this.channel) return;
 
     this.stopListeningMessagesChannel();
-    this.handleMessagesSubscribe = this.template.subscribe('messages', channel);
+    this.handleMessagesSubscribe = Meteor.subscribe('messages', channel);
     this.channel = channel;
     Session.set('messagesChannel', channel); // set console in the new channel
     this.markChannelAsRead(channel);

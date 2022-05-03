@@ -74,15 +74,12 @@ const extractLevelIdFromURL = () => {
 Template.lemverse.onCreated(function () {
   Session.set('selectedTiles', undefined);
   Session.set('selectedTilesetId', undefined);
-  Session.set('messagesChannel', undefined);
   Session.set('sceneWorldReady', false);
   Session.set('loading', true);
   Session.set('tilesetsLoaded', false);
   Session.set('editor', 0);
   Session.set('modal', undefined);
   Session.set('menu', undefined);
-
-  messagesModule.init(this);
 
   window.addEventListener('dblclick', e => {
     if (e.target === document.querySelector('canvas')) sendEvent('toggle-fullscreen');
@@ -513,8 +510,6 @@ Template.lemverse.onDestroyed(function () {
   hotkeys.unbind('r', scopes.player);
   hotkeys.unbind('shift+r', scopes.player);
   hotkeys.unbind('tab', scopes.player);
-
-  messagesModule.destroy();
 });
 
 Template.lemverse.helpers({
