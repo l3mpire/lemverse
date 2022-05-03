@@ -189,6 +189,6 @@ module.exports = {
     createEntityFromItem: 'writable',
 
     messagesModule: 'writable',
-    computeChannelNameFromNearUsers: 'writable',
+    nearUserIdsToString: 'writable',
   },
 };

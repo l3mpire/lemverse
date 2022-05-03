@@ -25,7 +25,7 @@ messagesModule = {
       const { zone } = event.detail;
       if (zone._id !== this.lastZoneEntered) return;
 
-      const nearUsersChannel = computeChannelNameFromNearUsers();
+      const nearUsersChannel = nearUserIdsToString();
       if (nearUsersChannel.length) this.changeMessagesChannel(nearUsersChannel);
       else this.stopListeningMessagesChannel();
 
@@ -35,13 +35,13 @@ messagesModule = {
     const onUserNear = () => {
       if (ignoreChannelAutoSwitch()) return;
 
-      this.changeMessagesChannel(computeChannelNameFromNearUsers());
+      this.changeMessagesChannel(nearUserIdsToString());
     };
 
     const onUserMovedAway = () => {
       if (ignoreChannelAutoSwitch()) return;
 
-      const channel = computeChannelNameFromNearUsers();
+      const channel = nearUserIdsToString();
       if (!channel.length && this.lastZoneEntered) this.changeMessagesChannel(this.lastZoneEntered);
       else if (channel.length) this.changeMessagesChannel(channel);
       else this.stopListeningMessagesChannel();
@@ -54,7 +54,7 @@ messagesModule = {
   },
 
   autoSelectChannel() {
-    if (userProximitySensor.isNearSomeone()) this.changeMessagesChannel(computeChannelNameFromNearUsers());
+    if (userProximitySensor.isNearSomeone()) this.changeMessagesChannel(nearUserIdsToString());
     else if (zones.activeZone) this.changeMessagesChannel(zones.activeZone._id);
   },
 

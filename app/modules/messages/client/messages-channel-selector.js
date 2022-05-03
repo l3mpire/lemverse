@@ -7,7 +7,7 @@ const allChannels = () => {
   if (!user) return [];
 
   const sortedZones = zones.currentZones(Meteor.user()).map(zone => ({ _id: zone._id, name: zone.name }));
-  const nearUsers = computeChannelNameFromNearUsers();
+  const nearUsers = nearUserIdsToString();
   let nearUsersChannel;
   if (nearUsers.length) nearUsersChannel = { _id: nearUsers, name: 'Near users' };
 
