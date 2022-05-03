@@ -90,7 +90,6 @@ Template.lemverse.onCreated(function () {
 
   this.currentLevelId = undefined;
   this.subscribe('characters');
-  this.subscribe('notifications');
 
   this.subscribe('notifications', () => {
     this.handleObserveNotifications = Notifications.find({ createdAt: { $gte: new Date() } }).observe({
