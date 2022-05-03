@@ -30,12 +30,6 @@ Levels = lp.collectionRegister('levels', 'lvl', [], {
   remove(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
 });
 
-Messages = lp.collectionRegister('messages', 'msg', [], {
-  insert(userId) { return communicationAllowed(userId); },
-  update(userId) { return communicationAllowed(userId); },
-  remove(userId, message) { return messageModerationAllowed(userId, message); },
-});
-
 Notifications = lp.collectionRegister('notifications', 'not', [], {
   insert(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
   update(userId, notification) { return notification.userId === userId; },
@@ -58,21 +52,6 @@ Items = lp.collectionRegister('items', 'itm', [], {
   insert(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
   update(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
   remove(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
-});
-
-Quests = lp.collectionRegister('quests', 'qst', [], {
-  insert() { return true; },
-  update(userId, quest, fields) {
-    if (quest.createdBy === userId) return true;
-
-    if (fields.length === 1) {
-      if (['completed', 'name'].includes(fields[0])) return quest.targets.includes(userId);
-      if (fields[0] === 'targets') return true;
-    }
-
-    return false;
-  },
-  remove(userId, quest) { return quest.createdBy === userId; },
 });
 
 Files = new FilesCollection({
