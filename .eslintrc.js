@@ -164,6 +164,7 @@ module.exports = {
     userLevel: 'writable',
     formatURLs: 'writable',
     userAllowedInZone: 'writable',
+    spawnEntityFromPrefab: 'writable',
 
     relativePositionToCamera: 'writable',
     updateViewport: 'writable',
@@ -185,8 +186,6 @@ module.exports = {
 
     addToInventory: 'writable',
     removeFromInventory: 'writable',
-
-    createEntityFromItem: 'writable',
 
     messagesModule: 'writable',
     nearUserIdsToString: 'writable',

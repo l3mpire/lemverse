@@ -8,7 +8,7 @@ const applyEntityState = (entity, stateActions) => {
   stateActions.replace?.forEach(t => Tiles.update({ levelId, x: t.x, y: t.y }, { $set: { tilesetId: t.newTilesetId, index: t.newIndex } }));
 };
 
-const spawnEntityFromPrefab = (entityId, data = {}) => {
+spawnEntityFromPrefab = (entityId, data = {}) => {
   check(entityId, String);
   check(data, Object);
 
@@ -58,13 +58,6 @@ switchEntityState = (entity, forcedState = undefined) => {
   log('switchEntityState: done', { entity, newState });
 };
 
-createEntityFromItem = (item, data = {}) => {
-  log('createEntityFromItem: start', { item });
-  if (!item.entityId) throw new Error(`The item isn't linked to an entity`);
-
-  spawnEntityFromPrefab(item.entityId, data);
-};
-
 const pickEntityInventory = entity => {
   log('pickEntityInventory: start', { entity });
   const inventoryItemKeys = Object.keys(entity.inventory || {});
@@ -72,7 +65,7 @@ const pickEntityInventory = entity => {
 
   // adds the entity's items to the user's inventory
   const itemsToAdd = inventoryItemKeys.map(key => ({ itemId: key, amount: entity.inventory[key] }));
-  addToInventory(Meteor.user(), itemsToAdd);
+  if (addToInventory) addToInventory(Meteor.user(), itemsToAdd);
 
   // clear entity's inventory
   Entities.update(entity._id, { $set: { inventory: {} } });
