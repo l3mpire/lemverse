@@ -125,3 +125,10 @@ meteorCall = (method, ...args) => new Promise((resolve, reject) => {
     else resolve(result);
   });
 });
+
+destroyVideoSource = video => {
+  if (!video) return;
+  video.pause();
+  video.src = '';
+  video.load();
+};
