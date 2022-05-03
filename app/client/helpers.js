@@ -13,6 +13,7 @@ editorModes = Object.freeze({
 
 eventTypes = Object.freeze({
   onEntityUpdated: 'onEntityUpdated',
+  onNotificationReceived: 'onNotificationReceived',
   onTileAdded: 'onTileAdded',
   onTileChanged: 'onTileChanged',
   onUserNear: 'onUserNear',
