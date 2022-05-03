@@ -1,8 +1,8 @@
 <template name="lemverse">
   <div class="lemverse">
     <div class="simulation {{#if neq (Session 'editor') 0}}edit{{/if}}">
-      {{#if isGuest}}
-        {{> formAccount visible=isLoading}}
+      {{#if guest}}
+        {{> formAccount visible=loading}}
       {{else}}
         {{#if neq (Session 'editor') 0}}
           {{> editToolbox}}
@@ -12,7 +12,7 @@
             {{> remoteStream remoteUser=remoteUser }}
           {{/each}}
         </div>
-        <div class="user-panel {{#unless isLoading}}visible{{/unless}}">
+        <div class="user-panel {{#unless loading}}visible{{/unless}}">
           <div class="js-stream-screen-me"></div>
           <div class="js-stream-me">
             <video type="video/mp4" width="160" height="120" autoplay muted></video>
@@ -26,7 +26,7 @@
         </div>
         <button type="button" class="button js-notifications {{#if pendingNotificationsCount}}visible{{/if}}" data-count="{{ pendingNotificationsCount }}">🔔</button>
       {{/if}}
-      <div id="game" class="{{#if neq (Session 'editor') 0}}edit{{/if}} {{#if isLoading}}loading{{/if}}"></div>
+      <div id="game" class="{{#if neq (Session 'editor') 0}}edit{{/if}} {{#if loading}}loading{{/if}}"></div>
     </div>
     <div id="meet"></div>
     <div id="webpage">
@@ -36,7 +36,7 @@
   {{> zoneNameToaster}}
   {{> modalContainer }}
 
-  {{#unless isGuest}}
+  {{#unless guest}}
     {{> radialMenu }}
   {{/unless}}
 
