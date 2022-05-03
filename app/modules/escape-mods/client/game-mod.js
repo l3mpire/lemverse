@@ -1,5 +1,7 @@
 import DizzyEffect from '../../../public/assets/post-effects/DizzyEffect';
 
+window.addEventListener('load', () => registerModule('gameMod'));
+
 const differMeteorCall = (...args) => setTimeout(() => { Meteor.call(...args); }, 0);
 
 const onZoneEntered = e => {

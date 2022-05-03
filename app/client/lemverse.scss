@@ -306,35 +306,6 @@ button.js-notifications {
   }
 }
 
-.two-cols-modules {
-  position: absolute;
-  bottom: 100px;
-  left: 50%;
-  transform: translateX(calc(-50% - 120px));
-  width: 70%;
-  min-width: 750px;
-  max-width: 1000px;
-  height: 500px;
-  display: flex;
-  gap: 10px;
-  flex-direction: row;
-  align-items: stretch;
-  z-index: 100;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.25s linear;
-
-  .right-content {
-    position: relative;
-    width: 100%;
-  }
-
-  &.show {
-    opacity: 1;
-    pointer-events: all;
-  }
-}
-
 @keyframes pulse {
   0% {
     transform: scale(0.95);

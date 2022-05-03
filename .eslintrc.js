@@ -189,5 +189,6 @@ module.exports = {
 
     messagesModule: 'writable',
     nearUserIdsToString: 'writable',
+    registerModule: 'writable',
   },
 };

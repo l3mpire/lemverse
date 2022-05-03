@@ -34,21 +34,15 @@
     </div>
   </div>
   {{> zoneNameToaster}}
-  {{> gameMod}}
   {{> modalContainer }}
 
   {{#unless isGuest}}
     {{> radialMenu }}
-    <div class="two-cols-modules {{#if showTwoColsLayout}}show{{/if}}">
-      <div class="left-content">
-        {{> messagesChannelSelector}}
-        {{> questsList}}
-      </div>
-      <div class="right-content">
-        {{> questToolbar}}
-        {{> messagesList}}
-        {{> console}}
-      </div>
-    </div>
   {{/unless}}
+
+  <div class="modules">
+    {{#each module in modules}}
+      {{> Template.dynamic template=module}}
+    {{/each}}
+  </div>
 </template>

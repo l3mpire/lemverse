@@ -132,3 +132,8 @@ destroyVideoSource = video => {
   video.src = '';
   video.load();
 };
+
+registerModule = name => {
+  const modules = Session.get('modules') || [];
+  Session.set('modules', [...new Set([...modules, name])]);
+};

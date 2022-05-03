@@ -1,0 +1,15 @@
+<template name="textualCommunicationTools">
+  {{#unless guest}}
+    <div class="two-cols-modules {{#if show}}show{{/if}}">
+      <div class="left-content">
+        {{> messagesChannelSelector}}
+        {{> questsList}}
+      </div>
+      <div class="right-content">
+        {{> questToolbar}}
+        {{> messagesList}}
+        {{> console}}
+      </div>
+    </div>
+  {{/unless}}
+</template>
