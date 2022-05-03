@@ -22,12 +22,30 @@ const onNotificationReceived = async e => {
   };
 };
 
+const onNotificationClicked = e => {
+  const { notification } = e.detail;
+
+  const questId = notification.questId || notification.channelId;
+  const questNotification = questId?.includes('qst_');
+
+  if (questNotification) {
+    Session.set('modal', undefined);
+    Session.set('quests', { selectedQuestId: questId, origin: 'notifications' });
+  } else if (!this.fileId) {
+    Session.set('modal', undefined);
+    messagesModule.changeMessagesChannel(questId);
+    openConsole();
+  }
+};
+
 Template.textualCommunicationTools.onCreated(() => {
   messagesModule.init();
+  window.addEventListener(eventTypes.onNotificationClicked, onNotificationClicked);
   window.addEventListener(eventTypes.onNotificationReceived, onNotificationReceived);
 });
 
 Template.textualCommunicationTools.onDestroyed(() => {
+  window.removeEventListener(eventTypes.onNotificationClicked, onNotificationClicked);
   window.removeEventListener(eventTypes.onNotificationReceived, onNotificationReceived);
 });
 

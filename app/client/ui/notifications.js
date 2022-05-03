@@ -71,15 +71,7 @@ Template.notification.events({
   'click .js-notification-clickable'(event) {
     event.preventDefault();
     markNotificationAsRead(this._id);
-
-    if (isQuestNotification(this)) {
-      Session.set('modal', undefined);
-      Session.set('quests', { selectedQuestId: this.questId || this.channelId, origin: 'notifications' });
-    } else if (!this.fileId) {
-      Session.set('modal', undefined);
-      messagesModule.changeMessagesChannel(this.channelId);
-      openConsole();
-    }
+    window.dispatchEvent(new CustomEvent(eventTypes.onNotificationClicked, { detail: { notification: this } }));
   },
 });
 
