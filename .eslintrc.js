@@ -137,7 +137,6 @@ module.exports = {
     toggleModal: 'writable',
     toggleUserProperty: 'writable',
     scopes: 'writable',
-    scopesNotifications: 'writable',
     destroyVideoSource: 'writable',
     waitFor: 'writable',
     userStreams: 'writable',
