@@ -1,4 +1,11 @@
-window.addEventListener('load', () => registerModule('textualCommunicationTools'));
+window.addEventListener('load', () => {
+  registerModule('textualCommunicationTools');
+
+  addShortcutsToRadialMenu([
+    { id: 'show-quests', icon: '📜', shortcut: 57, label: 'Quests', closeMenu: true, scope: 'me' },
+    { id: 'open-console', icon: '💬', shortcut: 56, label: 'Text', closeMenu: true, scope: 'me' },
+  ]);
+});
 
 const onNotificationReceived = async e => {
   const { notification } = e.detail;
@@ -38,13 +45,22 @@ const onNotificationClicked = e => {
   }
 };
 
+const onMenuOptionSelected = e => {
+  const { option } = e.detail;
+
+  if (option.id === 'show-quests') Session.set('quests', { origin: 'menu' });
+  else if (option.id === 'open-console') openConsole(true);
+};
+
 Template.textualCommunicationTools.onCreated(() => {
   messagesModule.init();
+  window.addEventListener(eventTypes.onMenuOptionSelected, onMenuOptionSelected);
   window.addEventListener(eventTypes.onNotificationClicked, onNotificationClicked);
   window.addEventListener(eventTypes.onNotificationReceived, onNotificationReceived);
 });
 
 Template.textualCommunicationTools.onDestroyed(() => {
+  window.removeEventListener(eventTypes.onMenuOptionSelected, onMenuOptionSelected);
   window.removeEventListener(eventTypes.onNotificationClicked, onNotificationClicked);
   window.removeEventListener(eventTypes.onNotificationReceived, onNotificationReceived);
 });

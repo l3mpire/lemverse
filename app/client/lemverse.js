@@ -400,6 +400,8 @@ Template.lemverse.onCreated(function () {
     });
   });
 
+  hotkeys('space', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
+
   hotkeys('e', { scope: 'all' }, event => {
     if (event.repeat || !isEditionAllowed(Meteor.userId())) return;
     Session.set('editor', !Session.get('editor'));
@@ -487,6 +489,7 @@ Template.lemverse.onDestroyed(function () {
   hotkeys.unbind('r', scopes.player);
   hotkeys.unbind('shift+r', scopes.player);
   hotkeys.unbind('tab', scopes.player);
+  hotkeys.unbind('space', scopes.player);
 });
 
 Template.lemverse.helpers({

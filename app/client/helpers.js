@@ -13,6 +13,8 @@ editorModes = Object.freeze({
 
 eventTypes = Object.freeze({
   onEntityUpdated: 'onEntityUpdated',
+  onMenuOptionSelected: 'onMenuOptionSelected',
+  onMenuOptionUnselected: 'onMenuOptionUnselected',
   onNotificationClicked: 'onNotificationClicked',
   onNotificationReceived: 'onNotificationReceived',
   onTileAdded: 'onTileAdded',
@@ -138,4 +140,9 @@ destroyVideoSource = video => {
 registerModule = name => {
   const modules = Session.get('modules') || [];
   Session.set('modules', [...new Set([...modules, name])]);
+};
+
+addShortcutsToRadialMenu = shortcuts => {
+  const existingShortcuts = Session.get('radialMenuAdditionalShortcuts') || [];
+  Session.set('radialMenuAdditionalShortcuts', [...existingShortcuts, ...shortcuts]);
 };

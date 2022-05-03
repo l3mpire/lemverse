@@ -6,6 +6,13 @@ window.addEventListener('load', () => {
     e.stopPropagation();
     toggleModal('inventory');
   });
+
+  window.addEventListener(eventTypes.onMenuOptionSelected, e => {
+    const { option } = e.detail;
+    if (option.id === 'open-inventory') toggleModal('inventory');
+  });
+
+  addShortcutsToRadialMenu([{ id: 'open-inventory', icon: '📦', shortcut: 73, label: 'Inventory', closeMenu: true, scope: 'me' }]);
 });
 
 Template.inventoryItemPanel.helpers({

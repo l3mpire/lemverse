@@ -11,6 +11,7 @@ const radialMenuOffsetY = 38;
 const mouseDistanceToCloseMenu = 105;
 const itemAmountRequiredForBackground = 2;
 let menuHandler;
+Session.set('radialMenuAdditionalShortcuts', []);
 
 const getMenuActiveUser = () => {
   const menu = Session.get('menu');
@@ -36,85 +37,88 @@ const closeMenu = () => {
 };
 
 const reactionMenuItems = [
-  { icon: '🪧', shortcut: 50, action: () => setReaction(Meteor.user().profile.defaultReaction || Meteor.settings.public.defaultReaction), cancel: () => setReaction() },
-  { icon: '↩️', shortcut: 49, action: template => buildMenu(mainMenuItems, template.items) },
-  { icon: '👏', shortcut: 57, action: () => setReaction('👏'), cancel: () => setReaction() },
-  { icon: '😲', shortcut: 56, action: () => setReaction('😲'), cancel: () => setReaction() },
-  { icon: '😢', shortcut: 55, action: () => setReaction('😢'), cancel: () => setReaction() },
-  { icon: '🤣', shortcut: 54, action: () => setReaction('🤣'), cancel: () => setReaction() },
-  { icon: '🙁', shortcut: 53, action: () => setReaction('🙁'), cancel: () => setReaction() },
-  { icon: '👍', shortcut: 52, action: () => setReaction('👍'), cancel: () => setReaction() },
-  { icon: '❤️', shortcut: 51, action: () => setReaction('❤️'), cancel: () => setReaction() },
+  { id: 'custom-reaction', icon: '🪧', shortcut: 50 },
+  { id: 'go-back', icon: '↩️', shortcut: 49 },
+  { id: 'emoji', icon: '👏', shortcut: 57 },
+  { id: 'emoji', icon: '😲', shortcut: 56 },
+  { id: 'emoji', icon: '😢', shortcut: 55 },
+  { id: 'emoji', icon: '🤣', shortcut: 54 },
+  { id: 'emoji', icon: '🙁', shortcut: 53 },
+  { id: 'emoji', icon: '👍', shortcut: 52 },
+  { id: 'emoji', icon: '❤️', shortcut: 51 },
 ];
 
 const mainMenuItems = [
-  { icon: '📺', shortcut: 51, label: 'Screen', state: 'shareScreen', action: () => toggleUserProperty('shareScreen') },
-  { icon: '🎥', shortcut: 50, label: 'Camera', state: 'shareVideo', action: () => toggleUserProperty('shareVideo') },
-  { icon: '🎤', shortcut: 49, label: 'Audio', state: 'shareAudio', action: () => toggleUserProperty('shareAudio') },
-  { icon: '📦', shortcut: 73, label: 'Inventory', action: () => { toggleModal('inventory'); closeMenu(); } },
-  { icon: '😃', shortcut: 57, label: 'Reactions', action: template => buildMenu(reactionMenuItems, template.items) },
-  { icon: '🔔', shortcut: 56, label: 'Notifications', action: () => { toggleModal('notifications'); closeMenu(); } },
-  { icon: '📜', shortcut: 55, label: 'Quests', action: () => { Session.set('quests', { origin: 'menu' }); closeMenu(); } },
-  { icon: '💬', shortcut: 54, label: 'Text', action: () => { openConsole(true); closeMenu(); } },
-  { icon: '📢',
-    label: 'Shout',
-    shortcut: 53,
-    action: () => userVoiceRecorderAbility.recordVoice(true, sendAudioChunksToUsersInZone),
-    cancel: () => userVoiceRecorderAbility.recordVoice(false, sendAudioChunksToUsersInZone),
-  },
-  { icon: '⚙️', shortcut: 52, label: 'Settings', action: () => { toggleModal('settingsMain'); closeMenu(); } },
+  { id: 'toggle-mic', icon: '🎤', order: 0, shortcut: 49, label: 'Audio', state: 'shareAudio' },
+  { id: 'toggle-cam', icon: '🎥', order: 1, shortcut: 50, label: 'Camera', state: 'shareVideo' },
+  { id: 'toggle-screen', icon: '📺', order: 2, shortcut: 51, label: 'Screen', state: 'shareScreen' },
+  { id: 'settings', icon: '⚙️', order: 3, shortcut: 52, label: 'Settings', closeMenu: true },
+  { id: 'reactions', icon: '😃', order: 4, shortcut: 53, label: 'Reactions' },
+  { id: 'notifications', icon: '🔔', order: 5, shortcut: 54, label: 'Notifications', closeMenu: true },
+  { id: 'shout', icon: '📢', label: 'Shout', order: 40, shortcut: 55 },
 ];
 
 const otherUserMenuItems = [
-  {
-    icon: '❤️',
-    shortcut: 50,
-    label: 'Send love',
-    action: () => {
-      const user = getMenuActiveUser();
-      if (user) setReaction(Random.choice(lovePhrases(user.profile.name)));
-    },
-    cancel: () => setReaction(),
-  },
-  {
-    icon: '🏃',
-    shortcut: 49,
-    label: 'Follow',
-    action: () => {
-      const user = getMenuActiveUser();
-      if (!user) {
-        lp.notif.warning('Unable to follow this user');
-        return;
-      }
-
-      userManager.follow(user);
-      closeMenu();
-    },
-  },
-  { icon: '🎙️',
-    label: 'Send vocal',
-    shortcut: 53,
-    action: () => {
-      const user = getMenuActiveUser();
-      if (!userProximitySensor.isUserNear(user)) {
-        lp.notif.error(`${user.profile.name} must be near you`);
-        return;
-      }
-
-      userVoiceRecorderAbility.recordVoice(true, sendAudioChunksToNearUsers);
-    },
-    cancel: () => userVoiceRecorderAbility.recordVoice(false, sendAudioChunksToNearUsers),
-  }, {
-    icon: '📜',
-    label: 'New quest',
-    shortcut: 52,
-    action: () => {
-      const user = getMenuActiveUser();
-      if (user) createQuestDraft([user._id], Meteor.userId());
-    },
-  },
-  { icon: '👤', label: 'Profile', shortcut: 51, action: () => Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId }) },
+  { id: 'send-love', icon: '❤️', shortcut: 50, label: 'Send love' },
+  { id: 'follow', icon: '🏃', shortcut: 49, label: 'Follow', closeMenu: true },
+  { id: 'send-vocal', icon: '🎙️', label: 'Send vocal', shortcut: 53 },
+  { id: 'new-quest', icon: '📜', label: 'New quest', shortcut: 52 },
+  { id: 'show-profile', icon: '👤', label: 'Profile', shortcut: 51 },
 ];
+
+const menuOptions = new ReactiveVar(mainMenuItems);
+
+const additionalOptions = scope => Session.get('radialMenuAdditionalShortcuts').filter(option => option.scope === scope);
+
+const onMenuOptionSelected = e => {
+  const { option } = e.detail;
+
+  if (option.id === 'toggle-mic') toggleUserProperty('shareAudio');
+  else if (option.id === 'toggle-cam') toggleUserProperty('shareVideo');
+  else if (option.id === 'toggle-screen') toggleUserProperty('shareScreen');
+  else if (option.id === 'settings') toggleModal('settingsMain');
+  else if (option.id === 'reactions') buildMenuFromOptions(reactionMenuItems);
+  else if (option.id === 'notifications') toggleModal('notifications');
+  else if (option.id === 'shout') userVoiceRecorderAbility.recordVoice(true, sendAudioChunksToUsersInZone);
+  else if (option.id === 'send-love') {
+    const user = getMenuActiveUser();
+    if (user) setReaction(Random.choice(lovePhrases(user.profile.name)));
+  } else if (option.id === 'follow') {
+    const user = getMenuActiveUser();
+    if (!user) {
+      lp.notif.warning('Unable to follow this user');
+      return;
+    }
+
+    userManager.follow(user);
+  } else if (option.id === 'send-vocal') {
+    const user = getMenuActiveUser();
+    if (!userProximitySensor.isUserNear(user)) {
+      lp.notif.error(`${user.profile.name} must be near you`);
+      return;
+    }
+
+    userVoiceRecorderAbility.recordVoice(true, sendAudioChunksToNearUsers);
+  } else if (option.id === 'new-quest') {
+    const user = getMenuActiveUser();
+    if (user) createQuestDraft([user._id], Meteor.userId());
+  } else if (option.id === 'show-profile') Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId });
+  else if (option.id === 'go-back') buildMenuFromOptions([...mainMenuItems, ...additionalOptions('me')]);
+  else if (option.id === 'custom-reaction') setReaction(Meteor.user().profile.defaultReaction || Meteor.settings.public.defaultReaction);
+  else if (option.id === 'emoji') setReaction(option.icon);
+
+  if (option.closeMenu) closeMenu();
+};
+
+const onMenuOptionUnselected = e => {
+  const { option } = e.detail;
+
+  if (option.id === 'shout') userVoiceRecorderAbility.recordVoice(false, sendAudioChunksToUsersInZone);
+  else if (option.id === 'send-love') setReaction();
+  else if (option.id === 'send-vocal') userVoiceRecorderAbility.recordVoice(false, sendAudioChunksToNearUsers);
+  else if (option.id === 'custom-reaction') setReaction();
+  else if (option.id === 'emoji') setReaction();
+};
 
 const computeMenuPosition = () => {
   const position = Session.get('menu-position');
@@ -126,27 +130,28 @@ const setReaction = reaction => {
   else Meteor.users.update(Meteor.userId(), { $unset: { 'profile.reaction': 1 } });
 };
 
-const buildMenu = (menuItems, reactiveVar) => {
-  const items = [];
+const buildMenuFromOptions = options => {
+  const newOptions = [];
+  const allOptions = options.sort((a, b) => b.order - a.order);
 
-  if (menuItems.length <= itemAmountRequiredForBackground) {
-    for (let i = 0; i < menuItems.length; i++) {
-      const x = horizontalMenuItemDistance.x * (i - (menuItems.length - 1) / 2);
-      items.push({ ...menuItems[i], x, y: horizontalMenuItemDistance.y });
+  if (allOptions.length <= itemAmountRequiredForBackground) {
+    for (let i = 0; i < allOptions.length; i++) {
+      const x = horizontalMenuItemDistance.x * (i - (options.length - 1) / 2);
+      newOptions.push({ ...options[i], x, y: horizontalMenuItemDistance.y });
     }
   } else {
-    const theta = 2 * Math.PI / menuItems.length;
+    const theta = 2 * Math.PI / allOptions.length;
     const offset = Math.PI / 2 - theta;
 
-    for (let i = 0; i < menuItems.length; i++) {
-      const currentAngle = i * theta + offset;
+    for (let i = 0; i < allOptions.length; i++) {
+      const currentAngle = (i * theta + offset) + 3.8;
       const x = radialMenuRadius * Math.cos(currentAngle);
       const y = radialMenuRadius * Math.sin(currentAngle);
-      items.push({ ...menuItems[i], x, y });
+      newOptions.push({ ...allOptions[i], x, y });
     }
   }
 
-  reactiveVar.set(items);
+  menuOptions.set(newOptions);
 };
 
 const onMouseMove = event => {
@@ -157,26 +162,26 @@ const onMouseMove = event => {
   if (distance >= mouseDistanceToCloseMenu) closeMenu();
 };
 
-Template.radialMenuItem.helpers({
+Template.radialMenuOption.helpers({
   isActive(value) { return Meteor.user()?.profile[value]; },
   shortcutLabel() { return String.fromCharCode(this.shortcut); },
 });
 
 Template.radialMenu.onCreated(function () {
-  this.items = new ReactiveVar(mainMenuItems);
   this.label = new ReactiveVar('Settings');
   this.showShortcuts = new ReactiveVar(false);
-  document.addEventListener('mousemove', onMouseMove);
   Session.set('menu-position', { x: 0, y: 0 });
+
+  document.addEventListener('mousemove', onMouseMove);
+  window.addEventListener(eventTypes.onMenuOptionSelected, onMenuOptionSelected);
+  window.addEventListener(eventTypes.onMenuOptionUnselected, onMenuOptionUnselected);
 
   // allow users to react without opening the menu
   hotkeys('1,2,3,4,5,6,7,8,9', { keyup: true, scope: scopes.player }, e => {
-    const menuEntry = reactionMenuItems.find(menuItem => menuItem.shortcut === e.keyCode);
-    if (e.type === 'keyup' && menuEntry.cancel) menuEntry.cancel(this);
-    else if (e.type === 'keydown' && menuEntry.action) menuEntry.action(this);
+    const option = reactionMenuItems.find(menuItem => menuItem.shortcut === e.keyCode);
+    if (e.type === 'keyup') window.dispatchEvent(new CustomEvent(eventTypes.onMenuOptionSelected, { detail: { option } }));
+    else if (e.type === 'keydown') window.dispatchEvent(new CustomEvent(eventTypes.onMenuOptionUnselected, { detail: { option } }));
   });
-
-  hotkeys('space', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
 
   hotkeys('*', { keyup: true, scope: scopes.player }, e => {
     // show/hide shortcuts
@@ -204,12 +209,13 @@ Template.radialMenu.onCreated(function () {
 
     // execute shortcut actions
     if (e.repeat || !hotkeys[keyToOpen]) return;
-    const menuItems = !Session.get('menu') ? mainMenuItems : this.items.get();
-    const menuEntry = menuItems.find(menuItem => menuItem.shortcut === e.keyCode);
-    if (!menuEntry) return;
+    const options = !Session.get('menu') ? mainMenuItems : menuOptions.get();
 
-    if (e.type === 'keyup' && menuEntry.cancel) menuEntry.cancel(this);
-    else if (e.type === 'keydown' && menuEntry.action) menuEntry.action(this);
+    const option = options.find(menuItem => menuItem.shortcut === e.keyCode);
+    if (!option) return;
+
+    if (e.type === 'keyup') window.dispatchEvent(new CustomEvent(eventTypes.onMenuOptionUnselected, { detail: { option } }));
+    else if (e.type === 'keydown') window.dispatchEvent(new CustomEvent(eventTypes.onMenuOptionSelected, { detail: { option } }));
   });
 
   this.autorun(() => {
@@ -218,25 +224,24 @@ Template.radialMenu.onCreated(function () {
     Tracker.nonreactive(() => {
       if (!menu?.userId) { setReaction(); return; }
 
-      const menuItems = menu.userId === Meteor.userId() ? mainMenuItems : otherUserMenuItems;
-      buildMenu(menuItems, this.items);
+      const options = menu.userId === Meteor.userId() ? [...mainMenuItems, ...additionalOptions('me')] : otherUserMenuItems;
+      buildMenuFromOptions(options);
     });
   });
 });
 
 Template.radialMenu.onDestroyed(() => {
   hotkeys.unbind('*', scopes.player);
-  hotkeys.unbind('space', scopes.player);
 });
 
 Template.radialMenu.events({
   'mousedown .js-menu-item'(e) {
-    if (this.action) this.action(Template.instance());
+    window.dispatchEvent(new CustomEvent(eventTypes.onMenuOptionSelected, { detail: { option: this } }));
     e.preventDefault();
     e.stopPropagation();
   },
   'mouseup .js-menu-item'(e) {
-    if (this.cancel) this.cancel();
+    window.dispatchEvent(new CustomEvent(eventTypes.onMenuOptionUnselected, { detail: { option: this } }));
     e.preventDefault();
     e.stopPropagation();
   },
@@ -245,11 +250,11 @@ Template.radialMenu.events({
 });
 
 Template.radialMenu.helpers({
-  items() { return Template.instance().items.get(); },
+  options() { return menuOptions.get(); },
   label() { return Template.instance().label.get(); },
   open() { return Session.get('menu'); },
   position() { return computeMenuPosition(); },
-  showBackground() { return Template.instance().items.get().length > itemAmountRequiredForBackground; },
+  showBackground() { return menuOptions.get().length > itemAmountRequiredForBackground; },
   showShortcuts() { return Template.instance().showShortcuts.get(); },
   username() { return getMenuActiveUser()?.profile.name; },
 });
