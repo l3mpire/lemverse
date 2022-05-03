@@ -181,17 +181,8 @@ zones = {
 
     // compute zone toaster
     if (activeZone && !activeZone.hideName) {
-      const zone = _.reduce(availableZones, (mz, z) => {
-        if (mz.name) mz.name = `${mz.name} | ${z.name}`;
-        else mz.name = z.name;
-        _.each(_.keys(z), k => {
-          if (k === 'name') return;
-          if (z[k]) mz[k] = z[k];
-        });
-        return mz;
-      }, {});
-
-      Session.set('showZoneName', zone);
+      activeZone.name = availableZones.map(z => z.name).filter(Boolean).join(' | ');
+      Session.set('showZoneName', activeZone);
     }
 
     // notify external modules
