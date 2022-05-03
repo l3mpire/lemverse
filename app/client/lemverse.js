@@ -319,6 +319,7 @@ Template.lemverse.onCreated(function () {
       }
 
       // subscribe to the loaded level
+      log(`loading level: ${levelId || 'unknown'}…`);
       this.levelSubscribeHandler = this.subscribe('currentLevel', () => {
         // update title
         const level = Levels.findOne(levelId);
@@ -347,7 +348,6 @@ Template.lemverse.onCreated(function () {
       });
 
       // Load users
-      log(`loading level: ${levelId || 'unknown'}…`);
       log(`loading level: loading users`);
       this.handleUsersSubscribe = this.subscribe('users', levelId, () => {
         this.handleObserveUsers = Meteor.users.find({ 'status.online': true, 'profile.levelId': levelId }).observe({
