@@ -458,12 +458,13 @@ userManager = {
       Session.set('menu', false);
     } else if (this.entityFollowed) {
       const minimumDistance = Meteor.settings.public.character.sensorNearDistance / 2;
+      const diff = { x: this.entityFollowed.x - this.player.x, y: this.entityFollowed.y - this.player.y };
 
-      // eslint-disable-next-line new-cap
-      const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.entityFollowed.x, this.entityFollowed.y);
+      const distance = Math.hypot(diff.x, diff.y);
       if (distance >= minimumDistance) {
-        speed = distance > Meteor.settings.public.character.sensorNearDistance ? Meteor.settings.public.character.runSpeed : Meteor.settings.public.character.walkSpeed;
-        this.playerVelocity.set(this.entityFollowed.x - this.player.x, this.entityFollowed.y - this.player.y);
+        const { sensorNearDistance, runSpeed, walkSpeed } = Meteor.settings.public.character;
+        speed = distance > sensorNearDistance ? runSpeed : walkSpeed;
+        this.playerVelocity.set(diff.x, diff.y);
       }
     }
 
