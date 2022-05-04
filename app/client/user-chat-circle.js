@@ -1,6 +1,7 @@
 const linearLerp = (start, end, amt) => (1 - amt) * start + amt * end;
 const lerpAmount = 0.5;
 const circleOffset = { x: 0, y: -35 };
+const distanceBeforeTeleport = 100;
 
 userChatCircle = {
   chatCircle: undefined,
@@ -19,24 +20,22 @@ userChatCircle = {
   },
 
   update(playerX, playerY, camera) {
-    const wasVisible = this.chatCircle.visible;
-    this.chatCircle.visible = this.shouldBeVisible();
     if (!this.chatCircle.visible) return;
 
     let x = playerX + circleOffset.x;
     let y = playerY + circleOffset.y;
-    if (this.chatCircle.visible) {
-      if (wasVisible) {
-        x = linearLerp(this.chatCircle.x, x, lerpAmount);
-        y = linearLerp(this.chatCircle.y, y, lerpAmount);
-      }
 
-      this.chatCircle.setPosition(x, y);
-      this.chatCircle.setRadius(userProximitySensor.nearDistance * camera.zoom);
+    const newPositionDistance = Math.hypot(this.chatCircle.x - x, this.chatCircle.y - y);
+    if (newPositionDistance < distanceBeforeTeleport) {
+      x = linearLerp(this.chatCircle.x, x, lerpAmount);
+      y = linearLerp(this.chatCircle.y, y, lerpAmount);
     }
+
+    this.chatCircle.setPosition(x, y);
+    this.chatCircle.setRadius(userProximitySensor.nearDistance * camera.zoom);
   },
 
-  shouldBeVisible() {
-    return userProximitySensor.nearUsersCount() > 0 && !meet.api && peer.isEnabled() && !Session.get('menu');
+  visible(value) {
+    this.chatCircle.visible = value;
   },
 };
