@@ -1,5 +1,3 @@
-import Phaser from 'phaser';
-
 userProximitySensor = {
   nearUsers: {},
   nearDistance: Meteor.settings.public.character.sensorNearDistance,
@@ -24,8 +22,7 @@ userProximitySensor = {
     const { x: userX, y: userY } = user.profile;
     const { x, y } = otherUser.profile;
 
-    // eslint-disable-next-line new-cap
-    return Phaser.Math.Distance.Between(x, y, userX, userY);
+    return Math.hypot(x - userX, y - userY);
   },
 
   addNearUser(user) {
