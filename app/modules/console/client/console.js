@@ -102,7 +102,8 @@ const onSubmit = () => {
 const onKeyPressed = e => {
   if (e.key === 'Escape') closeConsole();
   else if (e.key === 'Enter') {
-    if (Session.get('console') && !e.shiftKey) {
+    const field = document.querySelector(inputSelector);
+    if (Session.get('console') && !e.shiftKey && document.activeElement === field) {
       e.preventDefault();
       e.stopPropagation();
       onSubmit();
