@@ -144,7 +144,6 @@ module.exports = {
     levelManager: 'writable',
     userManager: 'writable',
     entityManager: 'writable',
-    stringToColor: 'writable',
     editorModes: 'writable',
     viewportModes: 'writable',
     teleportUserInLevel: 'writable',

@@ -1,4 +1,5 @@
 import { PeerServer } from 'peer';
+import crypto from 'crypto';
 
 if (Meteor.settings.peer.server.start) {
   // eslint-disable-next-line new-cap
@@ -9,6 +10,18 @@ Accounts.emailTemplates.from = Meteor.settings.email.from;
 AccountsGuest.enabled = true;
 AccountsGuest.forced = true;
 AccountsGuest.name = true;
+
+const generateTURNCredentials = (name, secret) => {
+  const duration = Meteor.settings.peer?.client.credentialDuration || 86400;
+  const unixTimeStamp = parseInt(Date.now() / 1000, 10) + duration;
+  const username = [unixTimeStamp, name].join(':');
+  const hmac = crypto.createHmac('sha1', secret);
+  hmac.setEncoding('base64');
+  hmac.write(username);
+  hmac.end();
+
+  return { username, password: hmac.read() };
+};
 
 Meteor.publish('notifications', function () {
   if (!this.userId) return undefined;

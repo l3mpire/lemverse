@@ -85,6 +85,18 @@ const onZoneLeft = e => {
   escapeA.enable_sync_coloration = false;
 };
 
+const stringToColor = str => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+
+  let color = '#';
+  for (let i = 0; i < 3; i++) {
+    const value = (hash >> (i * 8)) & 0xFF;
+    color += (`00${value.toString(16)}`).substr(-2);
+  }
+  return color;
+};
+
 const paintTile = (worldScene, tile, layer) => {
   const phaserTile = levelManager.map.getTileAt(tile.x, tile.y, false, layer);
   const converted = stringToColor(tile.metadata.paint).replace('#', '0x');

@@ -1,5 +1,3 @@
-import crypto from 'crypto';
-
 entityActionType = Object.freeze({
   none: 0,
   actionable: 1,
@@ -70,18 +68,6 @@ generateRandomCharacterSkin = (user, levelId) => {
   Meteor.users.update(user._id, { $set: { profile: { ...newProfile } } });
 };
 
-generateTURNCredentials = (name, secret) => {
-  const duration = Meteor.settings.peer?.client.credentialDuration || 86400;
-  const unixTimeStamp = parseInt(Date.now() / 1000, 10) + duration;
-  const username = [unixTimeStamp, name].join(':');
-  const hmac = crypto.createHmac('sha1', secret);
-  hmac.setEncoding('base64');
-  hmac.write(username);
-  hmac.end();
-
-  return { username, password: hmac.read() };
-};
-
 waitFor = (condition, attempt, delay = 250) => new Promise((resolve, reject) => {
   let currentAttempt = 0;
   const waitFunc = () => {
@@ -98,18 +84,6 @@ generateRandomAvatarURLForUser = user => Meteor.settings.public.peer.avatarAPI
   .replace('[user_id]', encodeURI(user._id || 'guest'))
   .replace('[user_name]', encodeURI(user.profile.name || 'guest'))
   .replace('[user_avatar]', encodeURI(user.profile.avatar || 'cat'));
-
-stringToColor = str => {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
-
-  let colour = '#';
-  for (let i = 0; i < 3; i++) {
-    const value = (hash >> (i * 8)) & 0xFF;
-    colour += (`00${value.toString(16)}`).substr(-2);
-  }
-  return colour;
-};
 
 teleportUserInLevel = (levelId, userId) => {
   check([levelId, userId], [String]);
