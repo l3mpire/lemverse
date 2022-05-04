@@ -11,7 +11,7 @@ userProximitySensor = {
 
   checkDistance(user, otherUser) {
     if (user._id === otherUser._id) return;
-    if (otherUser?.profile?.guest) return;
+    if (otherUser.profile.guest) return;
 
     const distance = this.distance(user, otherUser);
     if (distance < this.nearDistance) this.addNearUser(otherUser);
@@ -70,35 +70,20 @@ userProximitySensor = {
   },
 
   nearestUser(user) {
-    if (!this.nearUsersCount()) return undefined;
+    const nearUsers = Object.values(this.nearUsers);
+    if (!nearUsers.length) return undefined;
 
-    let nearestUser;
     let nearestDistance = Infinity;
-    _.each(this.nearUsers, nearUser => {
+    let nearestUser;
+
+    nearUsers.forEach(nearUser => {
       const distance = this.distance(user, nearUser);
-      if (distance < nearestDistance) {
-        nearestUser = nearUser;
-        nearestDistance = distance;
-      }
+      if (distance > nearestDistance) return;
+
+      nearestUser = nearUser;
+      nearestDistance = distance;
     });
 
     return nearestUser;
-  },
-
-  nearestUsers(user) {
-    if (!this.nearUsersCount()) return undefined;
-
-    const nearestUsers = [];
-    let nearestDistance = Infinity;
-
-    _.each(this.nearUsers, nearUser => {
-      const distance = this.distance(user, nearUser);
-      if (distance < nearestDistance) {
-        nearestUsers.push(nearUser);
-        nearestDistance = distance;
-      }
-    });
-
-    return nearestUsers;
   },
 };

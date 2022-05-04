@@ -458,7 +458,7 @@ Template.lemverse.onCreated(function () {
     e.preventDefault();
     e.stopPropagation();
     if (e.repeat) return;
-    userManager.punch(userProximitySensor.nearestUsers(Meteor.user()));
+    userManager.punch(Object.values(userProximitySensor.nearUsers));
   });
 });
 
