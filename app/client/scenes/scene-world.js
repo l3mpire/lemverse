@@ -61,7 +61,7 @@ WorldScene = new Phaser.Class({
 
     // set focus to the canvas and blur focused element on scene clicked
     this.input.on('pointerdown', () => {
-      if (isModalOpen()) return;
+      if (isModalOpen() || Session.get('console')) return;
       this.enableKeyboard(true, true);
       document.activeElement.blur();
     });

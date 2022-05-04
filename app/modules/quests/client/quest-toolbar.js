@@ -69,16 +69,35 @@ const showActionsButton = () => {
   return quest.targets.includes(Meteor.userId()) || quest.createdBy === Meteor.userId();
 };
 
+const createNewQuestFromTitle = name => {
+  if (!name?.length) return;
+
+  const channel = Session.get('messagesChannel');
+
+  const quest = Quests.findOne(channel);
+  if (quest) { Quests.update(channel, { $set: { name } }); return; }
+
+  Quests.insert({
+    _id: channel,
+    origin: Session.get('quests').origin,
+    targets: Session.get('quests').targets || [],
+    createdAt: new Date(),
+    createdBy: Meteor.userId(),
+    name,
+  });
+
+  const text = '<i>Everything is in the title ⬆</i>';
+  messagesModule.sendMessage(channel, text);
+};
+
 Template.questToolbar.events({
-  'focus .js-quest-name'(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    hotkeys.setScope(scopes.form); game.scene.keys.WorldScene.enableKeyboard(false, false);
+  'keypress input.js-quest-name'(e) {
+    if (e.which !== 13) return;
+    createNewQuestFromTitle(e.currentTarget.value);
   },
   'blur .js-quest-name'(e) {
     e.preventDefault();
     e.stopPropagation();
-    hotkeys.setScope(scopes.player); game.scene.keys.WorldScene.enableKeyboard(true, false);
     updateTitle(e.currentTarget.value);
   },
   'click .js-quest-join'(e) {
