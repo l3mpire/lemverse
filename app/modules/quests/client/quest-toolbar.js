@@ -21,7 +21,7 @@ const joinQuest = () => {
   Quests.update(questId, { $addToSet: { targets: userId } }, error => {
     if (error) { lp.notif.error(`Unable to join the quest`); return; }
 
-    const message = `[user_id:${userId}] has joined the quest`;
+    const message = `{{${userId}}} has joined the quest`;
     messagesModule.sendMessage(questId, message);
   });
 };
@@ -34,7 +34,7 @@ const leaveQuest = () => {
   Quests.update(questId, { $pull: { targets: userId } }, error => {
     if (error) { lp.notif.error(`Unable to leave the quest`); return; }
 
-    const message = `[user_id:${userId}] left the quest`;
+    const message = `{{${userId}}} left the quest`;
     messagesModule.sendMessage(questId, message);
   });
 };
