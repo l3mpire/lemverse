@@ -126,6 +126,27 @@ createFakeShadow = (scene, x, y, scaleX, scaleY) => {
   return shadow;
 };
 
+waitFor = (condition, attempt, delay = 250) => new Promise((resolve, reject) => {
+  let currentAttempt = 0;
+  const waitFunc = () => {
+    currentAttempt++;
+    if (condition()) { resolve(); return; }
+    if (currentAttempt >= attempt) reject(new Error('too many attempt'));
+    else setTimeout(waitFunc, delay);
+  };
+
+  waitFunc();
+});
+
+generateRandomAvatarURLForUser = user => Meteor.settings.public.peer.avatarAPI
+  .replace('[user_id]', encodeURI(user._id || 'guest'))
+  .replace('[user_name]', encodeURI(user.profile.name || 'guest'))
+  .replace('[user_avatar]', encodeURI(user.profile.avatar || 'cat'));
+
+sendEvent = (command, data = {}) => {
+  window.parent.postMessage(JSON.parse(JSON.stringify({ command, ...data })), '*');
+};
+
 meteorCall = (method, ...args) => new Promise((resolve, reject) => {
   Meteor.call(method, ...args, (err, result) => {
     if (err) reject(err);

@@ -68,23 +68,6 @@ generateRandomCharacterSkin = (user, levelId) => {
   Meteor.users.update(user._id, { $set: { profile: { ...newProfile } } });
 };
 
-waitFor = (condition, attempt, delay = 250) => new Promise((resolve, reject) => {
-  let currentAttempt = 0;
-  const waitFunc = () => {
-    currentAttempt++;
-    if (condition()) { resolve(); return; }
-    if (currentAttempt >= attempt) reject(new Error('too many attempt'));
-    else setTimeout(waitFunc, delay);
-  };
-
-  waitFunc();
-});
-
-generateRandomAvatarURLForUser = user => Meteor.settings.public.peer.avatarAPI
-  .replace('[user_id]', encodeURI(user._id || 'guest'))
-  .replace('[user_name]', encodeURI(user.profile.name || 'guest'))
-  .replace('[user_avatar]', encodeURI(user.profile.avatar || 'cat'));
-
 teleportUserInLevel = (levelId, userId) => {
   check([levelId, userId], [String]);
 
@@ -93,10 +76,6 @@ teleportUserInLevel = (levelId, userId) => {
   Meteor.users.update(userId, { $set: { 'profile.levelId': level._id, 'profile.x': spawn?.x || 0, 'profile.y': spawn?.y || 0 } });
 
   return level.name;
-};
-
-sendEvent = (command, data = {}) => {
-  window.parent.postMessage(JSON.parse(JSON.stringify({ command, ...data })), '*');
 };
 
 subscribedUsersToEntity = entityId => Meteor.users.find(
