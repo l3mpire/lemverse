@@ -62,6 +62,17 @@ const onZoneUpdated = e => {
 window.addEventListener(eventTypes.onZoneEntered, onZoneEntered);
 window.addEventListener(eventTypes.onZoneLeft, onZoneLeft);
 window.addEventListener(eventTypes.onZoneUpdated, onZoneUpdated);
+window.addEventListener('load', () => {
+  const head = document.querySelector('head');
+
+  const script = document.createElement('script');
+  script.src = `https://${Meteor.settings.public.meet.serverURL}/external_api.js`;
+  head.appendChild(script);
+
+  const scriptLowLevel = document.createElement('script');
+  scriptLowLevel.src = `https://${Meteor.settings.public.meet.serverURL}/libs/lib-jitsi-meet.min.js`;
+  head.appendChild(scriptLowLevel);
+});
 
 hotkeys('f', { scope: scopes.player }, event => {
   if (event.repeat || !linkedZoneId) return;

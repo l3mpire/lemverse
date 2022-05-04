@@ -1,20 +1,6 @@
 Session.setDefault('retryTimeDuration', 0);
 const updateRetryTimeDuration = () => Session.set('retryTimeDuration', moment(Meteor.status().retryTime).diff());
 
-Template.layout.onRendered(() => {
-  $(document).ready(() => {
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = `https://${Meteor.settings.public.meet.serverURL}/external_api.js`;
-    $('head').append(script);
-
-    const scriptLowLevel = document.createElement('script');
-    scriptLowLevel.type = 'text/javascript';
-    scriptLowLevel.src = `https://${Meteor.settings.public.meet.serverURL}/libs/lib-jitsi-meet.min.js`;
-    $('head').append(scriptLowLevel);
-  });
-});
-
 Template.layout.helpers({
   settings() { return Meteor.settings; },
 });
