@@ -133,6 +133,7 @@ module.exports = {
     generateRandomCharacterSkin: 'writable',
     generateTURNCredentials: 'writable',
     isModalOpen: 'writable',
+    closeModal: 'writable',
     toggleModal: 'writable',
     toggleUserProperty: 'writable',
     scopes: 'writable',

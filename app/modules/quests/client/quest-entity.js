@@ -9,7 +9,7 @@ Template.questEntity.events({
     e.preventDefault();
     e.stopPropagation();
 
-    Session.set('modal', undefined);
+    closeModal();
     createQuestDraft([], template.data.entity._id);
   },
   'click .js-quest-subscribe'(e, template) {

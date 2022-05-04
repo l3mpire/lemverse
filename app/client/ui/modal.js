@@ -5,7 +5,7 @@ toggleModal = modalName => {
   else Session.set('modal', { template: modalName });
 };
 
-const closeModal = () => Session.set('modal', undefined);
+closeModal = () => Session.set('modal', undefined);
 
 const keydownListener = e => {
   if (e.code !== 'Escape' || !Session.get('modal')) return;
@@ -18,6 +18,7 @@ const keydownListener = e => {
 let modals = [];
 
 Template.modalContainer.onCreated(() => {
+  closeModal();
   document.addEventListener('keydown', keydownListener);
 
   Tracker.autorun(() => {

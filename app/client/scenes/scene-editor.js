@@ -30,7 +30,7 @@ EditorScene = new Phaser.Class({
 
     this.events.on('wake', () => {
       Session.set('console', false);
-      Session.set('modal', undefined);
+      closeModal();
       this.onEditorModeChanged(Session.get('editorSelectedMenu'));
     });
 

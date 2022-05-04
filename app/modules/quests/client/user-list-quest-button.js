@@ -3,7 +3,7 @@ Template.userListQuestButton.events({
     e.preventDefault();
     e.stopPropagation();
 
-    Session.set('modal', undefined);
+    closeModal();
     createQuestDraft([this.user._id], Meteor.userId());
   },
 });

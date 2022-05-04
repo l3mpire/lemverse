@@ -39,10 +39,10 @@ const onNotificationClicked = e => {
   const questNotification = questId?.includes('qst_');
 
   if (questNotification) {
-    Session.set('modal', undefined);
+    closeModal();
     Session.set('quests', { selectedQuestId: questId, origin: 'notifications' });
   } else if (!this.fileId) {
-    Session.set('modal', undefined);
+    closeModal();
     messagesModule.changeMessagesChannel(questId);
     openConsole();
   }

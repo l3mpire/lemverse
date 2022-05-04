@@ -23,7 +23,7 @@ Template.userListSelection.events({
   },
   'click .js-submit'(e, template) {
     Session.set('usersSelected', Object.keys(template.selectedUsers.get()));
-    Session.set('modal', undefined);
+    closeModal();
   },
 });
 

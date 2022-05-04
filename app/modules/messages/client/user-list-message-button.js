@@ -3,7 +3,7 @@ Template.userListMessageButton.events({
     e.preventDefault();
     e.stopPropagation();
 
-    Session.set('modal', undefined);
+    closeModal();
     const channel = [this.user._id, Meteor.userId()].sort().join(';');
     messagesModule.changeMessagesChannel(channel);
     openConsole();
