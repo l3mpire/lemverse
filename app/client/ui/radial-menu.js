@@ -158,6 +158,7 @@ Template.radialMenuOption.helpers({
 Template.radialMenu.onCreated(function () {
   this.label = new ReactiveVar('Settings');
   this.showShortcuts = new ReactiveVar(false);
+  Session.set('menu', undefined);
   Session.set('menu-position', { x: 0, y: 0 });
 
   document.addEventListener('mousemove', onMouseMove);

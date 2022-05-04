@@ -27,6 +27,8 @@ EditorScene = new Phaser.Class({
     // put editor in sleep mode on load (no rendering, no update)
     game.scene.keys.EditorScene.scene.sleep();
     Session.set('editor', 0);
+    Session.set('selectedTiles', undefined);
+    Session.set('selectedTilesetId', undefined);
 
     this.events.on('wake', () => {
       Session.set('console', false);

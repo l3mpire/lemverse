@@ -67,14 +67,10 @@ const extractLevelIdFromURL = () => {
 };
 
 Template.lemverse.onCreated(function () {
-  Session.set('selectedTiles', undefined);
-  Session.set('selectedTilesetId', undefined);
+  Session.set('editor', 0);
   Session.set('sceneWorldReady', false);
   Session.set('loading', true);
   Session.set('tilesetsLoaded', false);
-  Session.set('editor', 0);
-  Session.set('modal', undefined);
-  Session.set('menu', undefined);
 
   window.addEventListener('dblclick', e => {
     if (e.target === document.querySelector('canvas')) sendEvent('toggle-fullscreen');
@@ -111,7 +107,6 @@ Template.lemverse.onCreated(function () {
 
   this.subscribe('tilesets', () => {
     log('All tilesets loaded');
-    Session.set('selectedTilesetId', undefined);
     Session.set('tilesetsLoaded', true);
   });
 
@@ -480,6 +475,9 @@ Template.lemverse.onDestroyed(function () {
   hotkeys.unbind('j', scopes.player);
   hotkeys.unbind('l', scopes.player);
   hotkeys.unbind('r', scopes.player);
+  hotkeys.unbind('p', scopes.player);
+  hotkeys.unbind('u', scopes.player);
+  hotkeys.unbind('x', scopes.player);
   hotkeys.unbind('shift+r', scopes.player);
   hotkeys.unbind('tab', scopes.player);
   hotkeys.unbind('space', scopes.player);
