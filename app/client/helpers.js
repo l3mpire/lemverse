@@ -139,6 +139,18 @@ waitFor = (condition, attempt, delay = 250) => new Promise((resolve, reject) => 
   waitFunc();
 });
 
+replaceTextVars = text => {
+  const regex = /\[(.*?)\]/g;
+
+  return text.replaceAll(regex, element => {
+    const [action, value] = element.replace(/[[\]']+/g, '').split(':');
+
+    if (action === 'user_id') return Meteor.users.findOne(value)?.profile.name || `User ${value}`;
+
+    return element;
+  });
+};
+
 generateRandomAvatarURLForUser = user => Meteor.settings.public.peer.avatarAPI
   .replace('[user_id]', encodeURI(user._id || 'guest'))
   .replace('[user_name]', encodeURI(user.profile.name || 'guest'))

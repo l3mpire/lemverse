@@ -19,7 +19,13 @@ const scrollToBottom = () => {
   if (messagesElement) messagesElement.scrollTop = messagesElement.scrollHeight;
 };
 
-const formatText = text => formatURLs(lp.purify(text)).replace(/(?:\r\n|\r|\n)/g, '<br>');
+const formatText = text => {
+  let finalText = lp.purify(text);
+  finalText = formatURLs(finalText);
+  finalText = replaceTextVars(finalText);
+
+  return finalText.replace(/(?:\r\n|\r|\n)/g, '<br>');
+};
 
 Template.messagesListMessage.onCreated(function () {
   this.moderationAllowed = messageModerationAllowed(Meteor.userId(), this.data.message);

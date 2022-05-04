@@ -17,10 +17,11 @@ const joinQuest = () => {
   const questId = Session.get('selectedQuestId');
   if (!questId) return;
 
-  Quests.update(questId, { $addToSet: { targets: Meteor.userId() } }, error => {
+  const userId = Meteor.userId();
+  Quests.update(questId, { $addToSet: { targets: userId } }, error => {
     if (error) { lp.notif.error(`Unable to join the quest`); return; }
 
-    const message = `${Meteor.user().profile.name} has joined the quest`;
+    const message = `[user_id:${userId}] has joined the quest`;
     messagesModule.sendMessage(questId, message);
   });
 };
@@ -29,10 +30,11 @@ const leaveQuest = () => {
   const questId = Session.get('selectedQuestId');
   if (!questId) return;
 
-  Quests.update(questId, { $pull: { targets: Meteor.userId() } }, error => {
+  const userId = Meteor.userId();
+  Quests.update(questId, { $pull: { targets: userId } }, error => {
     if (error) { lp.notif.error(`Unable to leave the quest`); return; }
 
-    const message = `${Meteor.user().profile.name} left the quest`;
+    const message = `[user_id:${userId}] left the quest`;
     messagesModule.sendMessage(questId, message);
   });
 };

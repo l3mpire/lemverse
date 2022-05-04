@@ -141,6 +141,7 @@ module.exports = {
     waitFor: 'writable',
     userStreams: 'writable',
     streamTypes: 'writable',
+    replaceTextVars: 'writable',
     generateRandomAvatarURLForUser: 'writable',
     levelManager: 'writable',
     userManager: 'writable',
