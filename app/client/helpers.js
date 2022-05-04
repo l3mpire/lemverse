@@ -17,6 +17,7 @@ eventTypes = Object.freeze({
   onMenuOptionUnselected: 'onMenuOptionUnselected',
   onNotificationClicked: 'onNotificationClicked',
   onNotificationReceived: 'onNotificationReceived',
+  onPeerDataReceived: 'onPeerDataReceived',
   onTileAdded: 'onTileAdded',
   onTileChanged: 'onTileChanged',
   onUserNear: 'onUserNear',

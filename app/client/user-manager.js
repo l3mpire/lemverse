@@ -661,13 +661,13 @@ userManager = {
     this.userMediaStates = undefined;
   },
 
-  onPeerDataReceived(dataReceived) {
-    const emitterUserId = dataReceived.emitter;
+  onPeerDataReceived(data) {
+    const emitterUserId = data.emitter;
     const userEmitter = Meteor.users.findOne(emitterUserId);
     if (!userEmitter) return;
 
-    if (dataReceived.type === 'audio') userVoiceRecorderAbility.playSound(dataReceived.data);
-    else if (dataReceived.type === 'punch') {
+    if (data.type === 'audio') userVoiceRecorderAbility.playSound(data.data);
+    else if (data.type === 'punch') {
       if (!userProximitySensor.isUserNear(userEmitter)) return;
 
       sounds.play('punch.mp3');
@@ -675,15 +675,15 @@ userManager = {
       if (Math.random() > 0.95) sounds.play('punch2.mp3');
 
       this.takeDamage(this.players[Meteor.user()._id]);
-    } else if (dataReceived.type === 'followed') {
+    } else if (data.type === 'followed') {
       peer.lockCall(emitterUserId);
       lp.notif.warning(`${userEmitter.profile.name} is following you 👀`);
-    } else if (dataReceived.type === 'unfollowed') {
+    } else if (data.type === 'unfollowed') {
       peer.unlockCall(emitterUserId);
 
       if (this.entityFollowed?.userId === emitterUserId) this.follow(undefined);
       else lp.notif.warning(`${userEmitter.profile.name} has finally stopped following you 🎉`);
-    } else if (dataReceived.type === 'text') {
+    } else if (data.type === 'text') {
       const emitterPlayer = userManager.players[emitterUserId];
       if (!emitterPlayer) return;
 
@@ -692,11 +692,13 @@ userManager = {
       const popInIdentifier = `${emitterUserId}-pop-in`;
       characterPopIns.createOrUpdate(
         popInIdentifier,
-        dataReceived.data,
+        data.data,
         { target: emitterPlayer, className: messageReceived.style, autoClose: messageReceived.duration, parseURL: true, classList: 'copy', offset: characterPopInOffset },
       );
 
-      if (emitterUserId !== Meteor.userId()) notify(userEmitter, `${userEmitter.profile.name}: ${dataReceived.data}`);
+      if (emitterUserId !== Meteor.userId()) notify(userEmitter, `${userEmitter.profile.name}: ${data.data}`);
     }
+
+    window.dispatchEvent(new CustomEvent(eventTypes.onPeerDataReceived, { detail: { data } }));
   },
 };
