@@ -2,6 +2,7 @@ window.addEventListener('load', () => {
   registerModule('textualCommunicationTools');
 
   addShortcutsToRadialMenu([
+    { id: 'new-quest', icon: '📜', shortcut: 53, label: 'New quest', closeMenu: true, scope: 'other' },
     { id: 'show-quests', icon: '📜', shortcut: 57, label: 'Quests', closeMenu: true, scope: 'me' },
     { id: 'open-console', icon: '💬', shortcut: 56, label: 'Text', closeMenu: true, scope: 'me' },
   ]);
@@ -46,10 +47,11 @@ const onNotificationClicked = e => {
 };
 
 const onMenuOptionSelected = e => {
-  const { option } = e.detail;
+  const { option, user } = e.detail;
 
   if (option.id === 'show-quests') Session.set('quests', { origin: 'menu' });
   else if (option.id === 'open-console') openConsole(true);
+  else if (option.id === 'new-quest' && user) createQuestDraft([user._id], Meteor.userId());
 };
 
 Template.textualCommunicationTools.onCreated(() => {
