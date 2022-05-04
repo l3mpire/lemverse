@@ -12,7 +12,7 @@ const mouseDistanceToCloseMenu = 105;
 const itemAmountRequiredForBackground = 2;
 const radialMenuStartingAngle = 3.8; // in radians
 let menuHandler;
-Session.set('radialMenuAdditionalShortcuts', []);
+Session.set('radialMenuModules', []);
 
 const menuCurrentUser = () => {
   const menu = Session.get('menu');
@@ -68,7 +68,7 @@ const otherUserMenuItems = [
 
 const menuOptions = new ReactiveVar(mainMenuItems);
 
-const additionalOptions = scope => Session.get('radialMenuAdditionalShortcuts').filter(option => option.scope === scope);
+const additionalOptions = scope => Session.get('radialMenuModules').filter(option => option.scope === scope);
 
 const onMenuOptionSelected = e => {
   const { option, user } = e.detail;

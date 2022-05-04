@@ -188,7 +188,8 @@ module.exports = {
 
     messagesModule: 'writable',
     nearUserIdsToString: 'writable',
-    registerModule: 'writable',
-    addShortcutsToRadialMenu: 'writable',
+    registerModules: 'writable',
+    registerUserListModules: 'writable',
+    registerRadialMenuModules: 'writable',
   },
 };

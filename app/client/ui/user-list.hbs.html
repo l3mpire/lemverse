@@ -11,12 +11,9 @@
       <span>{{zone}}</span>
     </div>
     <div class="actions">
-      {{#if communicationAllowed}}
-        <span class="js-send-message">💬</span>
-        <span class="js-create-quest">📜</span>
-      {{else}}
-        <span>-</span>
-      {{/if}}
+      {{#each module in modules}}
+        {{> Template.dynamic template=module}}
+      {{/each}}
     </div>
     <div class="infos">
       {{#if admin}}

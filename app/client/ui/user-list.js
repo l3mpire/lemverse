@@ -17,31 +17,20 @@ const users = (mode, guildId) => {
 
 Template.userListEntry.helpers({
   admin() { return this.user.roles?.admin; },
+  canEditLevel() { return isEditionAllowed(this.user._id); },
   guild() { return Guilds.findOne(this.user.guildId)?.name; },
+  levelOwner() { return isLevelOwner(this.user._id); },
+  modules() { return Session.get('userListModules'); },
+  user() { return this.user; },
   zone() {
     if (!this.user.status.online) return '-';
     return this.user.profile.zoneName || '-';
   },
-  canEditLevel() { return isEditionAllowed(this.user._id); },
-  communicationAllowed() { return this.user._id !== Meteor.userId() && !Meteor.user().profile.guest; },
-  levelOwner() { return isLevelOwner(this.user._id); },
-  user() { return this.user; },
 });
 
 Template.userListEntry.events({
   'click .js-toggle-edition'() { Meteor.call('toggleLevelEditionPermission', this.user._id); },
   'click .js-profile'() { Session.set('modal', { template: 'profile', userId: this.user._id, append: true }); },
-  'click .js-create-quest'() {
-    Session.set('modal', undefined);
-    createQuestDraft([this.user._id], Meteor.userId());
-  },
-  'click .js-send-message'() {
-    Session.set('modal', undefined);
-
-    const channel = [this.user._id, Meteor.userId()].sort().join(';');
-    messagesModule.changeMessagesChannel(channel);
-    openConsole();
-  },
   'click .js-guild'() { Session.set('modal', { template: 'guild', guildId: this.user.guildId, append: true }); },
 });
 

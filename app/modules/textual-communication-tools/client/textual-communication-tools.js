@@ -1,7 +1,9 @@
 window.addEventListener('load', () => {
-  registerModule('textualCommunicationTools');
+  registerModules(['textualCommunicationTools']);
 
-  addShortcutsToRadialMenu([
+  registerUserListModules(['userListQuestButton', 'userListMessageButton']);
+
+  registerRadialMenuModules([
     { id: 'new-quest', icon: '📜', shortcut: 53, label: 'New quest', closeMenu: true, scope: 'other' },
     { id: 'show-quests', icon: '📜', shortcut: 57, label: 'Quests', closeMenu: true, scope: 'me' },
     { id: 'open-console', icon: '💬', shortcut: 56, label: 'Text', closeMenu: true, scope: 'me' },

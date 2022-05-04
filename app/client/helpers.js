@@ -137,12 +137,11 @@ destroyVideoSource = video => {
   video.load();
 };
 
-registerModule = name => {
-  const modules = Session.get('modules') || [];
-  Session.set('modules', [...new Set([...modules, name])]);
+const addToSession = (key, values) => {
+  const existingModules = Session.get(key) || [];
+  Session.set(key, [...new Set([...existingModules, ...values])]);
 };
 
-addShortcutsToRadialMenu = shortcuts => {
-  const existingShortcuts = Session.get('radialMenuAdditionalShortcuts') || [];
-  Session.set('radialMenuAdditionalShortcuts', [...existingShortcuts, ...shortcuts]);
-};
+registerModules = modules => addToSession('modules', modules);
+registerUserListModules = modules => addToSession('userListModules', modules);
+registerRadialMenuModules = modules => addToSession('radialMenuModules', modules);

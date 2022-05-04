@@ -12,7 +12,7 @@ window.addEventListener('load', () => {
     if (option.id === 'open-inventory') toggleModal('inventory');
   });
 
-  addShortcutsToRadialMenu([{ id: 'open-inventory', icon: '📦', shortcut: 73, label: 'Inventory', closeMenu: true, scope: 'me' }]);
+  registerRadialMenuModules([{ id: 'open-inventory', icon: '📦', shortcut: 73, label: 'Inventory', closeMenu: true, scope: 'me' }]);
 });
 
 Template.inventoryItemPanel.helpers({
