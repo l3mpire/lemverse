@@ -90,7 +90,11 @@ Template.lemverse.onCreated(function () {
   this.subscribe('notifications', () => {
     this.handleObserveNotifications = Notifications.find({ createdAt: { $gte: new Date() } }).observe({
       async added(notification) {
-        if (notification.channelId === Session.get('messagesChannel')) {
+        // remove new notification when the notification is about a new message:
+        // … and the interface showing textual messages is open
+        // … or the sender is talking to the user in vocal (a bubble should be visible on the screen)
+        if (notification.channelId === Session.get('messagesChannel') ||
+          (notification.channelId.includes(Meteor.userId()) && userProximitySensor.isUserNear({ _id: notification.createdBy }))) {
           Notifications.remove(notification._id);
           return;
         }
