@@ -167,8 +167,8 @@ Template.radialMenu.onCreated(function () {
   // allow users to react without opening the menu
   hotkeys('1,2,3,4,5,6,7,8,9', { keyup: true, scope: scopes.player }, e => {
     const option = reactionMenuItems.find(menuItem => menuItem.shortcut === e.keyCode);
-    if (e.type === 'keyup') window.dispatchEvent(new CustomEvent(eventTypes.onMenuOptionSelected, { detail: { option } }));
-    else if (e.type === 'keydown') window.dispatchEvent(new CustomEvent(eventTypes.onMenuOptionUnselected, { detail: { option } }));
+    if (e.type === 'keyup') window.dispatchEvent(new CustomEvent(eventTypes.onMenuOptionUnselected, { detail: { option } }));
+    else if (e.type === 'keydown') window.dispatchEvent(new CustomEvent(eventTypes.onMenuOptionSelected, { detail: { option } }));
   });
 
   hotkeys('*', { keyup: true, scope: scopes.player }, e => {
