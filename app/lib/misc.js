@@ -22,15 +22,6 @@ userLevel = userId => {
   return Levels.findOne(user.profile.levelId);
 };
 
-communicationAllowed = userId => {
-  const level = userLevel(userId);
-  if (!level) return false;
-
-  // todo: check if the user is in the zone
-
-  return true;
-};
-
 isLevelOwner = userId => {
   const level = userLevel(userId);
   if (!level) return false;
@@ -53,13 +44,6 @@ isEditionAllowed = userId => {
   if (level.editorUserIds?.includes(userId)) return true;
 
   return false;
-};
-
-messageModerationAllowed = (userId, message) => {
-  if (!userId || !message) return false;
-  if (message.createdBy === userId) return true;
-
-  return isEditionAllowed(userId);
 };
 
 generateRandomCharacterSkin = (user, levelId) => {
