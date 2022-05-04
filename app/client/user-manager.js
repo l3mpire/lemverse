@@ -19,6 +19,7 @@ const characterAnimations = Object.freeze({
   run: 'run',
 });
 const timeBetweenReactionSound = 500;
+const rubberBandingDistance = 160;
 
 const messageReceived = {
   duration: 15000,
@@ -245,9 +246,9 @@ userManager = {
     const shouldCheckDistance = hasMoved && !guest;
 
     if (user._id === loggedUser._id) {
-      // Check distance between players
-      const dist = Math.sqrt(((player.x - x) ** 2) + ((player.y - y) ** 2));
-      if (dist >= 160) {
+      // network rubber banding
+      const dist = Math.hypot(player.x - x, player.y - y);
+      if (dist >= rubberBandingDistance) {
         player.x = x;
         player.y = y;
       }
