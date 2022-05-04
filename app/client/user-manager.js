@@ -159,10 +159,9 @@ userManager = {
     this.players[user._id].lwTargetX = x;
     this.players[user._id].lwTargetY = y;
     this.players[user._id].direction = direction || defaultCharacterDirection;
-
     this.players[user._id].setDepth(y);
 
-    this.updateUser(user);
+    window.setTimeout(() => this.updateUser(user), 0);
 
     return this.players[user._id];
   },

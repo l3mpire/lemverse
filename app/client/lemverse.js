@@ -346,18 +346,12 @@ Template.lemverse.onCreated(function () {
       log(`loading level: loading users`);
       this.handleUsersSubscribe = this.subscribe('users', levelId, () => {
         this.handleObserveUsers = Meteor.users.find({ 'status.online': true, 'profile.levelId': levelId }).observe({
-          added(user) {
-            window.setTimeout(() => userManager.createUser(user), 0);
-          },
-          changed(user, oldUser) {
-            window.setTimeout(() => userManager.updateUser(user, oldUser));
-          },
+          added(user) { userManager.createUser(user); },
+          changed(user, oldUser) { userManager.updateUser(user, oldUser); },
           removed(user) {
-            window.setTimeout(() => {
-              userManager.removeUser(user);
-              userProximitySensor.removeNearUser(user);
-              lp.defer(() => peer.close(user._id, 0, 'user-disconnected'));
-            }, 0);
+            userManager.removeUser(user);
+            userProximitySensor.removeNearUser(user);
+            lp.defer(() => peer.close(user._id, 0, 'user-disconnected'));
           },
         });
 
