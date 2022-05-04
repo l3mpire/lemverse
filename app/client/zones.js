@@ -28,23 +28,17 @@ zones = {
   onDocumentAdded(zone) {
     this.checkZoneForNewContent(zone);
     if (zone.popInConfiguration?.autoOpen) characterPopIns.initFromZone(zone);
+    window.dispatchEvent(new CustomEvent(eventTypes.onZoneAdded, { detail: { zone } }));
   },
 
   onDocumentRemoved(zone) {
     this.destroyNewContentIndicator(zone);
+    window.dispatchEvent(new CustomEvent(eventTypes.onZoneRemoved, { detail: { zone } }));
   },
 
-  onDocumentUpdated(newZone) {
-    this.checkZoneForNewContent(newZone);
-
-    const currentZone = zones.currentZone(Meteor.user());
-    if (!currentZone || currentZone._id !== newZone._id) return;
-
-    if (meet.api) {
-      meet.fullscreen(newZone.fullscreen);
-      const screenMode = newZone.fullscreen ? viewportModes.small : viewportModes.splitScreen;
-      updateViewport(this.scene, screenMode);
-    }
+  onDocumentUpdated(zone) {
+    this.checkZoneForNewContent(zone);
+    window.dispatchEvent(new CustomEvent(eventTypes.onZoneUpdated, { detail: { zone } }));
   },
 
   currentZone(user) {

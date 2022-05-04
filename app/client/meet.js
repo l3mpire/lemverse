@@ -47,8 +47,31 @@ const onZoneLeft = e => {
   if (meet.api && newZone) updateMeetStates(newZone);
 };
 
+const onZoneUpdated = e => {
+  if (!linkedZoneId) return;
+
+  const { zone } = e.detail;
+  const currentZone = zones.currentZone(Meteor.user());
+  if (currentZone._id !== linkedZoneId) return;
+
+  meet.fullscreen(zone.fullscreen);
+  const screenMode = zone.fullscreen ? viewportModes.small : viewportModes.splitScreen;
+  updateViewport(game.scene.keys.WorldScene, screenMode);
+};
+
 window.addEventListener(eventTypes.onZoneEntered, onZoneEntered);
 window.addEventListener(eventTypes.onZoneLeft, onZoneLeft);
+window.addEventListener(eventTypes.onZoneUpdated, onZoneUpdated);
+
+hotkeys('f', { scope: scopes.player }, event => {
+  if (event.repeat || !linkedZoneId) return;
+  event.preventDefault();
+
+  if (!isEditionAllowed(Meteor.userId())) return;
+
+  const zone = Zones.findOne(linkedZoneId);
+  if (zone) zones.setFullscreen(zone, !zone.fullscreen);
+});
 
 meetHighLevel = {
   api: undefined,

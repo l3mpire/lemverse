@@ -424,14 +424,7 @@ Template.lemverse.onCreated(function () {
   hotkeys('f', { scope: scopes.player }, event => {
     if (event.repeat) return;
     event.preventDefault();
-
-    if (meet.api) {
-      const user = Meteor.user();
-      if (!user.roles?.admin) return;
-
-      const currentZone = zones.currentZone(user);
-      if (currentZone) zones.setFullscreen(currentZone, !currentZone.fullscreen);
-    } else userManager.follow(userProximitySensor.nearestUser(Meteor.user()));
+    userManager.follow(userProximitySensor.nearestUser(Meteor.user()));
   });
 
   hotkeys('u', { scope: scopes.player }, event => {
