@@ -58,6 +58,7 @@ userManager = {
   scene: undefined,
   canPlayReactionSound: true,
   userMediaStates: undefined,
+  checkZones: false,
 
   init(scene) {
     this.entityFollowed = undefined;
@@ -258,7 +259,7 @@ userManager = {
 
       if (user.profile.avatar !== oldUser?.profile.avatar) userStreams.refreshVideoElementAvatar(userStreams.getVideoElement());
 
-      if (hasMoved) zones.checkDistances(this.player);
+      if (hasMoved) this.checkZones = true;
 
       if (shouldCheckDistance) {
         const otherUsers = Meteor.users.find({ _id: { $ne: loggedUser._id }, 'status.online': true, 'profile.levelId': loggedUser.profile.levelId }).fetch();
@@ -410,6 +411,11 @@ userManager = {
   },
 
   update() {
+    if (this.checkZones) {
+      zones.checkDistances(this.player);
+      this.checkZones = false;
+    }
+
     this.interpolatePlayerPositions();
   },
 

@@ -62,7 +62,7 @@ const onZoneUpdated = e => {
   updateViewport(game.scene.keys.WorldScene, screenMode);
 };
 
-window.addEventListener(eventTypes.onZoneEntered, Meteor.bindEnvironment(onZoneEntered));
+window.addEventListener(eventTypes.onZoneEntered, onZoneEntered);
 window.addEventListener(eventTypes.onZoneLeft, onZoneLeft);
 window.addEventListener(eventTypes.onZoneUpdated, onZoneUpdated);
 window.addEventListener('load', () => {
