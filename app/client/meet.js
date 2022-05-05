@@ -22,6 +22,8 @@ const onZoneEntered = e => {
     userManager.saveMediaStates();
     Meteor.call('computeRoomName', _id, (err, data) => {
       if (err) { lp.notif.error('You cannot access this zone'); return; }
+      if (!data) { lp.notif.error('Unable to load a room, please try later'); return; }
+
       meet.open(data);
       linkedZoneId = _id;
       updateViewport(game.scene.keys.WorldScene, fullscreen ? viewportModes.small : viewportModes.splitScreen);
@@ -38,6 +40,7 @@ const onZoneLeft = e => {
   if (linkedZoneId === _id) {
     meet = jitsiLowLevel ? meetLowLevel : meetHighLevel;
     meet.close();
+    linkedZoneId = undefined;
 
     userManager.clearMediaStates();
     updateViewport(game.scene.keys.WorldScene, viewportModes.fullscreen);
@@ -59,7 +62,7 @@ const onZoneUpdated = e => {
   updateViewport(game.scene.keys.WorldScene, screenMode);
 };
 
-window.addEventListener(eventTypes.onZoneEntered, onZoneEntered);
+window.addEventListener(eventTypes.onZoneEntered, Meteor.bindEnvironment(onZoneEntered));
 window.addEventListener(eventTypes.onZoneLeft, onZoneLeft);
 window.addEventListener(eventTypes.onZoneUpdated, onZoneUpdated);
 window.addEventListener('load', () => {

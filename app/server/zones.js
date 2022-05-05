@@ -11,6 +11,7 @@ Meteor.publish('zones', function (levelId) {
 
 Meteor.methods({
   computeRoomName(zoneId) {
+    log('computeRoomName: start', { zoneId });
     check(zoneId, String);
 
     const zone = Zones.findOne(zoneId);
@@ -30,6 +31,8 @@ Meteor.methods({
       uuid = randomUUID();
       Zones.update(zone._id, { $set: { uuid } });
     }
+
+    log('computeRoomName: end', { uuid });
 
     return uuid;
   },
