@@ -98,7 +98,7 @@ messagesModule = {
 
   sendMessage(channel, content, file) {
     if (content.length >= messageMaxLength) throw new Error(`The message is too long (> ${messageMaxLength} chars)`);
-    content = lp.purify(content);
+    content = lp.purify(content).trim();
     if (!content.length && !file) throw new Error(`Invalid content`);
 
     window.dispatchEvent(new CustomEvent(eventTypes.beforeSendingMessage, { detail: { channel, content } }));
