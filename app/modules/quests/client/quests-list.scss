@@ -89,6 +89,15 @@
       font-weight: bold;
     }
 
+    li.empty {
+      text-align: center;
+      background-color: transparent;
+      color: $main-text-color;
+      padding: 10px;
+      font-size: 1rem;
+      border-left: 5px solid transparent;
+    }
+
     .quest {
       cursor: pointer;
       display: flex;
@@ -140,16 +149,6 @@
 
       &.updated {
         border-left: 5px solid $light-red;
-      }
-
-      &.empty {
-        text-align: center;
-        background-color: transparent;
-        cursor: default;
-
-        &:hover {
-          background-color: transparent;
-        }
       }
     }
   }
