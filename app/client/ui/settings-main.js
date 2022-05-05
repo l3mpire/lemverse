@@ -7,31 +7,28 @@ Template.settingsMain.events({
   'input .js-name'(event) {
     event.preventDefault();
     event.stopPropagation();
-    const name = event.target.value;
-    if (!name) return false;
+    const name = event.target.value.trim();
+    if (!name) return;
 
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.name': name } });
     userManager.rename(name, Meteor.user().profile.nameColor);
-    return false;
   },
   'input .js-name-color'(event) {
     event.preventDefault();
     event.stopPropagation();
     const color = event.target.value;
-    if (!color) return false;
+    if (!color) return;
 
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.nameColor': color } });
     userManager.rename(Meteor.user().profile.name, color);
-    return false;
   },
   'input .js-reaction'(event) {
     event.preventDefault();
     event.stopPropagation();
-    const reaction = event.target.value;
-    if (!reaction) return false;
+    const reaction = event.target.value.trim();
+    if (!reaction) return;
 
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.defaultReaction': reaction } });
-    return false;
   },
   'click .js-copy-invitation'(event) {
     event.preventDefault();
@@ -43,8 +40,6 @@ Template.settingsMain.events({
     const path = FlowRouter.path('invite', { levelId: levelIdWithoutPrefix });
     const url = `${window.location.protocol}//${window.location.host}${path}`;
     navigator.clipboard.writeText(url).then(() => lp.notif.success('✂️ Invitation copied to your clipboard'));
-
-    return false;
   },
 });
 
