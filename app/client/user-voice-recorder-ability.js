@@ -1,5 +1,3 @@
-import Phaser from 'phaser';
-
 let mediaRecorder;
 let recordedChunks = [];
 const minChunkSize = 1000; // ~100ms
@@ -103,8 +101,7 @@ userVoiceRecorderAbility = {
     const radialProgressBar = this.recordingIndicator.getAt(0);
     radialProgressBar.clear();
     radialProgressBar.fillStyle(0x0078e7);
-    // eslint-disable-next-line new-cap
-    radialProgressBar.slice(0, 0, this.recordingIndicatorRadius, 0, Phaser.Math.DegToRad(progress), false);
+    radialProgressBar.slice(0, 0, this.recordingIndicatorRadius, 0, progress * (Math.PI / 180), false);
     radialProgressBar.fillPath();
   },
 
