@@ -129,6 +129,8 @@ Template.console.onDestroyed(() => {
 });
 
 Template.console.events({
+  'focus .js-command-input'() { hotkeys.setScope(scopes.form); game.scene.keys.WorldScene.enableKeyboard(false, false); },
+  'blur .js-command-input'() { hotkeys.setScope(scopes.player); game.scene.keys.WorldScene.enableKeyboard(true, false); },
   'change .console-file'(event) { markInputFileWithContent(!!event.currentTarget.files.length); },
   'click .js-button-submit'(event) {
     event.preventDefault();

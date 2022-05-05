@@ -95,9 +95,15 @@ Template.questToolbar.events({
     if (e.which !== 13) return;
     createNewQuestFromTitle(e.currentTarget.value);
   },
+  'focus .js-quest-name'(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    hotkeys.setScope(scopes.form); game.scene.keys.WorldScene.enableKeyboard(false, false);
+  },
   'blur .js-quest-name'(e) {
     e.preventDefault();
     e.stopPropagation();
+    hotkeys.setScope(scopes.player); game.scene.keys.WorldScene.enableKeyboard(true, false);
     updateTitle(e.currentTarget.value);
   },
   'click .js-quest-join'(e) {
