@@ -77,6 +77,6 @@ Files = new FilesCollection({
       return true;
     }
 
-    return false;
+    return 'Source of upload not set';
   },
 });
