@@ -1,7 +1,7 @@
 zoom = 1.5;
 selectedCharactersPart = () => Characters.findOne(Session.get('selectedCharacterId')) || {};
 findFirstCharacters = () => {
-  const filter = { category: Session.get('editorCharactersFilter') || { $exists: false } }; 
+  const filter = { category: Session.get('editorCharactersFilter') || { $exists: false } };
   return Characters.findOne(filter);
 };
 
@@ -50,7 +50,7 @@ Template.editorCharacters.events({
     Session.set('editorCharactersFilter', category === 'none' ? null : category);
     Session.set('selectedCharacterId', findFirstCharacters()?._id || null);
   },
-  'dragover .js-drop-zone, dragenter .js-drop-zone'({ currentTarget }) {
+  'dragover .js-drop-zone, dragenter .js-drop-zone'() {
     Session.set('showDropZone', true);
   },
 
@@ -59,11 +59,11 @@ Template.editorCharacters.events({
     e.stopPropagation();
   },
 
-  'dragleave .js-drop-zone, dragend .js-drop-zone, drop .js-drop-zone'({ currentTarget, target }) {
+  'dragleave .js-drop-zone, dragend .js-drop-zone, drop .js-drop-zone'() {
     Session.set('showDropZone', false);
   },
 
-  'drop .js-drop-zone'({ currentTarget, originalEvent }) {
+  'drop .js-drop-zone'({ originalEvent }) {
     const uploadedFiles = originalEvent.dataTransfer.files;
     Array.from(uploadedFiles).forEach(file => {
       if (!file) return;
