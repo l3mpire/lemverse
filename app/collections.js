@@ -56,22 +56,27 @@ Files = new FilesCollection({
   allowClientCode: false,
   // debug: true,
   onBeforeUpload(file) {
-    if (file.meta?.source === 'editor-tilesets') {
-      if (file.size <= 5000000 && /png|jpe?g/i.test(file.extension)) return true;
-      return 'Please upload an image (png, jpg or jpeg) less than 5MB';
-    } else if (file.meta?.source === 'editor-characters') {
-      if (file.size <= 5000000 && /png|jpe?g/i.test(file.extension)) return true;
-      return 'Please upload an image (png, jpg or jpeg) less than 5MB';
-    } else if (file.meta?.source === 'voice-recorder') {
-      if (file.size <= 5000000 && /webm|ogg|mp4/i.test(file.extension)) return true;
-      if (!file.meta.targets.length) return 'Targets required';
+    const { meta, mime, size } = file;
 
-      return 'Please upload a valid sound file (webm, ogg or mp4) less than 5MB';
-    } else if (file.meta?.source === 'user-console') {
-      if (file.size <= 5000000 && /png|jpg|gif|jpeg/i.test(file.extension)) return true;
-      return 'Please upload an image (png, jpg, gif or jpeg) less than 5MB';
+    if (size > 5000000) return `File too big (> 5MB)`;
+
+    if (meta.source === 'editor-tilesets') {
+      if (!['image/png', 'image/jpeg'].includes(mime)) return `Only jpeg and png can be uploaded`;
+      return true;
     }
 
-    return 'Source of upload not set. Can\'t continue.';
+    if (meta.source === 'editor-characters') {
+      if (!['image/png', 'image/jpeg'].includes(mime)) return `Only jpeg and png can be uploaded`;
+      return true;
+    }
+
+    if (meta.source === 'voice-recorder') {
+      if (!['audio/webm', 'audio/ogg', 'audio/mp4'].includes(mime)) return `Only webm, ogg and mp4 can be uploaded`;
+      if (!meta.userIds.length) return `userIds are required to send an audio file`;
+
+      return true;
+    }
+
+    return false;
   },
 });

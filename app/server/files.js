@@ -1,5 +1,4 @@
 import '../collections';
-import FileType from 'file-type';
 import gm from 'gm';
 
 const filesAfterUploadEditorTileset = (user, fileRef) => {
@@ -105,26 +104,6 @@ const filesAfterUploadVoiceRecorder = (user, fileRef) => {
   });
 
   log('filesAfterUploadVoiceRecorder: done', { userId: user._id });
-};
-
-Files.onBeforeUpload = function () {
-  if (this.eof) {
-    const type = Promise.await(FileType.fromFile(this.file.path));
-
-    if (this.meta?.source === 'editor-tilesets') {
-      if (!type || !_.contains(['image/png', 'image/jpeg'], type.mime)) throw new Meteor.Error('invalid-file-type', `Only jpeg and png can be uploaded`);
-    }
-
-    if (this.meta?.source === 'editor-characters') {
-      if (!type || !_.contains(['image/png', 'image/jpeg'], type.mime)) throw new Meteor.Error('invalid-file-type', `Only jpeg and png can be uploaded`);
-    }
-
-    if (this.meta?.source === 'voice-recorder') {
-      if (!type || !_.contains(['audio/webm', 'audio/ogg', 'audio/mp4'], type.mime)) throw new Meteor.Error('invalid-file-type', `Only webm, ogg and mp4 can be uploaded`);
-      if (!this.meta.userIds.length) throw new Meteor.Error('missing-users', `userIds are required to send an audio file`);
-    }
-  }
-  return true;
 };
 
 Files.on('afterUpload', fileRef => {
