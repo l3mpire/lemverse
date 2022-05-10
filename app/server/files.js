@@ -109,7 +109,7 @@ const filesAfterUploadVoiceRecorder = (user, fileRef) => {
 
 Files.onBeforeUpload = function (file) {
   if (this.eof) {
-    const { mime } = Promise.await(FileType.fromFile(file.path));
+    const { mime } = Promise.await(FileType.fromFile(file.path)) || file; // fallback to default mime for non binary-based file
     return fileOnBeforeUpload(file, mime);
   }
 
