@@ -98,6 +98,7 @@ module.exports = {
     closeConsole: 'writable',
     createQuestDraft: 'writable',
     isolateUser: 'writable',
+    fileOnBeforeUpload: 'writable',
 
     game: 'writable',
     createLevel: 'writable',

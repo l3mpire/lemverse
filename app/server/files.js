@@ -1,3 +1,4 @@
+import FileType from 'file-type';
 import '../collections';
 import gm from 'gm';
 
@@ -104,6 +105,15 @@ const filesAfterUploadVoiceRecorder = (user, fileRef) => {
   });
 
   log('filesAfterUploadVoiceRecorder: done', { userId: user._id });
+};
+
+Files.onBeforeUpload = function (file) {
+  if (this.eof) {
+    const { mime } = Promise.await(FileType.fromFile(file.path));
+    return fileOnBeforeUpload(file, mime);
+  }
+
+  return true;
 };
 
 Files.on('afterUpload', fileRef => {
