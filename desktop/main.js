@@ -94,7 +94,7 @@ const createWindow = () => {
     shell.openExternal(url);
     return { action: 'deny' };
   });
-}; 
+};
 
 const toggleWindow = (value, autoFocus = false) => {
   if (value !== undefined) {
@@ -102,6 +102,13 @@ const toggleWindow = (value, autoFocus = false) => {
     else mainWindow.hide();
   } else if (mainWindow?.isVisible()) mainWindow.hide();
   else showWindow(autoFocus);
+};
+
+const toggleFullScreen = value => {
+  if (!mainWindow) return;
+  wasFullscreen = false;
+  if (value !== undefined) mainWindow.setFullScreen(value);
+  else mainWindow.setFullScreen(!mainWindow.isFullScreen());
 };
 
 const toggleWindowFullScreen = () => {
@@ -125,13 +132,6 @@ const toggleWindowFullScreen = () => {
   toggleWindow(undefined, true);
 };
 
-const toggleFullScreen = value => {
-  if (!mainWindow) return;
-  wasFullscreen = false;
-  if (value !== undefined) mainWindow.setFullScreen(value);
-  else mainWindow.setFullScreen(!mainWindow.isFullScreen());
-};
-
 const createTrayMenu = () => {
   tray = new Tray(iconPath);
   tray.setToolTip('lemverse');
@@ -148,7 +148,7 @@ const createTrayMenu = () => {
   }]);
 
   tray.on('right-click', () => tray.popUpContextMenu(menu));
-  tray.on('click', () => toggleWindowFullScreen()); //toggleWindow(undefined, true));
+  tray.on('click', () => toggleWindowFullScreen());
 };
 
 const initJitsi = () => {
