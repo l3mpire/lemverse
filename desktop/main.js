@@ -94,15 +94,35 @@ const createWindow = () => {
     shell.openExternal(url);
     return { action: 'deny' };
   });
-};
+}; 
 
 const toggleWindow = (value, autoFocus = false) => {
   if (value !== undefined) {
     if (value) showWindow(autoFocus);
     else mainWindow.hide();
-  } else if (mainWindow?.isFullScreen()) showWindow(autoFocus);
-  else if (mainWindow?.isVisible()) mainWindow.hide();
+  } else if (mainWindow?.isVisible()) mainWindow.hide();
   else showWindow(autoFocus);
+};
+
+const toggleWindowFullScreen = () => {
+  // the user wants to hide the app currently in fullscreen
+  if (mainWindow.isFullScreen() && mainWindow.isVisible()) {
+    mainWindow.once('leave-full-screen', () => {
+      wasFullscreen = true;
+      toggleWindow(false, true);
+    });
+    toggleFullScreen(false);
+    return;
+  }
+
+  // the user wants to show the app previously in fullscreen
+  if (!mainWindow.isVisible() && wasFullscreen) {
+    mainWindow.once('enter-full-screen', () => toggleWindow(true, true));
+    toggleFullScreen(true);
+    return;
+  }
+
+  toggleWindow(undefined, true);
 };
 
 const toggleFullScreen = value => {
@@ -128,7 +148,7 @@ const createTrayMenu = () => {
   }]);
 
   tray.on('right-click', () => tray.popUpContextMenu(menu));
-  tray.on('click', () => toggleWindow(undefined, true));
+  tray.on('click', () => toggleWindowFullScreen()); //toggleWindow(undefined, true));
 };
 
 const initJitsi = () => {
@@ -145,24 +165,7 @@ app.whenReady().then(() => {
 
   // Shortcut
   globalShortcut.register('Alt+Cmd+v', () => {
-    // the user wants to hide the app currently in fullscreen
-    if (mainWindow.isFullScreen() && mainWindow.isVisible()) {
-      mainWindow.once('leave-full-screen', () => {
-        wasFullscreen = true;
-        toggleWindow(false, true);
-      });
-      toggleFullScreen(false);
-      return;
-    }
-
-    // the user wants to show the app previously in fullscreen
-    if (!mainWindow.isVisible() && wasFullscreen) {
-      mainWindow.once('enter-full-screen', () => toggleWindow(true, true));
-      toggleFullScreen(true);
-      return;
-    }
-
-    toggleWindow(undefined, true);
+    toggleWindowFullScreen();
   });
 
   // Set the window under the tray icon on first load
