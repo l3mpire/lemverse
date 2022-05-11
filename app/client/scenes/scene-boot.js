@@ -20,6 +20,8 @@ BootScene = new Phaser.Class({
         frameHeight: frameHeight || 32,
       });
     });
+
+    this.loadAssetsAtRuntime(Assets.find().fetch());
   },
 
   create() {
@@ -88,6 +90,20 @@ BootScene = new Phaser.Class({
     if (!imageLoadedCount) onComplete(images);
     else {
       this.load.once(`complete`, () => onComplete(images));
+      this.load.start();
+    }
+  },
+
+  loadAssetsAtRuntime(assets, onComplete = () => {}) {
+    let assetsLoadedCount = 0;
+    assets.forEach(asset => {
+      const key = asset.fileId;
+      if (asset.type === 'spritesheet') this.load.multiatlas(key, `/api/files/${key}`, `/api/files/`);
+      assetsLoadedCount++;
+    });
+
+    if (assetsLoadedCount) {
+      this.load.once(`complete`, () => onComplete(assets));
       this.load.start();
     }
   },

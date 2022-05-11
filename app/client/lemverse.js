@@ -111,7 +111,11 @@ Template.lemverse.onCreated(function () {
 
   this.subscribe('tilesets', () => {
     log('All tilesets loaded');
-    Session.set('tilesetsLoaded', true);
+
+    this.subscribe('assets', () => {
+      log('All assets loaded');
+      Session.set('tilesetsLoaded', true);
+    });
   });
 
   this.autorun(() => {
