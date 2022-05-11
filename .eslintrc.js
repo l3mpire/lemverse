@@ -71,6 +71,7 @@ module.exports = {
     lp: 'writable',
     throttle: 'writable',
 
+    Assets: 'writable',
     Tilesets: 'writable',
     Characters: 'writable',
     Entities: 'writable',
@@ -186,6 +187,9 @@ module.exports = {
 
     addToInventory: 'writable',
     removeFromInventory: 'writable',
+
+    rewriteSpritesheet: 'writable',
+    spritesheetValid: 'writable',
 
     messagesModule: 'writable',
     nearUserIdsToString: 'writable',
