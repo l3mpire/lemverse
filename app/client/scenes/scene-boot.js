@@ -92,7 +92,7 @@ BootScene = new Phaser.Class({
 
     if (!imageLoadedCount) onComplete(images);
     else {
-      this.load.once(`complete`, () => onComplete(images));
+      this.load.once(Phaser.Loader.Events.COMPLETE, () => onComplete(images));
       this.load.start();
     }
   },
@@ -106,7 +106,7 @@ BootScene = new Phaser.Class({
     });
 
     if (assetsLoadedCount) {
-      this.load.once(`complete`, () => onComplete(assets));
+      this.load.once(Phaser.Loader.Events.COMPLETE, () => onComplete(assets));
       this.load.start();
     }
   },
