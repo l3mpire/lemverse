@@ -45,8 +45,8 @@ BootScene = new Phaser.Class({
       if (!character.category) return;
 
       const { animations } = formats[`w-${character.width}`];
-      _.each(animations, (animation, animationName) => {
-        _.each(animation, (direction, key) => {
+      Object.entries(animations).forEach(([animationName, animation]) => {
+        Object.entries(animation).forEach(([key, direction]) => {
           this.anims.create({
             key: `${animationName}-${key}-${character._id}`,
             frames: this.anims.generateFrameNumbers(character.fileId, { frames: direction.frames }),
@@ -64,17 +64,17 @@ BootScene = new Phaser.Class({
       if (!character.category) return;
 
       const { animations } = formats[`w-${character.width}`];
-      _.each(animations, (animation, animationName) => {
-        _.each(animation, (direction, key) => {
+      Object.entries(animations).forEach(([animationName, animation]) => {
+        Object.entries(animation).forEach(([key]) => {
           this.anims.remove(`${animationName}-${key}-${character._id}`);
         });
       });
     });
   },
 
-  loadImagesAtRuntime(images, onComplete) {
+  loadImagesAtRuntime(images, onComplete = () => {}) {
     let imageLoadedCount = 0;
-    _.each(images, image => {
+    images.forEach(image => {
       const key = image.fileId || image.key;
       if (this.textures.exists(key)) return;
 
