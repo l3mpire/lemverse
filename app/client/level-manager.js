@@ -180,12 +180,11 @@ levelManager = {
 
     const tileset = this.map.getTileset(newTileset._id);
     if (newTileset.fileId !== oldTileset.fileId) {
-      this.scene.load.image(newTileset.fileId, `/api/files/${newTileset.fileId}`);
-      this.scene.load.once(Phaser.Loader.Events.COMPLETE, () => {
+      const bootScene = game.scene.getScene('BootScene');
+      bootScene.loadImagesAtRuntime([newTileset], () => {
         this.scene.textures.remove(oldTileset.fileId);
         tileset.setImage(this.scene.textures.get(newTileset.fileId));
       });
-      this.scene.load.start();
     }
 
     tileset.tileProperties = newTileset.tiles;
