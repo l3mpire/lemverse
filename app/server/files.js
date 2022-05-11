@@ -107,10 +107,41 @@ const filesAfterUploadVoiceRecorder = (user, fileRef) => {
   log('filesAfterUploadVoiceRecorder: done', { userId: user._id });
 };
 
+const filesAfterUploadAsset = async (user, fileRef) => {
+  log('filesAfterUploadAsset: start', { userId: user._id, fileRef });
+
+  if (fileRef.extension === 'json') {
+    rewriteSpritesheet(fileRef);
+
+    const existingAsset = Assets.findOne({ fileName: fileRef.name });
+    if (existingAsset) {
+      log('filesAfterUploadAsset: updating', { userId: user._id, assetId: existingAsset._id, fileId: fileRef._id });
+      Assets.update(existingAsset._id, { $set: { fileId: fileRef._id, updatedAt: new Date() } });
+    } else {
+      log('filesAfterUploadAsset: creating new asset', { userId: user._id, fileId: fileRef._id });
+      const assetId = Assets.id();
+      Assets.insert({
+        _id: assetId,
+        createdAt: new Date(),
+        createdBy: user._id,
+        fileId: fileRef._id,
+        fileName: fileRef.name,
+        type: 'spritesheet',
+      });
+      log('filesAfterUploadAsset: created', { userId: user._id, assetId });
+    }
+  }
+
+  log('filesAfterUploadAsset: done', { userId: user._id });
+};
+
 Files.onBeforeUpload = function (file) {
   if (this.eof) {
     const { mime } = Promise.await(FileType.fromFile(file.path)) || file; // fallback to default mime for non binary-based file
-    return fileOnBeforeUpload(file, mime);
+
+    const fileValid = fileOnBeforeUpload(file, mime);
+    if (!fileValid) return fileValid;
+    if (file.meta?.source === 'editor-assets' && mime === 'application/json') return Promise.await(spritesheetValid(file));
   }
 
   return true;
@@ -123,6 +154,7 @@ Files.on('afterUpload', fileRef => {
   if (fileRef.meta?.source === 'editor-tilesets') filesAfterUploadEditorTileset(user, fileRef);
   else if (fileRef.meta?.source === 'editor-characters') filesAfterUploadEditorCharacter(user, fileRef);
   else if (fileRef.meta?.source === 'voice-recorder') filesAfterUploadVoiceRecorder(user, fileRef);
+  else if (fileRef.meta?.source === 'editor-assets') filesAfterUploadAsset(user, fileRef);
 });
 
 Meteor.publish('files', fileIds => {

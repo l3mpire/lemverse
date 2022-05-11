@@ -121,5 +121,10 @@ fileOnBeforeUpload = (file, mime) => {
     return true;
   }
 
+  if (meta.source === 'editor-assets') {
+    if (!['image/png', 'image/jpeg', 'application/json'].includes(mime)) return `Only jpeg, png and json files can be uploaded`;
+    return true;
+  }
+
   return 'Source of upload not set';
 };
