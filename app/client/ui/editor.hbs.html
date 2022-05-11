@@ -6,8 +6,10 @@
     <div class='sub-editor'>
       {{#if eq (Session 'editorMenu') 'characters'}}
         {{> editorCharacters}}
-      {{else}}
+      {{else if eq (Session 'editorMenu') 'tilesets'}}
         {{> editorTilesets}}
+      {{else}}
+        {{> editorAssets}}
       {{/if}}
     </div>
   </div>
@@ -28,9 +30,13 @@
           <p class="nav-item-label">Characters</p>
         </a>
       </li>
+      <li class="nav-item {{#if eq (Session 'editorMenu') 'assets'}}selected{{/if}}">
+        <a href='#' data-type='assets' class="js-menu-editor">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M21,17H7V3H21M21,1H7A2,2 0 0,0 5,3V17A2,2 0 0,0 7,19H21A2,2 0 0,0 23,17V3A2,2 0 0,0 21,1M3,5H1V21A2,2 0 0,0 3,23H19V21H3M15.96,10.29L13.21,13.83L11.25,11.47L8.5,15H19.5L15.96,10.29Z" /></svg>
+          <p class="nav-item-label">Assets</p>
+        </a>
+      </li>
     </ul>
   </navbar>
-  {{!-- <div class=''>Mnu1</div> --}}
-  {{!-- <div class=''>Mnu2</div> --}}
 </template>
 

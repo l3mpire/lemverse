@@ -1,0 +1,36 @@
+@import "../_variables";
+
+.editor-assets {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  height: 100vh;
+
+  .drop-zone {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    .drop-title {
+      color: $lem-color-1;
+    }
+
+    .drop-info {
+      color: $gray500;
+      font-weight: bold;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+}
