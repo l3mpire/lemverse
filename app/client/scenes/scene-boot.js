@@ -100,8 +100,7 @@ BootScene = new Phaser.Class({
   loadAssetsAtRuntime(assets, onComplete = () => {}) {
     let assetsLoadedCount = 0;
     assets.forEach(asset => {
-      const key = asset.fileId;
-      if (asset.type === 'spritesheet') this.load.multiatlas(key, `${filesRoute}/${key}`, filesRoute);
+      if (asset.type === 'spritesheet') this.load.multiatlas(asset._id, `${filesRoute}/${asset.fileId}`, filesRoute);
       assetsLoadedCount++;
     });
 
