@@ -1,5 +1,8 @@
 import Phaser from 'phaser';
 
+const assetsRoute = 'assets/images/';
+const filesRoute = Meteor.settings.public.files.route;
+
 BootScene = new Phaser.Class({
   Extends: Phaser.Scene,
 
@@ -8,14 +11,14 @@ BootScene = new Phaser.Class({
   },
 
   preload() {
-    this.load.image('circle', 'assets/images/circle_white.png');
-    this.load.image('pixel', 'assets/images/pixel.png');
+    this.load.image('circle', `${assetsRoute}/circle_white.png`);
+    this.load.image('pixel', `${assetsRoute}/pixel.png`);
 
-    Tilesets.find().forEach(tileset => this.load.image(tileset.fileId, `/api/files/${tileset.fileId}`));
+    Tilesets.find().forEach(tileset => this.load.image(tileset.fileId, `${filesRoute}/${tileset.fileId}`));
 
     const { frameHeight, frameWidth } = Meteor.settings.public.assets.character;
     Characters.find().forEach(character => {
-      this.load.spritesheet(character.fileId, `/api/files/${character.fileId}`, {
+      this.load.spritesheet(character.fileId, `${filesRoute}/${character.fileId}`, {
         frameWidth: frameWidth || 16,
         frameHeight: frameHeight || 32,
       });
@@ -75,7 +78,7 @@ BootScene = new Phaser.Class({
       const key = image.fileId || image.key;
       if (this.textures.exists(key)) return;
 
-      const path = image.path || `/api/files/${image.fileId}`;
+      const path = image.path || `${filesRoute}/${image.fileId}`;
 
       if (image.frameWidth || image.frameHeight) {
         this.load.spritesheet(key, path, {
@@ -98,7 +101,7 @@ BootScene = new Phaser.Class({
     let assetsLoadedCount = 0;
     assets.forEach(asset => {
       const key = asset.fileId;
-      if (asset.type === 'spritesheet') this.load.multiatlas(key, `/api/files/${key}`, `/api/files/`);
+      if (asset.type === 'spritesheet') this.load.multiatlas(key, `${filesRoute}/${key}`, filesRoute);
       assetsLoadedCount++;
     });
 

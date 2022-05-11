@@ -56,8 +56,8 @@ Guilds = lp.collectionRegister('guilds', 'gui', [], {
 
 Files = new FilesCollection({
   collectionName: 'Files',
-  storagePath: '/var/tmp/lemverse',
-  downloadRoute: '/api/files',
+  storagePath: Meteor.settings.public.files.storagePath,
+  downloadRoute: Meteor.settings.public.files.route,
   public: true,
   allowClientCode: false,
   // debug: true,

@@ -153,6 +153,10 @@ services:
                             "terms": "",
                             "cookies": "",
                             "privacy": ""
+                        },
+                        "files": {
+                            "storagePath": "/var/tmp/lemverse",
+                            "route": "/api/files"
                         }
                     },
                     "defaultLevelId": "lvl_iLOVEaLOTlemverse",
