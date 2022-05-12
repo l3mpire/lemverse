@@ -1,9 +1,9 @@
-const fs = require('fs/promises');
+import * as fs from 'fs';
 
 spritesheetValid = async fileRef => {
   log('spritesheetValid: start', { fileRef });
 
-  const rawData = await fs.readFile(fileRef.path, { encoding: 'utf8' });
+  const rawData = await fs.readFileSync(fileRef.path, { encoding: 'utf8' });
   const data = JSON.parse(rawData);
   if (!data.textures?.length) throw new Meteor.Error('invalid-spritesheet', 'invalid sprite sheet format');
 
@@ -25,7 +25,7 @@ rewriteSpritesheet = async fileRef => {
   log('rewriteSpritesheet: start', { fileRef });
   if (!spritesheetValid(fileRef)) throw new Meteor.Error('invalid-spritesheet', 'invalid sprite sheet format');
 
-  const rawData = await fs.readFile(fileRef.path, { encoding: 'utf8' });
+  const rawData = await fs.readFileSync(fileRef.path, { encoding: 'utf8' });
   const data = JSON.parse(rawData);
 
   // replace texture packer file name with files collection identifier
@@ -36,13 +36,68 @@ rewriteSpritesheet = async fileRef => {
     data.textures[i].image = asset._id;
   }
 
-  fs.writeFile(fileRef.path, JSON.stringify(data), err => {
-    if (err) throw new Meteor.Error('spritesheet-rewrite', err);
-  });
+  try {
+    await fs.writeFileSync(fileRef.path, JSON.stringify(data));
+  } catch (err) {
+    throw new Meteor.Error('spritesheet-rewrite', err);
+  }
 
   log('rewriteSpritesheet: done');
 
   return true;
+};
+
+importSpritesheetFramesAsEntities = async fileRef => {
+  log('importSpritesheetFramesAsEntities: start', { fileRef });
+  if (!spritesheetValid(fileRef)) throw new Meteor.Error('invalid-spritesheet', 'invalid sprite sheet format');
+
+  const asset = Assets.findOne({ fileId: fileRef._id });
+  if (!asset) throw new Meteor.Error('invalid-asset', 'asset is missing');
+
+  const rawData = await fs.readFileSync(fileRef.path, { encoding: 'utf8' });
+  const data = JSON.parse(rawData);
+
+  // replace texture packer file name with files collection identifier
+  data.textures.forEach(texture => {
+    texture.frames.forEach(frame => {
+      const name = frame.filename.split('/').pop();
+
+      const { x, y, w, h } = frame.frame;
+      const thumbnail = {
+        fileId: texture.image,
+        rect: [x, y, w, h],
+      };
+
+      const existingEntity = Entities.findOne({ name, 'gameObject.sprite.assetId': asset._id, prefab: true });
+      if (existingEntity) {
+        log('importSpritesheetFramesAsEntities: updating entity', { name, assetId: asset._id });
+        Entities.update(existingEntity._id, { $set: { thumbnail } });
+
+        return;
+      }
+
+      const entityId = Entities.id();
+      Entities.insert({
+        _id: entityId,
+        createdBy: 'import-script',
+        createdAt: new Date(),
+        actionType: entityActionType.none,
+        thumbnail,
+        gameObject: {
+          sprite: {
+            key: frame.filename,
+            assetId: asset._id,
+          },
+        },
+        name,
+        prefab: true,
+      });
+
+      log('importSpritesheetFramesAsEntities: created new entity prefab', { entityId, name, assetId: asset._id });
+    });
+  });
+
+  log('importSpritesheetFramesAsEntities: done');
 };
 
 Meteor.publish('assets', function () {

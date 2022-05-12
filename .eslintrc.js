@@ -188,6 +188,7 @@ module.exports = {
     addToInventory: 'writable',
     removeFromInventory: 'writable',
 
+    importSpritesheetFramesAsEntities: 'writable',
     rewriteSpritesheet: 'writable',
     spritesheetValid: 'writable',
 
