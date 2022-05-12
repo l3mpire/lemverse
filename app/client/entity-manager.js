@@ -268,19 +268,22 @@ entityManager = {
 
         let mainSprite;
         if (entity.gameObject.sprite) {
-          mainSprite = this.scene.add.sprite(0, 0, entity.gameObject.sprite.key);
+          const { sprite } = entity.gameObject;
+          if (sprite.assetId) mainSprite = this.scene.add.sprite(0, 0, sprite.assetId, sprite.key);
+          else mainSprite = this.scene.add.sprite(0, 0, sprite.path);
+
           mainSprite.name = 'main-sprite';
-          mainSprite.setScale(entity.gameObject.sprite.scale || 1);
+          mainSprite.setScale(sprite.scale || 1);
           gameObject.add(mainSprite);
 
           // play spritesheet animation
-          if (entity.gameObject.sprite.framerate) {
+          if (sprite.framerate) {
             const animation = this.scene.anims.create({
-              key: entity.gameObject.sprite.key,
-              frames: this.scene.anims.generateFrameNumbers(entity.gameObject.sprite.key),
-              frameRate: entity.gameObject.sprite.framerate || 16,
+              key: sprite.path,
+              frames: this.scene.anims.generateFrameNumbers(sprite.path),
+              frameRate: sprite.framerate || 16,
             });
-            if (animation.frames.length) mainSprite.play({ key: entity.gameObject.sprite.key, repeat: -1 });
+            if (animation.frames.length) mainSprite.play({ key: sprite.path, repeat: -1 });
           }
         }
 
