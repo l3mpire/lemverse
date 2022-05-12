@@ -1,3 +1,5 @@
+const filesRoute = Meteor.settings.public.files.route;
+const thumbnailMaxSize = 35;
 const closeInterface = () => Session.set('selectedEntityId', undefined);
 const prefabEntities = () => Entities.find({ prefab: true }).fetch();
 
@@ -12,7 +14,20 @@ Template.entityToolbox.helpers({
 
 Template.entityToolboxEntry.helpers({
   name() { return this.name || 'Entity'; },
-  thumbnail() { return this.thumbnail || this.gameObject?.sprite?.path; },
+  thumbnail() {
+    if (!this.thumbnail) {
+      const url = this.gameObject?.sprite?.path;
+      return `background-image: url("${url}"); background-size: contain; width: 100%; height: 100%;`;
+    }
+
+    const [x, y, w, h] = this.thumbnail.rect;
+    const url = `${filesRoute}/${this.thumbnail.fileId}`;
+
+    const maxSize = Math.max(w, h);
+    const ratio = thumbnailMaxSize / maxSize;
+
+    return `background-image: url("./${url}"); background-position: -${x}px -${y}px; width: ${w}px; height: ${h}px; transform: scale(${ratio});`;
+  },
 });
 
 Template.entityToolboxEntry.events({

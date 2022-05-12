@@ -4,36 +4,44 @@
   padding: 10px;
 
   .list {
-    display: flex;
-    flex-direction: row;
-    column-gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 70px);
+    gap: 10px;
     overflow-x: scroll;
     max-width: 100%;
     list-style-type: none;
+    margin-right: 200px;
+    overflow: scroll;
+    max-height: 250px;
 
     li.js-entity-entry {
-      display: flex;
-      justify-content: center;
-      padding: 10px;
-      height: 100px;
-      min-width: 100px;
-      width: 100px;
-      overflow: hidden;
+      padding: 5px;
+      height: 70px;
+      width: 70px;
       background-color: $main-color;
       border-radius: $radius;
       color: $main-text-color;
       flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
 
       &:hover {
         cursor: pointer;
         background-color: lighten($main-color, 10%);
       }
 
-      .thumbnail {
-        flex-grow: 1;
-        width: 90%;
-        height: 90%;
-        object-fit: scale-down;
+      .thumbnail { 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+
+        * {
+          image-rendering: pixelated;
+          background-position: center;
+          background-repeat: no-repeat;
+        }
       }
 
       .name {
