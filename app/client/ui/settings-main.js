@@ -41,6 +41,12 @@ Template.settingsMain.events({
     const url = `${window.location.protocol}//${window.location.host}${path}`;
     navigator.clipboard.writeText(url).then(() => lp.notif.success('✂️ Invitation copied to your clipboard'));
   },
+  'click .js-logout'(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    closeModal();
+    Meteor.logout();
+  },
 });
 
 Template.settingsMain.events({
