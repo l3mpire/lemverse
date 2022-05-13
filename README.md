@@ -418,6 +418,63 @@ Please note, that as stated in section `Deploy in production`, there is an addit
     },
 
     "packages": {
+      // configure OAuth external authentication services
+      "service-configuration": {
+         // for pure OAuth2 identity provider
+        "custom": {
+          "buttonBackgroundColor": "#ea4335",
+          "buttonTextColor": "white",
+          "clientId": "xxxxxxx",
+          "type": "oauth",
+          "custom": true,
+          "secret": "xxxxxxx",
+          "authUrl": "https://auth.example.org/oauth/authorize",
+          "accessTokenUrl": "https://auth.example.org/oauth/access_token",
+          "identityUrl": "https://auth.example.org/oauth/userinfo",
+          "serverURL": "http://localhost:9000/",
+          "responseType": "code",
+          "loginStyle": "redirect",
+          "scope": "openid",
+          "identity": [
+            "firstName",
+            "lastName"
+          ]
+        },
+        // Social login with preconfigured oauth providers
+        "twitter": {
+          "consumerKey": "xxxxxxx",
+          "secret": "xxxxxxx",
+          "type": "oauth",
+          "custom": false,
+          "loginStyle": "redirect"
+        },
+        "github": {
+          "clientId": "xxxxxxx",
+          "buttonBackgroundColor": "#5880ff",
+          "buttonTextColor": "white",
+          "type": "oauth",
+          "custom": false,
+          "secret": "xxxxxxx"
+        },
+        "google": {
+          "clientId": "xxxxxxx",
+          "buttonBackgroundColor": "#5880ff",
+          "buttonTextColor": "white",
+          "type": "oauth",
+          "custom": false,
+          "secret": "xxxxxxx",
+          "loginStyle": "redirect"
+        },
+        "facebook": {
+          "clientId": "xxxxxxx",
+          "buttonBackgroundColor": "#5880ff",
+          "buttonTextColor": "white",
+          "type": "oauth",
+          "custom": false,
+          "secret": "xxxxxxx",
+          "loginStyle": "redirect"
+        }
+      },
       "email": {
         "service": "Mailgun",
         "user": "postmaster@meteor.com",
