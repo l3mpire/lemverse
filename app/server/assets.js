@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 
-spritesheetValid = async fileRef => {
+spritesheetValid = fileRef => {
   log('spritesheetValid: start', { fileRef });
 
-  const rawData = await fs.readFileSync(fileRef.path, { encoding: 'utf8' });
+  const rawData = fs.readFileSync(fileRef.path, { encoding: 'utf8' });
   const data = JSON.parse(rawData);
   if (!data.textures?.length) throw new Meteor.Error('invalid-spritesheet', 'invalid sprite sheet format');
 
@@ -21,11 +21,10 @@ spritesheetValid = async fileRef => {
   return true;
 };
 
-rewriteSpritesheet = async fileRef => {
+rewriteSpritesheet = fileRef => {
   log('rewriteSpritesheet: start', { fileRef });
-  if (!spritesheetValid(fileRef)) throw new Meteor.Error('invalid-spritesheet', 'invalid sprite sheet format');
 
-  const rawData = await fs.readFileSync(fileRef.path, { encoding: 'utf8' });
+  const rawData = fs.readFileSync(fileRef.path, { encoding: 'utf8' });
   const data = JSON.parse(rawData);
 
   // replace texture packer file name with files collection identifier
@@ -37,7 +36,7 @@ rewriteSpritesheet = async fileRef => {
   }
 
   try {
-    await fs.writeFileSync(fileRef.path, JSON.stringify(data));
+    fs.writeFileSync(fileRef.path, JSON.stringify(data));
   } catch (err) {
     throw new Meteor.Error('spritesheet-rewrite', err);
   }
@@ -47,14 +46,13 @@ rewriteSpritesheet = async fileRef => {
   return true;
 };
 
-importSpritesheetFramesAsEntities = async fileRef => {
+importSpritesheetFramesAsEntities = fileRef => {
   log('importSpritesheetFramesAsEntities: start', { fileRef });
-  if (!spritesheetValid(fileRef)) throw new Meteor.Error('invalid-spritesheet', 'invalid sprite sheet format');
 
   const asset = Assets.findOne({ fileId: fileRef._id });
   if (!asset) throw new Meteor.Error('invalid-asset', 'asset is missing');
 
-  const rawData = await fs.readFileSync(fileRef.path, { encoding: 'utf8' });
+  const rawData = fs.readFileSync(fileRef.path, { encoding: 'utf8' });
   const data = JSON.parse(rawData);
 
   // replace texture packer file name with files collection identifier
