@@ -111,8 +111,6 @@ const filesAfterUploadAsset = async (user, fileRef) => {
   log('filesAfterUploadAsset: start', { userId: user._id, fileRef });
 
   if (fileRef.extension === 'json') {
-    rewriteSpritesheet(fileRef);
-
     const existingAsset = Assets.findOne({ fileName: fileRef.name });
     if (existingAsset) {
       log('filesAfterUploadAsset: updating', { userId: user._id, assetId: existingAsset._id, fileId: fileRef._id });
@@ -130,6 +128,9 @@ const filesAfterUploadAsset = async (user, fileRef) => {
       });
       log('filesAfterUploadAsset: created', { userId: user._id, assetId });
     }
+
+    await rewriteSpritesheet(fileRef);
+    await importSpritesheetFramesAsEntities(fileRef);
   }
 
   log('filesAfterUploadAsset: done', { userId: user._id });
