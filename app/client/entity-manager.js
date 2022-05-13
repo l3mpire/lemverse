@@ -258,6 +258,7 @@ entityManager = {
           .setData('id', entity._id)
           .setData('actionType', entity.actionType)
           .setDepth(entity.y)
+          .setScale(entity.scale?.x || 1, entity.scale?.y || 1)
           .on('pointerdown', onPointerDown)
           .on('drag', onDrag)
           .on('dragend', onDragEnd);
@@ -270,20 +271,19 @@ entityManager = {
         if (entity.gameObject.sprite) {
           const { sprite } = entity.gameObject;
           if (sprite.assetId) mainSprite = this.scene.add.sprite(0, 0, sprite.assetId, sprite.key);
-          else mainSprite = this.scene.add.sprite(0, 0, sprite.path);
+          else mainSprite = this.scene.add.sprite(0, 0, sprite.key);
 
           mainSprite.name = 'main-sprite';
-          mainSprite.setScale(sprite.scale || 1);
           gameObject.add(mainSprite);
 
           // play spritesheet animation
           if (sprite.framerate) {
             const animation = this.scene.anims.create({
-              key: sprite.path,
-              frames: this.scene.anims.generateFrameNumbers(sprite.path),
+              key: sprite.key,
+              frames: this.scene.anims.generateFrameNumbers(sprite.key),
               frameRate: sprite.framerate || 16,
             });
-            if (animation.frames.length) mainSprite.play({ key: sprite.path, repeat: -1 });
+            if (animation.frames.length) mainSprite.play({ key: sprite.key, repeat: -1 });
           }
         }
 
