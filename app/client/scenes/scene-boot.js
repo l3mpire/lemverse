@@ -75,7 +75,7 @@ BootScene = new Phaser.Class({
   loadImagesAtRuntime(images, onComplete = () => {}) {
     let imageLoadedCount = 0;
     images.forEach(image => {
-      const key = image.fileId || image.path;
+      const key = image.fileId || image.key;
       if (!key || this.textures.exists(key)) return;
 
       const path = image.path || `${filesRoute}/${image.fileId}`;
