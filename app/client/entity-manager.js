@@ -84,7 +84,11 @@ entityManager = {
     const entityInstance = this.entities[newEntity._id];
     if (!entityInstance) return;
 
-    entityInstance.setPosition(newEntity.x, newEntity.y);
+    entityInstance
+      .setPosition(newEntity.x, newEntity.y)
+      .setDepth(newEntity.y)
+      .setScale(newEntity.scale?.x || 1, newEntity.scale?.y || 1);
+
     if (newEntity.state !== oldEntity.state) this.updateEntityFromState(newEntity, newEntity.state);
 
     window.dispatchEvent(new CustomEvent(eventTypes.onEntityUpdated, { detail: { entity: newEntity } }));

@@ -2,6 +2,7 @@ const filesRoute = Meteor.settings.public.files.route;
 const thumbnailMaxSize = 35;
 const closeInterface = () => Session.set('selectedEntityId', undefined);
 const prefabEntities = () => Entities.find({ prefab: true }).fetch();
+const selectedEntity = () => Entities.findOne(Session.get('selectedEntityId'));
 
 Template.entityToolbox.onRendered(function () {
   this.subscribe('entityPrefabs');
@@ -35,7 +36,8 @@ Template.entityToolboxEntry.events({
 });
 
 Template.entityEditor.helpers({
-  entity() { return Entities.findOne(Session.get('selectedEntityId')); },
+  flipped() { return selectedEntity()?.scale?.x < 0; },
+  entity() { return selectedEntity(); },
 });
 
 Template.entityEditor.events({
@@ -44,6 +46,14 @@ Template.entityEditor.events({
       Entities.remove(Session.get('selectedEntityId'));
       closeInterface();
     }, null);
+  },
+  'click #entity-flip'(e) {
+    const entity = selectedEntity();
+    if (!entity) return;
+
+    const scaleX = Math.abs(entity.scale?.x || 1);
+    const newScaleX = e.currentTarget.checked ? -scaleX : scaleX;
+    Entities.update(entity._id, { $set: { scale: { x: e.currentTarget.checked ? -scaleX : newScaleX } } });
   },
   'click .js-close-entity-editor'() { closeInterface(); },
 });
