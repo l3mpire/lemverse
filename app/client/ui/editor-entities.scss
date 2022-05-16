@@ -25,7 +25,10 @@
           width: 35px;
           height: 35px;
           image-rendering: pixelated;
-          background-repeat: no-repeat;
+
+          > div {
+            background-repeat: no-repeat;
+          }
         }
 
         > .entity-label {
