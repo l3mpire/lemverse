@@ -279,7 +279,11 @@ userStreams = {
 
   refreshVideoElementAvatar(videoElement) {
     if (!videoElement) return;
-    videoElement.parentElement.dataset.avatar = generateRandomAvatarURLForUser(Meteor.user());
+
+    const user = Meteor.user();
+    if (!user) return;
+
+    videoElement.parentElement.dataset.avatar = generateRandomAvatarURLForUser(user);
     if (this.streams.main.instance) videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
   },
 
