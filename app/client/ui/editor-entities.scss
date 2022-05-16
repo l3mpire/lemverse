@@ -1,0 +1,27 @@
+.editor-entities {
+  padding: 10px;
+
+  .entity-list {
+    max-height: 100%;
+    width: 400px;
+    overflow-y: scroll;
+    
+    ul {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+
+      li {
+        display: flex;
+        flex-direction: row;
+
+        > :first-child {
+          flex-grow: 1;
+        } 
+      }
+    }
+  }
+}

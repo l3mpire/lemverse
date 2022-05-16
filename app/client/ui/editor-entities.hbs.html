@@ -1,0 +1,18 @@
+<template name="editorEntity">
+  <li>
+    <span>{{label}}</span>
+    <input type="checkbox" checked="{{validated}}" class="validated">
+  </li>
+</template>
+
+<template name="editorEntities">
+  <div class="editor-entities">
+    <div class="entity-list">
+      <ul>
+        {{#each entities}}
+          {{> editorEntity}}
+        {{/each}}
+      </ul>
+    </div>
+  </div>
+</template>
