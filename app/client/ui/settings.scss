@@ -41,6 +41,10 @@ div.settings {
     }
   }
 
+  .highlight {
+    background-color: lighten($highlight-color, 5%);
+  }
+
   video {
     display: block;
     min-height: 200px;
@@ -81,11 +85,5 @@ div.settings {
       padding-bottom: 10px;
       font-size: 1rem;
     }
-
-    .button {
-      margin-top: 15px;
-      margin-bottom: 15px;
-    }
   }
-
 }
