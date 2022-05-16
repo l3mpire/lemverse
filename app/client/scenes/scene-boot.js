@@ -78,7 +78,11 @@ BootScene = new Phaser.Class({
       const key = image.fileId || image.key;
       if (!key || this.textures.exists(key)) return;
 
-      const path = image.path || `${filesRoute}/${image.fileId}`;
+      let { path } = image;
+      if (!path) {
+        if (!image.fileId) return;
+        path = `${filesRoute}/${image.fileId}`;
+      }
 
       if (image.frameWidth || image.frameHeight) {
         this.load.spritesheet(key, path, {
