@@ -1,6 +1,9 @@
 <template name="editorEntity">
   <li>
-    <span>{{label}}</span>
+    <div class="thumbnail">
+      <div class="thumbnail-content" style="{{thumbnail}}"></div>
+    </div>
+    <input type="text" value="{{label}}" class="entity-label">
     <input type="checkbox" checked="{{validated}}" class="validated">
   </li>
 </template>
