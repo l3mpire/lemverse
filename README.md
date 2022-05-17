@@ -409,9 +409,9 @@ Please note, that as stated in section `Deploy in production`, there is an addit
     },
 
     "packages": {
-      // configure OAuth external authentication services
+      // configure external authentication services
       "service-configuration": {
-         // for pure OAuth2 identity provider
+         // for pure OAuth identity provider
         "custom": {
           "buttonBackgroundColor": "#ea4335",
           "buttonTextColor": "white",
