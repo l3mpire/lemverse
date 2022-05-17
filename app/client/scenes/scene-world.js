@@ -71,6 +71,7 @@ WorldScene = new Phaser.Class({
       const zoom = Math.min(Math.max(this.cameras.main.zoom + (deltaY / zoomConfig.delta), zoomConfig.min), zoomConfig.max);
       const roundedZoom = Math.round(zoom * 1000) / 1000;
       this.cameras.main.setZoom(roundedZoom);
+      levelManager.markCullingAsDirty();
     });
 
     if (window.matchMedia('(pointer: coarse)').matches) {
@@ -148,6 +149,7 @@ WorldScene = new Phaser.Class({
 
   resetZoom() {
     this.cameras.main.setZoom(zoomConfig.default);
+    levelManager.markCullingAsDirty();
   },
 
   sleep() {

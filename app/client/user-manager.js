@@ -42,6 +42,8 @@ savePlayer = player => {
       'profile.direction': player.direction,
     },
   });
+
+  levelManager.markCullingAsDirty();
 };
 
 const throttledSavePlayer = throttle(savePlayer, userInterpolationInterval, { leading: false });
