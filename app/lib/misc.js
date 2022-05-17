@@ -4,6 +4,8 @@ entityActionType = Object.freeze({
   pickable: 2,
 });
 
+const defaultSpawnPosition = { x: 100, y: 100 };
+
 nearestDuration = duration => {
   const message = [];
   message.push(lp.s.lpad(moment.duration(duration).asHours() | 0, 2, '0'));
@@ -18,6 +20,16 @@ userLevel = userId => {
   if (!user) return undefined;
 
   return Levels.findOne(user.profile.levelId);
+};
+
+levelSpawnPosition = levelId => {
+  const level = Levels.findOne(levelId);
+  if (!level?.spawn) return defaultSpawnPosition;
+
+  const x = +level.spawn.x;
+  const y = +level.spawn.y;
+
+  return { x: Number.isNaN(x) ? defaultSpawnPosition.x : x, y: Number.isNaN(y) ? defaultSpawnPosition.y : y };
 };
 
 isLevelOwner = userId => {

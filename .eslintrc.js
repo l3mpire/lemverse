@@ -166,6 +166,7 @@ module.exports = {
     formatURLs: 'writable',
     userAllowedInZone: 'writable',
     spawnEntityFromPrefab: 'writable',
+    levelSpawnPosition: 'writable',
 
     relativePositionToCamera: 'writable',
     updateViewport: 'writable',
