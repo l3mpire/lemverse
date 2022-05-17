@@ -8,10 +8,10 @@ const defaultTileset = { layer: defaultLayer, firstgid: 0, tileProperties: {} };
 const timeBeforeRefreshingRenderTexture = 1000;
 
 // Phaser has a culling bug, its camera.dirty flag is always false. For the moment this logic bypasses the problem, to remove later
+const layerCullingCache = {};
 function customCull(layer, camera, outputArray, renderOrder) {
-  const index = +layer.name;
+  if (!Session.get('editor') && layerCullingCache[layer.name]?.cached) return layerCullingCache[layer.name].tiles;
 
-  if (this.layers[index].visibleTilesCache?.length) return this.layers[index].visibleTilesCache;
   if (outputArray === undefined) outputArray = [];
   if (renderOrder === undefined) renderOrder = 0;
   outputArray.length = 0;
@@ -20,7 +20,7 @@ function customCull(layer, camera, outputArray, renderOrder) {
   const bounds = Phaser.Tilemaps.Components.CullBounds(layer, camera);
   // eslint-disable-next-line new-cap
   Phaser.Tilemaps.Components.RunCull(layer, bounds, renderOrder, outputArray);
-  this.layers[index].visibleTilesCache = outputArray;
+  layerCullingCache[layer.name] = { cached: true, tiles: outputArray };
 
   return outputArray;
 }
@@ -75,9 +75,7 @@ levelManager = {
   },
 
   markCullingAsDirty() {
-    for (let i = 0; i < this.layers.length; i++) {
-      this.layers[i].visibleTilesCache = [];
-    }
+    Object.keys(layerCullingCache).forEach(key => { layerCullingCache[key].cached = false; });
   },
 
   update() {
@@ -116,12 +114,14 @@ levelManager = {
     Array.from({ length: defaultLayerCount }, (_, i) => {
       const layer = this.map.createBlankLayer(`${i}`);
       layer.setCullPadding(4, 4);
-      if (lp.isLemverseBeta('custom-culling')) layer.cullCallback = customCull.bind(levelManager);
+      if (lp.isLemverseBeta('custom-culling')) layer.cullCallback = customCull;
       if (defaultLayerDepth[i]) layer.setDepth(defaultLayerDepth[i]);
       this.layers.push(layer);
 
       return i;
     });
+
+    this.markCullingAsDirty();
   },
 
   destroyMapLayers() {
