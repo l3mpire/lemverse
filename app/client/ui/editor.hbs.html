@@ -8,8 +8,10 @@
         {{> editorCharacters}}
       {{else if eq (Session 'editorMenu') 'tilesets'}}
         {{> editorTilesets}}
-      {{else}}
+      {{else if eq (Session 'editorMenu') 'assets'}}
         {{> editorAssets}}
+      {{else}}
+        {{> editorEntities}}
       {{/if}}
     </div>
   </div>
@@ -34,6 +36,12 @@
         <a href='#' data-type='assets' class="js-menu-editor">
           <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M21,17H7V3H21M21,1H7A2,2 0 0,0 5,3V17A2,2 0 0,0 7,19H21A2,2 0 0,0 23,17V3A2,2 0 0,0 21,1M3,5H1V21A2,2 0 0,0 3,23H19V21H3M15.96,10.29L13.21,13.83L11.25,11.47L8.5,15H19.5L15.96,10.29Z" /></svg>
           <p class="nav-item-label">Assets</p>
+        </a>
+      </li>
+      <li class="nav-item {{#if eq (Session 'editorMenu') 'entities'}}selected{{/if}}">
+        <a href='#' data-type='entities' class="js-menu-editor">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"> <path fill="currentColor" d="M15,7H20.5L15,1.5V7M8,0H16L22,6V18A2,2 0 0,1 20,20H8C6.89,20 6,19.1 6,18V2A2,2 0 0,1 8,0M4,4V22H20V24H4A2,2 0 0,1 2,22V4H4Z" /></svg>
+          <p class="nav-item-label">Entities</p>
         </a>
       </li>
     </ul>

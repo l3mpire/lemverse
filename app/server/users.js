@@ -28,9 +28,9 @@ Accounts.onLogin(param => {
 
   log('onLogin: start', { userId: user._id, ip: param.connection?.httpHeaders?.['x-forwarded-for'], userAgent: param.connection?.httpHeaders?.['user-agent'], languages: param.connection?.httpHeaders?.['accept-language'] });
 
-  const currentLevel = Levels.findOne(Meteor.settings.defaultLevelId);
-  if (currentLevel?.spawn && !user.profile?.x) {
-    Meteor.users.update(user._id, { $set: { 'profile.x': currentLevel.spawn.x, 'profile.y': currentLevel.spawn.y } });
+  if (!user.profile.x) {
+    const spawnPosition = levelSpawnPosition(Meteor.settings.defaultLevelId);
+    Meteor.users.update(user._id, { $set: { 'profile.x': spawnPosition.x, 'profile.y': spawnPosition.y } });
   }
 
   if (user.profile.guest) return;
@@ -137,7 +137,10 @@ Meteor.users.find({ 'status.online': true }).observeChanges({
 
     const levelId = user.profile.levelId || Meteor.settings.defaultLevelId;
     const currentLevel = Levels.findOne(levelId);
-    if (currentLevel?.spawn) Meteor.users.update(user._id, { $set: { 'profile.x': currentLevel.spawn.x, 'profile.y': currentLevel.spawn.y } });
+    if (currentLevel?.spawn) {
+      const spawnPosition = levelSpawnPosition(levelId);
+      Meteor.users.update(user._id, { $set: { 'profile.x': spawnPosition.x, 'profile.y': spawnPosition.y } });
+    }
   },
   removed(id) {
     Meteor.users.update(id, { $set: { 'status.lastLogoutAt': new Date() } });

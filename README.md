@@ -141,15 +141,6 @@ To edit those information, simply click on the name of the room (bold text).
   }
 }
 ```
-### Edit spawn position
-
-To help you setting up the spawn position, you simply have to walk where your want your `explorers` to spawn and execute the following command:  
-```js
-remote(`setSpawnLevelXY()`)
-```
-
-This command is reserved for `god` only, and will update the spawn position of the current level you are in.
-
 ## Shortcuts in lemverse
 
 In lemverse you have only few but useful shortcuts!  

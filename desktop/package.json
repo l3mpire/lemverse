@@ -14,13 +14,13 @@
   "repository": "github:l3mpire/lemverse",
   "dependencies": {
     "@jitsi/electron-sdk": "^3.0.8",
-    "dotenv": "^16.0.0",
-    "electron-log": "^4.4.6",
+    "dotenv": "^16.0.1",
+    "electron-log": "^4.4.7",
     "electron-reload": "^2.0.0-alpha.1",
     "electron-updater": "^5.0.1"
   },
   "devDependencies": {
-    "electron": "^18.0.3",
+    "electron": "^18.2.3",
     "electron-builder": "^23.0.4",
     "electron-notarize": "^1.2.1"
   },

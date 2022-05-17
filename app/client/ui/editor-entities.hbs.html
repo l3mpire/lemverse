@@ -1,0 +1,21 @@
+<template name="editorEntity">
+  <li>
+    <div class="thumbnail">
+      <div class="thumbnail-content" style="{{thumbnail}}"></div>
+    </div>
+    <input type="text" value="{{label}}" class="entity-label">
+    <input type="checkbox" checked="{{validated}}" class="validated">
+  </li>
+</template>
+
+<template name="editorEntities">
+  <div class="editor-entities">
+    <div class="entity-list">
+      <ul>
+        {{#each entities}}
+          {{> editorEntity}}
+        {{/each}}
+      </ul>
+    </div>
+  </div>
+</template>

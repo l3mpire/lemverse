@@ -131,8 +131,8 @@ const filesAfterUploadAsset = async (user, fileRef) => {
       log('filesAfterUploadAsset: created', { userId: user._id, assetId });
     }
 
-    await rewriteSpritesheet(fileRef);
-    await importSpritesheetFramesAsEntities(fileRef);
+    rewriteSpritesheet(fileRef);
+    importSpritesheetFramesAsEntities(fileRef);
   }
 
   log('filesAfterUploadAsset: done', { userId: user._id });

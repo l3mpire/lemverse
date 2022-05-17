@@ -4,6 +4,8 @@ entityActionType = Object.freeze({
   pickable: 2,
 });
 
+const defaultSpawnPosition = { x: 100, y: 100 };
+
 nearestDuration = duration => {
   const message = [];
   message.push(lp.s.lpad(moment.duration(duration).asHours() | 0, 2, '0'));
@@ -18,6 +20,16 @@ userLevel = userId => {
   if (!user) return undefined;
 
   return Levels.findOne(user.profile.levelId);
+};
+
+levelSpawnPosition = levelId => {
+  const level = Levels.findOne(levelId);
+  if (!level?.spawn) return defaultSpawnPosition;
+
+  const x = +level.spawn.x;
+  const y = +level.spawn.y;
+
+  return { x: Number.isNaN(x) ? defaultSpawnPosition.x : x, y: Number.isNaN(y) ? defaultSpawnPosition.y : y };
 };
 
 isLevelOwner = userId => {
@@ -94,9 +106,13 @@ generateRandomCharacterSkin = (user, levelId) => {
 teleportUserInLevel = (levelId, userId) => {
   check([levelId, userId], [String]);
 
-  const level = Levels.findOne(levelId) || Levels.findOne(Meteor.settings.defaultLevelId);
-  const { spawn } = level;
-  Meteor.users.update(userId, { $set: { 'profile.levelId': level._id, 'profile.x': spawn?.x || 0, 'profile.y': spawn?.y || 0 } });
+  log('teleportUserInLevel: start', { levelId, userId });
+  const loadingLevelId = levelId || Meteor.settings.defaultLevelId;
+  const level = Levels.findOne(loadingLevelId);
+  if (!level) throw new Error(`teleportUserInLevel: level not found`);
+
+  const { x, y } = levelSpawnPosition(loadingLevelId);
+  Meteor.users.update(userId, { $set: { 'profile.levelId': level._id, 'profile.x': x, 'profile.y': y } });
 
   return level.name;
 };
