@@ -73,14 +73,6 @@ deleteLevel = levelId => {
   Meteor.users.update({ 'profile.levelId': levelId }, { $set: { 'profile.levelId': Meteor.settings.defaultLevelId } }, { multi: true });
 };
 
-// eslint-disable-next-line no-undef
-setSpawnLevelXY = () => {
-  const user = Meteor.user();
-  log('setSpawnLevelXY: start', { userId: user._id });
-  if (!user) return;
-  Levels.update({ _id: user.profile.levelId }, { $set: { spawn: { x: user.profile.x, y: user.profile.y } } });
-};
-
 Meteor.publish('levels', function () {
   if (!this.userId) return undefined;
 
