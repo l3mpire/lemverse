@@ -83,9 +83,13 @@ generateRandomCharacterSkin = (user, levelId) => {
 teleportUserInLevel = (levelId, userId) => {
   check([levelId, userId], [String]);
 
-  const level = Levels.findOne(levelId) || Levels.findOne(Meteor.settings.defaultLevelId);
-  const { spawn } = level;
-  Meteor.users.update(userId, { $set: { 'profile.levelId': level._id, 'profile.x': spawn?.x || 0, 'profile.y': spawn?.y || 0 } });
+  log('teleportUserInLevel: start', { levelId, userId });
+  const loadingLevelId = levelId || Meteor.settings.defaultLevelId;
+  const level = Levels.findOne(loadingLevelId);
+  if (!level) throw new Error(`teleportUserInLevel: level not found`);
+
+  const { x, y } = levelSpawnPosition(loadingLevelId);
+  Meteor.users.update(userId, { $set: { 'profile.levelId': level._id, 'profile.x': x, 'profile.y': y } });
 
   return level.name;
 };

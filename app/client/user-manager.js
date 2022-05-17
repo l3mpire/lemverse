@@ -78,6 +78,8 @@ userManager = {
 
   onSleep() {
     throttledSavePlayer.cancel();
+    this.playerWasMoving = false;
+    this.entityFollowed = undefined;
   },
 
   rename(name, color) {

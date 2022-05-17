@@ -120,6 +120,9 @@ levelManager = {
     const loadingScene = game.scene.getScene('LoadingScene');
     loadingScene.setText('');
     loadingScene.show(() => {
+      // Phaser sends the sleep event on the next frame which causes the client to overwrite the spawn position set by the server
+      userManager.onSleep();
+
       this.scene.scene.sleep();
       Meteor.call('teleportUserInLevel', levelId, (error, levelName) => {
         if (error) {
