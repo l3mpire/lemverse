@@ -56,6 +56,29 @@ isEditionAllowed = userId => {
   return false;
 };
 
+completeUserProfile = (user, email, name) => {
+  try {
+    Promise.await(Meteor.users.update(user._id, {
+      $set: {
+        emails: [{
+          address: email,
+          verified: false,
+        }],
+        profile: {
+          ...user.profile,
+          name,
+          shareAudio: true,
+          shareVideo: true,
+        },
+      },
+    }));
+  } catch (err) { throw new Meteor.Error('email-duplicate', 'Email already exists'); }
+
+  Meteor.users.update(user._id, { $unset: { 'profile.guest': true, username: true } });
+
+  return generateRandomCharacterSkin(Meteor.user(), user.profile.levelId);
+};
+
 generateRandomCharacterSkin = (user, levelId) => {
   let newProfile = { ...user.profile };
   const currentLevel = Levels.findOne(levelId);

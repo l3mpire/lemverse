@@ -37,3 +37,14 @@ ostrio:files
 accounts-guest
 lempire:lempire
 jparker:crypto-md5
+accounts-oauth
+oauth
+oauth2
+facebook-oauth
+github-oauth
+google-oauth
+twitter-oauth
+accounts-twitter
+accounts-github
+accounts-google
+accounts-facebook

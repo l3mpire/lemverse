@@ -97,25 +97,8 @@ Meteor.methods({
   convertGuestAccountToRealAccount(email, name, password) {
     if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
     check([email, name, password], [String]);
-
-    const { profile } = Meteor.user();
-    try {
-      Promise.await(Meteor.users.update(this.userId, {
-        $set: {
-          'emails.0.address': email,
-          profile: {
-            ...profile,
-            name,
-            shareAudio: true,
-            shareVideo: true,
-          },
-        },
-      }));
-    } catch (err) { throw new Meteor.Error('email-duplicate', 'Email already exists'); }
-
-    // ensures the logged user don't have guest attributes anymore
-    Meteor.users.update(this.userId, { $unset: { 'profile.guest': true, username: true } });
-    generateRandomCharacterSkin(Meteor.user(), profile.levelId);
+    const user = Meteor.user();
+    completeUserProfile(user, email, name);
     Accounts.setPassword(this.userId, password, { logout: false });
   },
   teleportUserInLevel(levelId) {
