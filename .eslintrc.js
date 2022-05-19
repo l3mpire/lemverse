@@ -176,10 +176,6 @@ module.exports = {
     sendDataToUsers: 'writable',
     sendDataToUsersInZone: 'writable',
 
-    tileGlobalIndex: 'writable',
-    tileLayer: 'writable',
-    tileProperties: 'writable',
-
     BootScene: 'writable',
     EditorScene: 'writable',
     LoadingScene: 'writable',
