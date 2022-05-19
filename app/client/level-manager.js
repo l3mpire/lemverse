@@ -1,17 +1,16 @@
 import Phaser from 'phaser';
 
 const defaultMapConfig = { width: 100, height: 100, tileWidth: 48, tileHeight: 48 };
-const defaultLayer = 2;
 const defaultLayerCount = 9;
 const defaultLayerDepth = { 6: 10000, 7: 10001, 8: 10002 };
-const defaultTileset = { layer: defaultLayer, firstgid: 0, tileProperties: {} };
+const defaultTileset = { layer: 2, firstgid: 0, tileProperties: {} };
 const timeBeforeRefreshingRenderTexture = 1000;
 
 // Phaser has a culling bug, its camera.dirty flag is always false. For the moment this logic bypasses the problem, to remove later
+const layerCullingCache = {};
 function customCull(layer, camera, outputArray, renderOrder) {
-  const index = +layer.name;
+  if (!Session.get('editor') && layerCullingCache[layer.name]?.cached) return layerCullingCache[layer.name].tiles;
 
-  if (this.layers[index].visibleTilesCache?.length) return this.layers[index].visibleTilesCache;
   if (outputArray === undefined) outputArray = [];
   if (renderOrder === undefined) renderOrder = 0;
   outputArray.length = 0;
@@ -20,7 +19,7 @@ function customCull(layer, camera, outputArray, renderOrder) {
   const bounds = Phaser.Tilemaps.Components.CullBounds(layer, camera);
   // eslint-disable-next-line new-cap
   Phaser.Tilemaps.Components.RunCull(layer, bounds, renderOrder, outputArray);
-  this.layers[index].visibleTilesCache = outputArray;
+  layerCullingCache[layer.name] = { cached: true, tiles: outputArray };
 
   return outputArray;
 }
@@ -55,29 +54,33 @@ levelManager = {
   },
 
   onDocumentAdded(tile) {
-    const layer = this.tileLayer(tile);
-    this.map.putTileAt(this.tileGlobalIndex(tile), tile.x, tile.y, false, layer);
+    const tileset = this.map.getTileset(tile.tilesetId) || defaultTileset;
+    const layer = this.tileLayer(tileset, tile.index);
+
+    this.map.putTileAt(this.tileGlobalIndex(tileset, tile.index), tile.x, tile.y, false, layer);
     window.dispatchEvent(new CustomEvent(eventTypes.onTileAdded, { detail: { tile, layer } }));
     this.mapRenderTexturesDirty = timeBeforeRefreshingRenderTexture;
   },
 
   onDocumentRemoved(tile) {
-    const layer = this.tileLayer(tile);
+    const tileset = this.map.getTileset(tile.tilesetId) || defaultTileset;
+    const layer = this.tileLayer(tileset, tile.index);
+
     this.map.removeTileAt(tile.x, tile.y, false, false, layer);
     this.mapRenderTexturesDirty = timeBeforeRefreshingRenderTexture;
   },
 
   onDocumentUpdated(newTile) {
-    const layer = this.tileLayer(newTile);
-    this.map.putTileAt(this.tileGlobalIndex(newTile), newTile.x, newTile.y, false, layer);
+    const tileset = this.map.getTileset(newTile.tilesetId) || defaultTileset;
+    const layer = this.tileLayer(tileset, newTile.index);
+
+    this.map.putTileAt(this.tileGlobalIndex(tileset, newTile.index), newTile.x, newTile.y, false, layer);
     window.dispatchEvent(new CustomEvent(eventTypes.onTileChanged, { detail: { tile: newTile, layer } }));
     this.mapRenderTexturesDirty = timeBeforeRefreshingRenderTexture;
   },
 
   markCullingAsDirty() {
-    for (let i = 0; i < this.layers.length; i++) {
-      this.layers[i].visibleTilesCache = [];
-    }
+    Object.keys(layerCullingCache).forEach(key => { layerCullingCache[key].cached = false; });
   },
 
   update() {
@@ -100,7 +103,7 @@ levelManager = {
         return;
       }
 
-      tilesetImage.tileProperties = tileset.tiles;
+      tilesetImage.tileProperties = tileset.tiles || {};
       newTilesets.push(tilesetImage);
 
       const collisionTileIndexes = _.map(tileset.collisionTileIndexes, i => i + tileset.gid);
@@ -115,13 +118,16 @@ levelManager = {
 
     Array.from({ length: defaultLayerCount }, (_, i) => {
       const layer = this.map.createBlankLayer(`${i}`);
+      layer.setName(`${i}`);
       layer.setCullPadding(4, 4);
-      if (lp.isLemverseBeta('custom-culling')) layer.cullCallback = customCull.bind(levelManager);
+      if (lp.isLemverseBeta('custom-culling')) layer.cullCallback = customCull;
       if (defaultLayerDepth[i]) layer.setDepth(defaultLayerDepth[i]);
       this.layers.push(layer);
 
       return i;
     });
+
+    this.markCullingAsDirty();
   },
 
   destroyMapLayers() {
@@ -164,25 +170,14 @@ levelManager = {
     this.layers.forEach((layer, i) => this.map.removeTileAt(x, y, false, false, i));
 
     Tiles.find({ x, y }).forEach(tile => {
-      this.map.putTileAt(this.tileGlobalIndex(tile), tile.x, tile.y, false, this.tileLayer(tile));
+      const tileset = this.map.getTileset(tile.tilesetId) || defaultTileset;
+      this.map.putTileAt(this.tileGlobalIndex(tileset, tile.index), tile.x, tile.y, false, this.tileLayer(tileset, tile.index));
     });
   },
 
-  tileGlobalIndex(tile) {
-    const tileset = this.map.getTileset(tile.tilesetId);
-    return (tileset?.firstgid || 0) + tile.index;
-  },
+  tileGlobalIndex(mapTileset, tileIndex) { return (mapTileset.firstgid || 0) + tileIndex; },
 
-  tileProperties(tile) {
-    if (!tile.tilesetId) return defaultTileset;
-    const tileset = this.map.getTileset(tile.tilesetId);
-    if (!tileset) return defaultTileset;
-    return tileset.tileProperties?.[tile.index];
-  },
-
-  tileLayer(tile) {
-    return this.tileProperties(tile)?.layer ?? defaultLayer;
-  },
+  tileLayer(mapTileset, tileIndex) { return mapTileset.tileProperties[tileIndex]?.layer ?? defaultTileset.layer; },
 
   onLevelLoaded() {
     this.scene.scene.wake();
@@ -229,8 +224,8 @@ levelManager = {
     const enabledCollisionIndexes = _.difference(newTileset.collisionTileIndexes, oldTileset.collisionTileIndexes);
     const disabledCollisionIndexes = _.difference(oldTileset.collisionTileIndexes, newTileset.collisionTileIndexes);
 
-    const enabledCollisionGlobalIndexes = _.map(enabledCollisionIndexes, i => this.tileGlobalIndex({ index: i, tilesetId: newTileset._id }));
-    const disabledCollisionGlobalIndexes = _.map(disabledCollisionIndexes, i => this.tileGlobalIndex({ index: i, tilesetId: newTileset._id }));
+    const enabledCollisionGlobalIndexes = _.map(enabledCollisionIndexes, i => this.tileGlobalIndex(newTileset, i));
+    const disabledCollisionGlobalIndexes = _.map(disabledCollisionIndexes, i => this.tileGlobalIndex(newTileset, i));
 
     this.map.layers.forEach(layer => {
       this.map.setCollision(enabledCollisionGlobalIndexes, true, false, layer.tilemapLayer, true);
@@ -319,6 +314,11 @@ levelManager = {
   },
 };
 
-Template.registerHelper('tileLayer', function () { return levelManager.tileLayer(this); });
+Template.registerHelper('tileLayer', function () {
+  if (this.index < 0) return defaultTileset.layer;
+
+  const tileset = levelManager.map.getTileset(this.tilesetId);
+  return levelManager.tileLayer(tileset, this.index);
+});
 Template.registerHelper('worldToTileX', x => levelManager.map.worldToTileX(x));
 Template.registerHelper('worldToTileY', y => levelManager.map.worldToTileY(y));

@@ -135,25 +135,28 @@ EditorScene = new Phaser.Class({
         } else if (selectedTiles?.index < 0) {
           const layer = -selectedTiles.index - 1;
           Tiles.find({ x: pointerTileX, y: pointerTileY }).forEach(tile => {
-            if (levelManager.tileLayer(tile) === layer) {
+            const tileset = map.getTileset(tile.tilesetId);
+            if (levelManager.tileLayer(tileset, tile.index) === layer) {
               this.undoTiles.push(tile);
               Tiles.remove(tile._id);
             }
           });
         } else if (selectedTiles) {
-          const user = Meteor.users.findOne(userManager.player.userId);
           const selectedTileset = Tilesets.findOne(selectedTiles.tilesetId);
           for (let x = 0; x < selectedTiles.w; x++) {
             for (let y = 0; y < selectedTiles.h; y++) {
               const selectedTileIndex = (selectedTiles.y + y) * selectedTileset.width / 16 + (selectedTiles.x + x);
-              const layer = levelManager.tileLayer({ tilesetId: selectedTiles.tilesetId, index: selectedTileIndex });
+              const layer = levelManager.tileLayer(map.getTileset(selectedTileset._id), selectedTileIndex);
 
-              // eslint-disable-next-line no-loop-func
-              const tile = _.find(Tiles.find({ x: pointerTileX + x, y: pointerTileY + y }).fetch(), t => levelManager.tileLayer({ tilesetId: t.tilesetId, index: t.index }) === layer);
+              const tiles = Tiles.find({ x: pointerTileX + x, y: pointerTileY + y }).fetch();
+              const tile = tiles.find(t => {
+                const tileset = map.getTileset(t.tilesetId);
+                return levelManager.tileLayer(tileset, t.index) === layer;
+              });
 
               if (tile && (tile.index !== selectedTileIndex || tile.tilesetId !== selectedTileset._id)) {
                 this.undoTiles.push(tile);
-                Tiles.update(tile._id, { $set: { createdAt: new Date(), createdBy: user._id, index: selectedTileIndex, tilesetId: selectedTileset._id } });
+                Tiles.update(tile._id, { $set: { createdAt: new Date(), createdBy: Meteor.userId(), index: selectedTileIndex, tilesetId: selectedTileset._id } });
               } else if (!tile) {
                 const tileId = insertTile({
                   x: pointerTileX + x,
