@@ -175,7 +175,6 @@ levelManager = {
   },
 
   tileProperties(tile) {
-    if (!tile.tilesetId) return defaultTileset;
     const tileset = this.map.getTileset(tile.tilesetId);
     if (!tileset) return defaultTileset;
     return tileset.tileProperties?.[tile.index];
