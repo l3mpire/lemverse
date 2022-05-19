@@ -185,6 +185,7 @@
         "clientId": "xxxxxxx",
         "type": "oauth",
         "custom": true,
+        "hidden": false,
         "secret": "xxxxxxx",
         "authUrl": "https://auth.example.org/oauth/authorize",
         "accessTokenUrl": "https://auth.example.org/oauth/access_token",
@@ -202,6 +203,7 @@
         "consumerKey": "xxxxxxx",
         "secret": "xxxxxxx",
         "type": "oauth",
+        "hidden": false,
         "custom": false,
         "loginStyle": "redirect"
       },
@@ -209,6 +211,7 @@
         "clientId": "xxxxxxx",
         "buttonBackgroundColor": "#5880ff",
         "buttonTextColor": "white",
+        "hidden": false,
         "type": "oauth",
         "custom": false,
         "secret": "xxxxxxx"
@@ -219,15 +222,17 @@
         "buttonTextColor": "white",
         "type": "oauth",
         "custom": false,
+        "hidden": false,
         "secret": "xxxxxxx",
         "loginStyle": "redirect"
       },
       "facebook": {
-        "clientId": "xxxxxxx",
+        "appId": "xxxxxxx",
         "buttonBackgroundColor": "#5880ff",
         "buttonTextColor": "white",
         "type": "oauth",
         "custom": false,
+        "hidden": false,
         "secret": "xxxxxxx",
         "loginStyle": "redirect"
       }

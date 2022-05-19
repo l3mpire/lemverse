@@ -222,7 +222,7 @@
           "loginStyle": "redirect"
         },
         "facebook": {
-          "clientId": "xxxxxxx",
+          "appId": "xxxxxxx",
           "buttonBackgroundColor": "#5880ff",
           "buttonTextColor": "white",
           "type": "oauth",
