@@ -113,6 +113,7 @@ levelManager = {
 
     Array.from({ length: defaultLayerCount }, (_, i) => {
       const layer = this.map.createBlankLayer(`${i}`);
+      layer.setName(`${i}`);
       layer.setCullPadding(4, 4);
       if (lp.isLemverseBeta('custom-culling')) layer.cullCallback = customCull;
       if (defaultLayerDepth[i]) layer.setDepth(defaultLayerDepth[i]);
