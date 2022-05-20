@@ -50,9 +50,8 @@ const reactionMenuItems = [
 ];
 
 const mainMenuItems = [
-  { id: 'settings', icon: '⚙️', order: 1, shortcut: 52, label: 'Settings', closeMenu: true },
-  { id: 'reactions', icon: '😃', order: 2, shortcut: 53, label: 'Reactions' },
-  { id: 'notifications', icon: '🔔', order: 3, shortcut: 54, label: 'Notifications', closeMenu: true },
+  { id: 'reactions', icon: '😃', order: 1, shortcut: 53, label: 'Reactions' },
+  { id: 'notifications', icon: '🔔', order: 2, shortcut: 54, label: 'Notifications', closeMenu: true },
   { id: 'shout', icon: '📢', label: 'Shout', order: 40, shortcut: 55 },
 ];
 
