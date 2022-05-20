@@ -13,8 +13,8 @@ window.addEventListener('load', () => {
   });
 
   Tracker.autorun(() => {
-    const user = Meteor.user({ fields: { 'roles.admin': 1 } });
-    if (!user || !user.roles?.admin) return;
+    const user = Meteor.user({ fields: { guildId: 1 } });
+    if (!user || !user.guildId) return;
 
     Tracker.nonreactive(() => {
       registerRadialMenuModules([{ id: 'open-inventory', icon: '📦', shortcut: 73, label: 'Inventory', closeMenu: true, scope: 'me' }]);
