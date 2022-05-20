@@ -69,11 +69,7 @@ const additionalOptions = scope => Session.get('radialMenuModules').filter(optio
 const onMenuOptionSelected = e => {
   const { option, user } = e.detail;
 
-  if (option.id === 'toggle-mic') toggleUserProperty('shareAudio');
-  else if (option.id === 'toggle-cam') toggleUserProperty('shareVideo');
-  else if (option.id === 'toggle-screen') toggleUserProperty('shareScreen');
-  else if (option.id === 'settings') toggleModal('settingsMain');
-  else if (option.id === 'reactions') buildMenuFromOptions(reactionMenuItems);
+  if (option.id === 'reactions') buildMenuFromOptions(reactionMenuItems);
   else if (option.id === 'notifications') toggleModal('notifications');
   else if (option.id === 'shout') userVoiceRecorderAbility.recordVoice(true, sendAudioChunksToUsersInZone);
   else if (option.id === 'send-love' && user) setReaction(Random.choice(lovePhrases(user.profile.name)));
