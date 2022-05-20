@@ -177,17 +177,22 @@ button:focus {
     border-radius: 15px;
     z-index: 30;
     background-size: cover;
-    transition: all 0.25s linear;
+    transition: all 0.15s linear;
     overflow: hidden;
 
     &.active {
-      height: 120px;
+      width: 240px;
+      height: 180px;
       background-color: rgba($main-color, 1.0);
+
+      .buttons button:not(.active) {
+        opacity: 0.5
+      }
     }
 
     video {
-      width: 160px;
-      height: 120px;
+      width: 240px;
+      height: 180px;
       border-radius: 10px;
       display: none;
       object-fit: scale-down;
