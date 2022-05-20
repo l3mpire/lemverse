@@ -12,7 +12,14 @@ window.addEventListener('load', () => {
     if (option.id === 'open-inventory') toggleModal('inventory');
   });
 
-  registerRadialMenuModules([{ id: 'open-inventory', icon: '📦', shortcut: 73, label: 'Inventory', closeMenu: true, scope: 'me' }]);
+  Tracker.autorun(() => {
+    const user = Meteor.user({ fields: { 'roles.admin': 1 } });
+    if (!user || !user.roles?.admin) return;
+
+    Tracker.nonreactive(() => {
+      registerRadialMenuModules([{ id: 'open-inventory', icon: '📦', shortcut: 73, label: 'Inventory', closeMenu: true, scope: 'me' }]);
+    });
+  });
 });
 
 Template.inventoryItemPanel.helpers({

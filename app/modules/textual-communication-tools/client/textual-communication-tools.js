@@ -1,13 +1,24 @@
 window.addEventListener('load', () => {
   registerModules(['textualCommunicationTools']);
-
-  registerUserListModules(['userListQuestButton', 'userListMessageButton']);
+  registerUserListModules(['userListMessageButton']);
 
   registerRadialMenuModules([
-    { id: 'new-quest', icon: '📜', shortcut: 53, label: 'New quest', closeMenu: true, scope: 'other' },
-    { id: 'show-quests', icon: '📜', shortcut: 57, label: 'Quests', closeMenu: true, scope: 'me' },
     { id: 'open-console', icon: '💬', shortcut: 56, label: 'Text', closeMenu: true, scope: 'me' },
   ]);
+
+  Tracker.autorun(() => {
+    const user = Meteor.user({ fields: { 'roles.admin': 1 } });
+    if (!user || !user.roles?.admin) return;
+
+    Tracker.nonreactive(() => {
+      registerRadialMenuModules([
+        { id: 'new-quest', icon: '📜', shortcut: 53, label: 'New quest', closeMenu: true, scope: 'other' },
+        { id: 'show-quests', icon: '📜', shortcut: 57, label: 'Quests', closeMenu: true, scope: 'me' },
+      ]);
+
+      registerUserListModules(['userListQuestButton']);
+    });
+  });
 });
 
 const onNotificationReceived = async e => {
