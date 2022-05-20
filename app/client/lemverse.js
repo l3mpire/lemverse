@@ -412,6 +412,7 @@ Template.lemverse.onCreated(function () {
   hotkeys('shift+1', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
   hotkeys('shift+2', { scope: scopes.player }, () => toggleUserProperty('shareVideo'));
   hotkeys('shift+3', { scope: scopes.player }, () => toggleUserProperty('shareScreen'));
+  hotkeys('shift+4', { scope: scopes.player }, () => toggleModal('settingsMain'));
 
   hotkeys('l', { keyup: true, scope: scopes.player }, event => {
     if (event.repeat) return;
@@ -485,6 +486,7 @@ Template.lemverse.onDestroyed(function () {
   hotkeys.unbind('shift+1', scopes.player);
   hotkeys.unbind('shift+2', scopes.player);
   hotkeys.unbind('shift+3', scopes.player);
+  hotkeys.unbind('shift+4', scopes.player);
   hotkeys.unbind('shift+r', scopes.player);
   hotkeys.unbind('tab', scopes.player);
   hotkeys.unbind('space', scopes.player);
