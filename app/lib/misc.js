@@ -109,7 +109,7 @@ teleportUserInLevel = (levelId, userId) => {
   log('teleportUserInLevel: start', { levelId, userId });
   const loadingLevelId = levelId || Meteor.settings.defaultLevelId;
   const level = Levels.findOne(loadingLevelId);
-  if (!level) throw new Error(`teleportUserInLevel: level not found`);
+  if (!level) throw new Meteor.Error('not-found', `Level not found`);
 
   const { x, y } = levelSpawnPosition(loadingLevelId);
   Meteor.users.update(userId, { $set: { 'profile.levelId': level._id, 'profile.x': x, 'profile.y': y } });

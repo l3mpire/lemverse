@@ -157,7 +157,8 @@ levelManager = {
       this.scene.scene.sleep();
       Meteor.call('teleportUserInLevel', levelId, (error, levelName) => {
         if (error) {
-          lp.notif.error(`An error occured while loading the level ${levelId}`);
+          lp.notif.error(`An error occured while loading the level (${error.error})`);
+          this.onLevelLoaded();
           return;
         }
 
