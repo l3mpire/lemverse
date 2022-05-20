@@ -3,7 +3,7 @@ window.addEventListener('load', () => {
   registerUserListModules(['userListMessageButton']);
 
   registerRadialMenuModules([
-    { id: 'open-console', icon: '💬', shortcut: 56, label: 'Text', closeMenu: true, scope: 'me' },
+    { id: 'open-console', icon: '💬', shortcut: 56, order: 41, label: 'Text', closeMenu: true, scope: 'me' },
   ]);
 
   Tracker.autorun(() => {
@@ -13,7 +13,7 @@ window.addEventListener('load', () => {
     Tracker.nonreactive(() => {
       registerRadialMenuModules([
         { id: 'new-quest', icon: '📜', shortcut: 53, label: 'New quest', closeMenu: true, scope: 'other' },
-        { id: 'show-quests', icon: '📜', shortcut: 57, label: 'Quests', closeMenu: true, scope: 'me' },
+        { id: 'show-quests', icon: '📜', shortcut: 57, order: 42, label: 'Quests', closeMenu: true, scope: 'me' },
       ]);
 
       registerUserListModules(['userListQuestButton']);

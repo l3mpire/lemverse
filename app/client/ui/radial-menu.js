@@ -50,12 +50,9 @@ const reactionMenuItems = [
 ];
 
 const mainMenuItems = [
-  { id: 'toggle-mic', icon: '🎤', order: 0, shortcut: 49, label: 'Audio', state: 'shareAudio' },
-  { id: 'toggle-cam', icon: '🎥', order: 1, shortcut: 50, label: 'Camera', state: 'shareVideo' },
-  { id: 'toggle-screen', icon: '📺', order: 2, shortcut: 51, label: 'Screen', state: 'shareScreen' },
-  { id: 'settings', icon: '⚙️', order: 3, shortcut: 52, label: 'Settings', closeMenu: true },
-  { id: 'reactions', icon: '😃', order: 4, shortcut: 53, label: 'Reactions' },
-  { id: 'notifications', icon: '🔔', order: 5, shortcut: 54, label: 'Notifications', closeMenu: true },
+  { id: 'settings', icon: '⚙️', order: 1, shortcut: 52, label: 'Settings', closeMenu: true },
+  { id: 'reactions', icon: '😃', order: 2, shortcut: 53, label: 'Reactions' },
+  { id: 'notifications', icon: '🔔', order: 3, shortcut: 54, label: 'Notifications', closeMenu: true },
   { id: 'shout', icon: '📢', label: 'Shout', order: 40, shortcut: 55 },
 ];
 
