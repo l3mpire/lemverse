@@ -160,8 +160,8 @@ button:focus {
 .user-panel {
   position: absolute;
   z-index: 50;
-  bottom: 20px;
-  right: 5px;
+  bottom: 10px;
+  right: 10px;
   opacity: 0;
   transition: opacity 0.15s;
 
@@ -171,21 +171,18 @@ button:focus {
 
   .js-stream-me {
     position: relative;
-    width: 164px;
-    height: 124px;
-    background-color: $main-color;
-    border-radius: 10px;
-    border: 2px solid rgba($main-color, 0.1);
-    margin: 5px;
+    width: 160px;
+    height: 46px;
+    background-color: rgba($main-color, 0.9);
+    border-radius: 15px;
     z-index: 30;
-    background-size: contain;
-    transition: opacity 0.25s linear;
-    pointer-events: none;
-    opacity: 0;
+    background-size: cover;
+    transition: all 0.25s linear;
+    overflow: hidden;
 
     &.active {
-      pointer-events: all;
-      opacity: 1;
+      height: 120px;
+      background-color: rgba($main-color, 1.0);
     }
 
     video {
@@ -203,24 +200,26 @@ button:focus {
 
     .buttons {
       position: absolute;
-      bottom: -10px;
+      bottom: 8px;
       left: 0;
       right: 0;
       display: flex;
-      justify-content: space-evenly;
+      gap: 7px;
+      justify-content: center;
 
       .button {
         background-color: lighten($main-color, 65%);
-        padding-left: 5px;
-        padding-right: 2px;
         border-radius: 4px;
-        height: 26px;
-        width: 20px;
-        font-size: 12pt;
+        height: 30px;
+        width: 30px;
         box-sizing: content-box;
-        padding: 2px 5px;
+        padding: 0;
         margin: 0;
         border-radius: $radius;
+
+        svg {
+          transform: translate(0, 2px) scale(0.85);
+        }
 
         &:hover {
           background-color: lighten($main-color, 70%);
@@ -240,9 +239,8 @@ button:focus {
     right: 5px;
     width: 340px;
     height: 200px;
-    background-color: black;
-    border: white 2px solid;
-    border-radius: 10px;
+    background-color: $main-color;
+    border-radius: 15px;
     overflow: hidden;
     z-index: 28;
 
