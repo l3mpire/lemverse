@@ -3,6 +3,7 @@ window.addEventListener('load', () => {
   registerUserListModules(['userListMessageButton']);
 
   registerRadialMenuModules([
+    { id: 'send-text', icon: '💬', shortcut: 56, order: 41, label: 'Text', closeMenu: true, scope: 'other' },
     { id: 'open-console', icon: '💬', shortcut: 56, order: 41, label: 'Text', closeMenu: true, scope: 'me' },
   ]);
 
@@ -64,7 +65,11 @@ const onMenuOptionSelected = e => {
 
   if (option.id === 'show-quests') Session.set('quests', { origin: 'menu' });
   else if (option.id === 'open-console') openConsole(true);
-  else if (option.id === 'new-quest' && user) createQuestDraft([user._id], Meteor.userId());
+  else if (option.id === 'send-text') {
+    const channel = [user._id, Meteor.userId()].sort().join(';');
+    messagesModule.changeMessagesChannel(channel);
+    openConsole();
+  } else if (option.id === 'new-quest' && user) createQuestDraft([user._id], Meteor.userId());
 };
 
 Template.textualCommunicationTools.onCreated(() => {
