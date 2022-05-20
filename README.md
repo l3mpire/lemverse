@@ -411,13 +411,16 @@ Please note, that as stated in section `Deploy in production`, there is an addit
     "packages": {
       // configure external authentication services
       "service-configuration": {
-         // for pure OAuth identity provider
-        "custom": {
+         // An authentication button with the name of the service will be displayed.
+         // you can automatically trigger the authentication service by passing the idpHint parameter to the url of your server.
+         // example: https://app.lemverse.com/idpHint=custom will automatically trigger the "custom" login service
+        "custom": {  // for pure OAuth identity provider
           "buttonBackgroundColor": "#ea4335",
           "buttonTextColor": "white",
           "clientId": "xxxxxxx",
           "type": "oauth",
-          "custom": true,
+          "custom": true, // true for custom OAuth2 provider (not for social login)
+          "hidden": false, // when true hides the login button, the oauth service remains configured and can be triggered by the url parameter idpHint=custom
           "secret": "xxxxxxx",
           "authUrl": "https://auth.example.org/oauth/authorize",
           "accessTokenUrl": "https://auth.example.org/oauth/access_token",
@@ -457,7 +460,7 @@ Please note, that as stated in section `Deploy in production`, there is an addit
           "loginStyle": "redirect"
         },
         "facebook": {
-          "clientId": "xxxxxxx",
+          "appId": "xxxxxxx",
           "buttonBackgroundColor": "#5880ff",
           "buttonTextColor": "white",
           "type": "oauth",
