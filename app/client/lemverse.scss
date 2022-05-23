@@ -211,6 +211,7 @@ button:focus {
       justify-content: center;
 
       .button {
+        position: relative;
         background-color: lighten($main-color, 65%);
         height: 30px;
         width: 30px;
@@ -218,8 +219,10 @@ button:focus {
         padding: 0;
         margin: 0;
         border-radius: $radius;
+        color: $main-color;
 
         svg {
+          fill: $main-color;
           transform: translate(0, 2px) scale(0.85);
         }
 
@@ -229,6 +232,19 @@ button:focus {
 
         &.active {
           background-color: $light-green;
+        }
+
+        &:not(.active):nth-child(-n+3)::before {
+          content: "\\";
+          position: absolute;
+          color: $main-color;
+          z-index: 1000;
+          font-size: 1.8rem;
+          top: -2px;
+          left: 10px;
+          transform: rotate(62deg);
+          pointer-events: none;
+          text-shadow: 0px 0px 3px #eff1f6;
         }
       }
     }
