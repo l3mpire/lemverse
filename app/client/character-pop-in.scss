@@ -24,21 +24,21 @@
   }
 
   &.fade-in {
-    animation: fadeIn 0.25s linear;
+    animation: fade-in 0.25s linear;
   }
 
-  @keyframes fadeIn {
+  @keyframes fade-in {
     0% {
-      opacity: 0
+      opacity: 0;
     }
 
     100% {
-      opacity: 1
+      opacity: 1;
     }
   }
 
   &:not(.full-screen) {
-    &.with-arrow:before {
+    &.with-arrow::before {
       content: "";
       position: absolute;
       bottom: 0;
@@ -55,7 +55,7 @@
     background-color: $lem-color-3;
     color: $lem-color-1;
 
-    &.with-arrow:before {
+    &.with-arrow::before {
       border-top: 9px solid $lem-color-3;
     }
   }
@@ -64,7 +64,7 @@
     background-color: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(2px);
 
-    &.with-arrow:before {
+    &.with-arrow::before {
       border-top: 9px solid rgba(255, 255, 255, 0.75);
     }
   }
@@ -73,7 +73,7 @@
     color: white;
     background-color: rgba(25, 25, 25, 0.9);
 
-    &.with-arrow:before {
+    &.with-arrow::before {
       border-top: 9px solid rgba(25, 25, 25, 0.9);
       border-left: 10px solid transparent;
       border-right: 10px solid transparent;
@@ -87,7 +87,7 @@
   &.dark {
     background-color: rgb(25, 25, 25);
 
-    &.with-arrow:before {
+    &.with-arrow::before {
       border-top: 9px solid rgb(25, 25, 25);
       border-left: 10px solid transparent;
       border-right: 10px solid transparent;
@@ -95,8 +95,9 @@
   }
 
   &.acid p,
-  &.acid .with-arrow:before {
-    box-shadow: inset 0 0 2px rgba(255, 255, 255, 0.05),
+  &.acid .with-arrow::before {
+    box-shadow:
+      inset 0 0 2px rgba(255, 255, 255, 0.05),
       inset 4px 4px 6px rgba(0, 0, 0, 0.2);
     color: yellow;
     text-shadow: 0 0 15px yellow, 0 0 25px yellow;
@@ -122,11 +123,11 @@
 
   @keyframes typing {
     from {
-      width: 0
+      width: 0;
     }
 
     to {
-      width: 100%
+      width: 100%;
     }
   }
 
@@ -149,8 +150,8 @@
     align-items: center;
     justify-content: center;
 
-    &:before {
-      content: '◹';
+    &::before {
+      content: "◹";
     }
   }
 
@@ -163,8 +164,8 @@
     transform-origin: center center !important;
     transform: translate(-50%, -50%) !important;
 
-    .toggle-full-screen:before {
-      content: '◺';
+    .toggle-full-screen::before {
+      content: "◺";
     }
   }
 }

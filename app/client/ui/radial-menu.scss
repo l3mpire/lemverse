@@ -32,7 +32,7 @@ $z-index: 4;
 .radial-menu {
   width: 195px;
   height: 195px;
-  transform: scale(0.0) translate(-50%, -65%);
+  transform: scale(0) translate(-50%, -65%);
   transition: all .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   transform-origin: top left;
   opacity: 0;
@@ -52,7 +52,7 @@ $z-index: 4;
   }
 
   &.show {
-    transform: scale(1.0) translate(-50%, -65%);
+    transform: scale(1) translate(-50%, -65%);
     opacity: 1;
     pointer-events: all;
 
@@ -62,7 +62,7 @@ $z-index: 4;
   }
 
   &.show-shortcuts {
-    li:before {
+    li::before {
       opacity: 1;
     }
   }
@@ -76,7 +76,7 @@ $z-index: 4;
     border-radius: 50%;
     z-index: 1;
     opacity: $menu-background-opacity;
-    background: -webkit-radial-gradient(50% 50%, circle, transparent 35%, $main-color 35%);
+    background: radial-gradient(50% 50%, transparent 50%, $main-color 50%);
   }
 
   ul {
@@ -106,7 +106,7 @@ $z-index: 4;
       color: white;
       transform: translate(-50%, -50%);
 
-      &:before {
+      &::before {
         content: attr(data-shortcut);
         position: relative;
         z-index: 2;
@@ -131,8 +131,8 @@ $z-index: 4;
           }
         }
 
-        &:after {
-          content: '❌';
+        &::after {
+          content: "❌";
           z-index: 1000;
           position: absolute;
           color: hsl(8deg, 70%, 47%);

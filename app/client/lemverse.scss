@@ -32,7 +32,6 @@ button:focus {
     &.edit {
       -webkit-app-region: no-drag;
 
-      .user-panel,
       .reactions-toolbox,
       .js-streams,
       .user-panel {
@@ -50,7 +49,6 @@ button:focus {
   right: 0;
 
   &.loading {
-
     /* Hide pop-ins during loading */
     >div {
       opacity: 0 !important;
@@ -183,10 +181,10 @@ button:focus {
     &.active {
       width: 240px;
       height: 180px;
-      background-color: rgba($main-color, 1.0);
+      background-color: rgba($main-color, 1);
 
       .buttons button:not(.active) {
-        opacity: 0.5
+        opacity: 0.5;
       }
     }
 
@@ -214,7 +212,6 @@ button:focus {
 
       .button {
         background-color: lighten($main-color, 65%);
-        border-radius: 4px;
         height: 30px;
         width: 30px;
         box-sizing: content-box;
@@ -280,7 +277,7 @@ button.js-notifications {
     background-color: lighten($light-orange, 15%);
   }
 
-  &:after {
+  &::after {
     content: attr(data-count);
     color: white;
     position: absolute;
@@ -295,7 +292,7 @@ button.js-notifications {
     line-height: 25px;
   }
 
-  &[data-count="0"]:after {
+  &[data-count="0"]::after {
     display: none;
   }
 }

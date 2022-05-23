@@ -132,7 +132,7 @@
               transform: scale(0.33) translate(-25px, -91px);
             }
 
-            .avatar:before {
+            .avatar::before {
               bottom: 4px;
               right: 4px;
               width: 6px;

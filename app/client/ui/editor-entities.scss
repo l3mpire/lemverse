@@ -5,7 +5,7 @@
     max-height: 100%;
     width: 400px;
     overflow-y: scroll;
-    
+
     ul {
       display: flex;
       flex-direction: column;
@@ -35,7 +35,7 @@
           flex-grow: 1;
         }
 
-        input[type=text] {
+        input[type="text"] {
           padding: 0;
           margin: 0;
           border: 0;

@@ -52,7 +52,7 @@
 
       &.js-channel-subscribe {
         background-color: $light-green;
-    
+
         &:hover {
           background-color: darken($light-green, 10%);
         }
@@ -60,7 +60,7 @@
 
       &.js-channel-unsubscribe {
         background-color: $light-red;
-    
+
         &:hover {
           background-color: darken($light-red, 10%);
         }
@@ -72,7 +72,7 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding: 10px 10px 5px 10px;
+    padding: 10px 10px 5px;
     overflow-y: auto;
 
     .separation-day {
@@ -80,8 +80,8 @@
       height: 25px;
       min-height: 25px;
 
-      &:before {
-        content: '';
+      &::before {
+        content: "";
         position: absolute;
         top: 50%;
         height: 1px;
@@ -183,7 +183,7 @@
           transform: scale(0.7) translate(-1px, -28px);
         }
 
-        .avatar:before {
+        .avatar::before {
           width: 6px;
           height: 6px;
         }

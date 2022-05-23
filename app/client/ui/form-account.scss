@@ -21,7 +21,7 @@
   }
 
   .title {
-    margin: 5px 0 20px 0;
+    margin: 5px 0 20px;
     padding: 0;
   }
 
@@ -84,7 +84,7 @@
     }
 
     &:disabled {
-      background-color: hsl(0, 0%, 63%);
+      background-color: hsl(0deg, 0%, 63%);
       color: white;
       cursor: not-allowed;
     }
