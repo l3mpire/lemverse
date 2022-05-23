@@ -43,7 +43,10 @@ WorldScene = new Phaser.Class({
     this.nippleMoving = false;
     this.viewportMode = viewportModes.fullscreen;
     this.sleepMethod = this.sleep.bind(this);
-    this.updateViewportMethod = mode => updateViewport(this, mode);
+    this.updateViewportMethod = mode => {
+      updateViewport(this, mode);
+      levelManager.markCullingAsDirty();
+    };
     this.postUpdateMethod = this.postUpdate.bind(this);
     this.shutdownMethod = this.shutdown.bind(this);
 
