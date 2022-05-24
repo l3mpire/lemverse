@@ -23,6 +23,7 @@ BootScene = new Phaser.Class({
         frameHeight: frameHeight || 32,
       });
     });
+    this.loadAssetsAtRuntime(Assets.find().fetch());
   },
 
   create() {
@@ -35,7 +36,6 @@ BootScene = new Phaser.Class({
     this.scene.bringToTop('LoadingScene');
 
     this.loadCharacterAnimations(Characters.find().fetch());
-    this.loadAssetsAtRuntime(Assets.find().fetch());
   },
 
   loadCharacterAnimations(characters) {
