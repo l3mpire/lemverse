@@ -53,7 +53,7 @@ Template.entityEditor.events({
 
     const scaleX = Math.abs(entity.scale?.x || 1);
     const newScaleX = e.currentTarget.checked ? -scaleX : scaleX;
-    Entities.update(entity._id, { $set: { scale: { x: e.currentTarget.checked ? -scaleX : newScaleX } } });
+    Entities.update(entity._id, { $set: { 'scale.x': e.currentTarget.checked ? -scaleX : newScaleX } });
   },
   'click .js-close-entity-editor'() { closeInterface(); },
 });
