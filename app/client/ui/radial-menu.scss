@@ -76,7 +76,7 @@ $z-index: 4;
     border-radius: 50%;
     z-index: 1;
     opacity: $menu-background-opacity;
-    background: radial-gradient(50% 50%, transparent 50%, $main-color 50%);
+    background: radial-gradient(circle at 50% 50%, transparent 37%, #2b2d3d 37%);
   }
 
   ul {
