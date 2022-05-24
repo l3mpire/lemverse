@@ -21,7 +21,12 @@ Template.registerHelper('tile2domY', index => {
   return zoom * tileY * 16;
 });
 
-Template.registerHelper('tilesets', () => Tilesets.find({}, { sort: { name: 1 } }));
+Template.registerHelper('tilesets', () => {
+  const filters = { hidden: { $exists: false } };
+  if (Meteor.user()?.roles?.admin) delete filters.hidden;
+
+  return Tilesets.find(filters, { sort: { name: 1 } });
+});
 
 Template.registerHelper('selectedTileset', () => selectedTileset());
 
