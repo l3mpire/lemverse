@@ -176,6 +176,9 @@ Template.editorTilesets.events({
     event.preventDefault();
     event.stopImmediatePropagation();
   },
+  'click .js-toggle-visibility'(event) {
+    Tilesets.update(this._id, { $set: { hidden: event.currentTarget.checked } });
+  },
   'blur .js-tileset-name'(event, tpl) {
     if (!Session.get('selectedEditTilesetId')) return;
     Session.set('selectedEditTilesetId', undefined);
