@@ -165,5 +165,10 @@ fileOnBeforeUpload = (file, mime) => {
     return true;
   }
 
+  if (meta.source === 'user-console') {
+    if (!['image/png', 'image/jpeg', 'image/gif'].includes(mime)) return `Only jpeg, png and gif files can be uploaded`;
+    return true;
+  }
+
   return 'Source of upload not set';
 };
