@@ -2,7 +2,8 @@
   height: 100%;
 
   .container {
-    padding: 0 5px;
+    display: flex;
+    flex-direction: column;
     height: 100%;
   }
 
@@ -40,7 +41,6 @@
     display: flex;
     margin: 0 auto;
     width: 100%;
-    margin-bottom: 10px;
     top: 0;
     background: #eceff3;
 
