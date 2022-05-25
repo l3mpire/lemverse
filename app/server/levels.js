@@ -1,4 +1,6 @@
 createLevel = (templateId = undefined, newName = undefined) => {
+  log('createLevel: start', { templateId });
+
   const newLevelId = Levels.id();
   Levels.insert({
     _id: newLevelId,
@@ -10,6 +12,7 @@ createLevel = (templateId = undefined, newName = undefined) => {
   });
 
   if (templateId) {
+    log('createLevel: copy template', { templateId });
     const templateLevel = Levels.findOne(templateId);
     Levels.update({ _id: newLevelId }, { $set: { template: false, metadata: templateLevel.metadata } });
     if (templateLevel.spawn) Levels.update({ _id: newLevelId }, { $set: { spawn: templateLevel.spawn } });
@@ -37,6 +40,7 @@ createLevel = (templateId = undefined, newName = undefined) => {
       });
     });
   } else {
+    log('createLevel: create empty level', { templateId });
     const { levelId } = Meteor.user().profile;
 
     Zones.insert({
@@ -53,6 +57,8 @@ createLevel = (templateId = undefined, newName = undefined) => {
       y2: 110,
     });
   }
+
+  log('createLevel: done', { levelId: newLevelId });
 
   return newLevelId;
 };
