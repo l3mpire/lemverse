@@ -118,7 +118,11 @@ Meteor.methods({
     if (!level || level.sandbox) throw new Meteor.Error('invalid-level', 'A valid level is required');
     if (!isEditionAllowed(this.userId)) throw new Meteor.Error('permission-error', `You can't edit this level`);
 
-    Levels.update(levelId, { $set: { name, spawn: { x: position.x, y: position.y }, hide } });
+    const query = { $set: { name, spawn: { x: position.x, y: position.y } } };
+    if (hide) query.$set.hide = true;
+    else query.$unset = { hide: 1 };
+
+    Levels.update(levelId, query);
   },
   increaseLevelVisits(levelId) {
     check(levelId, String);
