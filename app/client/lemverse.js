@@ -17,43 +17,30 @@ game = undefined;
 const config = {
   type: Phaser.AUTO,
   parent: 'game',
-  width: window.innerWidth / Meteor.settings.public.zoom,
-  height: window.innerHeight / Meteor.settings.public.zoom,
-  zoom: Meteor.settings.public.zoom,
-  inputWindowEvents: false,
   title: Meteor.settings.public.lp.product,
   url: Meteor.settings.public.lp.website,
   fps: {
-    min: 5,
-    target: 60,
-    forceSetTimeOut: false,
     deltaHistory: 5,
-    panicMax: 120,
-    smoothStep: true,
+  },
+  input: {
+    windowEvents: false,
   },
   physics: {
     default: 'arcade',
     arcade: {
       debug: Meteor.settings.public.debug,
       gravity: { y: 0 },
-      useTree: false,
       customUpdate: true,
     },
   },
   render: {
-    pixelArt: true,
-    roundPixels: true,
-    antialias: false,
-    antialiasGL: false,
+    pixelArt: true, // disable anti-aliasing & enable round pixels
     powerPreference: 'low-power',
   },
   scale: {
     mode: Phaser.Scale.RESIZE,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 800, // Default game window width
-    height: 600, // Default game window height,
     autoRound: true,
-    resizeInterval: 999999,
   },
   dom: {
     createContainer: true,
