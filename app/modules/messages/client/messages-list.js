@@ -45,13 +45,13 @@ Template.messagesListMessage.helpers({
 });
 
 Template.messagesListMessage.events({
-  'click .js-username'(e, instance) {
-    e.preventDefault();
-    e.stopPropagation();
+  'click .js-username'(event, instance) {
+    event.preventDefault();
+    event.stopPropagation();
     const userId = instance.data.message.createdBy;
     if (userId) Session.set('modal', { template: 'profile', userId });
   },
-  'click .js-message-remove'(e, instance) {
+  'click .js-message-remove'(event, instance) {
     const messageId = instance.data.message._id;
     lp.notif.confirm('Delete message', `Do you really want to delete this message?`, () => Messages.remove(messageId));
   },
@@ -118,9 +118,9 @@ Template.messagesList.helpers({
 });
 
 Template.messagesList.events({
-  'click .js-channel-subscribe'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'click .js-channel-subscribe'(event) {
+    event.preventDefault();
+    event.stopPropagation();
 
     const channelId = Session.get('messagesChannel');
     if (!channelId.includes('zon_')) return;
@@ -129,9 +129,9 @@ Template.messagesList.events({
       lp.notif.success('🔔 You will be notified of news from this zone');
     });
   },
-  'click .js-channel-unsubscribe'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'click .js-channel-unsubscribe'(event) {
+    event.preventDefault();
+    event.stopPropagation();
 
     const channelId = Session.get('messagesChannel');
     if (!channelId.includes('zon_')) return;
@@ -140,20 +140,20 @@ Template.messagesList.events({
       lp.notif.success('🔔 You will no longer be notified');
     });
   },
-  'click .js-channel-mute'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'click .js-channel-mute'(event) {
+    event.preventDefault();
+    event.stopPropagation();
 
     const channelId = Session.get('messagesChannel');
     if (!channelId.includes('zon_')) return;
     Meteor.call('muteFromZone', channelId, true, err => {
       if (err) return;
-      lp.notif.success('Notifications on this channel are now without sound 🔕 ... soundlessness ans silence ... chuuuut !');
+      lp.notif.success('Notifications on this channel are now without sound 🔕 ... soundlessness and silence ...');
     });
   },
-  'click .js-channel-unmute'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'click .js-channel-unmute'(event) {
+    event.preventDefault();
+    event.stopPropagation();
 
     const channelId = Session.get('messagesChannel');
     if (!channelId.includes('zon_')) return;
