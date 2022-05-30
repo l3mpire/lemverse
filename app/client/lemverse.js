@@ -106,13 +106,6 @@ Template.lemverse.onCreated(function () {
   });
 
   this.autorun(() => {
-    if (!Session.get('sceneWorldReady')) return;
-
-    const editor = Session.get('editor');
-    Tracker.nonreactive(() => levelManager.enableRenderTexture(!editor));
-  });
-
-  this.autorun(() => {
     if (game || !Session.get('tilesetsLoaded')) return;
     game = new Phaser.Game(config);
     game.scene.add('BootScene', BootScene, true);

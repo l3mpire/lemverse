@@ -4,7 +4,6 @@ const defaultMapConfig = { width: 100, height: 100, tileWidth: 48, tileHeight: 4
 const defaultLayerCount = 9;
 const defaultLayerDepth = { 6: 10000, 7: 10001, 8: 10002 };
 const defaultTileset = { layer: 2, firstgid: 0, tileProperties: {} };
-const timeBeforeRefreshingRenderTexture = 1000;
 
 // Phaser has a culling bug, its camera.dirty flag is always false. For the moment this logic bypasses the problem, to remove later
 const layerCullingCache = {};
@@ -27,9 +26,6 @@ function customCull(layer, camera, outputArray, renderOrder) {
 levelManager = {
   layers: [],
   map: undefined,
-  mapRenderTextures: [],
-  mapRenderTexturesDirty: false,
-  mapRenderTexturesTimeOut: 0,
   scene: undefined,
   teleporterGraphics: [],
 
@@ -49,7 +45,6 @@ levelManager = {
 
   destroy() {
     this.destroyMapLayers();
-    this.enableRenderTexture(false);
     this.map?.destroy();
   },
 
@@ -59,7 +54,6 @@ levelManager = {
 
     this.map.putTileAt(this.tileGlobalIndex(tileset, tile.index), tile.x, tile.y, false, layer);
     window.dispatchEvent(new CustomEvent(eventTypes.onTileAdded, { detail: { tile, layer } }));
-    this.mapRenderTexturesDirty = timeBeforeRefreshingRenderTexture;
   },
 
   onDocumentRemoved(tile) {
@@ -67,7 +61,6 @@ levelManager = {
     const layer = this.tileLayer(tileset, tile.index);
 
     this.map.removeTileAt(tile.x, tile.y, false, false, layer);
-    this.mapRenderTexturesDirty = timeBeforeRefreshingRenderTexture;
   },
 
   onDocumentUpdated(newTile) {
@@ -76,20 +69,13 @@ levelManager = {
 
     this.map.putTileAt(this.tileGlobalIndex(tileset, newTile.index), newTile.x, newTile.y, false, layer);
     window.dispatchEvent(new CustomEvent(eventTypes.onTileChanged, { detail: { tile: newTile, layer } }));
-    this.mapRenderTexturesDirty = timeBeforeRefreshingRenderTexture;
   },
 
   markCullingAsDirty() {
     Object.keys(layerCullingCache).forEach(key => { layerCullingCache[key].cached = false; });
   },
 
-  update() {
-    if (this.mapRenderTexturesDirty >= 0 && !Session.get('editor')) {
-      clearTimeout(this.mapRenderTexturesTimeOut);
-      this.mapRenderTexturesTimeOut = setTimeout(() => this.refreshRenderTextures(), this.mapRenderTexturesDirty);
-      this.mapRenderTexturesDirty = -1;
-    }
-  },
+  update() {},
 
   addTilesetsToLayers(tilesets) {
     if (!this.map) return;
@@ -137,7 +123,6 @@ levelManager = {
       layer.destroy();
     });
 
-    this.enableRenderTexture(false);
     this.map.removeAllLayers();
     this.layers = [];
   },
@@ -185,7 +170,6 @@ levelManager = {
 
     // simulate a first frame update to avoid weirds visual effects with characters animation and direction
     this.scene.update(0, 0);
-    this.enableRenderTexture(true);
     setTimeout(() => game.scene.keys.LoadingScene.hide(() => this.scene.enableKeyboard(true)), 0);
 
     if (Meteor.settings.public.debug) {
@@ -267,41 +251,6 @@ levelManager = {
       graphic.setDepth(20000);
       this.teleporterGraphics.push(graphic);
     });
-  },
-
-  enableRenderTexture(value) {
-    if (!this.scene || !lp.isLemverseBeta('cachedMap')) return;
-
-    if (value) {
-      if (!this.mapRenderTextures.length) {
-        const mapWidthInPixel = defaultMapConfig.width * defaultMapConfig.tileWidth;
-        const mapHeightInPixel = defaultMapConfig.height * defaultMapConfig.tileHeight;
-
-        const bellowMapRT = this.scene.add.renderTexture(0, 0, mapWidthInPixel, mapHeightInPixel);
-        bellowMapRT.setDepth(0);
-        this.mapRenderTextures.push(bellowMapRT);
-
-        const aboveMapRT = this.scene.add.renderTexture(0, 0, mapWidthInPixel, mapHeightInPixel);
-        aboveMapRT.setDepth(10000);
-        this.mapRenderTextures.push(aboveMapRT);
-      }
-
-      this.mapRenderTexturesDirty = 1;
-    }
-
-    this.mapRenderTextures.forEach(mapRenderTexture => mapRenderTexture.setVisible(value));
-    this.layers.forEach(layer => layer.setVisible(!value));
-  },
-
-  refreshRenderTextures() {
-    if (!this.mapRenderTextures.length) return;
-    const playerLayer = 2;
-
-    const bellowLayers = this.layers.filter(layer => layer.depth <= playerLayer);
-    this.drawLayersToTarget(bellowLayers, this.mapRenderTextures[0]);
-
-    const aboveLayers = this.layers.filter(layer => layer.depth > playerLayer);
-    this.drawLayersToTarget(aboveLayers, this.mapRenderTextures[1]);
   },
 
   drawLayersToTarget(layers, target) {
