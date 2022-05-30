@@ -1,7 +1,7 @@
 Template.userListMessageButton.events({
-  'click .js-send-message'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'click .js-send-message'(event) {
+    event.preventDefault();
+    event.stopPropagation();
 
     closeModal();
     const channel = [this.user._id, Meteor.userId()].sort().join(';');
