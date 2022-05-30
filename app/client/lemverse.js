@@ -294,6 +294,7 @@ Template.lemverse.onCreated(function () {
 
       if (this.currentLevelId) {
         log(`unloading current level…`);
+        Session.set('editor', 0);
         worldScene.scene.restart();
         uiScene.onLevelUnloaded();
         this.currentLevelId = undefined;
