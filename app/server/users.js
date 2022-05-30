@@ -65,7 +65,7 @@ Meteor.publish('selfUser', function () {
 
   return Meteor.users.find(
     this.userId,
-    { fields: { emails: 1, options: 1, profile: 1, roles: 1, status: 1, beta: 1, entitySubscriptionIds: 1, zoneLastSeenDates: 1, inventory: 1 } },
+    { fields: { emails: 1, options: 1, profile: 1, roles: 1, status: 1, beta: 1, entitySubscriptionIds: 1, zoneLastSeenDates: 1, inventory: 1, zoneMuted: 1 } },
   );
 });
 
@@ -121,6 +121,16 @@ Meteor.methods({
     if (!this.userId) return;
     check(zoneId, String);
     Meteor.users.update(Meteor.userId(), { $unset: { [`zoneLastSeenDates.${zoneId}`]: 1 } });
+  },
+  muteFromZone(zoneId) {
+    if (!this.userId) return;
+    check(zoneId, String);
+    Meteor.users.update(Meteor.userId(), { $set: { [`zoneMuted.${zoneId}`]: 1 } });
+  },
+  unmuteFromZone(zoneId) {
+    if (!this.userId) return;
+    check(zoneId, String);
+    Meteor.users.update(Meteor.userId(), { $unset: { [`zoneMuted.${zoneId}`]: 1 } });
   },
 });
 

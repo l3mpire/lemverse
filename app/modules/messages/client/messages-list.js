@@ -91,6 +91,13 @@ Template.messagesList.helpers({
     const { zoneLastSeenDates } = Meteor.user();
     return !zoneLastSeenDates || !zoneLastSeenDates[channel];
   },
+  muted() {
+    const channel = Session.get('messagesChannel');
+    if (!channel?.includes('zon_')) return false;
+
+    const { zoneMuted } = Meteor.user();
+    return !zoneMuted || !zoneMuted[channel];
+  },
   sameDay(index) {
     if (index === 0) return true;
 
@@ -131,6 +138,28 @@ Template.messagesList.events({
     Meteor.call('unsubscribeFromZone', channelId, err => {
       if (err) return;
       lp.notif.success('🔔 You will no longer be notified');
+    });
+  },
+  'click .js-channel-mute'(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const channelId = Session.get('messagesChannel');
+    if (!channelId.includes('zon_')) return;
+    Meteor.call('muteFromZone', channelId, true, err => {
+      if (err) return;
+      lp.notif.success('Notifications on this channel are now without sound 🔕 ... soundlessness ans silence ... chuuuut !');
+    });
+  },
+  'click .js-channel-unmute'(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const channelId = Session.get('messagesChannel');
+    if (!channelId.includes('zon_')) return;
+    Meteor.call('unmuteFromZone', channelId, err => {
+      if (err) return;
+      lp.notif.success('Notifications on this channel are now unmuted and hearable 🔔 !');
     });
   },
   'click .js-message-list-close'() { closeConsole(); },
