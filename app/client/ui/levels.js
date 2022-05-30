@@ -34,22 +34,22 @@ Template.levels.onCreated(function () {
 });
 
 Template.levels.events({
-  'click .js-create-level'(event, template) {
-    template.loading.set(true);
+  'click .js-create-level'(event, templateInstance) {
+    templateInstance.loading.set(true);
     Meteor.call('createLevel', this._id, (err, levelId) => {
-      template.loading.set(false);
+      templateInstance.loading.set(false);
       if (err) { error(err); return; }
 
       // we need to wait collections update on the simulation part, todo: find a better way to handle that
       setTimeout(() => askLoadLevel(levelId), 500);
     });
   },
-  'click .js-tab-switcher'(event, template) {
+  'click .js-tab-switcher'(event, templateInstance) {
     const { mode } = event.target.dataset;
-    template.tab.set(mode);
+    templateInstance.tab.set(mode);
   },
-  'click .js-level-select'(event, template) {
-    if (window.self !== window.top) template.loading.set(true);
+  'click .js-level-select'(event, templateInstance) {
+    if (window.self !== window.top) templateInstance.loading.set(true);
     const { levelId } = event.target.dataset;
     askLoadLevel(levelId, true);
   },

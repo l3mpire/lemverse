@@ -47,13 +47,13 @@ Template.entityEditor.events({
       closeInterface();
     }, null);
   },
-  'click #entity-flip'(e) {
+  'click #entity-flip'(event) {
     const entity = selectedEntity();
     if (!entity) return;
 
     const scaleX = Math.abs(entity.scale?.x || 1);
-    const newScaleX = e.currentTarget.checked ? -scaleX : scaleX;
-    Entities.update(entity._id, { $set: { 'scale.x': e.currentTarget.checked ? -scaleX : newScaleX } });
+    const newScaleX = event.currentTarget.checked ? -scaleX : scaleX;
+    Entities.update(entity._id, { $set: { 'scale.x': event.currentTarget.checked ? -scaleX : newScaleX } });
   },
   'click .js-close-entity-editor'() { closeInterface(); },
 });

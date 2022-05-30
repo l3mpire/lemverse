@@ -20,8 +20,8 @@ const updateLevel = (name, spawnPosition, hide = false) => {
 Template.levelToolbox.events({
   'focus input'() { hotkeys.setScope('form'); game?.scene?.keys?.WorldScene?.enableKeyboard(false, false); },
   'blur input'() { hotkeys.setScope(scopes.player); game?.scene?.keys?.WorldScene?.enableKeyboard(true, false); },
-  'blur .js-name'(e) { updateLevel(e.target.value, currentLevel().spawn, currentLevel().hide); },
-  'change .js-hidden'(e) { updateLevel(currentLevel().name, currentLevel().spawn, e.target.checked); },
+  'blur .js-name'(event) { updateLevel(event.target.value, currentLevel().spawn, currentLevel().hide); },
+  'change .js-hidden'(event) { updateLevel(currentLevel().name, currentLevel().spawn, event.target.checked); },
   'click .js-spawn-position'() {
     const { name } = currentLevel();
     const { x, y } = Meteor.user().profile;

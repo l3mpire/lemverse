@@ -91,50 +91,50 @@ const createNewQuestFromTitle = name => {
 };
 
 Template.questToolbar.events({
-  'keypress input.js-quest-name'(e) {
-    if (e.which !== 13) return;
-    createNewQuestFromTitle(e.currentTarget.value);
+  'keypress input.js-quest-name'(event) {
+    if (event.which !== 13) return;
+    createNewQuestFromTitle(event.currentTarget.value);
   },
-  'focus .js-quest-name'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'focus .js-quest-name'(event) {
+    event.preventDefault();
+    event.stopPropagation();
     hotkeys.setScope(scopes.form); game.scene.keys.WorldScene.enableKeyboard(false, false);
   },
-  'blur .js-quest-name'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'blur .js-quest-name'(event) {
+    event.preventDefault();
+    event.stopPropagation();
     hotkeys.setScope(scopes.player); game.scene.keys.WorldScene.enableKeyboard(true, false);
-    updateTitle(e.currentTarget.value);
+    updateTitle(event.currentTarget.value);
   },
-  'click .js-quest-join'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'click .js-quest-join'(event) {
+    event.preventDefault();
+    event.stopPropagation();
     joinQuest();
   },
-  'click .js-quest-leave'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'click .js-quest-leave'(event) {
+    event.preventDefault();
+    event.stopPropagation();
     leaveQuest();
   },
-  'click .js-quest-invite'(e, template) {
-    e.preventDefault();
-    e.stopPropagation();
+  'click .js-quest-invite'(event, templateInstance) {
+    event.preventDefault();
+    event.stopPropagation();
 
     const quest = activeQuest();
     Session.set('modal', { template: 'userListSelection', selectedUsers: quest.targets, ignoredUsers: [quest.createdBy] });
 
     // we can't send callback to Session.set, so:
     // open the user selection modal then wait for the close action to add the selected users to the quest
-    template.autorun(computation => {
+    templateInstance.autorun(computation => {
       if (Session.get('modal')) return;
       computation.stop();
 
       Tracker.nonreactive(() => setTargets(Session.get('usersSelected') || []));
     });
   },
-  'click .js-toggle-state'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'click .js-toggle-state'(event) {
+    event.preventDefault();
+    event.stopPropagation();
     toggleQuestState();
   },
 });

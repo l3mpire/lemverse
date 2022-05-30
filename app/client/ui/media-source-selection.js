@@ -20,7 +20,7 @@ Template.mediaSourceSelection.helpers({
 });
 
 Template.mediaSourceSelection.events({
-  'click .js-screen-source'(e) { selectedSource.set(e.currentTarget.dataset.id); },
+  'click .js-screen-source'(event) { selectedSource.set(event.currentTarget.dataset.id); },
   'click .js-submit'() {
     dispatchEventToModal(new CustomEvent('window-selected', { detail: selectedSource.get() }));
     Session.set('modal', null);

@@ -131,9 +131,9 @@ Template.editorTilesets.events({
   'dragover .js-drop-tileset, dragenter .js-drop-tileset'() {
     Session.set('showDropZone', true);
   },
-  'drag .js-drop-tileset, dragstart .js-drop-tileset, dragend .js-drop-tileset, dragover .js-drop-tileset, dragenter .js-drop-tileset, dragleave .js-drop-tileset, drop .js-drop-tileset'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'drag .js-drop-tileset, dragstart .js-drop-tileset, dragend .js-drop-tileset, dragover .js-drop-tileset, dragenter .js-drop-tileset, dragleave .js-drop-tileset, drop .js-drop-tileset'(event) {
+    event.preventDefault();
+    event.stopPropagation();
   },
   'dragleave .js-drop-tileset, dragend .js-drop-tileset, drop .js-drop-tileset'() {
     Session.set('showDropZone', false);
@@ -184,18 +184,18 @@ Template.editorTilesets.events({
   'click .js-toggle-visibility'(event) {
     Tilesets.update(this._id, { $set: { hidden: event.currentTarget.checked } });
   },
-  'blur .js-tileset-name'(event, tpl) {
+  'blur .js-tileset-name'(event, templateInstance) {
     if (!Session.get('selectedEditTilesetId')) return;
     Session.set('selectedEditTilesetId', undefined);
-    const newName = tpl.$(`#${this._id}`).val().trim();
+    const newName = templateInstance.$(`#${this._id}`).val().trim();
     if (newName?.length) Tilesets.update({ _id: this._id }, { $set: { name: newName } });
   },
-  'keyup .js-tileset-name'(event, tpl) {
+  'keyup .js-tileset-name'(event, templateInstance) {
     if (event.code === 'Escape') {
       Session.set('selectedEditTilesetId', undefined);
     }
     if (event.code === 'Enter') {
-      tpl.$(`#${this._id}`).blur();
+      templateInstance.$(`#${this._id}`).blur();
     }
   },
   'click .js-tileset-remove'(event) {

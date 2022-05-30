@@ -45,14 +45,14 @@ Template.messagesListMessage.helpers({
 });
 
 Template.messagesListMessage.events({
-  'click .js-username'(event, instance) {
+  'click .js-username'(event, templateInstance) {
     event.preventDefault();
     event.stopPropagation();
-    const userId = instance.data.message.createdBy;
+    const userId = templateInstance.data.message.createdBy;
     if (userId) Session.set('modal', { template: 'profile', userId });
   },
-  'click .js-message-remove'(event, instance) {
-    const messageId = instance.data.message._id;
+  'click .js-message-remove'(event, templateInstance) {
+    const messageId = templateInstance.data.message._id;
     lp.notif.confirm('Delete message', `Do you really want to delete this message?`, () => Messages.remove(messageId));
   },
   'load .files img'() { scrollToBottom(); },

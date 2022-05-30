@@ -14,15 +14,15 @@ const toggleUserSelection = (userId, template) => {
 };
 
 Template.userListSelection.events({
-  'click .js-selectable'(e, template) {
-    e.preventDefault();
-    e.stopPropagation();
+  'click .js-selectable'(event, templateInstance) {
+    event.preventDefault();
+    event.stopPropagation();
 
-    const { userId } = e.currentTarget.dataset;
-    toggleUserSelection(userId, template);
+    const { userId } = event.currentTarget.dataset;
+    toggleUserSelection(userId, templateInstance);
   },
-  'click .js-submit'(e, template) {
-    Session.set('usersSelected', Object.keys(template.selectedUsers.get()));
+  'click .js-submit'(event, templateInstance) {
+    Session.set('usersSelected', Object.keys(templateInstance.selectedUsers.get()));
     closeModal();
   },
 });

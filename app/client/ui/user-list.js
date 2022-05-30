@@ -82,8 +82,8 @@ Template.userList.helpers({
 });
 
 Template.userList.events({
-  'click .js-toggle-tab'(e, template) {
-    const { tab } = e.currentTarget.dataset;
-    template.activeTab.set(tab);
+  'click .js-toggle-tab'(event, templateInstance) {
+    const { tab } = event.currentTarget.dataset;
+    templateInstance.activeTab.set(tab);
   },
 });

@@ -484,29 +484,29 @@ Template.lemverse.helpers({
 });
 
 Template.lemverse.events({
-  'mouseup .button.audio'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'mouseup .button.audio'(event) {
+    event.preventDefault();
+    event.stopPropagation();
     toggleUserProperty('shareAudio');
   },
-  'mouseup .button.video'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'mouseup .button.video'(event) {
+    event.preventDefault();
+    event.stopPropagation();
     toggleUserProperty('shareVideo');
   },
-  'mouseup .button.screen'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'mouseup .button.screen'(event) {
+    event.preventDefault();
+    event.stopPropagation();
     toggleUserProperty('shareScreen');
   },
-  'mouseup .button.settings'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'mouseup .button.settings'(event) {
+    event.preventDefault();
+    event.stopPropagation();
     toggleModal('settingsMain');
   },
-  'mouseup .button.js-notifications'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'mouseup .button.js-notifications'(event) {
+    event.preventDefault();
+    event.stopPropagation();
     toggleModal('notifications');
   },
 });

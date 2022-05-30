@@ -16,8 +16,8 @@ Template.scoreInterface.onCreated(function () {
 });
 
 Template.scoreInterface.helpers({
-  showScores() { return Template.instance().showScores.get(); },
-  showTimer() { return Template.instance().showTimer.get(); },
-  timeLeft() { return Template.instance().timeLeft.get(); },
+  showScores(event, templateInstance) { return templateInstance.showScores.get(); },
+  showTimer(event, templateInstance) { return templateInstance.showTimer.get(); },
+  timeLeft(event, templateInstance) { return templateInstance.timeLeft.get(); },
   users() { return Meteor.users.find({ 'profile.escape.score': { $exists: true } }, { sort: { 'profile.escape.score': -1 } }).fetch(); },
 });

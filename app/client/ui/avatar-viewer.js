@@ -10,9 +10,9 @@ Template.avatarViewer.helpers({
 });
 
 Template.avatarViewer.events({
-  'click .js-show-user-profile'(e) {
+  'click .js-show-user-profile'(event) {
+    event.preventDefault();
+    event.stopPropagation();
     Session.set('modal', { template: 'profile', userId: this.user._id });
-    e.preventDefault();
-    e.stopPropagation();
   },
 });

@@ -218,18 +218,18 @@ Template.radialMenu.onDestroyed(() => {
 });
 
 Template.radialMenu.events({
-  'mousedown .js-menu-item'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'mousedown .js-menu-item'(event) {
+    event.preventDefault();
+    event.stopPropagation();
     window.dispatchEvent(new CustomEvent(eventTypes.onMenuOptionSelected, { detail: { option: this, user: menuCurrentUser() } }));
   },
-  'mouseup .js-menu-item'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'mouseup .js-menu-item'(event) {
+    event.preventDefault();
+    event.stopPropagation();
     window.dispatchEvent(new CustomEvent(eventTypes.onMenuOptionUnselected, { detail: { option: this } }));
   },
-  'mouseenter .js-menu-item'(e, template) { template.label.set(this.label); },
-  'mouseleave .js-menu-item'(e, template) { template.label.set(undefined); },
+  'mouseenter .js-menu-item'(event, templateInstance) { templateInstance.label.set(this.label); },
+  'mouseleave .js-menu-item'(event, templateInstance) { templateInstance.label.set(undefined); },
 });
 
 Template.radialMenu.helpers({
