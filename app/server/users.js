@@ -43,6 +43,7 @@ Accounts.onLogin(param => {
 });
 
 Meteor.publish('users', function (levelId) {
+  check(levelId, Match.Maybe(String));
   if (!this.userId) return undefined;
   if (!levelId) levelId = Meteor.settings.defaultLevelId;
 
@@ -88,6 +89,7 @@ Meteor.publish('userProfile', function (userId) {
 
 Meteor.methods({
   toggleEntitySubscription(entityId) {
+    check(entityId, String);
     if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
 
     const entitySubscriptionIds = Meteor.user().entitySubscriptionIds || [];
@@ -102,6 +104,7 @@ Meteor.methods({
     Accounts.setPassword(this.userId, password, { logout: false });
   },
   teleportUserInLevel(levelId) {
+    check(levelId, String);
     return teleportUserInLevel(levelId, Meteor.userId());
   },
   markNotificationAsRead(notificationId) {

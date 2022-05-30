@@ -30,6 +30,7 @@ Meteor.publish('notifications', function () {
 });
 
 Meteor.publish('tiles', function (levelId) {
+  check(levelId, Match.Maybe(String));
   if (!this.userId) return undefined;
   if (!levelId) levelId = Meteor.settings.defaultLevelId;
 

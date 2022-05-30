@@ -73,6 +73,7 @@ const pickEntityInventory = entity => {
 
 Meteor.methods({
   useEntity(entityId, value = undefined) {
+    check(value, Match.OneOf(undefined, null, Number, String));
     check(entityId, String);
 
     const entity = Entities.findOne(entityId);
@@ -100,6 +101,7 @@ Meteor.methods({
 });
 
 Meteor.publish('entities', function (levelId) {
+  check(levelId, Match.Maybe(String));
   if (!this.userId) return undefined;
   if (!levelId) levelId = Meteor.settings.defaultLevelId;
 

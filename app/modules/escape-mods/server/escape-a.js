@@ -24,9 +24,13 @@ const startPaintMode = levelId => {
 
 Meteor.methods({
   startPaintMode(levelId) {
+    check(levelId, String);
     startPaintMode(levelId); // todo: add hook on the entity collection to listen for state change and execute action
   },
   paintTile(levelId, x, y, index) {
+    check(levelId, String);
+    check([x, y, index], [Number]);
+
     Tiles.update({ levelId, x, y, index }, { $set: { 'metadata.paint': Meteor.userId() } });
   },
 });

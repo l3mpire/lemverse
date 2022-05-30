@@ -3,6 +3,7 @@ const { randomUUID } = require('crypto');
 const privateFields = { uuid: 0 };
 
 Meteor.publish('zones', function (levelId) {
+  check(levelId, Match.Maybe(String));
   if (!this.userId) return undefined;
   if (!levelId) levelId = Meteor.settings.defaultLevelId;
 
