@@ -30,13 +30,13 @@ userStreams = {
 
   audio(enabled) {
     if (!this.streams.main.instance) return;
-    _.each(this.streams.main.instance.getAudioTracks(), track => { track.enabled = enabled; });
+    this.streams.main.instance.getAudioTracks().forEach(track => { track.enabled = enabled; });
   },
 
   video(enabled) {
     const { instance: mainStream } = this.streams.main;
     this.getVideoElement().parentElement.classList.toggle('active-video', mainStream && enabled);
-    if (mainStream?.getVideoTracks().length) _.each(mainStream.getVideoTracks(), track => { track.enabled = enabled; });
+    if (mainStream?.getVideoTracks().length) mainStream.getVideoTracks().forEach(track => { track.enabled = enabled; });
   },
 
   screen(enabled) {
@@ -63,21 +63,18 @@ userStreams = {
 
   destroyStream(type) {
     const debug = Meteor.user()?.options?.debug;
-    if (debug) log('destroyStream: start');
     const { instance: stream } = type === streamTypes.main ? this.streams.main : this.streams.screen;
+    if (debug) log('destroyStream: start', { stream, type });
     if (!stream) {
       if (debug) log('destroyStream: cancelled (stream was not alive)');
       return;
     }
 
     this.stopTracks(stream);
-
     destroyVideoSource(this.getVideoElement());
 
-    if (stream === this.streams.main.instance) {
-      this.streams.main.instance = undefined;
-      this.hideUserPanel();
-    } else if (stream === this.streams.screen.instance) this.streams.screen.instance = undefined;
+    if (stream === this.streams.main.instance) this.streams.main.instance = undefined;
+    else if (stream === this.streams.screen.instance) this.streams.screen.instance = undefined;
   },
 
   async requestUserMedia(constraints = {}) {
@@ -122,6 +119,10 @@ userStreams = {
     if (debug) log('requestUserMedia: stream created', { streamId: stream.id });
     this.streams.main.instance = stream;
     Meteor.users.update(Meteor.userId(), { $unset: { 'profile.userMediaError': 1 } });
+
+    // sync video element with the stream
+    const videoElement = this.getVideoElement();
+    if (stream.id !== videoElement.srcObject?.id) videoElement.srcObject = stream;
 
     return stream;
   },
@@ -181,10 +182,8 @@ userStreams = {
   },
 
   async createStream(forceNew = false) {
-    const { shareVideo, shareAudio } = Meteor.user().profile;
     const constraints = this.getStreamConstraints(streamTypes.main);
     constraints.forceNew = forceNew;
-    this.showUserPanel();
 
     const { cams } = await this.enumerateDevices();
     if (cams.length === 0) delete constraints.video;
@@ -198,13 +197,11 @@ userStreams = {
       throw new Error(`unable to get a valid stream`);
     }
 
-    // sync video element with the stream
-    const videoElement = this.getVideoElement();
-    if (stream.id !== videoElement.srcObject?.id) videoElement.srcObject = stream;
-
     // ensures tracks are up-to-date
+    const { shareVideo, shareAudio } = Meteor.user().profile;
     this.audio(shareAudio);
     this.video(shareVideo);
+    this.showUserPanel();
 
     return stream;
   },
