@@ -69,7 +69,7 @@ WorldScene = new Phaser.Class({
       document.activeElement.blur();
     });
 
-    // Notes: tilesets with extrusion are required to avoid potential black lines between tiles
+    // Notes: tilesets with extrusion are required to avoid potential black lines between tiles (see https://github.com/sporadic-labs/tile-extruder)
     this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY) => {
       const zoom = Math.min(Math.max(this.cameras.main.zoom + (deltaY / zoomConfig.delta), zoomConfig.min), zoomConfig.max);
       this.cameras.main.setZoom(zoom);
