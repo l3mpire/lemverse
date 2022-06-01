@@ -80,10 +80,7 @@ peer = {
     streamsByUsers = streamsByUsers.filter(usr => usr.main.srcObject !== undefined || usr.screen.srcObject !== undefined || usr.waitingCallAnswer);
     this.remoteStreamsByUsers.set(streamsByUsers);
 
-    if (userProximitySensor.nearUsersCount() === 0) {
-      userStreams.destroyStream(streamTypes.main);
-      userStreams.toggleUserPanel(false);
-    }
+    if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
 
     $(`.js-video-${userId}-user`).remove();
     if (debug) log('closeCall: call closed successfully', userId);

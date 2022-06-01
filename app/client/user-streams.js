@@ -29,14 +29,11 @@ userStreams = {
   },
 
   audio(enabled) {
-    if (!this.streams.main.instance) return;
-    this.streams.main.instance.getAudioTracks().forEach(track => { track.enabled = enabled; });
+    this.streams.main.instance?.getAudioTracks().forEach(track => { track.enabled = enabled; });
   },
 
   video(enabled) {
-    const { instance: mainStream } = this.streams.main;
-    this.getVideoElement().parentElement.classList.toggle('active-video', mainStream && enabled);
-    if (mainStream?.getVideoTracks().length) mainStream.getVideoTracks().forEach(track => { track.enabled = enabled; });
+    this.streams.main.instance?.getVideoTracks().forEach(track => { track.enabled = enabled; });
   },
 
   screen(enabled) {
@@ -71,7 +68,6 @@ userStreams = {
     }
 
     this.stopTracks(stream);
-    destroyVideoSource(this.getVideoElement());
 
     if (stream === this.streams.main.instance) this.streams.main.instance = undefined;
     else if (stream === this.streams.screen.instance) this.streams.screen.instance = undefined;
@@ -119,10 +115,6 @@ userStreams = {
     if (debug) log('requestUserMedia: stream created', { streamId: stream.id });
     this.streams.main.instance = stream;
     Meteor.users.update(Meteor.userId(), { $unset: { 'profile.userMediaError': 1 } });
-
-    // sync video element with the stream
-    const videoElement = this.getVideoElement();
-    if (stream.id !== videoElement.srcObject?.id) videoElement.srcObject = stream;
 
     return stream;
   },
@@ -192,16 +184,12 @@ userStreams = {
     // if (!shareVideo) delete constraints.video;
 
     const stream = await this.requestUserMedia(constraints);
-    if (!stream) {
-      this.toggleUserPanel(false);
-      throw new Error(`unable to get a valid stream`);
-    }
+    if (!stream) throw new Error(`unable to get a valid stream`);
 
     // ensures tracks are up-to-date
     const { shareVideo, shareAudio } = Meteor.user().profile;
     this.audio(shareAudio);
     this.video(shareVideo);
-    this.toggleUserPanel(true);
 
     return stream;
   },
@@ -248,35 +236,6 @@ userStreams = {
     if (needVideo && !stream.getVideoTracks().length) return true;
 
     return false;
-  },
-
-  getVideoElement() {
-    if (!this.streams.main.domElement) {
-      this.streams.main.domElement = document.querySelector('.js-stream-me video');
-      if (this.streams.main.domElement) this.refreshVideoElementAvatar(this.streams.main.domElement);
-    }
-
-    return this.streams.main.domElement;
-  },
-
-  toggleUserPanel(enable) {
-    const videoElement = this.getVideoElement();
-    if (!videoElement) return;
-
-    const { parentElement } = videoElement;
-    parentElement.classList.toggle('active', enable);
-    if (enable) parentElement.style.backgroundImage = `url('${parentElement.dataset.avatar}')`;
-    else parentElement.style.backgroundImage = '';
-  },
-
-  refreshVideoElementAvatar(videoElement) {
-    if (!videoElement) return;
-
-    const user = Meteor.user();
-    if (!user) return;
-
-    videoElement.parentElement.dataset.avatar = generateRandomAvatarURLForUser(user);
-    if (this.streams.main.instance) videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
   },
 
   async enumerateDevices() {

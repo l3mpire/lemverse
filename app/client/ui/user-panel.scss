@@ -1,0 +1,116 @@
+@import "../_variables";
+
+.user-panel {
+  position: absolute;
+  z-index: 50;
+  bottom: 10px;
+  right: 10px;
+  opacity: 0;
+  transition: opacity 0.15s;
+
+  &.visible {
+    opacity: 1;
+  }
+
+  .js-stream-me {
+    position: relative;
+    width: 160px;
+    height: 46px;
+    background-color: rgba($main-color, 0.9);
+    border-radius: 15px;
+    z-index: 30;
+    background-size: cover;
+    transition: all 0.15s linear;
+    overflow: hidden;
+
+    &.active {
+      width: 240px;
+      height: 180px;
+      background-color: rgba($main-color, 1);
+
+      .buttons button:not(.active) {
+        opacity: 0.5;
+      }
+    }
+
+    video {
+      width: 240px;
+      height: 180px;
+      border-radius: 10px;
+      display: none;
+      object-fit: scale-down;
+      transform: scale(-1, 1);
+    }
+
+    &.active-video video {
+      display: block;
+    }
+
+    .buttons {
+      position: absolute;
+      bottom: 8px;
+      left: 0;
+      right: 0;
+      display: flex;
+      gap: 7px;
+      justify-content: center;
+
+      .button {
+        position: relative;
+        background-color: lighten($main-color, 65%);
+        height: 30px;
+        width: 30px;
+        box-sizing: content-box;
+        padding: 0;
+        margin: 0;
+        border-radius: $radius;
+        color: $main-color;
+
+        svg {
+          fill: $main-color;
+          transform: translate(0, 2px) scale(0.85);
+        }
+
+        &:hover {
+          background-color: lighten($main-color, 70%);
+        }
+
+        &.active {
+          background-color: $light-green;
+        }
+
+        &:not(.active):nth-child(-n+3)::before {
+          content: "\\";
+          position: absolute;
+          color: $main-color;
+          z-index: 1000;
+          font-size: 1.8rem;
+          top: -2px;
+          left: 10px;
+          transform: rotate(62deg);
+          pointer-events: none;
+          text-shadow: 0px 0px 3px #eff1f6;
+        }
+      }
+    }
+  }
+
+  .js-stream-screen-me {
+    display: none;
+    position: absolute;
+    bottom: 25px;
+    right: 16px;
+    width: 340px;
+    height: 200px;
+    background-color: $main-color;
+    border-radius: 15px;
+    overflow: hidden;
+    z-index: 28;
+
+    video {
+      width: 100%;
+      object-fit: fill;
+      height: 100%;
+    }
+  }
+}

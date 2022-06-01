@@ -261,8 +261,6 @@ userManager = {
       // ensures this.player is assigned to the logged user
       if (this.player?.userId !== loggedUser._id || !this.player.body) this.setAsMainPlayer(loggedUser._id);
 
-      if (user.profile.avatar !== oldUser?.profile.avatar) userStreams.refreshVideoElementAvatar(userStreams.getVideoElement());
-
       if (hasMoved) this.checkZones = true;
 
       if (shouldCheckDistance) {
