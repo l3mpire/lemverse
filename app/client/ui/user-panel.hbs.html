@@ -1,6 +1,8 @@
 <template name="userPanel">
   <div class="user-panel {{#unless loading}}visible{{/unless}}">
-    <div class="js-stream-screen-me"></div>
+    <div class="js-stream-screen-me {{#if screenSharing}}active{{/if}}">
+      <video type="video/mp4" width="340" height="240" autoplay muted></video>
+    </div>
     <div class="js-stream-me {{#if active}}active{{/if}} {{#if videoActive}}active-video{{/if}}" style="background-image: url('{{avatarURL}}')">
       <video type="video/mp4" width="240" height="180" autoplay muted></video>
       <div class="buttons">

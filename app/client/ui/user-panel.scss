@@ -20,6 +20,8 @@
     border-radius: 15px;
     z-index: 30;
     background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
     transition: all 0.15s linear;
     overflow: hidden;
 
@@ -102,15 +104,28 @@
     right: 16px;
     width: 340px;
     height: 200px;
-    background-color: $main-color;
+    background-color: #292929;
+    background-image: url("loader-white.gif");
+    background-size: 30%;
+    background-position: 50%;
+    background-repeat: no-repeat;
     border-radius: 15px;
     overflow: hidden;
     z-index: 28;
+
+    &.active {
+      display: block;
+    }
 
     video {
       width: 100%;
       object-fit: fill;
       height: 100%;
+      display: none;
+
+      &.active {
+        display: block;
+      }
     }
   }
 }

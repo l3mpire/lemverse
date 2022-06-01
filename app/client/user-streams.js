@@ -19,12 +19,10 @@ userStreams = {
     main: {
       instance: undefined,
       loading: false,
-      domElement: undefined,
     },
     screen: {
       instance: undefined,
       loading: false,
-      domElement: undefined,
     },
   },
 
@@ -46,14 +44,6 @@ userStreams = {
         if (Meteor.user().options?.debug) log('me -> you screen ****** I stop sharing screen, call closing', key);
         call.close();
         delete peer.calls[key];
-      });
-
-      const divElm = document.querySelector('.js-stream-screen-me');
-      divElm.srcObject = undefined;
-      divElm.style.display = 'none';
-      document.querySelectorAll('.js-stream-screen-me video').forEach(v => {
-        destroyVideoSource(v);
-        v.remove();
       });
     } else if (enabled) userProximitySensor.callProximityStartedForAllNearUsers();
   },
@@ -109,11 +99,9 @@ userStreams = {
       throw err;
     } finally { this.streams.main.loading = false; }
 
-    // todo: remove later, useless function call here
-    this.destroyStream(streamTypes.main);
-
     if (debug) log('requestUserMedia: stream created', { streamId: stream.id });
     this.streams.main.instance = stream;
+    window.dispatchEvent(new CustomEvent(eventTypes.onMediaStreamStateChanged, { detail: { type: streamTypes.main, state: 'ready', stream } }));
     Meteor.users.update(Meteor.userId(), { $unset: { 'profile.userMediaError': 1 } });
 
     return stream;
@@ -169,6 +157,7 @@ userStreams = {
 
     if (debug) log('requestDisplayMedia: stream created', { streamId: stream.id });
     this.streams.screen.instance = stream;
+    window.dispatchEvent(new CustomEvent(eventTypes.onMediaStreamStateChanged, { detail: { type: streamTypes.screen, state: 'ready', stream } }));
 
     return stream;
   },
@@ -197,19 +186,6 @@ userStreams = {
   async createScreenStream() {
     const stream = await this.requestDisplayMedia();
     if (!stream) throw new Error('Unable to get a display media');
-
-    let videoElm = document.querySelector('.js-stream-screen-me video');
-    if (!videoElm) {
-      videoElm = document.createElement('video');
-      videoElm.setAttribute('type', 'video/mp4');
-
-      const videoElmParent = document.querySelector('.js-stream-screen-me');
-      videoElmParent.style.display = 'block';
-      videoElmParent.appendChild(videoElm);
-    }
-
-    videoElm.autoplay = true;
-    videoElm.srcObject = stream;
 
     // set framerate after stream creation due to a deprecated constraints issue with the frameRate attribute
     this.applyConstraints(streamTypes.screen, 'video', this.getStreamConstraints(streamTypes.screen));

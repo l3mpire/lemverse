@@ -18,6 +18,7 @@ eventTypes = Object.freeze({
   onNotificationClicked: 'onNotificationClicked',
   onNotificationReceived: 'onNotificationReceived',
   onPeerDataReceived: 'onPeerDataReceived',
+  onMediaStreamStateChanged: 'onMediaStreamStateChanged',
   onTileAdded: 'onTileAdded',
   onTileChanged: 'onTileChanged',
   onUserNear: 'onUserNear',
