@@ -238,7 +238,7 @@ userStreams = {
 
   stopTracks(stream) {
     if (!stream) return;
-    _.each(stream.getTracks(), track => track.stop());
+    stream.getTracks().forEach(track => track.stop());
   },
 
   shouldCreateNewStream(streamType, needAudio, needVideo) {

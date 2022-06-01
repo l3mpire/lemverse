@@ -346,7 +346,7 @@ userManager = {
     player.body.setOffset(characterFootOffset.x, characterFootOffset.y);
 
     // add character's physic body to layers
-    _.each(levelManager.layers, layer => {
+    levelManager.layers.forEach(layer => {
       if (layer.playerCollider) this.scene.physics.world.removeCollider(layer.playerCollider);
       if (!level?.godMode) layer.playerCollider = this.scene.physics.add.collider(player, layer);
     });
@@ -366,7 +366,7 @@ userManager = {
     this.scene.physics.world.disableBody(this.player);
     if (destroy) this.player.destroy();
 
-    _.each(levelManager.layers, layer => {
+    levelManager.layers.forEach(layer => {
       if (layer.playerCollider) this.scene.physics.world.removeCollider(layer.playerCollider);
     });
 
@@ -601,7 +601,7 @@ userManager = {
 
     users.forEach(user => this.takeDamage(this.players[user._id]));
 
-    peer.punchCall(_.pluck(users, '_id'));
+    peer.punchCall(users.map(user => user._id));
   },
 
   takeDamage(player) {
