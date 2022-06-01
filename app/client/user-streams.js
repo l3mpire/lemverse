@@ -107,28 +107,6 @@ userStreams = {
     return stream;
   },
 
-  getStreamConstraints(type) {
-    const { videoRecorder, audioRecorder, screenShareFrameRate } = Meteor.user().profile;
-    const constraints = {};
-
-    if (type === streamTypes.main) {
-      constraints.audio = { deviceId: audioRecorder };
-      constraints.video = { deviceId: videoRecorder, ...videoDefaultConfig };
-    } else {
-      const { defaultFrameRate, maxFrameRate } = screenShareDefaultConfig;
-
-      constraints.audio = false;
-      constraints.video = {
-        frameRate: {
-          ideal: +screenShareFrameRate || defaultFrameRate,
-          max: maxFrameRate,
-        },
-      };
-    }
-
-    return constraints;
-  },
-
   async requestDisplayMedia() {
     const debug = Meteor.user().options?.debug;
     if (debug) log('requestDisplayMedia: start');
@@ -198,6 +176,28 @@ userStreams = {
     if (!stream) return;
     const tracks = trackType === 'video' ? stream.getVideoTracks() : stream.getAudioTracks();
     tracks.forEach(track => track.applyConstraints(constraints));
+  },
+
+  getStreamConstraints(type) {
+    const { videoRecorder, audioRecorder, screenShareFrameRate } = Meteor.user().profile;
+    const constraints = {};
+
+    if (type === streamTypes.main) {
+      constraints.audio = { deviceId: audioRecorder };
+      constraints.video = { deviceId: videoRecorder, ...videoDefaultConfig };
+    } else {
+      const { defaultFrameRate, maxFrameRate } = screenShareDefaultConfig;
+
+      constraints.audio = false;
+      constraints.video = {
+        frameRate: {
+          ideal: +screenShareFrameRate || defaultFrameRate,
+          max: maxFrameRate,
+        },
+      };
+    }
+
+    return constraints;
   },
 
   stopTracks(stream) {
