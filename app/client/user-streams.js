@@ -137,6 +137,9 @@ userStreams = {
     this.streams.screen.instance = stream;
     window.dispatchEvent(new CustomEvent(eventTypes.onMediaStreamStateChanged, { detail: { type: streamTypes.screen, state: 'ready', stream } }));
 
+    // detect cancel action from the browser UI
+    stream.getVideoTracks()[0].onended = () => Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } });
+
     return stream;
   },
 
