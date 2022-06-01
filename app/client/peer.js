@@ -82,7 +82,7 @@ peer = {
 
     if (userProximitySensor.nearUsersCount() === 0) {
       userStreams.destroyStream(streamTypes.main);
-      userStreams.hideUserPanel();
+      userStreams.toggleUserPanel(false);
     }
 
     $(`.js-video-${userId}-user`).remove();

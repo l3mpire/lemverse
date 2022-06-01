@@ -193,7 +193,7 @@ userStreams = {
 
     const stream = await this.requestUserMedia(constraints);
     if (!stream) {
-      this.hideUserPanel();
+      this.toggleUserPanel(false);
       throw new Error(`unable to get a valid stream`);
     }
 
@@ -201,7 +201,7 @@ userStreams = {
     const { shareVideo, shareAudio } = Meteor.user().profile;
     this.audio(shareAudio);
     this.video(shareVideo);
-    this.showUserPanel();
+    this.toggleUserPanel(true);
 
     return stream;
   },
@@ -237,16 +237,15 @@ userStreams = {
   },
 
   stopTracks(stream) {
-    if (!stream) return;
-    stream.getTracks().forEach(track => track.stop());
+    stream?.getTracks().forEach(track => track.stop());
   },
 
   shouldCreateNewStream(streamType, needAudio, needVideo) {
     const { instance: stream } = streamType === streamTypes.main ? this.streams.main : this.streams.screen;
 
     if (!stream) return true;
-    if (needAudio && stream.getAudioTracks().length === 0) return true;
-    if (needVideo && stream.getVideoTracks().length === 0) return true;
+    if (needAudio && !stream.getAudioTracks().length) return true;
+    if (needVideo && !stream.getVideoTracks().length) return true;
 
     return false;
   },
@@ -260,18 +259,14 @@ userStreams = {
     return this.streams.main.domElement;
   },
 
-  showUserPanel() {
+  toggleUserPanel(enable) {
     const videoElement = this.getVideoElement();
     if (!videoElement) return;
-    videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
-    videoElement.parentElement.classList.toggle('active', true);
-  },
 
-  hideUserPanel() {
-    const videoElement = this.getVideoElement();
-    if (!videoElement) return;
-    videoElement.parentElement.classList.toggle('active', false);
-    videoElement.parentElement.style.backgroundImage = '';
+    const { parentElement } = videoElement;
+    parentElement.classList.toggle('active', enable);
+    if (enable) parentElement.style.backgroundImage = `url('${parentElement.dataset.avatar}')`;
+    else parentElement.style.backgroundImage = '';
   },
 
   refreshVideoElementAvatar(videoElement) {
