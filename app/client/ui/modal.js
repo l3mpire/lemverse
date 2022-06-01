@@ -1,4 +1,7 @@
-isModalOpen = () => Session.get('modal');
+isModalOpen = template => {
+  if (!template) return Session.get('modal');
+  return Session.get('modal')?.template === template;
+};
 
 toggleModal = modalName => {
   if (Session.get('modal')?.template === modalName) Session.set('modal', null);
