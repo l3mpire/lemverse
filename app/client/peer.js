@@ -157,29 +157,30 @@ peer = {
 
   updatePeersStream(stream, type) {
     const debug = Meteor.user()?.options?.debug;
-    if (debug) log('updatePeersStream: start');
+    if (debug) log('updatePeersStream: start', { stream, type });
 
     if (type === streamTypes.main) {
-      if (debug) log(`updatePeersStream: main stream ${stream.id}`, stream);
+      if (debug) log(`updatePeersStream: main stream ${stream.id}`, { stream });
       const audioTrack = stream.getAudioTracks()[0];
       const videoTrack = stream.getVideoTracks()[0];
 
+      // note: to add a track it is necessary to renegotiate the connection with the remote user (https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/addTrack)
       _.each(this.calls, (call, key) => {
         if (key.indexOf('-screen') !== -1) return;
         const senders = call.peerConnection.getSenders();
-        let trackUpdated = false;
 
-        _.each(senders, sender => {
-          if (sender.track.id === audioTrack.id || sender.track.id === videoTrack.id) return;
-          if (sender.track.kind === 'audio') sender.replaceTrack(audioTrack);
-          else if (sender.track.kind === 'video') sender.replaceTrack(videoTrack);
-          trackUpdated = true;
-        });
+        const existingSenderAudioTrack = senders.find(sender => sender.track.kind === 'audio');
+        if (existingSenderAudioTrack) existingSenderAudioTrack.replaceTrack(audioTrack);
+        else call.peerConnection.addTrack(audioTrack);
 
-        if (debug && trackUpdated) log(`updatePeersStream: stream main track updated for user ${key}`);
+        const existingSenderVideoTrack = senders.find(sender => sender.track.kind === 'video');
+        if (existingSenderVideoTrack) existingSenderVideoTrack.replaceTrack(videoTrack);
+        else call.peerConnection.addTrack(videoTrack);
+
+        if (debug) log(`updatePeersStream: stream main track updated for user`, { key });
       });
     } else if (type === streamTypes.screen) {
-      if (debug) log(`updatePeersStream: screen share stream ${stream.id}`, stream);
+      if (debug) log(`updatePeersStream: screen share stream ${stream.id}`, { stream });
       const screenTrack = stream.getVideoTracks()[0];
 
       _.each(this.calls, (call, key) => {
@@ -187,7 +188,7 @@ peer = {
         const senders = call.peerConnection.getSenders();
         let trackUpdated = false;
 
-        _.each(senders, sender => {
+        senders.forEach(sender => {
           if (sender.track.id === screenTrack.id || sender.track.kind !== 'video') return;
           sender.replaceTrack(screenTrack);
           trackUpdated = true;
