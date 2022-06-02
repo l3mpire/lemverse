@@ -66,7 +66,7 @@ userStreams = {
   async requestUserMedia(constraints = {}) {
     const debug = Meteor.user().options?.debug;
 
-    if (debug) log('requestUserMedia: start');
+    if (debug) log('requestUserMedia: start', { constraints });
     if (constraints.forceNew) this.destroyStream(streamTypes.main);
 
     const { instance: currentStream, loading } = this.streams.main;
@@ -99,7 +99,7 @@ userStreams = {
       throw err;
     } finally { this.streams.main.loading = false; }
 
-    if (debug) log('requestUserMedia: stream created', { streamId: stream.id });
+    if (debug) log('requestUserMedia: stream created', { streamId: stream.id, constraints });
     this.streams.main.instance = stream;
     window.dispatchEvent(new CustomEvent(eventTypes.onMediaStreamStateChanged, { detail: { type: streamTypes.main, state: 'ready', stream } }));
     Meteor.users.update(Meteor.userId(), { $unset: { 'profile.userMediaError': 1 } });
