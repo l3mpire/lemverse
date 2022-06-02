@@ -37,3 +37,26 @@ Template.userPanel.helpers({
   screenSharing() { return Meteor.user({ fields: { 'profile.shareScreen': 1 } })?.profile.shareScreen; },
   videoActive() { return talking() && Meteor.user({ fields: { 'profile.shareVideo': 1 } })?.profile.shareVideo; },
 });
+
+Template.userPanel.events({
+  'mouseup .button.audio'(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    toggleUserProperty('shareAudio');
+  },
+  'mouseup .button.video'(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    toggleUserProperty('shareVideo');
+  },
+  'mouseup .button.screen'(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    toggleUserProperty('shareScreen');
+  },
+  'mouseup .button.settings'(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    toggleModal('settingsMain');
+  },
+});
