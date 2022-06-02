@@ -14,7 +14,7 @@
 
   .js-stream-me {
     position: relative;
-    width: 160px;
+    width: 205px;
     height: 46px;
     background-color: rgba($main-color, 0.9);
     border-radius: 15px;
@@ -56,6 +56,11 @@
       display: flex;
       gap: 7px;
       justify-content: center;
+
+      .separator {
+        color: #d2d5e0;
+        transform: translateY(5px);
+      }
 
       .button {
         position: relative;

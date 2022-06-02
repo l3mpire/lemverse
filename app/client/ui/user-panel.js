@@ -59,4 +59,9 @@ Template.userPanel.events({
     event.stopPropagation();
     toggleModal('settingsMain');
   },
+  'mouseup .button.js-user-invitation'(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    toggleModal('userInvitation', 'height-auto');
+  },
 });
