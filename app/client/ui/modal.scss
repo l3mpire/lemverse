@@ -34,6 +34,10 @@
       opacity: 0;
       transition: opacity 0.15s linear;
 
+      &.height-auto {
+        height: auto;
+      }
+
       .modal-body {
         display: flex;
         flex-direction: column;

@@ -3,9 +3,9 @@ isModalOpen = template => {
   return Session.get('modal')?.template === template;
 };
 
-toggleModal = modalName => {
+toggleModal = (modalName, classes = '') => {
   if (Session.get('modal')?.template === modalName) Session.set('modal', null);
-  else Session.set('modal', { template: modalName });
+  else Session.set('modal', { template: modalName, classes });
 };
 
 closeModal = () => Session.set('modal', undefined);
@@ -53,4 +53,8 @@ Template.modalContainer.helpers({
 
 Template.modal.events({
   'click .js-modal-close'() { closeModal(); },
+});
+
+Template.modal.helpers({
+  classes() { return Session.get('modal')?.classes || ''; },
 });
