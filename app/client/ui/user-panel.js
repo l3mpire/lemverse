@@ -21,6 +21,12 @@ Template.userPanel.onCreated(function () {
   this.avatarURL = new ReactiveVar();
   window.addEventListener(eventTypes.onMediaStreamStateChanged, onMediaStreamStateChanged);
 
+  hotkeys('space', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
+  hotkeys('shift+1', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
+  hotkeys('shift+2', { scope: scopes.player }, () => toggleUserProperty('shareVideo'));
+  hotkeys('shift+3', { scope: scopes.player }, () => toggleUserProperty('shareScreen'));
+  hotkeys('shift+4', { scope: scopes.player }, () => toggleModal('settingsMain'));
+
   this.autorun(() => {
     const user = Meteor.user({ fields: { 'profile.avatar': 1 } });
     if (user) this.avatarURL.set(generateRandomAvatarURLForUser(user));
@@ -29,6 +35,11 @@ Template.userPanel.onCreated(function () {
 
 Template.userPanel.onDestroyed(() => {
   window.removeEventListener(eventTypes.onMediaStreamStateChanged, onMediaStreamStateChanged);
+  hotkeys.unbind('space', scopes.player);
+  hotkeys.unbind('shift+1', scopes.player);
+  hotkeys.unbind('shift+2', scopes.player);
+  hotkeys.unbind('shift+3', scopes.player);
+  hotkeys.unbind('shift+4', scopes.player);
 });
 
 Template.userPanel.helpers({
