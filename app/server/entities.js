@@ -81,7 +81,7 @@ Meteor.methods({
 
     if (!entity.actionType || entity.actionType === entityActionType.actionable) switchEntityState(entity, value);
     else if (entity.actionType === entityActionType.pickable) {
-      pickEntityInventory(entity, value);
+      pickEntityInventory(entity);
       Entities.remove(entity._id);
     } else throw new Error('entity action not implemented');
 
