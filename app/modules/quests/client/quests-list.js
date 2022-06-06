@@ -37,11 +37,11 @@ const quests = mode => {
 
 const autoSelectQuest = template => {
   const selectedQuestId = Session.get('quests')?.selectedQuestId || '';
-  if (selectedQuestId.includes('qst_')) selectQuest(selectedQuestId, template);
+  if (selectedQuestId.includes('qst_')) selectQuest(selectedQuestId);
   else {
     const allQuests = quests(template.questListMode.get());
     const firstQuest = Object.keys(allQuests).length ? Object.values(allQuests)[0][0] : undefined;
-    if (firstQuest) selectQuest(firstQuest._id, template);
+    if (firstQuest) selectQuest(firstQuest._id);
     else {
       messagesModule.stopListeningMessagesChannel();
       Session.set('selectedQuestId', undefined);
@@ -91,10 +91,10 @@ const entityName = (entityId, defaultName = 'Entity') => Entities.findOne(entity
 createQuestDraft = (targets, origin) => Session.set('quests', { selectedQuestId: Quests.id(), targets, origin });
 
 Template.questsList.events({
-  'click .js-quest'(event, templateInstance) {
+  'click .js-quest'(event) {
     event.preventDefault();
     event.stopPropagation();
-    selectQuest(event.currentTarget.dataset.questId, templateInstance);
+    selectQuest(event.currentTarget.dataset.questId);
   },
   'click .js-quest-switch-mode'(event, templateInstance) {
     event.preventDefault();
