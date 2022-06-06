@@ -1,0 +1,47 @@
+<template name="editorOnboarding">
+  <div class="editor-onboarding">
+    <h1>Onboarding</h1>
+    <form>
+      <div class="group-field">
+        <label for="email" class="label">Email:</label>
+        <input name="email" type="email" class="input js-edit js-email" autofocus required>
+      </div>
+      <div class="group-field">
+        <label for="level-name" class="label">Level name:</label>
+        <input name="levelName" type="text" class="input js-edit js-level-name" required>
+      </div>
+
+      <h2>Template</h2>
+      <div class="group-field">
+        <select class="select" name="levelTemplateId" required>
+          {{#each templates}}
+            <option value="{{_id}}">{{name}}</option>
+          {{/each}}
+        </select>
+      </div>
+      <button type="submit" class="button {{#if loading}}disabled{{/if}}">Create</button>
+    </form>
+
+    {{#if levelURL}}
+      <div class="output">
+        <h3>Results</h3>
+        <div class="copy-field">
+          <input type="text" class="input" disabled value="{{passwordURL}}">
+          <button class="js-copy-password-url button">
+            <svg viewBox="0 0 24 24">
+                <path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z" />
+            </svg>
+          </button>
+        </div>
+        <div class="copy-field">
+          <input type="text" class="input" disabled value="{{levelURL}}">
+          <button class="js-copy-level-url button">
+            <svg viewBox="0 0 24 24">
+                <path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    {{/if}}
+  </div>
+</template>
