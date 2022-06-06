@@ -696,10 +696,8 @@ userManager = {
       if (!emitterPlayer) return;
 
       const { zoneMuted } = Meteor.user();
-      const userEmitterZone = zones.currentZone(userEmitter)?._id;
-      if (!zoneMuted[userEmitterZone]) {
-        sounds.play('text-sound.wav', 0.5);
-      }
+      const userEmitterZoneId = zones.currentZone(userEmitter)?._id;
+      if (!zoneMuted || !zoneMuted[userEmitterZoneId]) sounds.play('text-sound.wav', 0.5);
 
       const popInIdentifier = `${emitterUserId}-pop-in`;
       characterPopIns.createOrUpdate(
