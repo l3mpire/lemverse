@@ -85,6 +85,12 @@ Meteor.publish('levels', function () {
   return Levels.find({ }, { fields: { name: 1, hide: 1, visit: 1, createdBy: 1, template: 1 } });
 });
 
+Meteor.publish('levelTemplates', function () {
+  if (!this.userId) return undefined;
+
+  return Levels.find({ template: true, hide: { $exists: false } }, { fields: { name: 1, hide: 1, visit: 1, createdBy: 1, template: 1 } });
+});
+
 Meteor.publish('currentLevel', function () {
   if (!this.userId) return undefined;
 
