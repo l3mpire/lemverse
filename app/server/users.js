@@ -135,6 +135,25 @@ Meteor.methods({
     check(zoneId, String);
     Meteor.users.update(Meteor.userId(), { $unset: { [`zoneMuted.${zoneId}`]: 1 } });
   },
+  onboardUser({ email, levelName, levelTemplateId }) {
+    if (!this.userId) throw new Meteor.Error('user-required', 'User required');
+    if (!Meteor.user().roles?.admin) throw new Meteor.Error('user-unauthorized', 'Unauthorized access');
+    check([email, levelName, levelTemplateId], [String]);
+
+    const userId = Accounts.createUser({ email });
+
+    // create level
+    const levelId = createLevel(levelTemplateId, levelName);
+    Levels.update(levelId, { $set: { hide: true, createdBy: userId } });
+
+    // generate the enrollment link
+    const { user, token } = Accounts.generateResetToken(userId, email, 'enrollAccount');
+    const url = Accounts.urls.enrollAccount(token);
+
+    teleportUserInLevel(levelId, userId);
+
+    return { user, levelId, passwordURL: url };
+  },
 });
 
 Meteor.users.find({ 'status.online': true }).observeChanges({
