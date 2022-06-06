@@ -7,8 +7,8 @@ scopes = {
   form: 'form',
 };
 
-hotkeys.filter = function (event) {
-  const { tagName } = event.target || event.srcElement;
+hotkeys.filter = event => {
+  const { tagName } = event.target;
   return !/^(INPUT|TEXTAREA)$/.test(tagName);
 };
 
