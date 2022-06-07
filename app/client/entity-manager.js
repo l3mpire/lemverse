@@ -257,7 +257,6 @@ entityManager = {
         // the spawn being asynchronous, an entity may have disappeared before being created
         if (!Entities.findOne(entity._id)) return;
 
-        const pickable = entity.actionType === entityActionType.pickable;
         const gameObject = this.scene.add.container(entity.x, entity.y)
           .setData('id', entity._id)
           .setData('actionType', entity.actionType)
@@ -272,22 +271,13 @@ entityManager = {
         if (!entity.gameObject) return;
 
         let mainSprite;
-        const { sprite } = entity.gameObject;
+        const { collide, sprite, text } = entity.gameObject;
         if (sprite) mainSprite = gameObject.add(this.spawnSpriteFromConfig(sprite));
-
-        if (entity.gameObject.text) {
-          const mainText = this.scene.make.text({ x: 0, y: 0, ...entity.gameObject.text, add: true });
-          mainText.name = 'main-text';
-          mainText.setScale(entity.gameObject.text.scale || 1);
-          mainText.setOrigin(0.5, 0.5);
-          gameObject.add(mainText);
-
-          if (!entity.gameObject.text.text) mainText.setText(entity.state);
-        }
-
-        if (entity.gameObject.collide) this.scene.physics.world.enableBody(gameObject);
+        if (text) gameObject.add(this.spawnTextFromConfig(text, entity.state));
+        if (collide) this.scene.physics.world.enableBody(gameObject);
 
         // pickable/loots animations
+        const pickable = entity.actionType === entityActionType.pickable;
         if (pickable && mainSprite) {
           const animation = entityAnimations.floating(0, -floatingDistance);
           this.scene.tweens.add({
@@ -339,6 +329,17 @@ entityManager = {
     if (animation.frames.length) sprite.play({ key: config.key, repeat: -1 });
 
     return sprite;
+  },
+
+  spawnTextFromConfig(config, defaultText = '') {
+    const text = this.scene.make.text({ x: 0, y: 0, ...config, add: true });
+    text.name = 'main-text';
+    text.setScale(config.scale || 1);
+    text.setOrigin(0.5, 0.5);
+
+    if (!text.text) text.setText(defaultText);
+
+    return text;
   },
 
   computeTooltipPosition(entity) {
