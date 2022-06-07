@@ -3,14 +3,31 @@ const thumbnailMaxSize = 35;
 const closeInterface = () => Session.set('selectedEntityId', undefined);
 const prefabEntities = () => Entities.find({ prefab: true }).fetch();
 const selectedEntity = () => Entities.findOne(Session.get('selectedEntityId'));
+const customEntityUploadAllowed = () => lp.isLemverseBeta('custom-sprite');
 
 Template.entityToolbox.onRendered(function () {
-  this.subscribe('entityPrefabs');
+  this.subscribe('entityPrefabs', Meteor.user().profile.levelId);
 });
 
 Template.entityToolbox.helpers({
   entities() { return prefabEntities(); },
   showEntityList() { return !Session.get('selectedEntityId'); },
+  customEntityUploadAllowed() { return customEntityUploadAllowed(); },
+});
+
+Template.entityToolbox.events({
+  'change .js-entity-sprite-upload'(event) {
+    if (!customEntityUploadAllowed()) return;
+    const file = event.currentTarget.files[0];
+
+    const uploadedFile = Files.insert({ file, meta: { source: 'toolbox-entity', userId: Meteor.userId() } }, false);
+    uploadedFile.on('end', (error, fileDocument) => {
+      if (error) { lp.notif.error(`Error during file upload: ${error.reason}`); return; }
+      Meteor.call('spawnEntityFromFile', fileDocument._id);
+    });
+
+    uploadedFile.start();
+  },
 });
 
 Template.entityToolboxEntry.helpers({

@@ -170,5 +170,10 @@ fileOnBeforeUpload = (file, mime) => {
     return true;
   }
 
+  if (meta.source === 'toolbox-entity') {
+    if (!['image/png', 'image/jpeg'].includes(mime)) return `Only jpeg and png files can be uploaded`;
+    return true;
+  }
+
   return 'Source of upload not set';
 };

@@ -23,6 +23,13 @@
 <template name="entityToolbox">
   <div class="entity-toolbox">
     {{#if showEntityList}}
+      {{#if customEntityUploadAllowed}}
+        <div class="create-entity-template">
+          <label for="js-entity-sprite-upload" class="custom-file-upload">Create new entity template</label>
+          <input id="js-entity-sprite-upload" class="js-entity-sprite-upload" type="file" accept="image/png, image/jpeg, image/gif">
+        </div>
+      {{/if}}
+
       <ul class="list">
         {{#each entities}}
           {{> entityToolboxEntry}}

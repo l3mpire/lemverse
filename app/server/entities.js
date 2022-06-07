@@ -26,10 +26,35 @@ spawnEntityFromPrefab = (entityId, data = {}) => {
     y: data.y || y,
     createdBy: Meteor.userId(),
     createdAt: new Date(),
-    prefab: undefined,
   });
 
   log('spawnEntityFromPrefab: done', { entityId });
+
+  return spawnedEntityId;
+};
+
+const spawnEntityFromFile = (fileId, options = {}) => {
+  log('spawnEntityFromFile: start', { fileId, options });
+  check(fileId, String);
+  check(options, { x: Number, y: Number, levelId: String });
+
+  const spawnedEntityId = Entities.insert({
+    _id: Entities.id(),
+    levelId: options.levelId,
+    x: options.x,
+    y: options.y,
+    actionType: entityActionType.none,
+    gameObject: {
+      sprite: {
+        key: fileId,
+        fileId,
+      },
+    },
+    createdBy: Meteor.userId(),
+    createdAt: new Date(),
+  });
+
+  log('spawnEntityFromFile: done', { spawnedEntityId });
 
   return spawnedEntityId;
 };
@@ -91,6 +116,20 @@ Meteor.methods({
     check(entityId, String);
 
     return subscribedUsersToEntity(entityId);
+  },
+  spawnEntityFromFile(fileId, options = {}) {
+    check(fileId, String);
+    check(options, { x: Match.Optional(Number), y: Match.Optional(Number) });
+    if (!lp.isLemverseBeta('custom-sprite')) throw new Meteor.Error('invalid-user', 'available for admin only for now');
+    if (!this.userId) return undefined;
+
+    const { levelId, x, y } = Meteor.user().profile;
+
+    return spawnEntityFromFile(fileId, {
+      x: options.x || x,
+      y: options.y || y,
+      levelId,
+    });
   },
   spawnEntityFromPrefab(entityId, data = {}) {
     check(entityId, String);
