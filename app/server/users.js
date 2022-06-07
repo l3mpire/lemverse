@@ -143,13 +143,12 @@ Meteor.methods({
     const userId = Accounts.createUser({ email });
 
     // create level
-    const levelId = createLevel(levelTemplateId, levelName);
+    const levelId = createLevel({ templateId: levelTemplateId, name: levelName });
     Levels.update(levelId, { $set: { hide: true, createdBy: userId } });
 
     // generate the enrollment link
     const { user, token } = Accounts.generateResetToken(userId, email, 'enrollAccount');
     const url = Accounts.urls.enrollAccount(token);
-
     teleportUserInLevel(levelId, userId);
 
     return { user, levelId, passwordURL: url };

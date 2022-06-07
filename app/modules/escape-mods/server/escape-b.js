@@ -17,7 +17,7 @@ Meteor.methods({
 
     // Clone Level
     log('escapeMakeLevel: cloning template', { templateId });
-    const newLevelId = createLevel(templateId, `Escape B #${Math.floor(Math.random() * 100)}`);
+    const newLevelId = createLevel({ templateId, name: `Escape B #${Math.floor(Math.random() * 100)}` });
 
     // Reset metadata
     Levels.update({ _id: newLevelId }, { $set: { 'metadata.escape': true, 'metadata.teleport': {}, disableEdit: true, godMode: false }, $unset: { 'metadata.end': 1, 'metadata.start': 1, 'metadata.currentRoom': 1, 'metadata.currentRoomTime': 1 } });
