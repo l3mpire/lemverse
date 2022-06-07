@@ -8,27 +8,27 @@ const applyEntityState = (entity, stateActions) => {
   stateActions.replace?.forEach(t => Tiles.update({ levelId, x: t.x, y: t.y }, { $set: { tilesetId: t.newTilesetId, index: t.newIndex } }));
 };
 
-spawnEntityFromPrefab = (entityId, data = {}) => {
+spawnEntityFromPrefab = (entityId, options = {}) => {
   check(entityId, String);
-  check(data, Object);
+  check(options, { x: Number, y: Number, levelId: String });
 
-  log('spawnEntityFromPrefab: start', { entityId });
+  log('spawnEntityFromPrefab: start', { entityId, options });
 
   const entityPrefab = Entities.findOne(entityId);
   if (!entityPrefab) throw new Error(`The entity does not exists (${entityId})`);
 
-  const { levelId, x, y } = Meteor.user().profile;
   const spawnedEntityId = Entities.insert({
     ...entityPrefab,
     _id: Entities.id(),
-    levelId: data.levelId || levelId,
-    x: data.x || x,
-    y: data.y || y,
+    levelId: options.levelId,
+    x: options.x,
+    y: options.y,
     createdBy: Meteor.userId(),
     createdAt: new Date(),
+    prefab: undefined, // remove prefab attribute
   });
 
-  log('spawnEntityFromPrefab: done', { entityId });
+  log('spawnEntityFromPrefab: done', { spawnedEntityId });
 
   return spawnedEntityId;
 };
@@ -131,11 +131,18 @@ Meteor.methods({
       levelId,
     });
   },
-  spawnEntityFromPrefab(entityId, data = {}) {
+  spawnEntityFromPrefab(entityId, options = {}) {
     check(entityId, String);
-    check(data, Object);
+    check(options, { x: Match.Optional(Number), y: Match.Optional(Number) });
+    if (!this.userId) return undefined;
 
-    spawnEntityFromPrefab(entityId, data);
+    const { levelId, x, y } = Meteor.user().profile;
+
+    return spawnEntityFromPrefab(entityId, {
+      levelId: options.levelId || levelId,
+      x: options.x || x,
+      y: options.y || y,
+    });
   },
 });
 
