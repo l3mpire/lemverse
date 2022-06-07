@@ -86,7 +86,7 @@ entityManager = {
 
     entityInstance
       .setPosition(newEntity.x, newEntity.y)
-      .setDepth(newEntity.y)
+      .setDepth(newEntity.gameObject.depth || newEntity.y)
       .setScale(newEntity.scale?.x || 1, newEntity.scale?.y || 1);
 
     if (newEntity.state !== oldEntity.state) this.updateEntityFromState(newEntity, newEntity.state);
@@ -261,7 +261,7 @@ entityManager = {
         const gameObject = this.scene.add.container(entity.x, entity.y)
           .setData('id', entity._id)
           .setData('actionType', entity.actionType)
-          .setDepth(entity.y)
+          .setDepth(entity.gameObject?.depth || entity.y)
           .setScale(entity.scale?.x || 1, entity.scale?.y || 1)
           .on('pointerdown', onPointerDown)
           .on('drag', onDrag)
