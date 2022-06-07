@@ -108,11 +108,14 @@ Meteor.publish('entities', function (levelId) {
   return Entities.find({ levelId, prefab: { $exists: false } });
 });
 
-Meteor.publish('entityPrefabs', function () {
+Meteor.publish('entityPrefabs', function (levelId) {
+  check(levelId, Match.Maybe(String));
   if (!this.userId) return undefined;
 
-  const selectors = { prefab: true, actionType: { $ne: entityActionType.pickable } };
+  const selectors = { prefab: true };
+
   if (!Meteor.user().roles?.admin) selectors.validated = { $exists: true };
+  if (levelId) selectors.$or = [{ levelId: { $exists: false } }, { levelId }];
 
   return Entities.find(selectors);
 });
