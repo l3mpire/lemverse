@@ -10,9 +10,11 @@
     overflow-x: scroll;
     max-width: 100%;
     list-style-type: none;
-    margin-right: 200px;
     overflow: scroll;
     max-height: 250px;
+    margin: 0;
+    margin-right: 200px;
+    padding: 0;
 
     li.js-entity-entry {
       padding: 5px;
