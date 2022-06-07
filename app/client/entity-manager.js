@@ -272,7 +272,10 @@ entityManager = {
 
         let mainSprite;
         const { collide, sprite, text } = entity.gameObject;
-        if (sprite) mainSprite = gameObject.add(this.spawnSpriteFromConfig(sprite));
+        if (sprite) {
+          mainSprite = this.spawnSpriteFromConfig(sprite);
+          gameObject.add(mainSprite);
+        }
         if (text) gameObject.add(this.spawnTextFromConfig(text, entity.state));
         if (collide) this.scene.physics.world.enableBody(gameObject);
 
@@ -332,7 +335,7 @@ entityManager = {
   },
 
   spawnTextFromConfig(config, defaultText = '') {
-    const text = this.scene.make.text({ x: 0, y: 0, ...config, add: true });
+    const text = this.scene.make.text({ ...config, add: true });
     text.name = 'main-text';
     text.setScale(config.scale || 1);
     text.setOrigin(0.5, 0.5);
