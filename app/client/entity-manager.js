@@ -272,24 +272,8 @@ entityManager = {
         if (!entity.gameObject) return;
 
         let mainSprite;
-        if (entity.gameObject.sprite) {
-          const { sprite } = entity.gameObject;
-          if (sprite.assetId) mainSprite = this.scene.add.sprite(0, 0, sprite.assetId, sprite.key);
-          else mainSprite = this.scene.add.sprite(0, 0, sprite.key);
-
-          mainSprite.name = 'main-sprite';
-          gameObject.add(mainSprite);
-
-          // play spritesheet animation
-          if (sprite.framerate) {
-            const animation = this.scene.anims.create({
-              key: sprite.key,
-              frames: this.scene.anims.generateFrameNumbers(sprite.key),
-              frameRate: sprite.framerate || 16,
-            });
-            if (animation.frames.length) mainSprite.play({ key: sprite.key, repeat: -1 });
-          }
-        }
+        const { sprite } = entity.gameObject;
+        if (sprite) mainSprite = gameObject.add(this.spawnSpriteFromConfig(sprite));
 
         if (entity.gameObject.text) {
           const mainText = this.scene.make.text({ x: 0, y: 0, ...entity.gameObject.text, add: true });
@@ -334,6 +318,27 @@ entityManager = {
 
       if (callback) callback();
     });
+  },
+
+  spawnSpriteFromConfig(config) {
+    let sprite;
+
+    if (config.assetId) sprite = this.scene.add.sprite(0, 0, config.assetId, config.key);
+    else sprite = this.scene.add.sprite(0, 0, config.key);
+    sprite.name = 'main-sprite';
+
+    // animations
+    if (!config.framerate) return sprite;
+
+    const animation = this.scene.anims.create({
+      key: config.key,
+      frames: this.scene.anims.generateFrameNumbers(config.key),
+      frameRate: config.framerate || 16,
+    });
+
+    if (animation.frames.length) sprite.play({ key: config.key, repeat: -1 });
+
+    return sprite;
   },
 
   computeTooltipPosition(entity) {
