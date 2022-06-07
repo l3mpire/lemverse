@@ -1,7 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable import/no-extraneous-dependencies */
-import stringify from 'fast-json-stable-stringify';
-
 let logFibersId = 0;
 
 const logToServer = (type, p1, p2) => {

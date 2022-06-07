@@ -44,7 +44,7 @@ Template.registerHelper('absoluteUrl', path => {
 });
 
 // overridable if exists
-ov = (obj, key, def) => obj && obj.override && lp.getVal(obj.override, key) || obj && lp.getVal(obj, key) || def;
+const ov = (obj, key, def) => obj && obj.override && lp.getVal(obj.override, key) || obj && lp.getVal(obj, key) || def;
 Template.registerHelper('ov', ov);
 
 // moment related
@@ -57,6 +57,7 @@ Template.registerHelper('formatDate', (date, format) => moment(date).format(form
 // log
 Template.registerHelper('l', (...args) => l({ args }));
 
+// eslint-disable-next-line no-undef
 Template.registerHelper('s', (method, text) => s[method](text));
 Template.registerHelper('pluralize', (text, n) => text && lp.pluralize(text, n));
 

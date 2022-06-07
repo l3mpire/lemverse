@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved
 import DOMPurify from 'dompurify';
 
 // escape XSS
@@ -7,7 +8,6 @@ Meteor.startup(() => {
   // so we can track reboot in lemlog
   log(`STARTTOKEN: --------------------------- ${lp.name()} started ----------------------------`);
 });
-
 
 //
 // gwendall:body-events@

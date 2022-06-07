@@ -94,14 +94,16 @@ lp.timeout = (fn, timeout, fnName) => Meteor.setTimeout(() => {
   }
 }, timeout * 1000);
 
-lp.defer = (fn, fnName) => Meteor.setTimeout(() => {
+lp.defer = (fn, fnName) => {
   if (!fnName) fnName = fn.name;
-  try {
-    fn();
-  } catch (err) {
-    error(`lp.defer${fnName ? `>${fnName}` : ''}: Exception`, { err, name: fnName || fn?.toString()?.substr(0, 1000) });
-  }
-}, 0);
+  return Meteor.defer(() => {
+    try {
+      fn();
+    } catch (err) {
+      error(`lp.defer${fnName ? `>${fnName}` : ''}: Exception`, { err, name: fnName || fn?.toString()?.substr(0, 1000) });
+    }
+  });
+};
 
 lp.interval = (fn, delay, fnName) => Meteor.setInterval(() => {
   if (!fnName) fnName = fn.name;
