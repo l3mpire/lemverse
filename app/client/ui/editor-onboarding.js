@@ -11,8 +11,14 @@ Template.editorOnboarding.events({
     event.stopPropagation();
     templateInstance.loading.set(true);
 
-    const { email: { value: email }, levelName: { value: levelName }, levelTemplateId: { value: levelTemplateId } } = event.target;
-    Meteor.call('onboardUser', { email, levelName, levelTemplateId }, (error, result) => {
+    const {
+      email: { value: email },
+      guildName: { value: guildName },
+      levelName: { value: levelName },
+      levelTemplateId: { value: levelTemplateId },
+    } = event.target;
+
+    Meteor.call('onboardUser', { email, guildName, levelName, levelTemplateId }, (error, result) => {
       if (error) { lp.notif.error(error); return; }
       templateInstance.loading.set(false);
       templateInstance.result.set(result);

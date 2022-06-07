@@ -135,15 +135,27 @@ Meteor.methods({
     check(zoneId, String);
     Meteor.users.update(Meteor.userId(), { $unset: { [`zoneMuted.${zoneId}`]: 1 } });
   },
-  onboardUser({ email, levelName, levelTemplateId }) {
+  onboardUser({ email, guildName, levelName, levelTemplateId }) {
     if (!this.userId) throw new Meteor.Error('user-required', 'User required');
     if (!Meteor.user().roles?.admin) throw new Meteor.Error('user-unauthorized', 'Unauthorized access');
-    check([email, levelName, levelTemplateId], [String]);
+    console.log(email, levelName, guildName, levelTemplateId);
+    check([email, levelName, guildName, levelTemplateId], [String]);
 
+    // create new account & new guild
     const userId = Accounts.createUser({ email });
 
+    const guildId = Guilds.id();
+    Guilds.insert({
+      _id: guildId,
+      name: levelName,
+      createdAt: new Date(),
+      createdBy: userId,
+    });
+
+    Meteor.users.update(userId, { $set: { guildId } });
+
     // create level
-    const levelId = createLevel({ templateId: levelTemplateId, name: levelName });
+    const levelId = createLevel({ templateId: levelTemplateId, name: levelName, guildId });
     Levels.update(levelId, { $set: { hide: true, createdBy: userId } });
 
     // generate the enrollment link
