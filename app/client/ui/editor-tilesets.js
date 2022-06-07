@@ -207,7 +207,7 @@ Template.editorTilesets.events({
           throw new Meteor.Error('tileset-remove-error', 'Error happened when delete a tileset');
         }
       });
-    }, null);
+    });
   },
 });
 

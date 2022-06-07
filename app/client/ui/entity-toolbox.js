@@ -45,7 +45,7 @@ Template.entityEditor.events({
     lp.notif.confirm('Entity deletion', `Are you sure to delete this entity?`, () => {
       Entities.remove(Session.get('selectedEntityId'));
       closeInterface();
-    }, null);
+    });
   },
   'click #entity-flip'(event) {
     const entity = selectedEntity();
