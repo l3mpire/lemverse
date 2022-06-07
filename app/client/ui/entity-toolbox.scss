@@ -3,6 +3,10 @@
 .entity-toolbox {
   padding: 10px;
 
+  .create-entity-from-file {
+    margin: 10px 0;
+  }
+
   .list {
     display: grid;
     grid-template-columns: repeat(auto-fill, 70px);
