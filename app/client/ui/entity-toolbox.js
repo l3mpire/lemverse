@@ -53,7 +53,7 @@ Template.entityToolboxEntry.events({
 });
 
 Template.entityEditor.helpers({
-  flipped() { return selectedEntity()?.scale?.x < 0; },
+  flipped() { return selectedEntity()?.gameObject.scale < 0; },
   entity() { return selectedEntity(); },
 });
 
@@ -64,13 +64,19 @@ Template.entityEditor.events({
       closeInterface();
     });
   },
-  'click #entity-flip'(event) {
+  'input #entity-depth'(event) {
     const entity = selectedEntity();
     if (!entity) return;
 
-    const scaleX = Math.abs(entity.scale?.x || 1);
-    const newScaleX = event.currentTarget.checked ? -scaleX : scaleX;
-    Entities.update(entity._id, { $set: { 'scale.x': event.currentTarget.checked ? -scaleX : newScaleX } });
+    const { valueAsNumber: value } = event.target;
+    Entities.update(entity._id, { $set: { 'gameObject.depth': value } });
+  },
+  'input #entity-scale'(event) {
+    const entity = selectedEntity();
+    if (!entity) return;
+
+    const { valueAsNumber: value } = event.target;
+    if (value !== 0) Entities.update(entity._id, { $set: { 'gameObject.scale': value } });
   },
   'click .js-close-entity-editor'() { closeInterface(); },
 });
