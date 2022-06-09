@@ -1,7 +1,7 @@
 const mainFields = { options: 1, profile: 1, roles: 1, status: { online: 1 }, beta: 1, guildId: 1 };
 
 isolateUser = userId => {
-  check(userId, String);
+  check(userId, Match.Id);
   if (!isEditionAllowed(Meteor.userId())) throw new Meteor.Error('missing-permissions', `You don't have the permissions`);
 
   const { levelId } = Meteor.user().profile;
@@ -43,7 +43,7 @@ Accounts.onLogin(param => {
 });
 
 Meteor.publish('users', function (levelId) {
-  check(levelId, Match.Maybe(String));
+  check(levelId, Match.Maybe(Match.Id));
   if (!this.userId) return undefined;
   if (!levelId) levelId = Meteor.settings.defaultLevelId;
 
@@ -72,24 +72,21 @@ Meteor.publish('selfUser', function () {
 
 Meteor.publish('usernames', function (userIds) {
   if (!this.userId) return undefined;
-  check(userIds, [String]);
+  check(userIds, [Match.Id]);
 
-  return Meteor.users.find(
-    { _id: { $in: userIds } },
-    { fields: mainFields },
-  );
+  return Meteor.users.find({ _id: userIds }, { fields: mainFields });
 });
 
 Meteor.publish('userProfile', function (userId) {
   if (!this.userId) return undefined;
-  check(userId, String);
+  check(userId, Match.Id);
 
   return Meteor.users.find(userId, { fields: { ...mainFields, createdAt: 1 } });
 });
 
 Meteor.methods({
   toggleEntitySubscription(entityId) {
-    check(entityId, String);
+    check(entityId, Match.Id);
     if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
 
     const entitySubscriptionIds = Meteor.user().entitySubscriptionIds || [];
@@ -104,36 +101,41 @@ Meteor.methods({
     Accounts.setPassword(this.userId, password, { logout: false });
   },
   teleportUserInLevel(levelId) {
-    check(levelId, String);
+    check(levelId, Match.Id);
+
     return teleportUserInLevel(levelId, Meteor.userId());
   },
   markNotificationAsRead(notificationId) {
     if (!this.userId) return;
-    check(notificationId, String);
+    check(notificationId, Match.Id);
+
     Notifications.update({ _id: notificationId, userId: this.userId }, { $set: { read: true } });
   },
   updateZoneLastSeenDate(zoneId, create = false) {
     if (!this.userId) return;
-    check(zoneId, String);
+    check(zoneId, Match.Id);
     check(create, Boolean);
 
     const { zoneLastSeenDates } = Meteor.user();
-    if (create || zoneLastSeenDates[zoneId]) Meteor.users.update(Meteor.userId(), { $set: { [`zoneLastSeenDates.${zoneId}`]: new Date() } });
+    if (create || zoneLastSeenDates[zoneId]) Meteor.users.update(this.userId, { $set: { [`zoneLastSeenDates.${zoneId}`]: new Date() } });
   },
   unsubscribeFromZone(zoneId) {
     if (!this.userId) return;
-    check(zoneId, String);
-    Meteor.users.update(Meteor.userId(), { $unset: { [`zoneLastSeenDates.${zoneId}`]: 1 } });
+    check(zoneId, Match.Id);
+
+    Meteor.users.update(this.userId, { $unset: { [`zoneLastSeenDates.${zoneId}`]: 1 } });
   },
   muteFromZone(zoneId) {
     if (!this.userId) return;
-    check(zoneId, String);
-    Meteor.users.update(Meteor.userId(), { $set: { [`zoneMuted.${zoneId}`]: 1 } });
+    check(zoneId, Match.Id);
+
+    Meteor.users.update(this.userId, { $set: { [`zoneMuted.${zoneId}`]: 1 } });
   },
   unmuteFromZone(zoneId) {
     if (!this.userId) return;
-    check(zoneId, String);
-    Meteor.users.update(Meteor.userId(), { $unset: { [`zoneMuted.${zoneId}`]: 1 } });
+    check(zoneId, Match.Id);
+
+    Meteor.users.update(this.userId, { $unset: { [`zoneMuted.${zoneId}`]: 1 } });
   },
   onboardUser({ email, guildName, levelName, levelTemplateId }) {
     if (!this.userId) throw new Meteor.Error('user-required', 'User required');

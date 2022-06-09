@@ -99,7 +99,7 @@ const pickEntityInventory = entity => {
 Meteor.methods({
   useEntity(entityId, value = undefined) {
     check(value, Match.OneOf(undefined, null, Number, String));
-    check(entityId, String);
+    check(entityId, Match.Id);
 
     const entity = Entities.findOne(entityId);
     if (!entity) throw new Meteor.Error(404, 'Entity not found.');
@@ -113,12 +113,12 @@ Meteor.methods({
     return entity;
   },
   subscribedUsers(entityId) {
-    check(entityId, String);
+    check(entityId, Match.Id);
 
     return subscribedUsersToEntity(entityId);
   },
   spawnEntityFromFile(fileId, options = {}) {
-    check(fileId, String);
+    check(fileId, Match.Id);
     check(options, { x: Match.Optional(Number), y: Match.Optional(Number) });
     if (!lp.isLemverseBeta('custom-sprite')) throw new Meteor.Error('invalid-user', 'available for admin only for now');
     if (!this.userId) return undefined;
@@ -132,7 +132,7 @@ Meteor.methods({
     });
   },
   spawnEntityFromPrefab(entityId, options = {}) {
-    check(entityId, String);
+    check(entityId, Match.Id);
     check(options, { x: Match.Optional(Number), y: Match.Optional(Number) });
     if (!this.userId) return undefined;
 
@@ -147,7 +147,7 @@ Meteor.methods({
 });
 
 Meteor.publish('entities', function (levelId) {
-  check(levelId, Match.Maybe(String));
+  check(levelId, Match.Maybe(Match.Id));
   if (!this.userId) return undefined;
   if (!levelId) levelId = Meteor.settings.defaultLevelId;
 
@@ -155,7 +155,7 @@ Meteor.publish('entities', function (levelId) {
 });
 
 Meteor.publish('entityPrefabs', function (levelId) {
-  check(levelId, Match.Maybe(String));
+  check(levelId, Match.Maybe(Match.Id));
   if (!this.userId) return undefined;
 
   const selectors = { prefab: true };

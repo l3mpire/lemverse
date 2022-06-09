@@ -118,7 +118,7 @@ Meteor.publish('currentLevel', function () {
 
 Meteor.methods({
   toggleLevelEditionPermission(userId) {
-    check(userId, String);
+    check(userId, Match.Id);
     if (!isEditionAllowed(this.userId)) return;
 
     const { levelId } = Meteor.user().profile;
@@ -126,7 +126,8 @@ Meteor.methods({
     else Levels.update(levelId, { $pull: { editorUserIds: userId } });
   },
   createLevel(templateId = undefined) {
-    check(templateId, Match.Maybe(String));
+    check(templateId, Match.Maybe(Match.Id));
+
     return createLevel({ templateId });
   },
   updateLevel(name, position, hide) {
@@ -135,8 +136,7 @@ Meteor.methods({
     check(position, { x: Number, y: Number });
     check(hide, Boolean);
 
-    const { levelId } = Meteor.user().profile;
-    const level = Levels.findOne(levelId);
+    const level = userLevel(this.userId);
     if (!level || level.sandbox) throw new Meteor.Error('invalid-level', 'A valid level is required');
     if (!isEditionAllowed(this.userId)) throw new Meteor.Error('permission-error', `You can't edit this level`);
 
@@ -144,10 +144,12 @@ Meteor.methods({
     if (hide) query.$set.hide = true;
     else query.$unset = { hide: 1 };
 
-    Levels.update(levelId, query);
+    Levels.update(level._id, query);
   },
   increaseLevelVisits(levelId) {
-    check(levelId, String);
-    Levels.update({ _id: levelId, createdBy: { $ne: Meteor.userId() } }, { $inc: { visit: 1 } });
+    if (!this.userId) return;
+    check(levelId, Match.Id);
+
+    Levels.update({ _id: levelId, createdBy: { $ne: this.userId } }, { $inc: { visit: 1 } });
   },
 });

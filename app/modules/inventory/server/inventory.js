@@ -35,6 +35,8 @@ removeFromInventory = (user, inventoryItems) => {
 
 const dropInventoryItem = (itemId, options = {}) => {
   log('dropInventoryItem: start', { itemId, options });
+  check(itemId, Match.Id);
+
   const item = Items.findOne(itemId);
   if (!item) throw new Meteor.Error(404, 'Item not found.');
 
@@ -57,7 +59,7 @@ const dropInventoryItem = (itemId, options = {}) => {
 
 Meteor.methods({
   dropInventoryItem(itemId, options = {}) {
-    check(itemId, String);
+    check(itemId, Match.Id);
     check(options, { x: Number, y: Number });
 
     return dropInventoryItem(itemId, options);
