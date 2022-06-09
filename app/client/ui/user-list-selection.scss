@@ -19,6 +19,11 @@
     flex-grow: 1;
     overflow: scroll;
 
+    li.empty {
+      text-align: center;
+      margin: 15px;
+    }
+
     .user {
       margin: 2px 5px;
       padding: 0 5px;
