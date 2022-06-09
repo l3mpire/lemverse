@@ -63,14 +63,15 @@ const notifyUsers = (channel, message) => {
   log('notifyUsers: done', { userIds });
 };
 
-const canSendMessage = (channel, userId) => {
+const messagingAllowed = (channel, userId) => {
   check(channel, String);
   check(userId, Match.Id);
 
   if (channel.includes('zon_')) return canAccessZone(channel, userId);
   if (channel.includes('usr_')) return channel.split(';').includes(userId);
+  if (channel.includes('qst')) return canAccessQuest && canAccessQuest(channel, userId);
 
-  return true;
+  return false;
 };
 
 Meteor.startup(() => {
@@ -86,8 +87,7 @@ Meteor.startup(() => {
 Meteor.publish('messages', function (channel) {
   check(channel, String);
   if (!this.userId) return undefined;
-
-  if (channel.includes('zon_') && !canAccessZone(channel, this.userId)) throw new Meteor.Error('not-authorized', 'Access not allowed');
+  if (!messagingAllowed(channel, this.userId)) throw new Meteor.Error('not-authorized', 'Access not allowed');
 
   return Messages.find({ channel }, { sort: { createdAt: -1 }, limit });
 });
@@ -100,7 +100,7 @@ Meteor.methods({
     check([channel, text], [String]);
     check(fileId, Match.Maybe(Match.Id));
 
-    if (!canSendMessage(channel, this.userId)) throw new Meteor.Error('not-authorized', 'Not allowed');
+    if (!messagingAllowed(channel, this.userId)) throw new Meteor.Error('not-authorized', 'Not allowed');
 
     const messageId = Messages.id();
     Messages.insert({
