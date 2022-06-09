@@ -77,5 +77,7 @@ Meteor.publish('messages', function (channel) {
   check(channel, String);
   if (!this.userId) return undefined;
 
+  if (channel.includes('zon_') && !canAccessZone(channel, this.userId)) throw new Meteor.Error('not-authorized', 'Access not allowed');
+
   return Messages.find({ channel }, { sort: { createdAt: -1 }, limit });
 });
