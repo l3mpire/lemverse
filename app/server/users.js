@@ -138,7 +138,6 @@ Meteor.methods({
   onboardUser({ email, guildName, levelName, levelTemplateId }) {
     if (!this.userId) throw new Meteor.Error('user-required', 'User required');
     if (!Meteor.user().roles?.admin) throw new Meteor.Error('user-unauthorized', 'Unauthorized access');
-    console.log(email, levelName, guildName, levelTemplateId);
     check([email, levelName, guildName, levelTemplateId], [String]);
 
     // create new account & new guild
