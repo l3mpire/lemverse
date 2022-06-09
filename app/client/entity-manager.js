@@ -84,10 +84,13 @@ entityManager = {
     const entityInstance = this.entities[newEntity._id];
     if (!entityInstance) return;
 
-    entityInstance
-      .setPosition(newEntity.x, newEntity.y)
-      .setDepth(newEntity.gameObject.depth || newEntity.y)
-      .setScale(newEntity.gameObject.scale || 1, Math.abs(newEntity.gameObject.scale || 1));
+    const { gameObject } = newEntity;
+    if (gameObject) {
+      entityInstance
+        .setPosition(newEntity.x, newEntity.y)
+        .setDepth(gameObject.depth || newEntity.y)
+        .setScale(gameObject.scale || 1, Math.abs(gameObject.scale || 1));
+    }
 
     if (newEntity.state !== oldEntity.state) this.updateEntityFromState(newEntity, newEntity.state);
 
