@@ -9,6 +9,11 @@ const zoneAnimations = {
   }),
 };
 
+const teleportUserOutsideZone = zone => {
+  const [x, y] = zone.teleportEndpoint ? zone.teleportEndpoint.split(',') : [73, 45];
+  userManager.teleportMainUser(+x, +y);
+};
+
 zones = {
   activeZone: undefined,
   previousAvailableZones: [],
@@ -197,13 +202,14 @@ zones = {
     this.activeZone = zone;
     if (!zone) return;
 
-    const user = Meteor.user();
-    if (!user) return;
-
-    if (!userAllowedInZone(user, zone)) {
-      const [x, y] = zone.teleportEndpoint ? zone.teleportEndpoint.split(',') : [73, 45];
-      userManager.teleportMainUser(+x, +y);
-      lp.notif.error('This zone is reserved');
+    try {
+      if (!canAccessZone(zone._id, Meteor.userId())) {
+        teleportUserOutsideZone(zone);
+        lp.notif.error('You cannot access this zone');
+      }
+    } catch (err) {
+      teleportUserOutsideZone(zone);
+      lp.notif.error(err);
     }
   },
 

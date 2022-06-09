@@ -12,25 +12,19 @@ Meteor.publish('zones', function (levelId) {
 
 Meteor.methods({
   computeRoomName(zoneId) {
-    log('computeRoomName: start', { zoneId });
-    check(zoneId, String);
+    log('computeRoomName: start', { zoneId, userId: this.userId });
+    check(zoneId, Match.Id);
 
-    const zone = Zones.findOne(zoneId);
-    if (!zone) {
-      log('computeRoomName: invalid zone', { zoneId });
-      throw new Meteor.Error('zone-invalid', 'Invalid zoneId');
-    }
-
-    const user = Meteor.user();
-    if (!userAllowedInZone(user, zone)) {
-      log('computeRoomName: user not allowed', { zone, user });
+    if (!canAccessZone(zoneId, this.userId)) {
+      log('computeRoomName: user not allowed');
       throw new Meteor.Error('not-allowed', 'User not allowed in the zone');
     }
 
+    const zone = Zones.findOne(zoneId);
     let { uuid } = zone;
     if (!uuid) {
       uuid = randomUUID();
-      Zones.update(zone._id, { $set: { uuid } });
+      Zones.update(zoneId, { $set: { uuid } });
     }
 
     log('computeRoomName: end', { uuid });

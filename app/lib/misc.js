@@ -55,6 +55,34 @@ canEditGuild = (userId, guildId) => {
   return guild.createdBy === userId && user.guildId === guildId;
 };
 
+canAccessZone = (zoneId, userId) => {
+  check([zoneId, userId], [Match.Id]);
+
+  const zone = Zones.findOne(zoneId);
+  if (!zone) throw new Meteor.Error('not-found', 'Zone not found');
+
+  const user = Meteor.users.findOne(userId);
+  if (!user) throw new Meteor.Error('not-found', 'User not found');
+  if (user.roles?.admin) return true;
+
+  // make sure that all the necessary items are in the user's inventory
+  if (zone.requiredItems?.length) {
+    const userItems = Object.keys(user.inventory || {});
+    if (!zone.requiredItems.every(tag => userItems.includes(tag))) return false;
+  }
+
+  // verifies that the user is a member of the level guild
+  if (zone.restrictedToGuild) {
+    const level = userLevel(userId);
+    if (!level) throw new Meteor.Error('not-found', 'Level not found');
+    if (!level.guildId) throw new Meteor.Error('configuration-missing', 'Guild not linked to the level. You must link a guild to the level or remove the "restrictedToGuild" attribute');
+
+    if (level.guildId !== user.guildId) return false;
+  }
+
+  return true;
+};
+
 isEditionAllowed = userId => {
   const user = Meteor.users.findOne(userId);
   if (!user) return false;
@@ -140,19 +168,6 @@ subscribedUsersToEntity = entityId => Meteor.users.find(
     sort: { 'profile.name': 1 },
   },
 ).fetch();
-
-userAllowedInZone = (user, zone) => {
-  if (zone.adminOnly && !user.roles?.admin) return false;
-
-  if (zone.requiredItems?.length) {
-    if (user.profile.guest) return false;
-
-    const userItems = Object.keys(user.inventory || {});
-    return zone.requiredItems.every(tag => userItems.includes(tag));
-  }
-
-  return true;
-};
 
 fileOnBeforeUpload = (file, mime) => {
   const { meta, size } = file;

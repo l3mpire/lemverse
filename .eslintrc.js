@@ -90,6 +90,7 @@ module.exports = {
     messageModerationAllowed: 'writable',
     isEditionAllowed: 'writable',
     isLevelOwner: 'writable',
+    canAccessZone: 'writable',
     canEditGuild: 'writable',
     remote: 'writable',
     _: 'readable',
@@ -169,7 +170,6 @@ module.exports = {
     subscribedUsersToEntity: 'writable',
     userLevel: 'writable',
     formatURLs: 'writable',
-    userAllowedInZone: 'writable',
     spawnEntityFromPrefab: 'writable',
     levelSpawnPosition: 'writable',
 
