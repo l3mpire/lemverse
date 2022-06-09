@@ -81,3 +81,29 @@ Meteor.publish('messages', function (channel) {
 
   return Messages.find({ channel }, { sort: { createdAt: -1 }, limit });
 });
+
+Meteor.methods({
+  sendMessage(channel, text, fileId) {
+    if (!this.userId) return undefined;
+
+    log('sendMessage: start', { channel, text, fileId, userId: this.userId });
+    check([channel, text], [String]);
+    check(fileId, Match.Maybe(Match.Id));
+
+    if (channel.includes('zon_') && !canAccessZone(channel, this.userId)) throw new Meteor.Error('not-authorized', 'Not allowed');
+
+    const messageId = Messages.id();
+    Messages.insert({
+      _id: messageId,
+      channel,
+      text,
+      fileId,
+      createdAt: new Date(),
+      createdBy: this.userId,
+    });
+
+    log('sendMessage: done', { messageId });
+
+    return messageId;
+  },
+});

@@ -96,16 +96,19 @@ messagesModule = {
     }
   },
 
-  sendMessage(channel, content, file) {
+  async sendMessage(channel, content, file) {
     if (content.length >= messageMaxLength) throw new Error(`The message is too long (> ${messageMaxLength} chars)`);
     content = lp.purify(content).trim();
     if (!content.length && !file) throw new Error(`Invalid content`);
 
     window.dispatchEvent(new CustomEvent(eventTypes.beforeSendingMessage, { detail: { channel, content } }));
 
-    let messageData = { _id: Messages.id(), channel, text: content, createdAt: new Date(), createdBy: Meteor.userId() };
-    if (file) messageData = { ...messageData, fileId: file._id };
-    const messageId = Messages.insert(messageData);
+    let messageId;
+    try {
+      messageId = await meteorCall('sendMessage', channel, content, file?._id);
+    } catch (err) {
+      lp.notif.error('You are not authorized to speak here');
+    }
 
     window.dispatchEvent(new CustomEvent(eventTypes.afterSendingMessage, { detail: { channel, messageId } }));
 
