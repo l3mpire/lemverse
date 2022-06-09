@@ -63,6 +63,16 @@ const notifyUsers = (channel, message) => {
   log('notifyUsers: done', { userIds });
 };
 
+const canSendMessage = (channel, userId) => {
+  check(channel, String);
+  check(userId, Match.Id);
+
+  if (channel.includes('zon_')) return canAccessZone(channel, userId);
+  if (channel.includes('usr_')) return channel.split(';').includes(userId);
+
+  return true;
+};
+
 Meteor.startup(() => {
   Messages.find({ createdAt: { $gte: new Date() } }).observe({
     added(message) {
@@ -90,7 +100,7 @@ Meteor.methods({
     check([channel, text], [String]);
     check(fileId, Match.Maybe(Match.Id));
 
-    if (channel.includes('zon_') && !canAccessZone(channel, this.userId)) throw new Meteor.Error('not-authorized', 'Not allowed');
+    if (!canSendMessage(channel, this.userId)) throw new Meteor.Error('not-authorized', 'Not allowed');
 
     const messageId = Messages.id();
     Messages.insert({
