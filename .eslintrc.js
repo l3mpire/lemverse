@@ -90,6 +90,7 @@ module.exports = {
     messageModerationAllowed: 'writable',
     isEditionAllowed: 'writable',
     isLevelOwner: 'writable',
+    canEditGuild: 'writable',
     remote: 'writable',
     _: 'readable',
     stats: 'writable',
