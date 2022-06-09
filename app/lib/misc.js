@@ -40,6 +40,8 @@ isLevelOwner = userId => {
 };
 
 canEditGuild = (userId, guildId) => {
+  check([userId, guildId], [Match.Id]);
+
   const user = Meteor.users.findOne(userId);
   if (!user) return false;
 
@@ -49,7 +51,8 @@ canEditGuild = (userId, guildId) => {
   if (user.roles?.admin) return true;
   if (!user.guildId) return false;
 
-  return guild.createdBy === userId;
+  // todo: replace createdBy with "owners"
+  return guild.createdBy === userId && user.guildId === guildId;
 };
 
 isEditionAllowed = userId => {
