@@ -157,7 +157,7 @@ Meteor.methods({
 
     // create level
     const levelId = createLevel({ templateId: levelTemplateId, name: levelName, guildId });
-    Levels.update(levelId, { $set: { hide: true, createdBy: userId } });
+    Levels.update(levelId, { $set: { hide: true, createdBy: userId, guildId } });
 
     // generate the enrollment link
     const { user, token } = Accounts.generateResetToken(userId, email, 'enrollAccount');
