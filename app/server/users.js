@@ -149,6 +149,7 @@ Meteor.methods({
     Guilds.insert({
       _id: guildId,
       name: levelName,
+      owners: [userId],
       createdAt: new Date(),
       createdBy: userId,
     });

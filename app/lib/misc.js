@@ -51,8 +51,7 @@ canEditGuild = (userId, guildId) => {
   if (user.roles?.admin) return true;
   if (!user.guildId) return false;
 
-  // todo: replace createdBy with "owners"
-  return guild.createdBy === userId && user.guildId === guildId;
+  return user.guildId === guildId && guild.owners?.includes(userId);
 };
 
 canAccessZone = (zoneId, userId) => {
