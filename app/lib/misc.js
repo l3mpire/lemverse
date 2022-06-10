@@ -84,6 +84,8 @@ canAccessZone = (zoneId, userId) => {
 };
 
 isEditionAllowed = userId => {
+  check(userId, Match.Id);
+
   const user = Meteor.users.findOne(userId);
   if (!user) return false;
 
@@ -124,6 +126,8 @@ completeUserProfile = (user, email, name) => {
 };
 
 generateRandomCharacterSkin = (user, levelId) => {
+  check(levelId, Match.Id);
+
   let newProfile = { ...user.profile };
   const currentLevel = Levels.findOne(levelId);
   if (!user.profile?.body && currentLevel?.skins?.default) {
@@ -148,7 +152,7 @@ generateRandomCharacterSkin = (user, levelId) => {
 };
 
 teleportUserInLevel = (levelId, userId) => {
-  check([levelId, userId], [String]);
+  check([levelId, userId], [Match.Id]);
 
   log('teleportUserInLevel: start', { levelId, userId });
   const loadingLevelId = levelId || Meteor.settings.defaultLevelId;
@@ -161,13 +165,17 @@ teleportUserInLevel = (levelId, userId) => {
   return level.name;
 };
 
-subscribedUsersToEntity = entityId => Meteor.users.find(
-  { entitySubscriptionIds: entityId },
-  {
-    fields: { 'status.online': 1, 'profile.body': 1, 'profile.eyes': 1, 'profile.accessory': 1, 'profile.hair': 1, 'profile.outfit': 1, 'profile.name': 1 },
-    sort: { 'profile.name': 1 },
-  },
-).fetch();
+subscribedUsersToEntity = entityId => {
+  check(entityId, Match.Id);
+
+  return Meteor.users.find(
+    { entitySubscriptionIds: entityId },
+    {
+      fields: { 'status.online': 1, 'profile.body': 1, 'profile.eyes': 1, 'profile.accessory': 1, 'profile.hair': 1, 'profile.outfit': 1, 'profile.name': 1 },
+      sort: { 'profile.name': 1 },
+    },
+  ).fetch();
+};
 
 fileOnBeforeUpload = (file, mime) => {
   const { meta, size } = file;
