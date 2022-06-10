@@ -482,11 +482,11 @@ Please note, that as stated in section `Deploy in production`, there is an addit
 
 # Getting started!
 
-Once you have cloned the repo, launch `./init` and wait, that's all!
+Once you have cloned the repo, launch `./bin/init` and wait, that's all!
 
 Due to image manipulation, please read [GraphicsMagick & ImageMagick](https://www.npmjs.com/package/gm) to install any additional library.
 
-Launch `./run` to run the app, accessible at `http://localhost:9000`.  
+Launch `./bin/run` to run the app, accessible at `http://localhost:9000`.  
 The mongodb database is accessible at `http://localhost:9001`.
 
 ## LocalTunnel to debug with other computers
@@ -558,7 +558,7 @@ Restart the Mongo service using `systemctl restart mongod` and initiate the repl
 If you do have some sensitive information, you can copy the file `settings.json` and paste it on the server at `/usr/local/etc/lemverse.json` (Server side only).  
 At the startup of the application, those settings will be merged with the current ones.
 
-After those preparation steps, run `./setup` in `app` folder from your workstation.
+After those preparation steps, run `./bin/setup` in `app` folder from your workstation.
 
 ## Nginx configuration example
 
