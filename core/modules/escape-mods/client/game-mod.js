@@ -1,5 +1,3 @@
-import DizzyEffect from '../../../public/assets/post-effects/DizzyEffect';
-
 window.addEventListener('load', () => registerModules(['gameMod']));
 
 const differMeteorCall = (...args) => setTimeout(() => { Meteor.call(...args); }, 0);
@@ -8,7 +6,6 @@ const onZoneEntered = e => {
   const { levelId: currentLevelId } = Meteor.user().profile;
   const { zone } = e.detail;
   const { escape } = zone;
-  const { WorldScene, UIScene } = game.scene.keys;
 
   if (!escape) return;
 
@@ -66,12 +63,6 @@ const onZoneEntered = e => {
   }
 
   if (escape.paintTiles) escapeA.enable_sync_coloration = true;
-  else if (escape.enableDistortionEffect) {
-    game.renderer.pipelines.addPostPipeline('DizzyEffect', DizzyEffect);
-    WorldScene.cameras.main.setPostPipeline(DizzyEffect);
-    UIScene.cameras.main.setPostPipeline(DizzyEffect);
-    escapeA.enable_path_coloration = true;
-  }
 };
 
 const onZoneLeft = e => {
