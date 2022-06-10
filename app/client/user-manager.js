@@ -674,7 +674,7 @@ userManager = {
     const userEmitter = Meteor.users.findOne(emitterUserId);
     if (!userEmitter) return;
 
-    if (data.type === 'audio') userVoiceRecorderAbility.playSound(data.data);
+    if (data.type === 'audio') sounds.playFromChunks(data.data);
     else if (data.type === 'punch') {
       if (!userProximitySensor.isUserNear(userEmitter)) return;
 
