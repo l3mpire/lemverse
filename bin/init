@@ -1,0 +1,47 @@
+#!/bin/bash
+set -e
+
+# Catch and alert on any error
+trap 'catch_err $? $LINENO' ERR
+catch_err() {
+  echo "error during ${0} execution"
+  echo "Error $1 occurred on line $2"
+}
+
+echo init...
+
+git config pull.rebase true
+
+if [ -f ~/.nvm/nvm.sh ]; then
+  echo 'sourcing nvm from ~/.nvm'
+  . ~/.nvm/nvm.sh
+elif command -v brew; then
+  # https://docs.brew.sh/Manpage#--prefix-formula
+  BREW_PREFIX=$(brew --prefix nvm)
+  if [ -f "$BREW_PREFIX/nvm.sh" ]; then
+    echo "sourcing nvm from brew ($BREW_PREFIX)"
+    . $BREW_PREFIX/nvm.sh
+  fi
+fi
+
+nvm install 14
+nvm use 14
+
+rm -rf ./node_modules
+
+npm install
+
+cd core
+rm -rf ./node_modules
+npm install
+cd ..
+
+cd public/app
+./bin/init
+cd ../..
+
+cd public/mup
+./bin/init
+cd ../..
+
+echo init end!
