@@ -1,12 +1,12 @@
 FROM geoffreybooth/meteor-base:2.5 AS builder
 
 # Copy app package.json and package-lock.json into container
-COPY ./app/package*.json $APP_SOURCE_FOLDER/
+COPY ./public/app/package*.json $APP_SOURCE_FOLDER/
 
 RUN bash $SCRIPTS_FOLDER/build-app-npm-dependencies.sh
 
 # Copy app source into container
-COPY ./app $APP_SOURCE_FOLDER/
+COPY ./public/app $APP_SOURCE_FOLDER/
 
 RUN bash $SCRIPTS_FOLDER/build-meteor-bundle.sh
 
