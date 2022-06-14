@@ -106,4 +106,14 @@
       }
     }
   }
+
+  .request-access {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    overflow: auto;
+    max-height: 100%;
+    text-align: center;
+    width: 100%;
+  }
 }
