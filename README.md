@@ -609,7 +609,7 @@ server {
 ```
 ## Other deployments
 
-Once you have done it, the subsequent deployments will be done using the command `./deploy`.
+Once you have done it, the subsequent deployments will be done using the command `./public/app/bin/deploy`.
 
 ## Docker images
 
