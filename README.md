@@ -700,7 +700,7 @@ Website with images API :
 
 # Assets
 
-We use paid assets from [limezu](https://limezu.itch.io/) on [itch.io](https://limezu.itch.io/moderninteriors) in the *version 35*. Please keep in mind than lemverse doesn't support the new character format for the moment.
+We use paid assets from [limezu](https://limezu.itch.io/) on [itch.io](https://limezu.itch.io/moderninteriors).
 
 By default lemverse appears in black because you have no textures in the project, you must go to the editor to upload the different textures.
 
