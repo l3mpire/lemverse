@@ -177,8 +177,6 @@ entityManager = {
   },
 
   postUpdate() {
-    escapeA.postUpdate();
-
     const { player, playerWasMoving } = userManager;
     if (player && playerWasMoving && !Meteor.user().profile.guest) this.handleNearestEntityTooltip(player);
   },
