@@ -24,7 +24,7 @@ createLevel = options => {
   if (templateId) {
     log('createLevel: copy template', { templateId });
     const templateLevel = Levels.findOne(templateId);
-    Levels.update({ _id: newLevelId }, { $set: { template: false, metadata: templateLevel.metadata } });
+    Levels.update({ _id: newLevelId }, { $set: { template: false, metadata: templateLevel.metadata, templateId } });
     if (templateLevel.spawn) Levels.update({ _id: newLevelId }, { $set: { spawn: templateLevel.spawn } });
 
     const tiles = Tiles.find({ levelId: templateId }).fetch();
