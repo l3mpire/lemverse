@@ -82,7 +82,12 @@ Template.notifications.onCreated(function () {
 });
 
 Template.notifications.helpers({
-  notifications() { return Notifications.find().fetch().sort((a, b) => b.createdAt - a.createdAt); },
+  notifications() { 
+    const notifsReadMaxDisplayed = 20;
+    var notifsRead = Notifications.find({ read: true },{ sort: { createdAt: -1 }, limit: notifsReadMaxDisplayed }).fetch();
+    var notifsUnread = Notifications.find({ read: { $ne: true } },{ sort: { createdAt: -1 }}).fetch();
+    return notifsRead.concat(notifsUnread).sort((a, b) => b.createdAt - a.createdAt); 
+  },
 });
 
 const blobToBase64 = blob => new Promise(resolve => {
