@@ -109,6 +109,7 @@ WorldScene = new Phaser.Class({
     this.physics.disableUpdate();
     Session.set('sceneWorldReady', true);
     this.scene.setVisible(false);
+    window.dispatchEvent(new CustomEvent(eventTypes.onWorldSceneCreated, { detail: { scene: this } }));
   },
 
   initFromLevel(level) {

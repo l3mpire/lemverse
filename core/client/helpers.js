@@ -29,6 +29,7 @@ eventTypes = Object.freeze({
   onZoneUpdated: 'onZoneUpdated',
   onZoneRemoved: 'onZoneRemoved',
   onPopInEvent: 'pop-in-event',
+  onWorldSceneCreated: 'onWorldSceneCreated',
   beforeSendingMessage: 'beforeSendingMessage',
   afterSendingMessage: 'afterSendingMessage',
   consoleClosed: 'consoleClosed',
