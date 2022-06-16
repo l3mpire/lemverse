@@ -464,9 +464,7 @@ Template.lemverse.onDestroyed(function () {
 Template.lemverse.helpers({
   allRemoteStreamsByUsers: () => peer.remoteStreamsByUsers.get(),
   guest: () => Meteor.user()?.profile.guest,
-  hasNotifications: () => Notifications.find().count(),
   loading: () => Session.get('loading'),
-  pendingNotificationsCount: () => Notifications.find({ read: { $exists: false } }).count(),
   screenMode: () => Template.instance().screenMode.get(),
   settingsOpen: () => (!Session.get('modal') ? false : (Session.get('modal').template.indexOf('settings') !== -1)),
   modules: () => Session.get('modules'),

@@ -22,6 +22,12 @@
   </li>
 </template>
 
+<template name="notificationButton">
+  {{#unless guest}}
+    <button type="button" class="button js-notifications {{#if pendingNotificationsCount}}visible{{/if}}" data-count="{{ pendingNotificationsCount }}">🔔</button>
+  {{/unless}}
+</template>
+
 <template name="notifications">
   {{#modal id="displayNotificationsPanel" title="Notifications"}}
     <div class="notifications">

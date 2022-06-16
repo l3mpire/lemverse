@@ -1,3 +1,5 @@
+const notifsReadMaxDisplayed = 20;
+
 const formatedDuration = value => {
   if (value === 0 || value === Infinity) return '00:00';
 
@@ -60,6 +62,10 @@ Template.notificationsAudioPlayer.events({
   },
 });
 
+Template.notificationButton.helpers({
+  pendingNotificationsCount() { return Notifications.find({ read: { $exists: false } }).count(); },
+});
+
 Template.notification.helpers({
   date() { return moment(this.createdAt).calendar(); },
   user() { return Meteor.users.findOne(Template.instance().data.createdBy); },
@@ -82,11 +88,11 @@ Template.notifications.onCreated(function () {
 });
 
 Template.notifications.helpers({
-  notifications() { 
-    const notifsReadMaxDisplayed = 20;
-    var notifsRead = Notifications.find({ read: true },{ sort: { createdAt: -1 }, limit: notifsReadMaxDisplayed }).fetch();
-    var notifsUnread = Notifications.find({ read: { $ne: true } },{ sort: { createdAt: -1 }}).fetch();
-    return notifsRead.concat(notifsUnread).sort((a, b) => b.createdAt - a.createdAt); 
+  notifications() {
+    const notifsRead = Notifications.find({ read: true }, { sort: { createdAt: -1 }, limit: notifsReadMaxDisplayed }).fetch();
+    const notifsUnread = Notifications.find({ read: { $ne: true } }, { sort: { createdAt: -1 } }).fetch();
+
+    return notifsRead.concat(notifsUnread).sort((a, b) => b.createdAt - a.createdAt);
   },
 });
 

@@ -23,12 +23,6 @@ const generateTURNCredentials = (name, secret) => {
   return { username, password: hmac.read() };
 };
 
-Meteor.publish('notifications', function () {
-  if (!this.userId) return undefined;
-
-  return Notifications.find({ userId: this.userId });
-});
-
 Meteor.publish('tiles', function (levelId) {
   check(levelId, Match.Maybe(String));
   if (!this.userId) return undefined;

@@ -25,10 +25,9 @@
 
       {{> userPanel loading=loading}}
       {{> radialMenu }}
-
-      <button type="button" class="button js-notifications {{#if pendingNotificationsCount}}visible{{/if}}" data-count="{{ pendingNotificationsCount }}">🔔</button>
     {{/unless}}
 
+    {{> notificationButton}}
     {{> zoneNameToaster}}
     {{> modalContainer }}
 

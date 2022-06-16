@@ -36,12 +36,6 @@ Levels = lp.collectionRegister('levels', 'lvl', [], {
   remove(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
 });
 
-Notifications = lp.collectionRegister('notifications', 'not', [], {
-  insert(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
-  update(userId, notification) { return notification.userId === userId; },
-  remove(userId, notification) { return notification.userId === userId; },
-});
-
 Entities = lp.collectionRegister('entities', 'ent', [], {
   insert(userId) { return isEditionAllowed(userId); },
   update(userId) { return isEditionAllowed(userId); },
