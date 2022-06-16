@@ -94,6 +94,7 @@ module.exports = {
     canAccessQuest: 'writable',
     canAccessZone: 'writable',
     canEditGuild: 'writable',
+    messagingAllowed: 'writable',
     remote: 'writable',
     _: 'readable',
     stats: 'writable',

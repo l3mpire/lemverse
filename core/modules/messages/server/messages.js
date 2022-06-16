@@ -63,17 +63,6 @@ const notifyUsers = (channel, message) => {
   log('notifyUsers: done', { userIds });
 };
 
-const messagingAllowed = (channel, userId) => {
-  check(channel, String);
-  check(userId, Match.Id);
-
-  if (channel.includes('zon_')) return canAccessZone(channel, userId);
-  if (channel.includes('usr_')) return channel.split(';').includes(userId);
-  if (channel.includes('qst')) return canAccessQuest && canAccessQuest(channel, userId);
-
-  return false;
-};
-
 Meteor.startup(() => {
   Messages.find({ createdAt: { $gte: new Date() } }).observe({
     added(message) {
