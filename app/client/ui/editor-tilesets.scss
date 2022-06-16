@@ -2,6 +2,8 @@
   margin: 0;
   padding: 0;
   flex-grow: 1;
+  overflow-y: scroll;
+  position: relative;
 
   .marker {
     position: absolute;
@@ -67,7 +69,7 @@
     }
 
     &.active {
-      background-color: #00ff00;
+      background-color: #0f0;
     }
   }
 }

@@ -9,19 +9,19 @@
     "desktop": "meteor-desktop"
   },
   "dependencies": {
-    "@babel/runtime": "^7.17.9",
+    "@babel/runtime": "^7.18.3",
     "body-parser": "^1.20.0",
     "fast-json-stable-stringify": "^2.1.0",
     "file-type": "^16.5.3",
     "gm": "^1.23.1",
-    "hotkeys-js": "^3.9.3",
+    "hotkeys-js": "^3.9.4",
     "jquery": "^3.6.0",
     "meteor-node-stubs": "^1.2.3",
-    "multer": "^1.4.4",
+    "multer": "1.4.5-lts.1",
     "nipplejs": "^0.9.1",
-    "node-cron": "^3.0.0",
+    "node-cron": "^3.0.1",
     "peer": "^0.6.1",
-    "peerjs": "^1.4.4",
+    "peerjs": "^1.4.6",
     "phaser": "^3.55.2"
   }
 }

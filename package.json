@@ -11,7 +11,7 @@
     "url": "git+https://github.com/l3mpire/lemverse.git"
   },
   "resolutions": {
-    "@babel/parser": "7.17.0"
+    "@babel/parser": "7.18.0"
   },
   "author": "",
   "license": "AGPLV3",
@@ -20,11 +20,14 @@
   },
   "homepage": "https://github.com/l3mpire/lemverse#readme",
   "devDependencies": {
-    "@babel/core": "^7.17.10",
-    "@babel/eslint-parser": "^7.17.0",
+    "@babel/core": "^7.18.2",
+    "@babel/eslint-parser": "^7.18.2",
     "@babel/eslint-plugin": "^7.17.7",
-    "eslint": "^8.15.0",
+    "eslint": "^8.17.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.26.0"
+    "eslint-plugin-meteor": "^7.3.0",
+    "eslint-plugin-import": "^2.26.0",
+    "stylelint": "^14.8.5",
+    "stylelint-config-standard-scss": "^4.0.0"
   }
 }

@@ -13,16 +13,16 @@ Template.settingsCharacter.helpers({
 });
 
 Template.settingsCharacter.events({
-  'click .js-customize-menu'(e) {
-    Session.set('settings-character-category', e.currentTarget.dataset.category);
+  'click .js-customize-menu'(event) {
+    Session.set('settings-character-category', event.currentTarget.dataset.category);
   },
-  'click .js-new-part'(e) {
-    const { id } = e.currentTarget.dataset;
+  'click .js-new-part'(event) {
+    const { id } = event.currentTarget.dataset;
     if (id === 'null') {
       Meteor.users.update(Meteor.userId(), { $unset: { [`profile.${Session.get('settings-character-category')}`]: 1 } });
     } else {
       const part = Characters.findOne({ _id: id });
-      if (part) Meteor.users.update(Meteor.userId(), { $set: { [`profile.${Session.get('settings-character-category')}`]: e.currentTarget.dataset.id } });
+      if (part) Meteor.users.update(Meteor.userId(), { $set: { [`profile.${Session.get('settings-character-category')}`]: id } });
     }
   },
 });

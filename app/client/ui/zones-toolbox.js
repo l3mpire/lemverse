@@ -12,7 +12,7 @@ const zoneHideProperties = [
   'entityId',
 ];
 
-const clearZoneRectangles = () => _.each(zoneRectangles, r => r.destroy());
+const clearZoneRectangles = () => zoneRectangles.forEach(r => r.destroy());
 
 //
 // zonesToolboxProperties

@@ -7,7 +7,6 @@
 }
 
 .editor-menu {
-
   *,
   *::before,
   *::after {
@@ -61,8 +60,6 @@
           color: $lem-color-6;
         }
       }
-
-      // background-color: red;
     }
 
     svg {
@@ -87,9 +84,8 @@
   }
 }
 
-@media screen and (max-width:550px) {
+@media screen and (max-width: 550px) {
   .nav {
-
     .nav-list {
       flex-direction: row;
       width: 100vw;

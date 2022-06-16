@@ -261,8 +261,6 @@ userManager = {
       // ensures this.player is assigned to the logged user
       if (this.player?.userId !== loggedUser._id || !this.player.body) this.setAsMainPlayer(loggedUser._id);
 
-      if (user.profile.avatar !== oldUser?.profile.avatar) userStreams.refreshVideoElementAvatar(userStreams.getVideoElement());
-
       if (hasMoved) this.checkZones = true;
 
       if (shouldCheckDistance) {
@@ -346,7 +344,7 @@ userManager = {
     player.body.setOffset(characterFootOffset.x, characterFootOffset.y);
 
     // add character's physic body to layers
-    _.each(levelManager.layers, layer => {
+    levelManager.layers.forEach(layer => {
       if (layer.playerCollider) this.scene.physics.world.removeCollider(layer.playerCollider);
       if (!level?.godMode) layer.playerCollider = this.scene.physics.add.collider(player, layer);
     });
@@ -366,7 +364,7 @@ userManager = {
     this.scene.physics.world.disableBody(this.player);
     if (destroy) this.player.destroy();
 
-    _.each(levelManager.layers, layer => {
+    levelManager.layers.forEach(layer => {
       if (layer.playerCollider) this.scene.physics.world.removeCollider(layer.playerCollider);
     });
 
@@ -601,7 +599,7 @@ userManager = {
 
     users.forEach(user => this.takeDamage(this.players[user._id]));
 
-    peer.punchCall(_.pluck(users, '_id'));
+    peer.punchCall(users.map(user => user._id));
   },
 
   takeDamage(player) {
@@ -676,7 +674,7 @@ userManager = {
     const userEmitter = Meteor.users.findOne(emitterUserId);
     if (!userEmitter) return;
 
-    if (data.type === 'audio') userVoiceRecorderAbility.playSound(data.data);
+    if (data.type === 'audio') sounds.playFromChunks(data.data);
     else if (data.type === 'punch') {
       if (!userProximitySensor.isUserNear(userEmitter)) return;
 
@@ -697,7 +695,9 @@ userManager = {
       const emitterPlayer = userManager.players[emitterUserId];
       if (!emitterPlayer) return;
 
-      sounds.play('text-sound.wav', 0.5);
+      const { zoneMuted } = Meteor.user();
+      const userEmitterZoneId = zones.currentZone(userEmitter)?._id;
+      if (!zoneMuted || !zoneMuted[userEmitterZoneId]) sounds.play('text-sound.wav', 0.5);
 
       const popInIdentifier = `${emitterUserId}-pop-in`;
       characterPopIns.createOrUpdate(

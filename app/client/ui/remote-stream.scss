@@ -16,7 +16,7 @@
     border: 2px solid $light-green;
   }
 
-  &:before {
+  &::before {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -24,12 +24,12 @@
     color: white;
   }
 
-  &[data-state="calling"]:before {
-    content: 'Calling…';
+  &[data-state="calling"]::before {
+    content: "Calling…";
   }
 
-  &[data-state="media-error"]:before {
-    content: 'Media error 😢';
+  &[data-state="media-error"]::before {
+    content: "Media error 😢";
   }
 
   &:hover {
@@ -146,7 +146,7 @@
   }
 }
 
-@-webkit-keyframes spin {
+@keyframes spin {
   0% {
     -webkit-transform: rotate(0deg);
   }

@@ -41,7 +41,7 @@ userVoiceRecorderAbility = {
     this.loading = false;
 
     mediaRecorder = new MediaRecorder(stream, {
-      mimeType: this.getSupportedType(),
+      mimeType: sounds.getSupportedType(),
       audio: true,
       video: false,
     });
@@ -71,13 +71,6 @@ userVoiceRecorderAbility = {
     this.progress = 0;
     this.recordingIndicator.visible = false;
     this.stream?.getTracks()?.forEach(track => track.stop());
-  },
-
-  // todo: move to sounds.js with generateFromBlob
-  playSound(chunks) {
-    const audio = new Audio();
-    audio.src = this.createAudioURL(chunks);
-    audio.play();
   },
 
   onStop() {
@@ -113,46 +106,6 @@ userVoiceRecorderAbility = {
     return mediaRecorder?.state === 'recording';
   },
 
-  generateBlob(chunks) {
-    return new Blob(chunks, { type: this.getSupportedType() });
-  },
-
-  getExtension(type) {
-    if (!type) type = this.getSupportedType();
-    if (type.includes('ogg')) return 'ogg';
-    if (type.includes('mp4')) return 'mp4';
-    if (type.includes('webm')) return 'webm';
-
-    throw new Error('Invalid type');
-  },
-
-  createAudioURL(chunks) {
-    const sound = this.generateBlob(chunks);
-    const audioURL = URL.createObjectURL(sound);
-    audioURL.src = audioURL;
-
-    return audioURL;
-  },
-
-  /**
-   * @note The type can be supported but not really, it's more like a "may be"
-   * @doc https://docs.w3cub.com/dom/mediarecorder/istypesupported
-   */
-  getSupportedType() {
-    const types = [
-      'audio/mp4',
-      'audio/ogg',
-      'audio/ogg; codecs=opus',
-      'audio/webm',
-      'audio/webm; codecs=opus',
-    ];
-
-    const supportedType = types.find(type => MediaRecorder.isTypeSupported(type));
-    if (!supportedType) throw new Error('Unable to find a supported type');
-
-    return supportedType;
-  },
-
   recordVoice(start, callback) {
     this.onSoundRecorded = callback;
 
@@ -168,8 +121,8 @@ userVoiceRecorderAbility = {
 
 const sendAudioChunksToTargets = (chunks, userIds) => {
   // Upload
-  const blob = userVoiceRecorderAbility.generateBlob(chunks);
-  const file = new File([blob], `audio-record.${userVoiceRecorderAbility.getExtension()}`, { type: blob.type });
+  const blob = sounds.generateBlob(chunks);
+  const file = new File([blob], `audio-record.${sounds.getExtension()}`, { type: blob.type });
   const uploadInstance = Files.insert({
     file,
     chunkSize: 'dynamic',

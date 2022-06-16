@@ -44,7 +44,7 @@
         flex: 3 1 auto;
       }
 
-      &[data-unread]:not([data-unread="0"]):before {
+      &[data-unread]:not([data-unread="0"])::before {
         content: attr(data-unread);
         position: absolute;
         background-color: darken($light-red, 20%);
@@ -104,7 +104,7 @@
       flex-direction: row;
       color: $main-text-color;
       padding: 5px;
-      transition: all linear 0.150s;
+      transition: all linear 0.15s;
       position: relative;
       border-left: 5px solid transparent;
       font-size: 0.85rem;
@@ -119,7 +119,7 @@
           transform: scale(0.35) translate(-37px, -95px);
         }
 
-        .avatar:before {
+        .avatar::before {
           bottom: 4px;
           right: 4px;
           width: 6px;

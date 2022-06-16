@@ -7,6 +7,8 @@ Meteor.methods({
       error('updateUsersCharacter: user not allowed');
       throw new Meteor.Error('not-authorized', 'only gods can do this');
     }
+
+    check(from, Match.Maybe(String));
     check([to, id], [String]);
 
     const characterPart = Characters.findOne({ _id: id });

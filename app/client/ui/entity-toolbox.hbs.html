@@ -4,8 +4,13 @@
     <h2>{{entity.name}}</h2>
 
     <div class="entity-form-element">
-      <label for="entity-flip">Flip</label>
-      <input type="checkbox" name="flip" id="entity-flip" checked="{{flipped}}">
+      <label for="entity-depth">Depth</label>
+      <input type="range" id="entity-depth" name="scale" min="-1" max="100000" step="1" value="{{entity.gameObject.depth}}">
+    </div>
+
+    <div class="entity-form-element">
+      <label for="entity-scale">Scale</label>
+      <input type="range" id="entity-scale" name="scale" min="-2" max="2" step="0.1" value="{{or entity.gameObject.scale 1}}">
     </div>
 
     <button type="button" class="button js-entity-delete">Delete</button>
@@ -23,11 +28,18 @@
 <template name="entityToolbox">
   <div class="entity-toolbox">
     {{#if showEntityList}}
-      <div class="list">
+      {{#if customEntityUploadAllowed}}
+        <div class="create-entity-from-file">
+          <label for="js-entity-sprite-upload" class="custom-file-upload">Create new entity</label>
+          <input id="js-entity-sprite-upload" class="js-entity-sprite-upload" type="file" accept="image/png, image/jpeg, image/gif">
+        </div>
+      {{/if}}
+
+      <ul class="list">
         {{#each entities}}
           {{> entityToolboxEntry}}
         {{/each}}
-      </div>
+      </ul>
     {{else}}
       {{> entityEditor}}
     {{/if}}

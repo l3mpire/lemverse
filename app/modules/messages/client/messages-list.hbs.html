@@ -7,7 +7,7 @@
         <p class="text">{{{text}}}</p>
         {{#if file}}
           <div class="files">
-            <a href="{{file.link}}" target="_blank">
+            <a href="{{file.link}}" target="_blank" rel="noopener">
               <img src="{{file.link}}" alt="{{file.name}}">
             </a>
           </div>
@@ -31,6 +31,11 @@
         {{#if subscribed}}
           <button type="button" class="js-channel-subscribe">Subscribe</button>
         {{else}}
+          {{#if muted}}
+            <button type="button" class="js-channel-mute">Mute</button>
+          {{else}}
+            <button type="button" class="js-channel-unmute">Unmute</button>
+          {{/if}}
           <button type="button" class="js-channel-unsubscribe">Unsubscribe</button>
         {{/if}}
       {{/if}}

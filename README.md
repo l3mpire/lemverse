@@ -411,13 +411,16 @@ Please note, that as stated in section `Deploy in production`, there is an addit
     "packages": {
       // configure external authentication services
       "service-configuration": {
-         // for pure OAuth identity provider
-        "custom": {
+         // An authentication button with the name of the service will be displayed.
+         // you can automatically trigger the authentication service by passing the idpHint parameter to the url of your server.
+         // example: https://app.lemverse.com/idpHint=custom will automatically trigger the "custom" login service
+        "custom": {  // for pure OAuth identity provider
           "buttonBackgroundColor": "#ea4335",
           "buttonTextColor": "white",
           "clientId": "xxxxxxx",
           "type": "oauth",
-          "custom": true,
+          "custom": true, // true for custom OAuth2 provider (not for social login)
+          "hidden": false, // when true hides the login button, the oauth service remains configured and can be triggered by the url parameter idpHint=custom
           "secret": "xxxxxxx",
           "authUrl": "https://auth.example.org/oauth/authorize",
           "accessTokenUrl": "https://auth.example.org/oauth/access_token",
@@ -457,7 +460,7 @@ Please note, that as stated in section `Deploy in production`, there is an addit
           "loginStyle": "redirect"
         },
         "facebook": {
-          "clientId": "xxxxxxx",
+          "appId": "xxxxxxx",
           "buttonBackgroundColor": "#5880ff",
           "buttonTextColor": "white",
           "type": "oauth",
@@ -479,11 +482,11 @@ Please note, that as stated in section `Deploy in production`, there is an addit
 
 # Getting started!
 
-Once you have cloned the repo, launch `./init` and wait, that's all!
+Once you have cloned the repo, launch `./bin/init` and wait, that's all!
 
 Due to image manipulation, please read [GraphicsMagick & ImageMagick](https://www.npmjs.com/package/gm) to install any additional library.
 
-Launch `./run` to run the app, accessible at `http://localhost:9000`.  
+Launch `./bin/run` to run the app, accessible at `http://localhost:9000`.  
 The mongodb database is accessible at `http://localhost:9001`.
 
 ## LocalTunnel to debug with other computers
@@ -555,7 +558,7 @@ Restart the Mongo service using `systemctl restart mongod` and initiate the repl
 If you do have some sensitive information, you can copy the file `settings.json` and paste it on the server at `/usr/local/etc/lemverse.json` (Server side only).  
 At the startup of the application, those settings will be merged with the current ones.
 
-After those preparation steps, run `./setup` in `app` folder from your workstation.
+After those preparation steps, run `./bin/setup` in `app` folder from your workstation.
 
 ## Nginx configuration example
 

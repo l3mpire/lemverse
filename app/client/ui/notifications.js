@@ -40,22 +40,22 @@ Template.notificationsAudioPlayer.helpers({
 });
 
 Template.notificationsAudioPlayer.events({
-  'click .js-play'(event, template) {
+  'click .js-play'(event, templateInstance) {
     event.preventDefault();
-    markNotificationAsRead(template.data._id);
+    markNotificationAsRead(templateInstance.data._id);
 
-    template._playing.set(true);
-    if (template.audio.paused && template.audio.currentTime > 0 && !template.audio.ended) template.audio.play();
-    else if (!template.audio.paused && template.audio.currentTime > 0 && !template.audio.ended) {
-      template.audio.pause();
-      template._playing.set(false);
+    templateInstance._playing.set(true);
+    if (templateInstance.audio.paused && templateInstance.audio.currentTime > 0 && !templateInstance.audio.ended) templateInstance.audio.play();
+    else if (!templateInstance.audio.paused && templateInstance.audio.currentTime > 0 && !templateInstance.audio.ended) {
+      templateInstance.audio.pause();
+      templateInstance._playing.set(false);
     } else {
-      template.audio.currentTime = 0;
-      template.audio.volume = 1;
-      template.audio.play();
+      templateInstance.audio.currentTime = 0;
+      templateInstance.audio.volume = 1;
+      templateInstance.audio.play();
 
-      template.audio.removeEventListener('ended', resetPlayButtonState);
-      template.audio.addEventListener('ended', resetPlayButtonState.bind(this, template));
+      templateInstance.audio.removeEventListener('ended', resetPlayButtonState);
+      templateInstance.audio.addEventListener('ended', resetPlayButtonState.bind(this, templateInstance));
     }
   },
 });
@@ -82,7 +82,12 @@ Template.notifications.onCreated(function () {
 });
 
 Template.notifications.helpers({
-  notifications() { return Notifications.find().fetch().sort((a, b) => b.createdAt - a.createdAt); },
+  notifications() { 
+    const notifsReadMaxDisplayed = 20;
+    var notifsRead = Notifications.find({ read: true },{ sort: { createdAt: -1 }, limit: notifsReadMaxDisplayed }).fetch();
+    var notifsUnread = Notifications.find({ read: { $ne: true } },{ sort: { createdAt: -1 }}).fetch();
+    return notifsRead.concat(notifsUnread).sort((a, b) => b.createdAt - a.createdAt); 
+  },
 });
 
 const blobToBase64 = blob => new Promise(resolve => {

@@ -2,6 +2,8 @@ Meteor.publish('tilesets', () => Tilesets.find());
 
 Meteor.methods({
   removeTileset(id) {
+    check(id, String);
+
     const user = Meteor.user();
     log('removeTileset: start', { userId: user._id, id });
 

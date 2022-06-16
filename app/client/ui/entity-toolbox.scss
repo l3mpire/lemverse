@@ -3,6 +3,10 @@
 .entity-toolbox {
   padding: 10px;
 
+  .create-entity-from-file {
+    margin: 10px 0;
+  }
+
   .list {
     display: grid;
     grid-template-columns: repeat(auto-fill, 70px);
@@ -10,9 +14,11 @@
     overflow-x: scroll;
     max-width: 100%;
     list-style-type: none;
-    margin-right: 200px;
     overflow: scroll;
     max-height: 250px;
+    margin: 0;
+    margin-right: 200px;
+    padding: 0;
 
     li.js-entity-entry {
       padding: 5px;
@@ -30,7 +36,7 @@
         background-color: lighten($main-color, 10%);
       }
 
-      .thumbnail { 
+      .thumbnail {
         display: flex;
         align-items: center;
         justify-content: center;

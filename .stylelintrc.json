@@ -1,0 +1,18 @@
+{
+  "extends": "stylelint-config-standard-scss",
+  "rules": {
+    "color-function-notation": "legacy",
+    "property-no-vendor-prefix": null,
+    "scss/double-slash-comment-empty-line-before": null,
+    "scss/double-slash-comment-whitespace-inside": null,
+    "selector-id-pattern": null,
+    "no-descending-specificity": null,
+    "selector-class-pattern": null,
+    "scss/no-global-function-names": null,
+    "length-zero-no-unit": null,
+    "number-leading-zero": null,
+    "color-hex-case": null,
+    "alpha-value-notation": null,
+    "scss/at-import-no-partial-leading-underscore": null
+  }
+}

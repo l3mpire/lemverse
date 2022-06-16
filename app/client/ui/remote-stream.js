@@ -92,18 +92,22 @@ Template.remoteStream.helpers({
 });
 
 Template.remoteStream.events({
-  'click .stream video, click .stream img'(e) {
-    e.preventDefault();
-    removeAllFullScreenElement(e.target);
-    e.target.classList.toggle('fullscreen');
+  'click .stream video, click .stream img'(event) {
+    event.preventDefault();
+
+    const { target } = event;
+    removeAllFullScreenElement(target);
+    target.classList.toggle('fullscreen');
 
     updatePhaserMouseInputState();
   },
-  'click .js-webcam, click .js-screenshare'(e) {
-    e.preventDefault();
-    removeAllFullScreenElement(e.target);
+  'click .js-webcam, click .js-screenshare'(event) {
+    event.preventDefault();
+    const { target } = event;
 
-    const child = e.target.querySelector('video, img');
+    removeAllFullScreenElement(target);
+
+    const child = target.querySelector('video, img');
     child?.classList.toggle('fullscreen');
 
     updatePhaserMouseInputState();

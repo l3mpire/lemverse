@@ -3,6 +3,10 @@ escapeTransport = {};
 Meteor.methods({
   escapeMakeLevel(templateId, zone, usersInZone) {
     log('escapeMakeLevel: start', { templateId, zoneId: zone._id, usersInZoneId: usersInZone?.map(user => user._id) });
+    check(templateId, String);
+    check(zone, Object);
+    check(usersInZone, [String]);
+
     const { escape } = zone;
 
     if (!escape?.triggerLimit || !templateId || !usersInZone) return;
@@ -13,7 +17,7 @@ Meteor.methods({
 
     // Clone Level
     log('escapeMakeLevel: cloning template', { templateId });
-    const newLevelId = createLevel(templateId, `Escape B #${Math.floor(Math.random() * 100)}`);
+    const newLevelId = createLevel({ templateId, name: `Escape B #${Math.floor(Math.random() * 100)}` });
 
     // Reset metadata
     Levels.update({ _id: newLevelId }, { $set: { 'metadata.escape': true, 'metadata.teleport': {}, disableEdit: true, godMode: false }, $unset: { 'metadata.end': 1, 'metadata.start': 1, 'metadata.currentRoom': 1, 'metadata.currentRoomTime': 1 } });
@@ -28,6 +32,8 @@ Meteor.methods({
   },
   enlightenZone(name) {
     log('enlightenZone: start', { name });
+    check(name, String);
+
     const allTiles = Tiles.find({ 'metadata.zoneName': name, levelId: Meteor.user().profile.levelId }).fetch();
     if (!allTiles) return;
     Tiles.update({ _id: { $in: allTiles.map(tile => tile._id) } }, { $set: { invisible: true } }, { multi: true });
@@ -35,6 +41,8 @@ Meteor.methods({
   },
   darkenZone(name) {
     log('darkenZone: start', { name });
+    check(name, String);
+
     const allTiles = Tiles.find({ 'metadata.zoneName': name, levelId: Meteor.user().profile.levelId }).fetch();
     if (!allTiles) return;
     Tiles.update({ _id: { $in: allTiles.map(tile => tile._id) } }, { $set: { invisible: false } }, { multi: true });
@@ -42,6 +50,8 @@ Meteor.methods({
   },
   toggleZone(name) {
     log('toggleZone: start', { name });
+    check(name, String);
+
     const allTiles = Tiles.find({ 'metadata.zoneName': name, levelId: Meteor.user().profile.levelId }).fetch();
     if (!allTiles || !allTiles.length) return;
     const invisible = !allTiles[0].invisible;
@@ -50,6 +60,7 @@ Meteor.methods({
   },
   escapeStart(zoneName, levelId) {
     log('escapeStart: start', { zoneName, levelId });
+    check([zoneName, levelId], [String]);
 
     const currentLevel = Levels.findOne({ _id: levelId });
 
@@ -62,6 +73,7 @@ Meteor.methods({
   },
   escapeEnd(levelId, winZoneName, lostZoneName) {
     log('escapeEnd: start', { levelId, winZoneName, lostZoneName });
+    check([winZoneName, lostZoneName, levelId], [String]);
 
     const currentLevel = Levels.findOne({ _id: levelId });
 
@@ -78,6 +90,8 @@ Meteor.methods({
     }
   },
   setCurrentRoom(room) {
+    check(room, String);
+
     const { levelId } = Meteor.user().profile;
     log('setCurrentRoom: start', { levelId });
 
@@ -91,6 +105,9 @@ Meteor.methods({
   },
   teleportAllTo(name, position) {
     log('teleportAllTo: start', { position });
+    check(name, String);
+    check(position, [Number]);
+
     const currentLevel = Levels.findOne(Meteor.user().profile.levelId);
     const allPlayers = Meteor.users.find({ 'profile.levelId': currentLevel._id, 'status.online': true }).fetch();
 
@@ -103,6 +120,8 @@ Meteor.methods({
   },
   updateTiles(tiles) {
     log('updateTiles: start', { tiles: tiles.length });
+    check(tiles, [Object]);
+
     if (!tiles) return;
     tiles.forEach(tile => {
       if (!tile.metaName || !tile.update) return;

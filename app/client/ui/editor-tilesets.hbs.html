@@ -62,6 +62,7 @@
     {{#each tilesets}}
       <div class="js-tilesets-select {{#if and (eq (Session 'selectedTilesetId') _id) (neq (Session 'selectedEditTilesetId') _id)}}active{{/if}}">
         {{#if neq (Session 'selectedEditTilesetId') _id}}
+          <input type="checkbox" class="js-toggle-visibility" checked="{{hidden}}">
           <div class='js-tileset-remove'>❌</div>
           <div class='tileset-name'>{{name}}</div>
         {{/if}}

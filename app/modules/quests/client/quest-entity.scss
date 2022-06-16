@@ -33,7 +33,7 @@
           transform: scale(0.4) translate(-24px, -70px);
         }
 
-        .avatar:before {
+        .avatar::before {
           bottom: 4px;
           right: 4px;
           width: 6px;
@@ -59,6 +59,7 @@
       &.subscribe {
         background-color: $light-green;
       }
+
       &.unsubscribe {
         background-color: $light-red;
       }

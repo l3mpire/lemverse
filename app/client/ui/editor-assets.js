@@ -18,9 +18,9 @@ Template.editorAssets.events({
     Session.set('showDropZone', true);
   },
 
-  'drag .js-drop-zone, dragstart .js-drop-zone, dragend .js-drop-zone, dragover .js-drop-zone, dragenter .js-drop-zone, dragleave .js-drop-zone, drop .js-drop-zone'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'drag .js-drop-zone, dragstart .js-drop-zone, dragend .js-drop-zone, dragover .js-drop-zone, dragenter .js-drop-zone, dragleave .js-drop-zone, drop .js-drop-zone'(event) {
+    event.preventDefault();
+    event.stopPropagation();
   },
 
   'dragleave .js-drop-zone, dragend .js-drop-zone, drop .js-drop-zone'() {

@@ -16,7 +16,8 @@ Meteor.publish('quests', function () {
 
 Meteor.methods({
   questUsers(questId) {
-    check(questId, String);
+    if (!this.userId) return undefined;
+    check(questId, Match.Id);
 
     const quest = Quests.findOne(questId);
     if (!quest) throw new Meteor.Error(404, 'Quest not found.');

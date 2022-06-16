@@ -2,6 +2,7 @@ module.exports = {
   parser: '@babel/eslint-parser',
   plugins: [
     '@babel',
+    'meteor',
   ],
   env: {
     meteor: true,
@@ -9,7 +10,7 @@ module.exports = {
     es2020: true,
     node: true,
   },
-  extends: ['airbnb-base'],
+  extends: ['airbnb-base', 'plugin:meteor/recommended'],
   parserOptions: {
     sourceType: 'module',
     requireConfigFile: false,
@@ -23,6 +24,7 @@ module.exports = {
     'prefer-destructuring': ['error', { object: true, array: false }],
     'no-empty': ['error', { allowEmptyCatch: true }],
     'no-console': 0,
+    'meteor/no-session': 'off',
     'max-len': 0,
     'func-names': 0,
     // "key-spacing": 0,
@@ -88,6 +90,9 @@ module.exports = {
     messageModerationAllowed: 'writable',
     isEditionAllowed: 'writable',
     isLevelOwner: 'writable',
+    canAccessQuest: 'writable',
+    canAccessZone: 'writable',
+    canEditGuild: 'writable',
     remote: 'writable',
     _: 'readable',
     stats: 'writable',
@@ -166,7 +171,6 @@ module.exports = {
     subscribedUsersToEntity: 'writable',
     userLevel: 'writable',
     formatURLs: 'writable',
-    userAllowedInZone: 'writable',
     spawnEntityFromPrefab: 'writable',
     levelSpawnPosition: 'writable',
 

@@ -1,7 +1,7 @@
 Template.userListQuestButton.events({
-  'click .js-create-quest'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'click .js-create-quest'(event) {
+    event.preventDefault();
+    event.stopPropagation();
 
     closeModal();
     createQuestDraft([this.user._id], Meteor.userId());

@@ -19,24 +19,19 @@ userStreams = {
     main: {
       instance: undefined,
       loading: false,
-      domElement: undefined,
     },
     screen: {
       instance: undefined,
       loading: false,
-      domElement: undefined,
     },
   },
 
   audio(enabled) {
-    if (!this.streams.main.instance) return;
-    _.each(this.streams.main.instance.getAudioTracks(), track => { track.enabled = enabled; });
+    this.streams.main.instance?.getAudioTracks().forEach(track => { track.enabled = enabled; });
   },
 
   video(enabled) {
-    const { instance: mainStream } = this.streams.main;
-    this.getVideoElement().parentElement.classList.toggle('active-video', mainStream && enabled);
-    if (mainStream?.getVideoTracks().length) _.each(mainStream.getVideoTracks(), track => { track.enabled = enabled; });
+    this.streams.main.instance?.getVideoTracks().forEach(track => { track.enabled = enabled; });
   },
 
   screen(enabled) {
@@ -50,21 +45,13 @@ userStreams = {
         call.close();
         delete peer.calls[key];
       });
-
-      const divElm = document.querySelector('.js-stream-screen-me');
-      divElm.srcObject = undefined;
-      divElm.style.display = 'none';
-      document.querySelectorAll('.js-stream-screen-me video').forEach(v => {
-        destroyVideoSource(v);
-        v.remove();
-      });
     } else if (enabled) userProximitySensor.callProximityStartedForAllNearUsers();
   },
 
   destroyStream(type) {
     const debug = Meteor.user()?.options?.debug;
-    if (debug) log('destroyStream: start');
     const { instance: stream } = type === streamTypes.main ? this.streams.main : this.streams.screen;
+    if (debug) log('destroyStream: start', { stream, type });
     if (!stream) {
       if (debug) log('destroyStream: cancelled (stream was not alive)');
       return;
@@ -72,18 +59,14 @@ userStreams = {
 
     this.stopTracks(stream);
 
-    destroyVideoSource(this.getVideoElement());
-
-    if (stream === this.streams.main.instance) {
-      this.streams.main.instance = undefined;
-      this.hideUserPanel();
-    } else if (stream === this.streams.screen.instance) this.streams.screen.instance = undefined;
+    if (stream === this.streams.main.instance) this.streams.main.instance = undefined;
+    else if (stream === this.streams.screen.instance) this.streams.screen.instance = undefined;
   },
 
   async requestUserMedia(constraints = {}) {
     const debug = Meteor.user().options?.debug;
 
-    if (debug) log('requestUserMedia: start');
+    if (debug) log('requestUserMedia: start', { constraints });
     if (constraints.forceNew) this.destroyStream(streamTypes.main);
 
     const { instance: currentStream, loading } = this.streams.main;
@@ -116,36 +99,12 @@ userStreams = {
       throw err;
     } finally { this.streams.main.loading = false; }
 
-    // todo: remove later, useless function call here
-    this.destroyStream(streamTypes.main);
-
-    if (debug) log('requestUserMedia: stream created', { streamId: stream.id });
+    if (debug) log('requestUserMedia: stream created', { streamId: stream.id, constraints });
     this.streams.main.instance = stream;
+    window.dispatchEvent(new CustomEvent(eventTypes.onMediaStreamStateChanged, { detail: { type: streamTypes.main, state: 'ready', stream } }));
     Meteor.users.update(Meteor.userId(), { $unset: { 'profile.userMediaError': 1 } });
 
     return stream;
-  },
-
-  getStreamConstraints(type) {
-    const { videoRecorder, audioRecorder, screenShareFrameRate } = Meteor.user().profile;
-    const constraints = {};
-
-    if (type === streamTypes.main) {
-      constraints.audio = { deviceId: audioRecorder };
-      constraints.video = { deviceId: videoRecorder, ...videoDefaultConfig };
-    } else {
-      const { defaultFrameRate, maxFrameRate } = screenShareDefaultConfig;
-
-      constraints.audio = false;
-      constraints.video = {
-        frameRate: {
-          ideal: +screenShareFrameRate || defaultFrameRate,
-          max: maxFrameRate,
-        },
-      };
-    }
-
-    return constraints;
   },
 
   async requestDisplayMedia() {
@@ -176,15 +135,17 @@ userStreams = {
 
     if (debug) log('requestDisplayMedia: stream created', { streamId: stream.id });
     this.streams.screen.instance = stream;
+    window.dispatchEvent(new CustomEvent(eventTypes.onMediaStreamStateChanged, { detail: { type: streamTypes.screen, state: 'ready', stream } }));
+
+    // detect cancel action from the browser UI
+    stream.getVideoTracks()[0].onended = () => Meteor.users.update(Meteor.userId(), { $set: { 'profile.shareScreen': false } });
 
     return stream;
   },
 
   async createStream(forceNew = false) {
-    const { shareVideo, shareAudio } = Meteor.user().profile;
     const constraints = this.getStreamConstraints(streamTypes.main);
     constraints.forceNew = forceNew;
-    this.showUserPanel();
 
     const { cams } = await this.enumerateDevices();
     if (cams.length === 0) delete constraints.video;
@@ -193,16 +154,10 @@ userStreams = {
     // if (!shareVideo) delete constraints.video;
 
     const stream = await this.requestUserMedia(constraints);
-    if (!stream) {
-      this.hideUserPanel();
-      throw new Error(`unable to get a valid stream`);
-    }
-
-    // sync video element with the stream
-    const videoElement = this.getVideoElement();
-    if (stream.id !== videoElement.srcObject?.id) videoElement.srcObject = stream;
+    if (!stream) throw new Error(`unable to get a valid stream`);
 
     // ensures tracks are up-to-date
+    const { shareVideo, shareAudio } = Meteor.user().profile;
     this.audio(shareAudio);
     this.video(shareVideo);
 
@@ -212,19 +167,6 @@ userStreams = {
   async createScreenStream() {
     const stream = await this.requestDisplayMedia();
     if (!stream) throw new Error('Unable to get a display media');
-
-    let videoElm = document.querySelector('.js-stream-screen-me video');
-    if (!videoElm) {
-      videoElm = document.createElement('video');
-      videoElm.setAttribute('type', 'video/mp4');
-
-      const videoElmParent = document.querySelector('.js-stream-screen-me');
-      videoElmParent.style.display = 'block';
-      videoElmParent.appendChild(videoElm);
-    }
-
-    videoElm.autoplay = true;
-    videoElm.srcObject = stream;
 
     // set framerate after stream creation due to a deprecated constraints issue with the frameRate attribute
     this.applyConstraints(streamTypes.screen, 'video', this.getStreamConstraints(streamTypes.screen));
@@ -239,52 +181,40 @@ userStreams = {
     tracks.forEach(track => track.applyConstraints(constraints));
   },
 
+  getStreamConstraints(type) {
+    const { videoRecorder, audioRecorder, screenShareFrameRate } = Meteor.user().profile;
+    const constraints = {};
+
+    if (type === streamTypes.main) {
+      constraints.audio = { deviceId: audioRecorder };
+      constraints.video = { deviceId: videoRecorder, ...videoDefaultConfig };
+    } else {
+      const { defaultFrameRate, maxFrameRate } = screenShareDefaultConfig;
+
+      constraints.audio = false;
+      constraints.video = {
+        frameRate: {
+          ideal: +screenShareFrameRate || defaultFrameRate,
+          max: maxFrameRate,
+        },
+      };
+    }
+
+    return constraints;
+  },
+
   stopTracks(stream) {
-    if (!stream) return;
-    _.each(stream.getTracks(), track => track.stop());
+    stream?.getTracks().forEach(track => track.stop());
   },
 
   shouldCreateNewStream(streamType, needAudio, needVideo) {
     const { instance: stream } = streamType === streamTypes.main ? this.streams.main : this.streams.screen;
 
     if (!stream) return true;
-    if (needAudio && stream.getAudioTracks().length === 0) return true;
-    if (needVideo && stream.getVideoTracks().length === 0) return true;
+    if (needAudio && !stream.getAudioTracks().length) return true;
+    if (needVideo && !stream.getVideoTracks().length) return true;
 
     return false;
-  },
-
-  getVideoElement() {
-    if (!this.streams.main.domElement) {
-      this.streams.main.domElement = document.querySelector('.js-stream-me video');
-      if (this.streams.main.domElement) this.refreshVideoElementAvatar(this.streams.main.domElement);
-    }
-
-    return this.streams.main.domElement;
-  },
-
-  showUserPanel() {
-    const videoElement = this.getVideoElement();
-    if (!videoElement) return;
-    videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
-    videoElement.parentElement.classList.toggle('active', true);
-  },
-
-  hideUserPanel() {
-    const videoElement = this.getVideoElement();
-    if (!videoElement) return;
-    videoElement.parentElement.classList.toggle('active', false);
-    videoElement.parentElement.style.backgroundImage = '';
-  },
-
-  refreshVideoElementAvatar(videoElement) {
-    if (!videoElement) return;
-
-    const user = Meteor.user();
-    if (!user) return;
-
-    videoElement.parentElement.dataset.avatar = generateRandomAvatarURLForUser(user);
-    if (this.streams.main.instance) videoElement.parentElement.style.backgroundImage = `url('${videoElement.parentElement.dataset.avatar}')`;
   },
 
   async enumerateDevices() {

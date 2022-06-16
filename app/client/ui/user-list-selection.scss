@@ -19,6 +19,11 @@
     flex-grow: 1;
     overflow: scroll;
 
+    li.empty {
+      text-align: center;
+      margin: 15px;
+    }
+
     .user {
       margin: 2px 5px;
       padding: 0 5px;
@@ -28,14 +33,14 @@
       flex-direction: row;
       align-items: center;
       cursor: pointer;
-  
+
       &:hover {
         background-color: darken($main-color, 5%);
       }
 
       &.selected {
         background-color: rgba($light-green, 0.35);
-  
+
         &:hover {
           background-color: rgba($light-green, 0.5);
         }
@@ -50,7 +55,7 @@
           transform: scale(0.4) translate(-24px, -70px);
         }
 
-        .avatar:before {
+        .avatar::before {
           bottom: 4px;
           right: 4px;
           width: 6px;

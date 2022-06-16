@@ -1,0 +1,19 @@
+@import "../_variables";
+
+.level-template-list {
+  display: block;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    cursor: pointer;
+    color: $main-color;
+    padding: 8px;
+
+    &:hover {
+      background-color: #0078e7;
+      color: white;
+    }
+  }
+}

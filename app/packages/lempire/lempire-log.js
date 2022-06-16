@@ -1,7 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable import/no-extraneous-dependencies */
-import stringify from 'fast-json-stable-stringify';
-
 let logFibersId = 0;
 
 const logToServer = (type, p1, p2) => {
@@ -44,7 +40,7 @@ const logToServer = (type, p1, p2) => {
   }
 
   if (Meteor.isServer) {
-    // eslint-disable-next-line global-require
+    // eslint-disable-next-line global-require,import/no-unresolved
     const fibers = require('fibers');
     fibers.current._id = fibers.current._id || logFibersId++;
     object._FID = `fid_${fibers.current._id}`;

@@ -154,10 +154,10 @@ Files.on('afterUpload', fileRef => {
   const user = Meteor.users.findOne(fileRef.userId);
   log('FilesCollection: afterUpload start', { userId: user._id, fileRef });
 
-  if (fileRef.meta?.source === 'editor-tilesets') filesAfterUploadEditorTileset(user, fileRef);
+  if (fileRef.meta?.source === 'editor-assets') filesAfterUploadAsset(user, fileRef);
   else if (fileRef.meta?.source === 'editor-characters') filesAfterUploadEditorCharacter(user, fileRef);
+  else if (fileRef.meta?.source === 'editor-tilesets') filesAfterUploadEditorTileset(user, fileRef);
   else if (fileRef.meta?.source === 'voice-recorder') filesAfterUploadVoiceRecorder(user, fileRef);
-  else if (fileRef.meta?.source === 'editor-assets') filesAfterUploadAsset(user, fileRef);
 });
 
 Meteor.publish('files', fileIds => {

@@ -1,15 +1,28 @@
-createLevel = (templateId = undefined, newName = undefined) => {
+createLevel = options => {
+  log('createLevel: start', { options });
+
+  check(options, {
+    templateId: Match.Optional(String),
+    name: Match.Optional(Match.SafeString),
+    guildId: Match.Optional(String),
+  });
+
+  const { name, templateId } = options;
+  const now = new Date();
+  const user = Meteor.user();
+
   const newLevelId = Levels.id();
   Levels.insert({
     _id: newLevelId,
-    name: newName || `${Meteor.user().profile.name || Meteor.user().username}'s world`,
+    name: name || `${user.profile.name || user.username}'s world`,
     spawn: { x: 200, y: 200 },
-    apiKey: CryptoJS.MD5((+new Date()) + Random.hexString(48)).toString(),
-    createdAt: new Date(),
-    createdBy: Meteor.userId(),
+    apiKey: CryptoJS.MD5(now + Random.hexString(48)).toString(),
+    createdAt: now,
+    createdBy: user._id,
   });
 
   if (templateId) {
+    log('createLevel: copy template', { templateId });
     const templateLevel = Levels.findOne(templateId);
     Levels.update({ _id: newLevelId }, { $set: { template: false, metadata: templateLevel.metadata } });
     if (templateLevel.spawn) Levels.update({ _id: newLevelId }, { $set: { spawn: templateLevel.spawn } });
@@ -21,8 +34,8 @@ createLevel = (templateId = undefined, newName = undefined) => {
       Tiles.insert({
         ...tile,
         _id: Tiles.id(),
-        createdAt: new Date(),
-        createdBy: Meteor.userId(),
+        createdAt: now,
+        createdBy: user._id,
         levelId: newLevelId,
       });
     });
@@ -31,19 +44,20 @@ createLevel = (templateId = undefined, newName = undefined) => {
       Zones.insert({
         ...zone,
         _id: Zones.id(),
-        createdAt: new Date(),
-        createdBy: Meteor.userId(),
+        createdAt: now,
+        createdBy: user._id,
         levelId: newLevelId,
       });
     });
   } else {
-    const { levelId } = Meteor.user().profile;
+    log('createLevel: create empty level');
+    const { levelId } = user.profile;
 
     Zones.insert({
       _id: Zones.id(),
       adminOnly: false,
-      createdAt: new Date(),
-      createdBy: Meteor.userId(),
+      createdAt: now,
+      createdBy: user._id,
       levelId: newLevelId,
       targetedLevelId: levelId,
       name: 'Previous world',
@@ -53,6 +67,8 @@ createLevel = (templateId = undefined, newName = undefined) => {
       y2: 110,
     });
   }
+
+  log('createLevel: done', { levelId: newLevelId });
 
   return newLevelId;
 };
@@ -76,7 +92,13 @@ deleteLevel = levelId => {
 Meteor.publish('levels', function () {
   if (!this.userId) return undefined;
 
-  return Levels.find({ }, { fields: { name: 1, hide: 1, visit: 1, createdBy: 1 } });
+  return Levels.find({ }, { fields: { name: 1, hide: 1, visit: 1, createdBy: 1, template: 1 } });
+});
+
+Meteor.publish('levelTemplates', function () {
+  if (!this.userId) return undefined;
+
+  return Levels.find({ template: true, hide: { $exists: false } }, { fields: { name: 1, hide: 1, visit: 1, createdBy: 1, template: 1 } });
 });
 
 Meteor.publish('currentLevel', function () {
@@ -96,7 +118,7 @@ Meteor.publish('currentLevel', function () {
 
 Meteor.methods({
   toggleLevelEditionPermission(userId) {
-    check(userId, String);
+    check(userId, Match.Id);
     if (!isEditionAllowed(this.userId)) return;
 
     const { levelId } = Meteor.user().profile;
@@ -104,8 +126,9 @@ Meteor.methods({
     else Levels.update(levelId, { $pull: { editorUserIds: userId } });
   },
   createLevel(templateId = undefined) {
-    check(templateId, Match.Maybe(String));
-    return createLevel(templateId);
+    check(templateId, Match.Maybe(Match.Id));
+
+    return createLevel({ templateId });
   },
   updateLevel(name, position, hide) {
     if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
@@ -113,15 +136,20 @@ Meteor.methods({
     check(position, { x: Number, y: Number });
     check(hide, Boolean);
 
-    const { levelId } = Meteor.user().profile;
-    const level = Levels.findOne(levelId);
+    const level = userLevel(this.userId);
     if (!level || level.sandbox) throw new Meteor.Error('invalid-level', 'A valid level is required');
     if (!isEditionAllowed(this.userId)) throw new Meteor.Error('permission-error', `You can't edit this level`);
 
-    Levels.update(levelId, { $set: { name, spawn: { x: position.x, y: position.y }, hide } });
+    const query = { $set: { name, spawn: { x: position.x, y: position.y } } };
+    if (hide) query.$set.hide = true;
+    else query.$unset = { hide: 1 };
+
+    Levels.update(level._id, query);
   },
   increaseLevelVisits(levelId) {
-    check(levelId, String);
-    Levels.update({ _id: levelId, createdBy: { $ne: Meteor.userId() } }, { $inc: { visit: 1 } });
+    if (!this.userId) return;
+    check(levelId, Match.Id);
+
+    Levels.update({ _id: levelId, createdBy: { $ne: this.userId } }, { $inc: { visit: 1 } });
   },
 });

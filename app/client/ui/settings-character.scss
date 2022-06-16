@@ -52,7 +52,6 @@
       }
     }
 
-
     .customize-selection {
       flex-grow: 1;
       background-color: lighten($main-color, 10%);
@@ -67,7 +66,6 @@
         border-radius: $radius;
         background-color: $main-color;
         cursor: pointer;
-
         margin: 0;
         position: relative;
         width: 48px;
@@ -98,7 +96,6 @@
           }
         }
       }
-
     }
   }
 }

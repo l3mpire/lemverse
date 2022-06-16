@@ -20,13 +20,13 @@ Template.editorEntity.helpers({
 });
 
 Template.editorEntity.events({
-  'click .validated'(event, instance) {
+  'click .validated'(event, templateInstance) {
     const { checked } = event.currentTarget;
-    Entities.update(instance.data._id, { [checked ? '$set' : '$unset']: { validated: true } });
+    Entities.update(templateInstance.data._id, { [checked ? '$set' : '$unset']: { validated: true } });
   },
-  'blur .entity-label'(event, instance) {
+  'blur .entity-label'(event, templateInstance) {
     const { value } = event.currentTarget;
-    Entities.update(instance.data._id, { $set: { label: value } });
+    Entities.update(templateInstance.data._id, { $set: { label: value } });
   },
 });
 

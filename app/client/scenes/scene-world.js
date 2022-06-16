@@ -3,8 +3,8 @@ import Phaser from 'phaser';
 
 const zoomConfig = Object.freeze({
   min: 0.6,
-  max: 1.5,
-  delta: 450,
+  max: 1.6,
+  delta: 100,
 });
 
 const onZoneEntered = e => {
@@ -43,7 +43,10 @@ WorldScene = new Phaser.Class({
     this.nippleMoving = false;
     this.viewportMode = viewportModes.fullscreen;
     this.sleepMethod = this.sleep.bind(this);
-    this.updateViewportMethod = mode => updateViewport(this, mode);
+    this.updateViewportMethod = mode => {
+      updateViewport(this, mode);
+      levelManager.markCullingAsDirty();
+    };
     this.postUpdateMethod = this.postUpdate.bind(this);
     this.shutdownMethod = this.shutdown.bind(this);
 
@@ -66,11 +69,10 @@ WorldScene = new Phaser.Class({
       document.activeElement.blur();
     });
 
-    // Notes: tilesets with extrusion are required to avoid potential black lines between tiles
+    // Notes: tilesets with extrusion are required to avoid potential black lines between tiles (see https://github.com/sporadic-labs/tile-extruder)
     this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY) => {
       const zoom = Math.min(Math.max(this.cameras.main.zoom + (deltaY / zoomConfig.delta), zoomConfig.min), zoomConfig.max);
-      const roundedZoom = Math.round(zoom * 1000) / 1000;
-      this.cameras.main.setZoom(roundedZoom);
+      this.cameras.main.setZoom(zoom);
       levelManager.markCullingAsDirty();
     });
 

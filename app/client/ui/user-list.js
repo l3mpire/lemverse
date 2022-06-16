@@ -78,12 +78,33 @@ Template.userList.helpers({
     return `Users (${userOnlineCount} online)`;
   },
   activeTab(name) { return Template.instance().activeTab.get() === name; },
-  showGuildCreationButton() { return Template.instance().activeTab.get() === tabs.guild && !users(tabs.guild, Meteor.user().guildId).count(); },
+  canEditGuild() {
+    const user = Meteor.user();
+    return canEditGuild(user._id, user.guildId);
+  },
 });
 
 Template.userList.events({
-  'click .js-toggle-tab'(e, template) {
-    const { tab } = e.currentTarget.dataset;
-    template.activeTab.set(tab);
+  'click .js-toggle-tab'(event, templateInstance) {
+    const { tab } = event.currentTarget.dataset;
+    templateInstance.activeTab.set(tab);
+  },
+  'click .js-guild-add-users'() {
+    Session.set('modal', { template: 'userListSelection', scope: 'level', append: true });
+
+    Tracker.autorun(computation => {
+      if (Session.get('modal')?.template === 'userListSelection') return;
+      computation.stop();
+
+      Tracker.nonreactive(() => {
+        const usersSelected = Session.get('usersSelected') || [];
+        if (!usersSelected.length) return;
+
+        const { guildId } = Meteor.user();
+        Meteor.call('addGuildUsers', guildId, usersSelected, error => {
+          if (error) lp.notif.error(error);
+        });
+      });
+    });
   },
 });

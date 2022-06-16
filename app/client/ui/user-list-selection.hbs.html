@@ -7,6 +7,8 @@
             {{> avatarViewer user=this showStatus=true}}
             <span>{{this.profile.name}}</span>
           </li>
+        {{else}}
+          <li class="empty">No users to add</li>
         {{/each}}
       </ul>
       <button type="button" class="button js-submit">Submit ({{amountSelected}})</button>

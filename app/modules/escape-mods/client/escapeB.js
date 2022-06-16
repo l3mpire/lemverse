@@ -32,8 +32,8 @@ Template.escapeB.helpers({
 });
 
 Template.escapeB.events({
-  'click .js-key-code'(e) {
-    const { lock, code } = e.currentTarget.dataset;
+  'click .js-key-code'(event) {
+    const { lock, code } = event.currentTarget.dataset;
     const lockString = `lock${lock}`;
     sounds.play('beep.mp3');
 
@@ -58,8 +58,8 @@ Template.escapeB.events({
       Session.set(lockString, `${Session.get(lockString) || ''}${code}`);
     }
   },
-  'click .js-activate-switch'(e) {
-    const { zone } = e.currentTarget.dataset;
+  'click .js-activate-switch'(event) {
+    const { zone } = event.currentTarget.dataset;
     if (!zone) return;
     sounds.play('click.wav');
     Meteor.call('toggleZone', zone);

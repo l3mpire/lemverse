@@ -1,13 +1,25 @@
 window.addEventListener('load', () => {
   registerModules(['textualCommunicationTools']);
-
-  registerUserListModules(['userListQuestButton', 'userListMessageButton']);
+  registerUserListModules(['userListMessageButton']);
 
   registerRadialMenuModules([
-    { id: 'new-quest', icon: '📜', shortcut: 53, label: 'New quest', closeMenu: true, scope: 'other' },
-    { id: 'show-quests', icon: '📜', shortcut: 57, label: 'Quests', closeMenu: true, scope: 'me' },
-    { id: 'open-console', icon: '💬', shortcut: 56, label: 'Text', closeMenu: true, scope: 'me' },
+    { id: 'send-text', icon: '💬', shortcut: 56, order: 41, label: 'Text', closeMenu: true, scope: 'other' },
+    { id: 'open-console', icon: '💬', shortcut: 56, order: 41, label: 'Text', closeMenu: true, scope: 'me' },
   ]);
+
+  Tracker.autorun(() => {
+    const user = Meteor.user({ fields: { guildId: 1 } });
+    if (!user || !user.guildId) return;
+
+    Tracker.nonreactive(() => {
+      registerRadialMenuModules([
+        { id: 'new-quest', icon: '📜', shortcut: 53, label: 'New quest', closeMenu: true, scope: 'other' },
+        { id: 'show-quests', icon: '📜', shortcut: 57, order: 42, label: 'Quests', closeMenu: true, scope: 'me' },
+      ]);
+
+      registerUserListModules(['userListQuestButton']);
+    });
+  });
 });
 
 const onNotificationReceived = async e => {
@@ -53,7 +65,11 @@ const onMenuOptionSelected = e => {
 
   if (option.id === 'show-quests') Session.set('quests', { origin: 'menu' });
   else if (option.id === 'open-console') openConsole(true);
-  else if (option.id === 'new-quest' && user) createQuestDraft([user._id], Meteor.userId());
+  else if (option.id === 'send-text') {
+    const channel = [user._id, Meteor.userId()].sort().join(';');
+    messagesModule.changeMessagesChannel(channel);
+    openConsole();
+  } else if (option.id === 'new-quest' && user) createQuestDraft([user._id], Meteor.userId());
 };
 
 Template.textualCommunicationTools.onCreated(() => {

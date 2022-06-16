@@ -18,7 +18,7 @@
         </div>
         <div>
           <label for="website" class="label">Website</label>
-          {{#if website}}<a href="{{website}}" class="website" target="_blank">{{website}}</a> {{else}}<span class="website">-</span>{{/if}}
+          {{#if website}}<a href="{{website}}" class="website" target="_blank" rel="noopener">{{website}}</a> {{else}}<span class="website">-</span>{{/if}}
           <input type="text" id="website" name="website" class="js-website input" value={{website}} placeholder="-" />
         </div>
         {{#if editionAllowed}}

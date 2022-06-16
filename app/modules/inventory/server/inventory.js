@@ -11,7 +11,7 @@ addToInventory = (user, inventoryItems) => {
 };
 
 removeFromInventory = (user, inventoryItems) => {
-  log('removeFromInventory: start', { user, inventoryItems });
+  log('removeFromInventory: start', { userId: user._id, inventory: user.inventory, inventoryItems });
   if (!user) throw new Meteor.Error(404, 'User not found.');
 
   const itemsEdited = {};
@@ -33,33 +33,35 @@ removeFromInventory = (user, inventoryItems) => {
   return itemsEdited;
 };
 
-const createEntityFromItem = (item, data = {}) => {
-  log('createEntityFromItem: start', { item });
-  if (!item.entityId) throw new Error(`The item isn't linked to an entity`);
+const dropInventoryItem = (itemId, options = {}) => {
+  log('dropInventoryItem: start', { itemId, options });
+  check(itemId, Match.Id);
 
-  spawnEntityFromPrefab(item.entityId, data);
-};
-
-const dropInventoryItem = (itemId, data = {}) => {
-  log('dropInventoryItem: start', { itemId, data });
   const item = Items.findOne(itemId);
   if (!item) throw new Meteor.Error(404, 'Item not found.');
 
   const user = Meteor.user();
   if (!user.inventory || user.inventory[itemId] < 1) throw new Meteor.Error(404, 'Item not found in the inventory.');
 
-  const itemsEdited = removeFromInventory(user, [{ itemId, amount: data.amount || 1 }]);
-  if (Object.keys(itemsEdited).length === 1) createEntityFromItem(item, data);
-  else throw new Meteor.Error(404, 'Inventory not updated: item not found in the user inventory.');
+  const itemsEdited = removeFromInventory(user, [{ itemId, amount: options.amount || 1 }]);
+  if (Object.keys(itemsEdited).length === 1) {
+    log('dropInventoryItem: drop item', { item });
+    if (!item.entityId) throw new Error(`The item isn't linked to an entity`);
+
+    spawnEntityFromPrefab(item.entityId, {
+      ...options,
+      levelId: user.profile.levelId,
+    });
+  } else throw new Meteor.Error(404, 'Inventory not updated: item not found in the user inventory.');
 
   return itemsEdited;
 };
 
 Meteor.methods({
-  dropInventoryItem(itemId, data = {}) {
-    check(itemId, String);
-    check(data, Object);
+  dropInventoryItem(itemId, options = {}) {
+    check(itemId, Match.Id);
+    check(options, { x: Number, y: Number });
 
-    return dropInventoryItem(itemId, data);
+    return dropInventoryItem(itemId, options);
   },
 });

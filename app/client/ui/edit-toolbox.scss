@@ -3,7 +3,6 @@
   --edit-menus-size: 250px;
   --edit-menus-backdrop: 15px;
   --edit-menus-z-index: 6;
-
   --edit-menus-icons-size: 36px;
   --edit-menus-shape-border: #23ABEE;
   --edit-menus-shape-fill: #45BFF9;
@@ -18,8 +17,8 @@
   bottom: 0;
   right: 0;
   overflow: hidden;
-
   background-color: #FFF95E;
+  /* stylelint-disable-next-line max-line-length */
   background-image: linear-gradient(135deg, rgba(230, 199, 15, 1) 25%, transparent 25%, transparent 50%, rgba(230, 199, 15, 1) 50%, rgba(230, 199, 15, 1) 75%, transparent 75%, transparent);
   background-size: 4rem 4rem;
 
@@ -33,7 +32,7 @@
   }
 
   .menus-backdrop {
-    border-radius: 100% 0 0 0;
+    border-radius: 100% 0 0;
     width: calc(var(--edit-menus-size) + var(--edit-menus-backdrop));
     height: calc(var(--edit-menus-size) + var(--edit-menus-backdrop));
     background-color: rgba(0, 0, 0, .25);
@@ -57,7 +56,7 @@
     }
   }
 
-  &.minimize>.menus-shrink {
+  &.minimize > .menus-shrink {
     background-color: #45BFF9;
 
     .expand {
@@ -69,19 +68,19 @@
     }
   }
 
-  &.minimize>.menus-backdrop {
+  &.minimize > .menus-backdrop {
     width: 0px;
     height: 0px;
     transition: height 0.25s ease-in, width 0.25s ease-in;
   }
 
-  &.minimize>.menus {
+  &.minimize > .menus {
     width: 0px;
     height: 0px;
     transition: height 0.25s ease-in, width 0.25s ease-in;
   }
 
-  &.minimize>.edit-content {
+  &.minimize > .edit-content {
     height: 0px;
     transition: height 0.25s ease-in;
 
@@ -97,8 +96,7 @@
     background-color: #45BFF9;
     transition: height 0.25s ease-in, width 0.25s ease-in;
     display: flex;
-
-    border-radius: 100% 0 0 0;
+    border-radius: 100% 0 0;
 
     .menus-level,
     .menus-tileset,
@@ -107,7 +105,7 @@
       width: 125px;
       height: 125px;
 
-      &>.icon {
+      & > .icon {
         cursor: pointer;
         position: absolute;
         fill: white;
@@ -138,7 +136,7 @@
       bottom: 17px;
       left: 25px;
 
-      &>.icon {
+      & > .icon {
         bottom: 40px;
         left: 34px;
       }
@@ -148,14 +146,14 @@
       right: 17px;
       top: 30px;
 
-      &>.icon {
+      & > .icon {
         bottom: 55px;
         left: 46px;
       }
     }
 
     .menus-level {
-      &>.icon {
+      & > .icon {
         bottom: 34px;
         left: 50px;
       }

@@ -12,7 +12,14 @@ window.addEventListener('load', () => {
     if (option.id === 'open-inventory') toggleModal('inventory');
   });
 
-  registerRadialMenuModules([{ id: 'open-inventory', icon: '📦', shortcut: 73, label: 'Inventory', closeMenu: true, scope: 'me' }]);
+  Tracker.autorun(() => {
+    const user = Meteor.user({ fields: { guildId: 1 } });
+    if (!user || !user.guildId) return;
+
+    Tracker.nonreactive(() => {
+      registerRadialMenuModules([{ id: 'open-inventory', icon: '📦', shortcut: 73, label: 'Inventory', closeMenu: true, scope: 'me' }]);
+    });
+  });
 });
 
 Template.inventoryItemPanel.helpers({
@@ -24,9 +31,9 @@ Template.inventoryItemPanel.helpers({
 });
 
 Template.inventoryItemPanel.events({
-  'click .js-drop-item'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'click .js-drop-item'(event) {
+    event.preventDefault();
+    event.stopPropagation();
 
     const itemId = Session.get('selectedInventoryItem')._id;
     const positionInFrontOfPlayer = userManager.getPositionInFrontOfPlayer(userManager.player, dropItemDistance);
@@ -48,10 +55,10 @@ Template.inventoryItem.helpers({
 });
 
 Template.inventoryItem.events({
-  'click .js-inventory-item'(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    Session.set('selectedInventoryItem', { ...Template.instance().item, amount: Template.instance().data.item.amount });
+  'click .js-inventory-item'(event, templateInstance) {
+    event.preventDefault();
+    event.stopPropagation();
+    Session.set('selectedInventoryItem', { ...templateInstance.item, amount: templateInstance.data.item.amount });
   },
 });
 

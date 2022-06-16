@@ -84,10 +84,13 @@ entityManager = {
     const entityInstance = this.entities[newEntity._id];
     if (!entityInstance) return;
 
-    entityInstance
-      .setPosition(newEntity.x, newEntity.y)
-      .setDepth(newEntity.y)
-      .setScale(newEntity.scale?.x || 1, newEntity.scale?.y || 1);
+    const { gameObject } = newEntity;
+    if (gameObject) {
+      entityInstance
+        .setPosition(newEntity.x, newEntity.y)
+        .setDepth(gameObject.depth || newEntity.y)
+        .setScale(gameObject.scale || 1, Math.abs(gameObject.scale || 1));
+    }
 
     if (newEntity.state !== oldEntity.state) this.updateEntityFromState(newEntity, newEntity.state);
 
@@ -257,12 +260,11 @@ entityManager = {
         // the spawn being asynchronous, an entity may have disappeared before being created
         if (!Entities.findOne(entity._id)) return;
 
-        const pickable = entity.actionType === entityActionType.pickable;
         const gameObject = this.scene.add.container(entity.x, entity.y)
           .setData('id', entity._id)
           .setData('actionType', entity.actionType)
-          .setDepth(entity.y)
-          .setScale(entity.scale?.x || 1, entity.scale?.y || 1)
+          .setDepth(entity.gameObject?.depth || entity.y)
+          .setScale(entity.gameObject?.scale || 1)
           .on('pointerdown', onPointerDown)
           .on('drag', onDrag)
           .on('dragend', onDragEnd);
@@ -272,38 +274,16 @@ entityManager = {
         if (!entity.gameObject) return;
 
         let mainSprite;
-        if (entity.gameObject.sprite) {
-          const { sprite } = entity.gameObject;
-          if (sprite.assetId) mainSprite = this.scene.add.sprite(0, 0, sprite.assetId, sprite.key);
-          else mainSprite = this.scene.add.sprite(0, 0, sprite.key);
-
-          mainSprite.name = 'main-sprite';
+        const { collide, sprite, text } = entity.gameObject;
+        if (sprite) {
+          mainSprite = this.spawnSpriteFromConfig(sprite);
           gameObject.add(mainSprite);
-
-          // play spritesheet animation
-          if (sprite.framerate) {
-            const animation = this.scene.anims.create({
-              key: sprite.key,
-              frames: this.scene.anims.generateFrameNumbers(sprite.key),
-              frameRate: sprite.framerate || 16,
-            });
-            if (animation.frames.length) mainSprite.play({ key: sprite.key, repeat: -1 });
-          }
         }
-
-        if (entity.gameObject.text) {
-          const mainText = this.scene.make.text({ x: 0, y: 0, ...entity.gameObject.text, add: true });
-          mainText.name = 'main-text';
-          mainText.setScale(entity.gameObject.text.scale || 1);
-          mainText.setOrigin(0.5, 0.5);
-          gameObject.add(mainText);
-
-          if (!entity.gameObject.text.text) mainText.setText(entity.state);
-        }
-
-        if (entity.gameObject.collide) this.scene.physics.world.enableBody(gameObject);
+        if (text) gameObject.add(this.spawnTextFromConfig(text, entity.state));
+        if (collide) this.scene.physics.world.enableBody(gameObject);
 
         // pickable/loots animations
+        const pickable = entity.actionType === entityActionType.pickable;
         if (pickable && mainSprite) {
           const animation = entityAnimations.floating(0, -floatingDistance);
           this.scene.tweens.add({
@@ -334,6 +314,38 @@ entityManager = {
 
       if (callback) callback();
     });
+  },
+
+  spawnSpriteFromConfig(config) {
+    let sprite;
+
+    if (config.assetId) sprite = this.scene.add.sprite(0, 0, config.assetId, config.key);
+    else sprite = this.scene.add.sprite(0, 0, config.key);
+    sprite.name = 'main-sprite';
+
+    // animations
+    if (!config.framerate) return sprite;
+
+    const animation = this.scene.anims.create({
+      key: config.key,
+      frames: this.scene.anims.generateFrameNumbers(config.key),
+      frameRate: config.framerate || 16,
+    });
+
+    if (animation.frames.length) sprite.play({ key: config.key, repeat: -1 });
+
+    return sprite;
+  },
+
+  spawnTextFromConfig(config, defaultText = '') {
+    const text = this.scene.make.text({ ...config, add: true });
+    text.name = 'main-text';
+    text.setScale(config.scale || 1);
+    text.setOrigin(0.5, 0.5);
+
+    if (!text.text) text.setText(defaultText);
+
+    return text;
   },
 
   computeTooltipPosition(entity) {

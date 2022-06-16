@@ -7,8 +7,8 @@ scopes = {
   form: 'form',
 };
 
-hotkeys.filter = function (event) {
-  const { tagName } = event.target || event.srcElement;
+hotkeys.filter = event => {
+  const { tagName } = event.target;
   return !/^(INPUT|TEXTAREA)$/.test(tagName);
 };
 
@@ -17,43 +17,30 @@ game = undefined;
 const config = {
   type: Phaser.AUTO,
   parent: 'game',
-  width: window.innerWidth / Meteor.settings.public.zoom,
-  height: window.innerHeight / Meteor.settings.public.zoom,
-  zoom: Meteor.settings.public.zoom,
-  inputWindowEvents: false,
   title: Meteor.settings.public.lp.product,
   url: Meteor.settings.public.lp.website,
   fps: {
-    min: 5,
-    target: 60,
-    forceSetTimeOut: false,
     deltaHistory: 5,
-    panicMax: 120,
-    smoothStep: true,
+  },
+  input: {
+    windowEvents: false,
   },
   physics: {
     default: 'arcade',
     arcade: {
       debug: Meteor.settings.public.debug,
       gravity: { y: 0 },
-      useTree: false,
       customUpdate: true,
     },
   },
   render: {
-    pixelArt: true,
-    roundPixels: true,
-    antialias: false,
-    antialiasGL: false,
+    pixelArt: true, // disable anti-aliasing & enable round pixels
     powerPreference: 'low-power',
   },
   scale: {
     mode: Phaser.Scale.RESIZE,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 800, // Default game window width
-    height: 600, // Default game window height,
     autoRound: true,
-    resizeInterval: 999999,
   },
   dom: {
     createContainer: true,
@@ -116,13 +103,6 @@ Template.lemverse.onCreated(function () {
       log('All assets loaded');
       Session.set('tilesetsLoaded', true);
     });
-  });
-
-  this.autorun(() => {
-    if (!Session.get('sceneWorldReady')) return;
-
-    const editor = Session.get('editor');
-    Tracker.nonreactive(() => levelManager.enableRenderTexture(!editor));
   });
 
   this.autorun(() => {
@@ -314,6 +294,7 @@ Template.lemverse.onCreated(function () {
 
       if (this.currentLevelId) {
         log(`unloading current level…`);
+        Session.set('editor', 0);
         worldScene.scene.restart();
         uiScene.onLevelUnloaded();
         this.currentLevelId = undefined;
@@ -397,8 +378,6 @@ Template.lemverse.onCreated(function () {
     });
   });
 
-  hotkeys('space', { scope: scopes.player }, () => toggleUserProperty('shareAudio'));
-
   hotkeys('e', { scope: 'all' }, event => {
     if (event.repeat || !isEditionAllowed(Meteor.userId())) return;
     Session.set('editor', !Session.get('editor'));
@@ -480,7 +459,6 @@ Template.lemverse.onDestroyed(function () {
   hotkeys.unbind('x', scopes.player);
   hotkeys.unbind('shift+r', scopes.player);
   hotkeys.unbind('tab', scopes.player);
-  hotkeys.unbind('space', scopes.player);
 });
 
 Template.lemverse.helpers({
@@ -495,29 +473,9 @@ Template.lemverse.helpers({
 });
 
 Template.lemverse.events({
-  'mouseup .button.audio'(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    toggleUserProperty('shareAudio');
-  },
-  'mouseup .button.video'(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    toggleUserProperty('shareVideo');
-  },
-  'mouseup .button.screen'(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    toggleUserProperty('shareScreen');
-  },
-  'mouseup .button.settings'(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    toggleModal('settingsMain');
-  },
-  'mouseup .button.js-notifications'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'mouseup .button.js-notifications'(event) {
+    event.preventDefault();
+    event.stopPropagation();
     toggleModal('notifications');
   },
 });

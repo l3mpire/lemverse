@@ -78,7 +78,7 @@ Template.profile.events({
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.avatar': avatar } });
     return false;
   },
-  'click .js-copy-identifier'(event, template) {
-    navigator.clipboard.writeText(getUser(template)._id).then(() => lp.notif.success('✂️ Identifier copied to your clipboard'));
+  'click .js-copy-identifier'(event, templateInstance) {
+    navigator.clipboard.writeText(getUser(templateInstance)._id).then(() => lp.notif.success('✂️ Identifier copied to your clipboard'));
   },
 });

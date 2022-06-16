@@ -28,7 +28,7 @@ $frame-height: 85px;
   }
 
   &.show-status {
-    .avatar:before {
+    .avatar::before {
       display: block;
     }
   }
@@ -47,9 +47,9 @@ $frame-height: 85px;
     bottom: 0;
     overflow: hidden;
 
-    &:before {
+    &::before {
       display: none;
-      content: '';
+      content: "";
       border-radius: 50%;
       bottom: 0;
       right: 0;
@@ -61,7 +61,7 @@ $frame-height: 85px;
       z-index: 5;
     }
 
-    &.online:before {
+    &.online::before {
       background-color: $light-green;
     }
 

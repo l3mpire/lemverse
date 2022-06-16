@@ -74,5 +74,11 @@
 			"anims",
 			"usemap"
 		],
+		"stylelint.validate": [
+			"css",
+			"less",
+			"postcss",
+			"scss"
+		],
 	}
 }

@@ -37,6 +37,6 @@ Template.editToolbox.onDestroyed(() => {
 });
 
 Template.editToolbox.events({
-  'click .js-menus-select'(e) { Session.set('editorSelectedMenu', e.currentTarget.dataset.menu); },
+  'click .js-menus-select'(event) { Session.set('editorSelectedMenu', event.currentTarget.dataset.menu); },
   'click .js-menus-shrink'() { document.querySelector('.edit-toolbox')?.classList.toggle('minimize'); },
 });

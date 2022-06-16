@@ -30,23 +30,24 @@ Template.editorCharacters.helpers({
 Template.registerHelper('selectedCharactersPart', () => selectedCharactersPart());
 
 Template.editorCharacters.events({
-  'change .js-characters-list'(e) {
-    Session.set('selectedCharacterId', e.currentTarget?.value || null);
+  'change .js-characters-list'(event) {
+    Session.set('selectedCharacterId', event.currentTarget?.value || null);
   },
-  'click .js-set-category'(e) {
-    const { category } = e.currentTarget.dataset;
+  'click .js-set-category'(event) {
+    const { category } = event.currentTarget.dataset;
     const currentId = selectedCharactersPart()._id;
 
     Meteor.call('updateUsersCharacter', Session.get('editorCharactersFilter'), category, currentId, err => {
-      if (!err) {
-        Session.set('selectedCharacterId', findFirstCharacters()?._id || null);
-      } else {
+      if (err) {
         lp.notif.error(`Error while changing category, ${err.reason}`);
+        return;
       }
+
+      Session.set('selectedCharacterId', findFirstCharacters()?._id || null);
     });
   },
-  'click .js-change-filter'(e) {
-    const { category } = e.currentTarget.dataset;
+  'click .js-change-filter'(event) {
+    const { category } = event.currentTarget.dataset;
     Session.set('editorCharactersFilter', category === 'none' ? null : category);
     Session.set('selectedCharacterId', findFirstCharacters()?._id || null);
   },
@@ -54,9 +55,9 @@ Template.editorCharacters.events({
     Session.set('showDropZone', true);
   },
 
-  'drag .js-drop-zone, dragstart .js-drop-zone, dragend .js-drop-zone, dragover .js-drop-zone, dragenter .js-drop-zone, dragleave .js-drop-zone, drop .js-drop-zone'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'drag .js-drop-zone, dragstart .js-drop-zone, dragend .js-drop-zone, dragover .js-drop-zone, dragenter .js-drop-zone, dragleave .js-drop-zone, drop .js-drop-zone'(event) {
+    event.preventDefault();
+    event.stopPropagation();
   },
 
   'dragleave .js-drop-zone, dragend .js-drop-zone, drop .js-drop-zone'() {

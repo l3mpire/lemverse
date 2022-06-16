@@ -5,17 +5,17 @@ const refreshSubscriberList = template => {
 const toggleSubscribe = (entity, callback) => Meteor.call('toggleEntitySubscription', entity._id, callback);
 
 Template.questEntity.events({
-  'click .js-quest-create'(e, template) {
-    e.preventDefault();
-    e.stopPropagation();
+  'click .js-quest-create'(event, templateInstance) {
+    event.preventDefault();
+    event.stopPropagation();
 
     closeModal();
-    createQuestDraft([], template.data.entity._id);
+    createQuestDraft([], templateInstance.data.entity._id);
   },
-  'click .js-quest-subscribe'(e, template) {
-    e.preventDefault();
-    e.stopPropagation();
-    toggleSubscribe(template.data.entity, () => refreshSubscriberList(template));
+  'click .js-quest-subscribe'(event, templateInstance) {
+    event.preventDefault();
+    event.stopPropagation();
+    toggleSubscribe(templateInstance.data.entity, () => refreshSubscriberList(templateInstance));
   },
 });
 

@@ -50,12 +50,8 @@ const reactionMenuItems = [
 ];
 
 const mainMenuItems = [
-  { id: 'toggle-mic', icon: '🎤', order: 0, shortcut: 49, label: 'Audio', state: 'shareAudio' },
-  { id: 'toggle-cam', icon: '🎥', order: 1, shortcut: 50, label: 'Camera', state: 'shareVideo' },
-  { id: 'toggle-screen', icon: '📺', order: 2, shortcut: 51, label: 'Screen', state: 'shareScreen' },
-  { id: 'settings', icon: '⚙️', order: 3, shortcut: 52, label: 'Settings', closeMenu: true },
-  { id: 'reactions', icon: '😃', order: 4, shortcut: 53, label: 'Reactions' },
-  { id: 'notifications', icon: '🔔', order: 5, shortcut: 54, label: 'Notifications', closeMenu: true },
+  { id: 'reactions', icon: '😃', order: 1, shortcut: 53, label: 'Reactions' },
+  { id: 'notifications', icon: '🔔', order: 2, shortcut: 54, label: 'Notifications', closeMenu: true },
   { id: 'shout', icon: '📢', label: 'Shout', order: 40, shortcut: 55 },
 ];
 
@@ -73,11 +69,7 @@ const additionalOptions = scope => Session.get('radialMenuModules').filter(optio
 const onMenuOptionSelected = e => {
   const { option, user } = e.detail;
 
-  if (option.id === 'toggle-mic') toggleUserProperty('shareAudio');
-  else if (option.id === 'toggle-cam') toggleUserProperty('shareVideo');
-  else if (option.id === 'toggle-screen') toggleUserProperty('shareScreen');
-  else if (option.id === 'settings') toggleModal('settingsMain');
-  else if (option.id === 'reactions') buildMenuFromOptions(reactionMenuItems);
+  if (option.id === 'reactions') buildMenuFromOptions(reactionMenuItems);
   else if (option.id === 'notifications') toggleModal('notifications');
   else if (option.id === 'shout') userVoiceRecorderAbility.recordVoice(true, sendAudioChunksToUsersInZone);
   else if (option.id === 'send-love' && user) setReaction(Random.choice(lovePhrases(user.profile.name)));
@@ -226,18 +218,18 @@ Template.radialMenu.onDestroyed(() => {
 });
 
 Template.radialMenu.events({
-  'mousedown .js-menu-item'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'mousedown .js-menu-item'(event) {
+    event.preventDefault();
+    event.stopPropagation();
     window.dispatchEvent(new CustomEvent(eventTypes.onMenuOptionSelected, { detail: { option: this, user: menuCurrentUser() } }));
   },
-  'mouseup .js-menu-item'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'mouseup .js-menu-item'(event) {
+    event.preventDefault();
+    event.stopPropagation();
     window.dispatchEvent(new CustomEvent(eventTypes.onMenuOptionUnselected, { detail: { option: this } }));
   },
-  'mouseenter .js-menu-item'(e, template) { template.label.set(this.label); },
-  'mouseleave .js-menu-item'(e, template) { template.label.set(undefined); },
+  'mouseenter .js-menu-item'(event, templateInstance) { templateInstance.label.set(this.label); },
+  'mouseleave .js-menu-item'(event, templateInstance) { templateInstance.label.set(undefined); },
 });
 
 Template.radialMenu.helpers({

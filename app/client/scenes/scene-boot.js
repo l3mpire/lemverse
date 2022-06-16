@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 
-const assetsRoute = 'assets/images/';
+const assetsRoute = 'assets/images';
 const filesRoute = Meteor.settings.public.files.route;
 
 BootScene = new Phaser.Class({
@@ -23,7 +23,6 @@ BootScene = new Phaser.Class({
         frameHeight: frameHeight || 32,
       });
     });
-
     this.loadAssetsAtRuntime(Assets.find().fetch());
   },
 

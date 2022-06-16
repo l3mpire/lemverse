@@ -20,9 +20,7 @@ Tracker.autorun(() => {
 
 Template.onlineStatus.helpers({
   disconnectedStatus() { return ['waiting', 'offline']; },
-  status() {
-    return Meteor.status();
-  },
+  status() { return Meteor.status(); },
   retryIn() {
     const [hour, minutes, seconds] = nearestDuration(Session.get('retryTimeDuration')).split(':');
     let retryIn = '';

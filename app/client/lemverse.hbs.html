@@ -12,25 +12,14 @@
             {{> remoteStream remoteUser=remoteUser }}
           {{/each}}
         </div>
-        <div class="user-panel {{#unless loading}}visible{{/unless}}">
-          <div class="js-stream-screen-me"></div>
-          <div class="js-stream-me">
-            <video type="video/mp4" width="160" height="120" autoplay muted></video>
-            <div class="buttons">
-              <button class="button audio {{#if currentUser.profile.shareAudio}}active{{/if}}" type="button">🎤</button>
-              <button class="button video {{#if currentUser.profile.shareVideo}}active{{/if}}" type="button">🎥</button>
-              <button class="button screen {{#if currentUser.profile.shareScreen}}active{{/if}}" type="button">📺</button>
-              <button class="button settings {{#if settingsOpen}}active{{/if}}" type="button">⚙️</button>
-            </div>
-          </div>
-        </div>
+        {{> userPanel loading=loading}}
         <button type="button" class="button js-notifications {{#if pendingNotificationsCount}}visible{{/if}}" data-count="{{ pendingNotificationsCount }}">🔔</button>
       {{/if}}
       <div id="game" class="{{#if neq (Session 'editor') 0}}edit{{/if}} {{#if loading}}loading{{/if}}"></div>
     </div>
     <div id="meet"></div>
     <div id="webpage">
-      <iframe src="" frameBorder="0" allowfullscreen="true" id="webpageIframe"></iframe>
+      <iframe src="" frameBorder="0" allowfullscreen="true" id="webpageIframe" title="Embedded content"></iframe>
     </div>
   </div>
   {{> zoneNameToaster}}

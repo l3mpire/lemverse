@@ -1,23 +1,20 @@
-const setVideoPreviewElementStream = stream => {
-  const video = document.querySelector('#js-video-preview');
-  video.srcObject = stream;
-  video.onloadedmetadata = () => video.play();
-  peer.updatePeersStream(stream, streamTypes.main);
-};
-
-const updateSettingsStream = template => {
+const updateSettingsStream = async template => {
   const constraints = userStreams.getStreamConstraints(streamTypes.main);
   constraints.forceNew = true;
 
-  userStreams.requestUserMedia(constraints)
-    .then(stream => {
-      userStreams.enumerateDevices().then(({ mics, cams }) => {
-        template.audioRecorders.set(mics);
-        template.videoRecorders.set(cams);
-      });
+  const stream = await userStreams.requestUserMedia(constraints);
+  if (!stream) { lp.notif.error(`unable to get a valid stream`); return; }
 
-      return stream;
-    }).then(stream => setVideoPreviewElementStream(stream));
+  userStreams.enumerateDevices().then(({ mics, cams }) => {
+    template.audioRecorders.set(mics);
+    template.videoRecorders.set(cams);
+  });
+
+  const video = document.querySelector('#js-video-preview');
+  video.srcObject = stream;
+  video.onloadedmetadata = () => video.play();
+
+  peer.updatePeersStream(stream, streamTypes.main);
 };
 
 Template.settingsMedias.onCreated(function () {
@@ -35,13 +32,13 @@ Template.settingsMedias.onDestroyed(function () {
 });
 
 Template.settingsMedias.events({
-  'change .js-mic-select'(event) {
+  'change .js-mic-select'(event, templateInstance) {
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.audioRecorder': event.target.value } });
-    updateSettingsStream(Template.instance());
+    updateSettingsStream(templateInstance);
   },
-  'change .js-cam-select'(event) {
+  'change .js-cam-select'(event, templateInstance) {
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.videoRecorder': event.target.value } });
-    updateSettingsStream(Template.instance());
+    updateSettingsStream(templateInstance);
   },
   'change .js-screen-framerate'(event) {
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.screenShareFrameRate': +event.target.value } });

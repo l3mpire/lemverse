@@ -30,26 +30,12 @@ Template.settingsMain.events({
 
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.defaultReaction': reaction } });
   },
-  'click .js-copy-invitation'(event) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    const { levelId } = Meteor.user().profile;
-    const levelIdWithoutPrefix = levelId.substring(levelId.lastIndexOf('_') + 1);
-
-    const path = FlowRouter.path('invite', { levelId: levelIdWithoutPrefix });
-    const url = `${window.location.protocol}//${window.location.host}${path}`;
-    navigator.clipboard.writeText(url).then(() => lp.notif.success('✂️ Invitation copied to your clipboard'));
-  },
   'click .js-logout'(event) {
     event.preventDefault();
     event.stopPropagation();
     closeModal();
     Meteor.logout();
   },
-});
-
-Template.settingsMain.events({
   'click .js-inventory'() { Session.set('modal', { template: 'inventory', append: true }); },
   'click .js-character-designer'() { Session.set('modal', { template: 'settingsCharacter', append: true }); },
   'click .js-medias-settings'() { Session.set('modal', { template: 'settingsMedias', append: true }); },

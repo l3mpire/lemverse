@@ -45,8 +45,10 @@
         {{/each}}
       </ul>
 
-      {{#if showGuildCreationButton}}
-        <div class="empty">Nothing to see here for now 🤫</div>
+      {{#if activeTab "guild"}}
+        {{#if canEditGuild}}
+          <button type="button" class="button js-guild-add-users">+</button>
+        {{/if}}
       {{/if}}
     </div>
   {{/modal}}

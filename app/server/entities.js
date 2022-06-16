@@ -8,28 +8,53 @@ const applyEntityState = (entity, stateActions) => {
   stateActions.replace?.forEach(t => Tiles.update({ levelId, x: t.x, y: t.y }, { $set: { tilesetId: t.newTilesetId, index: t.newIndex } }));
 };
 
-spawnEntityFromPrefab = (entityId, data = {}) => {
+spawnEntityFromPrefab = (entityId, options = {}) => {
   check(entityId, String);
-  check(data, Object);
+  check(options, { x: Number, y: Number, levelId: String });
 
-  log('spawnEntityFromPrefab: start', { entityId });
+  log('spawnEntityFromPrefab: start', { entityId, options });
 
   const entityPrefab = Entities.findOne(entityId);
   if (!entityPrefab) throw new Error(`The entity does not exists (${entityId})`);
 
-  const { levelId, x, y } = Meteor.user().profile;
   const spawnedEntityId = Entities.insert({
     ...entityPrefab,
     _id: Entities.id(),
-    levelId: data.levelId || levelId,
-    x: data.x || x,
-    y: data.y || y,
+    levelId: options.levelId,
+    x: options.x,
+    y: options.y,
     createdBy: Meteor.userId(),
     createdAt: new Date(),
-    prefab: undefined,
+    prefab: undefined, // remove prefab attribute
   });
 
-  log('spawnEntityFromPrefab: done', { entityId });
+  log('spawnEntityFromPrefab: done', { spawnedEntityId });
+
+  return spawnedEntityId;
+};
+
+const spawnEntityFromFile = (fileId, options = {}) => {
+  log('spawnEntityFromFile: start', { fileId, options });
+  check(fileId, String);
+  check(options, { x: Number, y: Number, levelId: String });
+
+  const spawnedEntityId = Entities.insert({
+    _id: Entities.id(),
+    levelId: options.levelId,
+    x: options.x,
+    y: options.y,
+    actionType: entityActionType.none,
+    gameObject: {
+      sprite: {
+        key: fileId,
+        fileId,
+      },
+    },
+    createdBy: Meteor.userId(),
+    createdAt: new Date(),
+  });
+
+  log('spawnEntityFromFile: done', { spawnedEntityId });
 
   return spawnedEntityId;
 };
@@ -41,11 +66,7 @@ switchEntityState = (entity, forcedState = undefined) => {
 
   const toggledState = entity.state === 'on' ? 'off' : 'on';
   const newState = forcedState !== undefined ? forcedState : toggledState;
-
-  let stateActions;
-  // todo: remove this condition once the migration to the new format is done in production
-  if (Array.isArray(entity.states)) stateActions = newState === 'on' ? entity.states[1] : entity.states[0];
-  else stateActions = entity.states[newState];
+  const stateActions = entity.states[newState];
 
   if (!stateActions) {
     log('Invalid state', { entity, newState });
@@ -73,44 +94,70 @@ const pickEntityInventory = entity => {
 
 Meteor.methods({
   useEntity(entityId, value = undefined) {
-    check(entityId, String);
+    check(value, Match.OneOf(undefined, null, Number, String));
+    check(entityId, Match.Id);
 
     const entity = Entities.findOne(entityId);
     if (!entity) throw new Meteor.Error(404, 'Entity not found.');
 
     if (!entity.actionType || entity.actionType === entityActionType.actionable) switchEntityState(entity, value);
     else if (entity.actionType === entityActionType.pickable) {
-      pickEntityInventory(entity, value);
+      pickEntityInventory(entity);
       Entities.remove(entity._id);
     } else throw new Error('entity action not implemented');
 
     return entity;
   },
   subscribedUsers(entityId) {
-    check(entityId, String);
+    check(entityId, Match.Id);
 
     return subscribedUsersToEntity(entityId);
   },
-  spawnEntityFromPrefab(entityId, data = {}) {
-    check(entityId, String);
-    check(data, Object);
+  spawnEntityFromFile(fileId, options = {}) {
+    check(fileId, Match.Id);
+    check(options, { x: Match.Optional(Number), y: Match.Optional(Number) });
+    if (!lp.isLemverseBeta('custom-sprite')) throw new Meteor.Error('invalid-user', 'available for admin only for now');
+    if (!this.userId) return undefined;
 
-    spawnEntityFromPrefab(entityId, data);
+    const { levelId, x, y } = Meteor.user().profile;
+
+    return spawnEntityFromFile(fileId, {
+      x: options.x || x,
+      y: options.y || y,
+      levelId,
+    });
+  },
+  spawnEntityFromPrefab(entityId, options = {}) {
+    check(entityId, Match.Id);
+    check(options, { x: Match.Optional(Number), y: Match.Optional(Number) });
+    if (!this.userId) return undefined;
+
+    const { levelId, x, y } = Meteor.user().profile;
+
+    return spawnEntityFromPrefab(entityId, {
+      levelId: options.levelId || levelId,
+      x: options.x || x,
+      y: options.y || y,
+    });
   },
 });
 
 Meteor.publish('entities', function (levelId) {
+  check(levelId, Match.Maybe(Match.Id));
   if (!this.userId) return undefined;
   if (!levelId) levelId = Meteor.settings.defaultLevelId;
 
   return Entities.find({ levelId, prefab: { $exists: false } });
 });
 
-Meteor.publish('entityPrefabs', function () {
+Meteor.publish('entityPrefabs', function (levelId) {
+  check(levelId, Match.Maybe(Match.Id));
   if (!this.userId) return undefined;
 
-  const selectors = { prefab: true, actionType: { $ne: entityActionType.pickable } };
+  const selectors = { prefab: true };
+
   if (!Meteor.user().roles?.admin) selectors.validated = { $exists: true };
+  if (levelId) selectors.$or = [{ levelId: { $exists: false } }, { levelId }];
 
   return Entities.find(selectors);
 });

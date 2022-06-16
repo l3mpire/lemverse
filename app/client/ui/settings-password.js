@@ -21,13 +21,13 @@ Template.settingsPassword.onCreated(function () {
 });
 
 Template.settingsPassword.events({
-  'keyup .js-currentPassword'(e) { Template.instance().currentPassword = e.target.value; },
-  'keyup .js-newPassword'(e) { Template.instance().newPassword = e.target.value; },
-  'keyup .js-newPasswordRepeated'(e) { Template.instance().newPasswordRepeated = e.target.value; },
-  'submit form'(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    onSubmit(Template.instance());
+  'keyup .js-currentPassword'(event, templateInstance) { templateInstance.currentPassword = event.target.value; },
+  'keyup .js-newPassword'(event, templateInstance) { templateInstance.newPassword = event.target.value; },
+  'keyup .js-newPasswordRepeated'(event, templateInstance) { templateInstance.newPasswordRepeated = event.target.value; },
+  'submit form'(event, templateInstance) {
+    event.preventDefault();
+    event.stopPropagation();
+    onSubmit(templateInstance);
     return false;
   },
 });

@@ -79,7 +79,7 @@ Accounts.onLogin(par => {
   } else if (par.type !== 'resume') {
     const guest = GuestUsers.findOne({ connection_id: par.connection.id });
     if (guest) {
-      Meteor.users.remove(guest.user_id);
+      Meteor.users.remove({ _id: guest.user_id, 'profile.guest': true });
       GuestUsers.remove(guest._id);
     }
   }

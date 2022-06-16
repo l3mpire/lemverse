@@ -53,15 +53,15 @@ Template.formLogIn.events({
   'click .js-next-step'() { onSubmit(Template.instance()); },
   'focus input'() { hotkeys.setScope('form'); game?.scene?.keys?.WorldScene?.enableKeyboard(false, false); },
   'blur input'() { hotkeys.setScope(scopes.player); game?.scene?.keys?.WorldScene?.enableKeyboard(true, false); },
-  'keyup .js-email'(e) { Template.instance().email = e.target.value; },
-  'keyup .js-password'(e) { Template.instance().password = e.target.value; },
+  'keyup .js-email'(event, templateInstance) { templateInstance.email = event.target.value; },
+  'keyup .js-password'(event, templateInstance) { templateInstance.password = event.target.value; },
   'click .js-cancel-login-mode'() { Template.instance().loginMode.set(true); },
   'click .js-password-lost'() { Template.instance().loginMode.set(false); },
-  'submit form'(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  'submit form'(event, templateInstance) {
+    event.preventDefault();
+    event.stopPropagation();
 
-    onSubmit(Template.instance());
+    onSubmit(templateInstance);
 
     return false;
   },

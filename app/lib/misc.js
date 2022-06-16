@@ -39,7 +39,52 @@ isLevelOwner = userId => {
   return level.createdBy === userId;
 };
 
+canEditGuild = (userId, guildId) => {
+  check([userId, guildId], [Match.Id]);
+
+  const user = Meteor.users.findOne(userId);
+  if (!user) return false;
+
+  const guild = Guilds.findOne(guildId);
+  if (!guild) return false;
+
+  if (user.roles?.admin) return true;
+  if (!user.guildId) return false;
+
+  return user.guildId === guildId && guild.owners?.includes(userId);
+};
+
+canAccessZone = (zoneId, userId) => {
+  check([zoneId, userId], [Match.Id]);
+
+  const zone = Zones.findOne(zoneId);
+  if (!zone) throw new Meteor.Error('not-found', 'Zone not found');
+
+  const user = Meteor.users.findOne(userId);
+  if (!user) throw new Meteor.Error('not-found', 'User not found');
+  if (user.roles?.admin) return true;
+
+  // make sure that all the necessary items are in the user's inventory
+  if (zone.requiredItems?.length) {
+    const userItems = Object.keys(user.inventory || {});
+    if (!zone.requiredItems.every(tag => userItems.includes(tag))) return false;
+  }
+
+  // verifies that the user is a member of the level guild
+  if (zone.restrictedToGuild) {
+    const level = userLevel(userId);
+    if (!level) throw new Meteor.Error('not-found', 'Level not found');
+    if (!level.guildId) throw new Meteor.Error('configuration-missing', 'Guild not linked to the level. You must link a guild to the level or remove the "restrictedToGuild" attribute');
+
+    if (level.guildId !== user.guildId) return false;
+  }
+
+  return true;
+};
+
 isEditionAllowed = userId => {
+  check(userId, Match.Id);
+
   const user = Meteor.users.findOne(userId);
   if (!user) return false;
 
@@ -80,6 +125,8 @@ completeUserProfile = (user, email, name) => {
 };
 
 generateRandomCharacterSkin = (user, levelId) => {
+  check(levelId, Match.Id);
+
   let newProfile = { ...user.profile };
   const currentLevel = Levels.findOne(levelId);
   if (!user.profile?.body && currentLevel?.skins?.default) {
@@ -104,12 +151,12 @@ generateRandomCharacterSkin = (user, levelId) => {
 };
 
 teleportUserInLevel = (levelId, userId) => {
-  check([levelId, userId], [String]);
+  check([levelId, userId], [Match.Id]);
 
   log('teleportUserInLevel: start', { levelId, userId });
   const loadingLevelId = levelId || Meteor.settings.defaultLevelId;
   const level = Levels.findOne(loadingLevelId);
-  if (!level) throw new Error(`teleportUserInLevel: level not found`);
+  if (!level) throw new Meteor.Error('not-found', `Level not found`);
 
   const { x, y } = levelSpawnPosition(loadingLevelId);
   Meteor.users.update(userId, { $set: { 'profile.levelId': level._id, 'profile.x': x, 'profile.y': y } });
@@ -117,25 +164,16 @@ teleportUserInLevel = (levelId, userId) => {
   return level.name;
 };
 
-subscribedUsersToEntity = entityId => Meteor.users.find(
-  { entitySubscriptionIds: entityId },
-  {
-    fields: { 'status.online': 1, 'profile.body': 1, 'profile.eyes': 1, 'profile.accessory': 1, 'profile.hair': 1, 'profile.outfit': 1, 'profile.name': 1 },
-    sort: { 'profile.name': 1 },
-  },
-).fetch();
+subscribedUsersToEntity = entityId => {
+  check(entityId, Match.Id);
 
-userAllowedInZone = (user, zone) => {
-  if (zone.adminOnly && !user.roles?.admin) return false;
-
-  if (zone.requiredItems?.length) {
-    if (user.profile.guest) return false;
-
-    const userItems = Object.keys(user.inventory || {});
-    return zone.requiredItems.every(tag => userItems.includes(tag));
-  }
-
-  return true;
+  return Meteor.users.find(
+    { entitySubscriptionIds: entityId },
+    {
+      fields: { 'status.online': 1, 'profile.body': 1, 'profile.eyes': 1, 'profile.accessory': 1, 'profile.hair': 1, 'profile.outfit': 1, 'profile.name': 1 },
+      sort: { 'profile.name': 1 },
+    },
+  ).fetch();
 };
 
 fileOnBeforeUpload = (file, mime) => {
@@ -162,6 +200,16 @@ fileOnBeforeUpload = (file, mime) => {
 
   if (meta.source === 'editor-assets') {
     if (!['image/png', 'image/jpeg', 'application/json'].includes(mime)) return `Only jpeg, png and json files can be uploaded`;
+    return true;
+  }
+
+  if (meta.source === 'user-console') {
+    if (!['image/png', 'image/jpeg', 'image/gif'].includes(mime)) return `Only jpeg, png and gif files can be uploaded`;
+    return true;
+  }
+
+  if (meta.source === 'toolbox-entity') {
+    if (!['image/png', 'image/jpeg'].includes(mime)) return `Only jpeg and png files can be uploaded`;
     return true;
   }
 

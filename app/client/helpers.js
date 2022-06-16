@@ -18,6 +18,7 @@ eventTypes = Object.freeze({
   onNotificationClicked: 'onNotificationClicked',
   onNotificationReceived: 'onNotificationReceived',
   onPeerDataReceived: 'onPeerDataReceived',
+  onMediaStreamStateChanged: 'onMediaStreamStateChanged',
   onTileAdded: 'onTileAdded',
   onTileChanged: 'onTileChanged',
   onUserNear: 'onUserNear',
@@ -178,4 +179,13 @@ const addToSession = (key, values) => {
 
 registerModules = modules => addToSession('modules', modules);
 registerUserListModules = modules => addToSession('userListModules', modules);
-registerRadialMenuModules = modules => addToSession('radialMenuModules', modules);
+registerRadialMenuModules = modules => {
+  const loadedModules = Session.get('radialMenuModules') || [];
+
+  modules.forEach(module => {
+    if (loadedModules.find(loadedModule => loadedModule.id === module.id)) return;
+    loadedModules.push(module);
+  });
+
+  Session.set('radialMenuModules', loadedModules);
+};

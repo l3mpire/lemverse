@@ -1,0 +1,25 @@
+@import "../_variables";
+
+.user-invitation {
+  margin-bottom: 15px;
+
+  .invitation-url-field {
+    display: flex;
+
+    input {
+      border-radius: $radius 0 0 $radius;
+    }
+
+    button {
+      border-radius: 0 $radius $radius 0;
+      width: 45px;
+      margin-top: 5px;
+
+      svg {
+        width: 18px;
+        height: 18px;
+        transform: translate(-2px, 3px);
+      }
+    }
+  }
+}

@@ -6,11 +6,9 @@
   right: 20%;
   overflow: scroll;
   flex-wrap: wrap;
-
   display: flex;
   justify-content: space-evenly;
   z-index: 1;
-  // pointer-events: none;
 
   .hide {
     display: none;
@@ -37,7 +35,6 @@
           object-fit: scale-down;
         }
       }
-
     }
   }
 }
