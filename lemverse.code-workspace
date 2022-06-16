@@ -80,5 +80,11 @@
 			"postcss",
 			"scss"
 		],
+    "search.exclude": {
+      "core/**": true
+    },
+    "files.exclude": {
+      "core/**": true
+    }
 	}
 }

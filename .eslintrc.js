@@ -46,6 +46,7 @@ module.exports = {
     'operator-linebreak': ['error', 'after'],
     'no-promise-executor-return': 0,
     'default-param-last': 'off',
+    'class-methods-use-this': 'off',
   },
   globals: {
     // Meteor
@@ -93,6 +94,7 @@ module.exports = {
     canAccessQuest: 'writable',
     canAccessZone: 'writable',
     canEditGuild: 'writable',
+    messagingAllowed: 'writable',
     remote: 'writable',
     _: 'readable',
     stats: 'writable',

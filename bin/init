@@ -1,6 +1,16 @@
 #!/bin/bash
+set -e
+
+# Catch and alert on any error
+trap 'catch_err $? $LINENO' ERR
+catch_err() {
+  echo "error during ${0} execution"
+  echo "Error $1 occurred on line $2"
+}
 
 echo init...
+
+git config pull.rebase true
 
 if [ -f ~/.nvm/nvm.sh ]; then
   echo 'sourcing nvm from ~/.nvm'
@@ -13,24 +23,25 @@ elif command -v brew; then
     . $BREW_PREFIX/nvm.sh
   fi
 fi
+
+nvm install 14
 nvm use 14
 
 rm -rf ./node_modules
-rm package-lock.json
 
 npm install
 
-# init lemverse
-cd app
-./bin/init
+cd core
+rm -rf ./node_modules
+npm install
 cd ..
 
-# must be the last because it changes node with the nvm use 4
-cd mup
+cd public/app
 ./bin/init
-cd ..
+cd ../..
 
-# Restore latest used node version
-nvm use 14
+cd public/mup
+./bin/init
+cd ../..
 
 echo init end!
