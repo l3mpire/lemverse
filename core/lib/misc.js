@@ -121,12 +121,12 @@ completeUserProfile = (user, email, name) => {
 
   Meteor.users.update(user._id, { $unset: { 'profile.guest': true, username: true } });
 
-  return generateRandomCharacterSkin(Meteor.user(), user.profile.levelId);
+  return generateRandomCharacterSkin(Meteor.userId(), user.profile.levelId);
 };
 
-generateRandomCharacterSkin = (user, levelId) => {
+generateRandomCharacterSkin = (userId, levelId) => {
   check(levelId, Match.Id);
-
+  const user = Meteor.users.findOne(userId);
   let newProfile = { ...user.profile };
   const currentLevel = Levels.findOne(levelId);
   if (!user.profile?.body && currentLevel?.skins?.default) {
