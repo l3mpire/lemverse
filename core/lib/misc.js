@@ -124,9 +124,14 @@ completeUserProfile = (user, email, name) => {
   return generateRandomCharacterSkin(Meteor.userId(), user.profile.levelId);
 };
 
-generateRandomCharacterSkin = (userId, levelId) => {
-  check(levelId, Match.Id);
+generateRandomCharacterSkin = (userId, levelId = undefined) => {
+  check(levelId, Match.Maybe(Match.Id));
+  check(userId, Match.Id);
+  const characterPartsKeys = Object.keys(charactersParts);
+
   const user = Meteor.users.findOne(userId);
+  if (!user) throw new Meteor.Error('not-found', 'User not found');
+
   let newProfile = { ...user.profile };
   const currentLevel = Levels.findOne(levelId);
   if (!user.profile?.body && currentLevel?.skins?.default) {
@@ -134,20 +139,23 @@ generateRandomCharacterSkin = (userId, levelId) => {
       ...newProfile,
       ...currentLevel.skins.default,
     };
-  } else if (Characters.find({}).count() === 0) {
+  } else if (Characters.find().count() === 0) {
     newProfile = {
       ...newProfile,
       ...Meteor.settings.public.skins.default,
     };
   } else {
-    ['body', 'outfit', 'eye', 'hair', 'accessory'].forEach(part => {
+    characterPartsKeys.forEach(part => {
       log('generateRandomCharacterSkin: Randomize character parts...');
       const parts = Characters.find({ category: part, $or: [{ hide: { $exists: false } }, { hide: false }] }).fetch();
       if (parts.length) newProfile[part] = parts[_.random(0, parts.length - 1)]._id;
     });
   }
 
-  Meteor.users.update(user._id, { $set: { profile: { ...newProfile } } });
+  // Updates only the attributes related to the user skin elements
+  const queryFields = {};
+  characterPartsKeys.forEach(characterPartKey => { queryFields[`profile.${characterPartKey}`] = newProfile[characterPartKey]; });
+  Meteor.users.update(user._id, { $set: { ...queryFields } });
 };
 
 teleportUserInLevel = (levelId, userId) => {
