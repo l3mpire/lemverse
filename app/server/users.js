@@ -38,7 +38,7 @@ Accounts.onLogin(param => {
   const isBodyValid = user.profile.body?.includes('chr_');
   if (!isBodyValid) {
     log('onLogin: setting default skin', { userId: user._id, ip: param.connection?.httpHeaders?.['x-forwarded-for'], userAgent: param.connection?.httpHeaders?.['user-agent'], languages: param.connection?.httpHeaders?.['accept-language'] });
-    generateRandomCharacterSkin(user, Meteor.settings.defaultLevelId);
+    generateRandomCharacterSkin(user._id, Meteor.settings.defaultLevelId);
   }
 });
 
