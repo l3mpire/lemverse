@@ -36,6 +36,12 @@
       "sensorFarDistance": 85
     },
 
+    "permissions": {
+      "allowAccountCreation": "all",
+      "allowLevelCreation": true,
+      "contactURL": ""
+    },
+
     "assets": {
       "character": {
         "frameWidth": 16,

@@ -272,6 +272,12 @@ Please note, that as stated in section `Deploy in production`, there is an addit
         "sensorFarDistance": 85  // Distance required before closing a call with an user
       },
 
+      "permissions": {
+        "allowAccountCreation": "all", // all for everyone, none for no-one, except:lvl_xxx to block a level
+        "allowLevelCreation": true,
+        "contactURL": ""
+      },
+
       "assets": { // Assets configuration
         "character": {
           "frameWidth": 16,

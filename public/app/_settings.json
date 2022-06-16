@@ -123,6 +123,12 @@
       }
     },
 
+    "permissions": {
+      "allowAccountCreation": "all",
+      "allowLevelCreation": true,
+      "contactURL": ""
+    },
+
     "skins": {
       "guest": {},
       "default": {}

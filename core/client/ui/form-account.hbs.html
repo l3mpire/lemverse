@@ -1,7 +1,9 @@
 <template name="formAccount">
   {{#if showLogForm}}
     {{> formLogIn visible=isLoading}}
-  {{else}}
+  {{else if not restrictedRegistration}}
     {{> formSignIn visible=isLoading}}
+  {{else}}
+    {{> formSignInLimited visible=isLoading}}
   {{/if}}
 </template>
