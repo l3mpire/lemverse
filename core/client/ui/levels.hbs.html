@@ -9,7 +9,7 @@
       <div class="container">
         <div class="tabs">
           <button type="button" data-mode="list" class="js-tab-switcher {{#if showList}}active{{/if}}">Levels</button>
-          <button type="button" data-mode="create" class="js-tab-switcher {{#if showCreate}}active{{/if}}">Request access</button>
+          <button type="button" data-mode="create" class="js-tab-switcher {{#if showCreate}}active{{/if}}">Create</button>
         </div>
         {{#if showList}}
           <ul class="levels-list">
@@ -22,14 +22,19 @@
               </li>
             {{/each}}
           </ul>
-        {{else}}
+        {{else if restrictedLevelCreation}}
           <div>
             <div class="request-access">
               <h2>Set up your virtual office on lemverse!</h2>
-              <div>Book a meeting with Charlotte who will create your custom virtual office for you</div>
+              <div>Book a meeting with someone who will create your custom virtual office for you</div>
               <div>and who will get you all set up on making the most out of your remote work experience on lemverse!</div>
-              <div><a href="https://calendly.com/charlotte-lemlist/15min" target="_blank" class="button">Schedule Time</a></div>
+              <div><a href="{{contactURL}}" target="_blank" class="button">Schedule Time</a></div>
             </div>
+          </div>
+        {{else}}
+          <div class="level-create">
+            {{> levelTemplateList}}
+            <div><button class="button js-create-level">Create a new empty level</button></div>
           </div>
         {{/if}}
       </div>

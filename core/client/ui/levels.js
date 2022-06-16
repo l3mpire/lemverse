@@ -82,4 +82,11 @@ Template.levels.helpers({
   loading() { return Template.instance().loading.get(); },
   showList() { return Template.instance().tab.get() === listMode; },
   showCreate() { return Template.instance().tab.get() !== listMode; },
+  restrictedLevelCreation() {
+    const { permissions } = Meteor.settings.public;
+    if (!permissions) return false;
+
+    return !permissions.allowLevelCreation;
+  },
+  contactURL() { return Meteor.settings.public.permissions?.contactURL; },
 });
