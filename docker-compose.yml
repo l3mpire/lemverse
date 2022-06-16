@@ -27,7 +27,7 @@ services:
             - '7010:7010' # expose peer port
         volumes:
             - lemverse:/var/tmp/lemverse # Necessary volume for upload tileset and keep them between restart
-            - ./app:/opt/src # mount local dir to allow hot reload
+            - ./public/app:/opt/src # mount local dir to allow hot reload
         environment:
             ROOT_URL: ${APP_ROOT_URL:-http://localhost}
             MONGO_URL: mongodb://mongodb:27017/meteor
