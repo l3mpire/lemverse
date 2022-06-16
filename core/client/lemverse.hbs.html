@@ -1,37 +1,41 @@
 <template name="lemverse">
-  <div class="lemverse">
-    <div class="simulation {{#if neq (Session 'editor') 0}}edit{{/if}}">
-      {{#if guest}}
-        {{> formAccount visible=loading}}
-      {{else}}
-        {{#if neq (Session 'editor') 0}}
-          {{> editToolbox}}
-        {{/if}}
-        <div class="js-streams">
-          {{#each remoteUser in allRemoteStreamsByUsers}}
-            {{> remoteStream remoteUser=remoteUser }}
-          {{/each}}
-        </div>
-        {{> userPanel loading=loading}}
-        <button type="button" class="button js-notifications {{#if pendingNotificationsCount}}visible{{/if}}" data-count="{{ pendingNotificationsCount }}">🔔</button>
+  <div class="lemverse {{#if neq (Session 'editor') 0}}edit{{/if}} {{#if loading}}loading{{/if}}">
+    <div class="simulation">
+        <div id="game"></div>
+        <div id="meet"></div>
+        <div id="webpage">
+        <iframe src="" allowfullscreen="true" id="webpageIframe" title="Embedded content"></iframe>
+      </div>
+    </div>
+
+    {{#if guest}}
+      {{> formAccount visible=loading}}
+    {{/if}}
+
+    {{#unless guest}}
+      {{#if neq (Session 'editor') 0}}
+        {{> editToolbox}}
       {{/if}}
-      <div id="game" class="{{#if neq (Session 'editor') 0}}edit{{/if}} {{#if loading}}loading{{/if}}"></div>
-    </div>
-    <div id="meet"></div>
-    <div id="webpage">
-      <iframe src="" allowfullscreen="true" id="webpageIframe" title="Embedded content"></iframe>
-    </div>
-  </div>
-  {{> zoneNameToaster}}
-  {{> modalContainer }}
 
-  {{#unless guest}}
-    {{> radialMenu }}
-  {{/unless}}
+      <div class="js-streams">
+        {{#each remoteUser in allRemoteStreamsByUsers}}
+          {{> remoteStream remoteUser=remoteUser }}
+        {{/each}}
+      </div>
 
-  <div class="modules">
-    {{#each module in modules}}
-      {{> Template.dynamic template=module}}
-    {{/each}}
+      {{> userPanel loading=loading}}
+      {{> radialMenu }}
+
+      <button type="button" class="button js-notifications {{#if pendingNotificationsCount}}visible{{/if}}" data-count="{{ pendingNotificationsCount }}">🔔</button>
+    {{/unless}}
+
+    {{> zoneNameToaster}}
+    {{> modalContainer }}
+
+    <div class="modules">
+      {{#each module in modules}}
+        {{> Template.dynamic template=module}}
+      {{/each}}
+    </div>
   </div>
 </template>

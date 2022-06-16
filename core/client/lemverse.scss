@@ -18,7 +18,6 @@ button:focus {
 
 .lemverse {
   display: flex;
-  user-select: none;
 
   .simulation {
     position: relative;
@@ -28,14 +27,46 @@ button:focus {
     padding: 0;
     flex-basis: 100%;
     -webkit-app-region: drag;
+  }
 
-    &.edit {
-      -webkit-app-region: no-drag;
+  &.loading {
+    #game {
+      /* Hide pop-ins during loading */
+      >div {
+        opacity: 0 !important;
+      }
+    }
+  }
 
-      .reactions-toolbox,
-      .js-streams,
-      .user-panel {
-        display: none;
+  &.edit {
+    -webkit-app-region: no-drag;
+
+    .reactions-toolbox,
+    .js-streams,
+    .user-panel {
+      display: none;
+    }
+
+    #game {
+      overflow: hidden;
+      top: var(--edit-border-size);
+      bottom: var(--edit-border-size);
+      left: var(--edit-border-size);
+      right: var(--edit-border-size);
+      border-radius: var(--edit-border-radius);
+      box-sizing: border-box;
+
+      >canvas,
+      >div {
+        position: absolute;
+        top: calc(-1 * var(--edit-border-size));
+        left: calc(-1 * var(--edit-border-size));
+        bottom: calc(-1 * var(--edit-border-size));
+        right: calc(-1 * var(--edit-border-size));
+      }
+
+      >canvas {
+        pointer-events: all;
       }
     }
   }
@@ -48,13 +79,6 @@ button:focus {
   left: 0;
   right: 0;
 
-  &.loading {
-    /* Hide pop-ins during loading */
-    >div {
-      opacity: 0 !important;
-    }
-  }
-
   >div {
     z-index: 3;
     opacity: 1;
@@ -62,38 +86,12 @@ button:focus {
   }
 
   >canvas {
-    z-index: 1;
-  }
-
-  &.edit {
-    overflow: hidden;
-    top: var(--edit-border-size);
-    bottom: var(--edit-border-size);
-    left: var(--edit-border-size);
-    right: var(--edit-border-size);
-    border-radius: var(--edit-border-radius);
-    box-sizing: border-box;
-
-    canvas,
-    >div {
-      position: absolute;
-      top: calc(-1 * var(--edit-border-size));
-      left: calc(-1 * var(--edit-border-size));
-      bottom: calc(-1 * var(--edit-border-size));
-      right: calc(-1 * var(--edit-border-size));
-    }
-
-    >canvas {
-      pointer-events: all;
-    }
-  }
-
-  canvas {
     position: absolute;
     top: 0;
     left: 0;
     bottom: 0;
     right: 0;
+    z-index: 1;
   }
 }
 
