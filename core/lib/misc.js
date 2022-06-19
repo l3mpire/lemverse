@@ -4,6 +4,14 @@ entityActionType = Object.freeze({
   pickable: 2,
 });
 
+charactersParts = Object.freeze({
+  body: 0,
+  outfit: 1,
+  eye: 2,
+  hair: 3,
+  accessory: 4,
+});
+
 const defaultSpawnPosition = { x: 100, y: 100 };
 
 nearestDuration = duration => {

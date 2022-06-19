@@ -26,14 +26,6 @@ const messageReceived = {
   style: 'tooltip with-arrow fade-in',
 };
 
-charactersParts = Object.freeze({
-  body: 0,
-  outfit: 1,
-  eye: 2,
-  hair: 3,
-  accessory: 4,
-});
-
 savePlayer = player => {
   Meteor.users.update(Meteor.userId(), {
     $set: {
