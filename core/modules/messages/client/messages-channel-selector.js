@@ -8,9 +8,9 @@ const allChannels = () => {
 
   const sortedZones = zones.currentZones(user).map(zone => ({ _id: zone._id, name: zone.name }));
 
-  const nearUsers = nearUserIdsToString();
+  const nearUsersIds = nearUserIdsToString();
   let nearUsersChannel;
-  if (nearUsers.length) nearUsersChannel = { _id: { $in: nearUsers }, name: 'Near users' };
+  if (nearUsersIds.length) nearUsersChannel = { _id: { $in: nearUsersIds }, name: 'Near users' };
 
   const level = Levels.findOne(user.profile.levelId);
   const levelChannel = { _id: level._id, name: level.name || 'Level' };
