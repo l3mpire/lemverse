@@ -15,10 +15,10 @@ Meteor.methods({
 
     if (!canEditGuild(this.userId, guildId)) throw new Meteor.Error('not-authorized', 'User not allowed');
 
-    const userCount = Meteor.users.find({ _id: userIds, guildId: { $exists: true } }).count();
+    const userCount = Meteor.users.find({ _id: { $in: userIds }, guildId: { $exists: true } }).count();
     if (userCount) throw new Meteor.Error('users-invalid', 'Some users are already in a Guild');
 
-    Meteor.users.update({ _id: userIds }, { $set: { guildId } }, { multi: true });
+    Meteor.users.update({ _id: { $in: userIds } }, { $set: { guildId } }, { multi: true });
     log('addGuildUsers: done');
   },
 });

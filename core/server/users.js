@@ -74,7 +74,7 @@ Meteor.publish('usernames', function (userIds) {
   if (!this.userId) return undefined;
   check(userIds, [Match.Id]);
 
-  return Meteor.users.find({ _id: userIds }, { fields: mainFields });
+  return Meteor.users.find({ _id: { $in: userIds } }, { fields: mainFields });
 });
 
 Meteor.publish('userProfile', function (userId) {

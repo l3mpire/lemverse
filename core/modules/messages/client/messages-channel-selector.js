@@ -10,7 +10,7 @@ const allChannels = () => {
 
   const nearUsers = nearUserIdsToString();
   let nearUsersChannel;
-  if (nearUsers.length) nearUsersChannel = { _id: nearUsers, name: 'Near users' };
+  if (nearUsers.length) nearUsersChannel = { _id: { $in: nearUsers }, name: 'Near users' };
 
   const level = Levels.findOne(user.profile.levelId);
   const levelChannel = { _id: level._id, name: level.name || 'Level' };
