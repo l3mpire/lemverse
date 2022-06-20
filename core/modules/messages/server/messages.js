@@ -63,6 +63,14 @@ const notifyUsers = (channel, message) => {
   log('notifyUsers: done', { userIds });
 };
 
+const context = channel => {
+  if (channel.includes('zon_')) return 'zone';
+  if (channel.includes('usr_')) return 'discussion';
+  if (channel.includes('qst_')) return 'quest';
+
+  return 'unknown';
+};
+
 Meteor.startup(() => {
   Messages.find({ createdAt: { $gte: new Date() } }).observe({
     added(message) {
@@ -101,6 +109,7 @@ Meteor.methods({
       createdBy: this.userId,
     });
 
+    analytics.track(this.userId, '✍️ Message Sent', { user_id: this.userId, context: context(channel) });
     log('sendMessage: done', { messageId });
 
     return messageId;

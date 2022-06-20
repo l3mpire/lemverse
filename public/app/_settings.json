@@ -145,6 +145,12 @@
     "files": {
       "storagePath": "/var/tmp/lemverse",
       "route": "/api/files"
+    },
+
+    "segmentAnalyticsSettings": {
+      "enable": false,
+      "workspace": "",
+      "writeKey": ""
     }
   },
 

@@ -1,20 +1,20 @@
 createLevel = options => {
   log('createLevel: start', { options });
 
-  check(options, {
-    templateId: Match.Optional(String),
-    name: Match.Optional(Match.SafeString),
-    guildId: Match.Optional(String),
-  });
+  check(options.templateId, Match.Maybe(Match.Id));
+  check(options.name, Match.Maybe(Match.SafeString));
+  check(options.guildId, Match.Maybe(Match.Id));
+  check(options.createdBy, Match.Maybe(Match.Id));
 
-  const { name, templateId } = options;
+  const { createdBy, name, templateId } = options;
   const now = new Date();
-  const user = Meteor.user();
+  const user = createdBy ? Meteor.users.findOne(createdBy) : Meteor.user();
 
   const newLevelId = Levels.id();
+  const levelName = name || `${user.profile.name || user.username}'s world`;
   Levels.insert({
     _id: newLevelId,
-    name: name || `${user.profile.name || user.username}'s world`,
+    name: levelName,
     spawn: { x: 200, y: 200 },
     apiKey: CryptoJS.MD5(now + Random.hexString(48)).toString(),
     createdAt: now,
@@ -28,8 +28,6 @@ createLevel = options => {
     if (templateLevel.spawn) Levels.update({ _id: newLevelId }, { $set: { spawn: templateLevel.spawn } });
 
     const tiles = Tiles.find({ levelId: templateId }).fetch();
-    const zones = Zones.find({ levelId: templateId }).fetch();
-
     tiles.forEach(tile => {
       Tiles.insert({
         ...tile,
@@ -40,6 +38,7 @@ createLevel = options => {
       });
     });
 
+    const zones = Zones.find({ levelId: templateId }).fetch();
     zones.forEach(zone => {
       Zones.insert({
         ...zone,
@@ -68,7 +67,8 @@ createLevel = options => {
     });
   }
 
-  log('createLevel: done', { levelId: newLevelId });
+  analytics.track(user._id, '🐣 Level Created', { level_id: newLevelId, level_name: levelName });
+  log('createLevel: done', { levelId: newLevelId, levelName });
 
   return newLevelId;
 };
@@ -126,6 +126,7 @@ Meteor.methods({
     else Levels.update(levelId, { $pull: { editorUserIds: userId } });
   },
   createLevel(templateId = undefined) {
+    if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
     check(templateId, Match.Maybe(Match.Id));
 
     return createLevel({ templateId });

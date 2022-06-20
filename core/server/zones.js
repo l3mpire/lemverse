@@ -12,8 +12,10 @@ Meteor.publish('zones', function (levelId) {
 
 Meteor.methods({
   computeRoomName(zoneId) {
-    log('computeRoomName: start', { zoneId, userId: this.userId });
+    if (!this.userId) return undefined;
     check(zoneId, Match.Id);
+
+    log('computeRoomName: start', { zoneId, userId: this.userId });
 
     if (!canAccessZone(zoneId, this.userId)) {
       log('computeRoomName: user not allowed');
@@ -27,6 +29,7 @@ Meteor.methods({
       Zones.update(zoneId, { $set: { uuid } });
     }
 
+    analytics.track(this.userId, '🎤 Conference Attend', { level_id: zone.levelId, zone_id: zoneId });
     log('computeRoomName: end', { uuid });
 
     return uuid;

@@ -40,6 +40,8 @@ Accounts.onLogin(param => {
     log('onLogin: setting default skin', { userId: user._id, ip: param.connection?.httpHeaders?.['x-forwarded-for'], userAgent: param.connection?.httpHeaders?.['user-agent'], languages: param.connection?.httpHeaders?.['accept-language'] });
     generateRandomCharacterSkin(user._id, Meteor.settings.defaultLevelId);
   }
+
+  analytics.track(user._id, '👋 Sign In');
 });
 
 Meteor.publish('users', function (levelId) {
@@ -99,9 +101,14 @@ Meteor.methods({
     const user = Meteor.user();
     completeUserProfile(user, email, name);
     Accounts.setPassword(this.userId, password, { logout: false });
+
+    analytics.createUser(user);
+    analytics.track(this.userId, '🐣 Sign Up', {});
   },
   teleportUserInLevel(levelId) {
+    if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
     check(levelId, Match.Id);
+    analytics.track(this.userId, '🧳 Level Teleport', { user_id: this.userId, level_id: levelId });
 
     return teleportUserInLevel(levelId, Meteor.userId());
   },
@@ -144,6 +151,8 @@ Meteor.methods({
 
     // create new account & new guild
     const userId = Accounts.createUser({ email });
+    analytics.createUser(Meteor.users.findOne(userId));
+    analytics.track(userId, '🐣 Sign Up', {});
 
     const guildId = Guilds.id();
     Guilds.insert({
@@ -157,7 +166,7 @@ Meteor.methods({
     Meteor.users.update(userId, { $set: { guildId } });
 
     // create level
-    const levelId = createLevel({ templateId: levelTemplateId, name: levelName, guildId });
+    const levelId = createLevel({ templateId: levelTemplateId, name: levelName, guildId, createdBy: userId });
     Levels.update(levelId, { $set: { hide: true, createdBy: userId, guildId } });
 
     // generate the enrollment link

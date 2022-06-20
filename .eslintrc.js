@@ -108,6 +108,7 @@ module.exports = {
     isolateUser: 'writable',
     fileOnBeforeUpload: 'writable',
 
+    analytics: 'writable',
     game: 'writable',
     createLevel: 'writable',
     escapeTransport: 'writable',
