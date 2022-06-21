@@ -167,31 +167,38 @@ Meteor.methods({
     check([email, levelName, guildName, levelTemplateId], [String]);
 
     // create new account & new guild
-    const userId = Accounts.createUser({ email });
-    analytics.createUser(Meteor.users.findOne(userId));
-    analytics.track(userId, '🐣 Sign Up', {});
+    let user = Accounts.findUserByEmail(email);
+    let passwordURL;
+
+    if (!user) {
+      const userId = Accounts.createUser({ email });
+      user = Meteor.users.findOne(userId);
+      analytics.createUser(Meteor.users.findOne(user._id));
+      analytics.track(user._id, '🐣 Sign Up', {});
+
+      // generate the enrollment link
+      const { token } = Accounts.generateResetToken(user._id, email, 'enrollAccount');
+      passwordURL = Accounts.urls.enrollAccount(token);
+    }
 
     const guildId = Guilds.id();
     Guilds.insert({
       _id: guildId,
       name: levelName,
-      owners: [userId],
+      owners: [user._id],
       createdAt: new Date(),
-      createdBy: userId,
+      createdBy: user._id,
     });
 
-    Meteor.users.update(userId, { $set: { guildId } });
+    Meteor.users.update(user._id, { $set: { guildId } });
 
     // create level
-    const levelId = createLevel({ templateId: levelTemplateId, name: levelName, guildId, createdBy: userId });
-    Levels.update(levelId, { $set: { hide: true, createdBy: userId, guildId } });
+    const levelId = createLevel({ templateId: levelTemplateId, name: levelName, guildId, createdBy: user._id });
+    Levels.update(levelId, { $set: { hide: true, createdBy: user._id, guildId } });
 
-    // generate the enrollment link
-    const { user, token } = Accounts.generateResetToken(userId, email, 'enrollAccount');
-    const url = Accounts.urls.enrollAccount(token);
-    teleportUserInLevel(levelId, userId);
+    teleportUserInLevel(levelId, user._id);
 
-    return { user, levelId, passwordURL: url };
+    return { user, levelId, passwordURL };
   },
 });
 
