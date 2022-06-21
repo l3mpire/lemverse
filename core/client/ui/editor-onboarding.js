@@ -51,5 +51,5 @@ Template.editorOnboarding.helpers({
   templates() { return Levels.find().fetch(); },
   loading() { return Template.instance().loading.get(); },
   passwordURL() { return Template.instance().result.get()?.passwordURL; },
-  levelURL() { return Template.instance().result.get()?.levelId; },
+  levelURL() { return invitationURL(Template.instance().result.get()?.levelId); },
 });
