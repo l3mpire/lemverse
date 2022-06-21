@@ -87,6 +87,24 @@ Meteor.publish('userProfile', function (userId) {
 });
 
 Meteor.methods({
+  teleportToGuildLevel() {
+    log('teleportToGuildLevel: start', { userId: this.userId });
+    if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
+
+    const { guildId } = Meteor.user();
+    if (!guildId) throw new Meteor.Error('missing-guild', 'You are not in a guild');
+
+    const level = Levels.findOne({ guildId });
+    if (!level) throw new Meteor.Error('missing-level', 'Level not found');
+
+    log('teleportToGuildLevel: done', { userId: this.userId, guildId, levelId: level._id });
+
+    return teleportUserInLevel(level._id, this.userId);
+  },
+  teleportToDefaultLevel() {
+    if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
+    return teleportUserInLevel(Meteor.settings.defaultLevelId, this.userId);
+  },
   toggleEntitySubscription(entityId) {
     check(entityId, Match.Id);
     if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
@@ -108,7 +126,6 @@ Meteor.methods({
   teleportUserInLevel(levelId) {
     if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
     check(levelId, Match.Id);
-    analytics.track(this.userId, '🧳 Level Teleport', { user_id: this.userId, level_id: levelId });
 
     return teleportUserInLevel(levelId, Meteor.userId());
   },
