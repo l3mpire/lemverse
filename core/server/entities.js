@@ -35,7 +35,7 @@ spawnEntityFromPrefab = (entityId, options = {}) => {
 
 const spawnEntityFromFile = (fileId, options = {}) => {
   log('spawnEntityFromFile: start', { fileId, options });
-  check(fileId, String);
+  check(fileId, Match.SafeString);
   check(options, { x: Number, y: Number, levelId: String });
 
   const spawnedEntityId = Entities.insert({
@@ -114,7 +114,7 @@ Meteor.methods({
     return subscribedUsersToEntity(entityId);
   },
   spawnEntityFromFile(fileId, options = {}) {
-    check(fileId, Match.Id);
+    check(fileId, Match.SafeString);
     check(options, { x: Match.Optional(Number), y: Match.Optional(Number) });
     if (!lp.isLemverseBeta('custom-sprite')) throw new Meteor.Error('invalid-user', 'available for admin only for now');
     if (!this.userId) return undefined;
