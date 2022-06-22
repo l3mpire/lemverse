@@ -10,40 +10,6 @@ isolateUser = userId => {
   Meteor.users.update(userId, { $set: { 'profile.x': +isolationPosition.x, 'profile.y': +isolationPosition.y } });
 };
 
-Accounts.onCreateUser((options, user) => {
-  log('onCreateUser', { options, user });
-  user._id = `usr_${Random.id()}`;
-  user.profile = {
-    ...options.profile,
-    levelId: Meteor.settings.defaultLevelId,
-  };
-
-  return user;
-});
-
-Accounts.validateNewUser(() => true);
-
-Accounts.onLogin(param => {
-  const user = Meteor.users.findOne(param.user._id);
-
-  log('onLogin: start', { userId: user._id, ip: param.connection?.httpHeaders?.['x-forwarded-for'], userAgent: param.connection?.httpHeaders?.['user-agent'], languages: param.connection?.httpHeaders?.['accept-language'] });
-
-  if (!user.profile.x) {
-    const spawnPosition = levelSpawnPosition(Meteor.settings.defaultLevelId);
-    Meteor.users.update(user._id, { $set: { 'profile.x': spawnPosition.x, 'profile.y': spawnPosition.y } });
-  }
-
-  if (user.profile.guest) return;
-
-  const isBodyValid = user.profile.body?.includes('chr_');
-  if (!isBodyValid) {
-    log('onLogin: setting default skin', { userId: user._id, ip: param.connection?.httpHeaders?.['x-forwarded-for'], userAgent: param.connection?.httpHeaders?.['user-agent'], languages: param.connection?.httpHeaders?.['accept-language'] });
-    generateRandomCharacterSkin(user._id, Meteor.settings.defaultLevelId);
-  }
-
-  analytics.track(user._id, '👋 Sign In');
-});
-
 Meteor.publish('users', function (levelId) {
   check(levelId, Match.Maybe(Match.Id));
   if (!this.userId) return undefined;
