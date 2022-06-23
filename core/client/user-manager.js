@@ -590,8 +590,7 @@ userManager = {
     if (Math.random() > 0.95) sounds.play('punch2.mp3');
 
     users.forEach(user => this.takeDamage(this.players[user._id]));
-
-    peer.punchCall(users.map(user => user._id));
+    peer.sendData(users.map(user => user._id), { type: 'punch', emitter: Meteor.userId() });
   },
 
   takeDamage(player) {

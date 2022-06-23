@@ -357,9 +357,9 @@ peer = {
   },
 
   async getPeer() {
-    if (this.isPeerValid(this.peerInstance)) return this.peerInstance;
     const debug = Meteor.user()?.options?.debug;
     if (debug) log('getPeer: start');
+    if (this.isPeerValid(this.peerInstance)) return this.peerInstance;
 
     if (this.peerInstance?.disconnected) {
       let reconnected = true;
@@ -425,22 +425,13 @@ peer = {
     this.peerInstance = new Peer(Meteor.userId(), peerConfig);
     this.peerLoading = false;
 
-    if (debug) log(`create peer: created (${this.peerInstance.id})`);
+    if (debug) log(`createMyPeer: created`, { peerInstanceId: this.peerInstance.id });
 
     this.peerInstance.on('connection', connection => connection.on('data', data => userManager.onPeerDataReceived(data)));
 
     this.peerInstance.on('close', () => {
-      log('peer closed and destroyed');
+      log('createMyPeer: peer closed');
       this.peerInstance = undefined;
-
-      if (this.reconnect.autoReconnectOnClose) {
-        // window.setTimeout(() => {
-        //   log('auto-reconnecting peer…');
-        //   this.createMyPeer()
-        //     .then(() => log('peer reconnected'))
-        //     .catch(error => log(`unable to automatically reconnect peer: ${error.message}`));
-        // }, this.reconnect.delayBetweenAttempt);
-      }
     });
 
     this.peerInstance.on('error', peerErr => {
@@ -456,9 +447,9 @@ peer = {
     });
 
     this.peerInstance.on('call', remoteCall => {
-      if (debug) log(`new call: from ${remoteCall.metadata.userId}`, { userId: remoteCall.metadata.userId });
+      if (debug) log(`createMyPeer: incoming call`, { userId: remoteCall.metadata.userId });
       if (meet.api) {
-        log(`new call: ignored (meet is open)`, { userId: remoteCall.metadata.userId, type: remoteCall.metadata.type });
+        log(`createMyPeer: call ignored (meet is open)`, { userId: remoteCall.metadata.userId, type: remoteCall.metadata.type });
         return;
       }
 
@@ -494,10 +485,5 @@ peer = {
 
   isEnabled() {
     return this.sensorEnabled;
-  },
-
-  punchCall(userIds) {
-    if (!userIds || !userIds.length) return;
-    this.sendData(userIds, { type: 'punch', emitter: Meteor.userId() });
   },
 };
