@@ -1,4 +1,4 @@
-messagingAllowed = (channel, userId) => {
+const messagingAllowed = (channel, userId) => {
   check(channel, String);
   check(userId, Match.Id);
 
@@ -17,9 +17,14 @@ messagingAllowed = (channel, userId) => {
   return false;
 };
 
-messageModerationAllowed = (userId, message) => {
+const messageModerationAllowed = (userId, message) => {
   if (!userId || !message) return false;
   if (message.createdBy === userId) return true;
 
   return isEditionAllowed(userId);
+};
+
+export {
+  messagingAllowed,
+  messageModerationAllowed,
 };

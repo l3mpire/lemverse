@@ -1,3 +1,5 @@
+import { messageModerationAllowed } from '../misc';
+
 const getCurrentChannelName = () => {
   const channel = Session.get('messagesChannel');
   if (!channel) return '-';

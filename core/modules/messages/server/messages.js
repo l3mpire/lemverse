@@ -1,3 +1,5 @@
+import { messagingAllowed } from '../misc';
+
 const limit = 20;
 
 // todo: remove the old "questId" attribute from notifications (the new field is "channelId") + simplify notifications queries
