@@ -359,17 +359,19 @@ peer = {
   async getPeer() {
     if (this.isPeerValid(this.peerInstance)) return this.peerInstance;
     const debug = Meteor.user()?.options?.debug;
+    if (debug) log('getPeer: start');
 
     if (this.peerInstance?.disconnected) {
       let reconnected = true;
       try {
-        if (debug) log('Peer disconnected, reconnecting…');
+        if (debug) log('getPeer: peer disconnected, reconnecting…');
         this.peerInstance.reconnect();
       } catch (err) { reconnected = false; }
 
       // peerjs reconnect doesn't offer a promise or callback so we have to wait a certain time until the reconnection is done
       if (reconnected) {
         try {
+          if (debug) log('getPeer: reconnected, waiting for instance');
           await waitFor(() => this.isPeerValid(this.peerInstance), 5, 250);
         } catch {
           this.destroy();
@@ -382,6 +384,7 @@ peer = {
 
     if (!this.peerInstance && this.peerLoading) {
       try {
+        if (debug) log('getPeer: loading, waiting for instance');
         await waitFor(() => this.peerInstance !== undefined, 5, 250);
       } catch {
         this.destroy();
@@ -391,7 +394,7 @@ peer = {
       return this.peerInstance;
     }
 
-    if (debug) log('Peer invalid, creating new peer…');
+    if (debug) log('getPeer: peer invalid, creating new peer…');
     this.peerInstance = undefined;
     this.peerLoading = false;
 
