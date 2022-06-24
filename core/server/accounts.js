@@ -36,7 +36,7 @@ Accounts.validateLoginAttempt(param => {
   const { user, methodName } = param;
   log('validateLoginAttempt: start', { type: param.type, allowed: param.allowed, methodName, username: param.methodArguments?.[0].user?.username, error: param.error, connection: param.connection, userId: user?._id });
 
-  if (Meteor.settings.forbiddenIPs.includes(lp.ip(param).ip)) {
+  if (Meteor.settings.forbiddenIPs?.includes(lp.ip(param).ip)) {
     error('validateLoginAttempt: watched ip detected!', { ip: lp.ip(param).ip, userId: user?._id });
     return false;
   }
