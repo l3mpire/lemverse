@@ -1,10 +1,10 @@
 <template name="loginServices">
     {{#if loginService.length}}
-    <div class="oauth-login buttons-group">
+    <div class="oauth-login buttons-group bottom">
         {{#each loginService}}
         <button
                 type="button"
-                class="submit external-login {{service.service}}"
+                class="submit external-login {{service.service}} button"
                 title="{{displayName}}"
                 style="{{#if service.buttonBackgroundColor}}background-color:{{service.buttonBackgroundColor}};{{/if}}{{#if service.buttonTextColor}}color:{{service.buttonTextColor}};{{/if}}"
         >

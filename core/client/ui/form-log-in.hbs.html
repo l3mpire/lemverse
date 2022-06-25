@@ -1,24 +1,31 @@
 <template name="formLogIn">
   <div class="form-account {{#unless visible}}visible{{/unless}}">
     <h1 class="title">Log to my account</h1>
-    <form>
-      <div class="group-field">
-        <label for="email">Email Address:</label>
-        <input name="email" type="email" value={{email}} class="js-edit js-email" autofocus>
-      </div>
-      {{#if loginMode}}
+    <div class="step">
+      <form>
         <div class="group-field">
-          <label for="password">Password:</label>
-          <input name="password" type="password" value={{password}} class="js-edit js-password">
+          <label for="email">Email Address:</label>
+          <input name="email" type="email" value={{email}} class="js-edit js-email" autofocus>
         </div>
-        <button type="button" class="link js-password-lost" aria-label="recover my password">I lost my password</button>
-        <button type="submit" class="submit" aria-label="go to the next step">Log in</button>
-        <hr />
+        {{#if loginMode}}
+          <div class="group-field">
+            <label for="password">Password:</label>
+            <input name="password" type="password" value={{password}} class="js-edit js-password">
+          </div>
+          <button type="button" class="link js-password-lost" aria-label="recover my password">I lost my password</button>
+          <button type="submit" class="submit" aria-label="go to the next step">Log in</button>
+        {{else}}
+          <button type="submit" class="button submit" aria-label="send email to recover my password">Recover my password</button>
+        {{/if}}
+      </form>
+    </div>
+
+    <div class="bottom">
+      {{#if loginMode}}
         <a href="?mode=create" class="link">Missing an account, join there!</a>
       {{else}}
         <button type="button" class="link js-cancel-login-mode" aria-label="cancel">Cancel</button>
-        <button type="submit" class="submit" aria-label="send email to recover my password">Recover my password</button>
       {{/if}}
-    </form>
+    </div>
   </div>
 </template>
