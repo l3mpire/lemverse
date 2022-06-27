@@ -65,11 +65,11 @@ Meteor.methods({
 
     log('teleportToGuildLevel: done', { userId: this.userId, guildId, levelId: level._id });
 
-    return teleportUserInLevel(level._id, this.userId);
+    return teleportUserInLevel(level._id, this.userId, 'onboarding-button');
   },
   teleportToDefaultLevel() {
     if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
-    return teleportUserInLevel(Meteor.settings.defaultLevelId, this.userId);
+    return teleportUserInLevel(Meteor.settings.defaultLevelId, this.userId, 'onboarding-button');
   },
   toggleEntitySubscription(entityId) {
     check(entityId, Match.Id);
@@ -87,13 +87,13 @@ Meteor.methods({
     Accounts.setPassword(this.userId, password, { logout: false });
 
     analytics.createUser(user);
-    analytics.track(this.userId, '🐣 Sign Up', {});
+    analytics.track(this.userId, '🐣 Sign Up', { source: 'self' });
   },
   teleportUserInLevel(levelId) {
     if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
     check(levelId, Match.Id);
 
-    return teleportUserInLevel(levelId, Meteor.userId());
+    return teleportUserInLevel(levelId, Meteor.userId(), 'teleporter');
   },
   markNotificationAsRead(notificationId) {
     if (!this.userId) return;
@@ -140,7 +140,7 @@ Meteor.methods({
       const userId = Accounts.createUser({ email });
       user = Meteor.users.findOne(userId);
       analytics.createUser(Meteor.users.findOne(user._id));
-      analytics.track(user._id, '🐣 Sign Up', {});
+      analytics.track(user._id, '🐣 Sign Up', { source: 'admin' });
 
       // generate the enrollment link
       const { token } = Accounts.generateResetToken(user._id, email, 'enrollAccount');
@@ -162,7 +162,7 @@ Meteor.methods({
     const levelId = createLevel({ templateId: levelTemplateId, name: levelName, guildId, createdBy: user._id });
     Levels.update(levelId, { $set: { hide: true, createdBy: user._id, guildId } });
 
-    teleportUserInLevel(levelId, user._id);
+    teleportUserInLevel(levelId, user._id, 'onboarding');
 
     return { user, levelId, passwordURL };
   },
