@@ -140,4 +140,28 @@ Meteor.methods({
     const user = Meteor.user();
     analytics.track(userId, '💬 Discussion End', { level_id: user.profile.levelId, duration: traits.duration });
   },
+  analyticsConferenceAttend(traits) {
+    const { userId } = this;
+    if (!userId) return;
+
+    check(traits, {
+      zoneId: String,
+      zoneName: String,
+    });
+
+    const user = Meteor.user();
+    analytics.track(userId, '🎤 Conference Attend', { level_id: user.profile.levelId, zone_id: traits.zoneId, zone_name: traits.zoneName });
+  },
+  analyticsConferenceEnd(traits) {
+    const { userId } = this;
+    if (!userId) return;
+
+    check(traits, {
+      zoneId: String,
+      zoneName: String,
+    });
+
+    const user = Meteor.user();
+    analytics.track(userId, '🎤 Conference End', { level_id: user.profile.levelId, zone_id: traits.zoneId, zone_name: traits.zoneName });
+  },
 });

@@ -29,7 +29,6 @@ Meteor.methods({
       Zones.update(zoneId, { $set: { uuid } });
     }
 
-    analytics.track(this.userId, '🎤 Conference Attend', { level_id: zone.levelId, zone_id: zoneId });
     log('computeRoomName: end', { uuid });
 
     return uuid;

@@ -29,17 +29,19 @@ const onZoneEntered = e => {
       updateViewport(game.scene.keys.WorldScene, fullscreen ? viewportModes.small : viewportModes.splitScreen);
       updateMeetStates(zone);
       meet.fullscreen(fullscreen);
+      Meteor.call('analyticsConferenceAttend', { zoneId: _id, zoneName: roomName });
     });
   } else if (meet.api) updateMeetStates(zone);
 };
 
 const onZoneLeft = e => {
   const { zone, newZone } = e.detail;
-  const { _id, jitsiLowLevel } = zone;
+  const { _id, jitsiLowLevel, roomName } = zone;
 
   if (linkedZoneId === _id) {
     meet = jitsiLowLevel ? meetLowLevel : meetHighLevel;
     meet.close();
+    Meteor.call('analyticsConferenceEnd', { zoneId: _id, zoneName: roomName });
     linkedZoneId = undefined;
 
     userManager.clearMediaStates();
@@ -121,6 +123,8 @@ meetHighLevel = {
 
       if (shareVideo) this.unhide();
       else this.hide();
+
+      Meteor.call('analyticsConferenceAttend', { zoneId: 0, zoneName: '' });
     });
     this.show(true);
 
