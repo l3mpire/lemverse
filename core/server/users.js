@@ -107,7 +107,7 @@ Meteor.methods({
     check(create, Boolean);
 
     const { zoneLastSeenDates } = Meteor.user();
-    if (create || zoneLastSeenDates[zoneId]) Meteor.users.update(this.userId, { $set: { [`zoneLastSeenDates.${zoneId}`]: new Date() } });
+    if (create || (zoneLastSeenDates && zoneLastSeenDates[zoneId])) Meteor.users.update(this.userId, { $set: { [`zoneLastSeenDates.${zoneId}`]: new Date() } });
   },
   unsubscribeFromZone(zoneId) {
     if (!this.userId) return;
