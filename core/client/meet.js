@@ -123,8 +123,6 @@ meetHighLevel = {
 
       if (shareVideo) this.unhide();
       else this.hide();
-
-      Meteor.call('analyticsConferenceAttend', { zoneId: 0, zoneName: '' });
     });
     this.show(true);
 
