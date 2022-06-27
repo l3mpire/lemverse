@@ -35,6 +35,7 @@ Template.zonesToolboxProperties.helpers({
     if (!props.hideName) props.hideName = false;
     if (!props.disableCommunications) props.disableCommunications = false;
     if (!props.requiredItems) props.requiredItems = [];
+    if (!props.restrictedToGuild) props.restrictedToGuild = false;
 
     return JSON.stringify(props, ' ', 2);
   },
