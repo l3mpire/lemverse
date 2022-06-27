@@ -118,4 +118,26 @@ Meteor.methods({
 
     analytics.updateUser(editedUserId, traits);
   },
+  analyticsDiscussionAttend(traits) {
+    const { userId } = this;
+    if (!userId) return;
+
+    check(traits, {
+      users_attending_count: Number,
+    });
+
+    const user = Meteor.user();
+    analytics.track(userId, '💬 Discussion Attend', { level_id: user.profile.levelId });
+  },
+  analyticsDiscussionEnd(traits) {
+    const { userId } = this;
+    if (!userId) return;
+
+    check(traits, {
+      duration: Number,
+    });
+
+    const user = Meteor.user();
+    analytics.track(userId, '💬 Discussion End', { level_id: user.profile.levelId, duration: traits.duration });
+  },
 });

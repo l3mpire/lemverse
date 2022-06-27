@@ -4,6 +4,7 @@ peer = {
   calls: {},
   callsToClose: {},
   callsOpening: {},
+  discussionStartDate: undefined,
   remoteCalls: {},
   peerInstance: undefined,
   peerLoading: false,
@@ -80,7 +81,12 @@ peer = {
     streamsByUsers = streamsByUsers.filter(usr => usr.main.srcObject !== undefined || usr.screen.srcObject !== undefined || usr.waitingCallAnswer);
     this.remoteStreamsByUsers.set(streamsByUsers);
 
-    if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
+    if (userProximitySensor.nearUsersCount() === 0) {
+      userStreams.destroyStream(streamTypes.main);
+
+      const duration = (Date.now() - this.discussionStartDate) / 1000;
+      Meteor.call('analyticsDiscussionEnd', { duration });
+    }
 
     $(`.js-video-${userId}-user`).remove();
     if (debug) log('closeCall: call closed successfully', userId);
@@ -139,6 +145,10 @@ peer = {
     if (!this.calls[`${user._id}-${streamTypes.main}`] && !this.calls[`${user._id}-${streamTypes.screen}`]) {
       sounds.play('webrtc-in.mp3', 0.2);
       notify(user, `Wants to talk to you`);
+
+      const nearUsersCount = userProximitySensor.nearUsersCount();
+      Meteor.call('analyticsDiscussionAttend', { users_attending_count: nearUsersCount });
+      if (nearUsersCount === 1) this.discussionStartDate = new Date();
     }
 
     const peer = await this.getPeer();
