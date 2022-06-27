@@ -166,7 +166,7 @@ generateRandomCharacterSkin = (userId, levelId = undefined) => {
   Meteor.users.update(user._id, { $set: { ...queryFields } });
 };
 
-teleportUserInLevel = (levelId, userId) => {
+teleportUserInLevel = (levelId, userId, source = 'teleporter') => {
   check([levelId, userId], [Match.Id]);
 
   log('teleportUserInLevel: start', { levelId, userId });
@@ -181,7 +181,7 @@ teleportUserInLevel = (levelId, userId) => {
   const { x, y } = levelSpawnPosition(loadingLevelId);
   Meteor.users.update(userId, { $set: { 'profile.levelId': level._id, 'profile.x': x, 'profile.y': y } });
 
-  analytics.track(userId, '🧳 Level Teleport', { user_id: userId, level_id: levelId });
+  analytics.track(userId, '🧳 Level Teleport', { user_id: userId, level_id: levelId, source, level_name: level.name });
 
   return level.name;
 };
