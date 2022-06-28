@@ -139,7 +139,7 @@ Meteor.methods({
     if (!user) {
       const userId = Accounts.createUser({ email });
       user = Meteor.users.findOne(userId);
-      analytics.createUser(Meteor.users.findOne(user._id));
+      analytics.createUser(user);
       analytics.track(user._id, '🐣 Sign Up', { source: 'admin' });
 
       // generate the enrollment link
