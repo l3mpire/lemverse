@@ -31,13 +31,13 @@ messagesModule = {
       this.lastZoneEntered = undefined;
     };
 
-    const onUserNear = () => {
+    const onUsersComeCloser = () => {
       if (ignoreChannelAutoSwitch()) return;
 
       this.changeMessagesChannel(nearUserIdsToString());
     };
 
-    const onUserMovedAway = () => {
+    const onUsersMovedAway = () => {
       if (ignoreChannelAutoSwitch()) return;
 
       const channel = nearUserIdsToString();
@@ -48,8 +48,8 @@ messagesModule = {
 
     window.addEventListener(eventTypes.onZoneEntered, onZoneEntered);
     window.addEventListener(eventTypes.onZoneLeft, onZoneLeft);
-    window.addEventListener(eventTypes.onUserNear, onUserNear);
-    window.addEventListener(eventTypes.onUserMovedAway, onUserMovedAway);
+    window.addEventListener(eventTypes.onUsersComeCloser, onUsersComeCloser);
+    window.addEventListener(eventTypes.onUsersMovedAway, onUsersMovedAway);
   },
 
   autoSelectChannel() {

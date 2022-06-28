@@ -18,18 +18,24 @@ peer = {
   },
 
   init() {
-    userProximitySensor.onProximityEnded = this.onProximityEnded.bind(this);
+    window.addEventListener(eventTypes.onUsersComeCloser, e => {
+      const { users } = e.detail;
+      peer.onProximityStarted(users);
+    });
+
+    window.addEventListener(eventTypes.onUsersMovedAway, e => {
+      const { users } = e.detail;
+      peer.onProximityEnded(users);
+    });
     this.enable();
   },
 
   enable() {
     this.enabled = true;
-    userProximitySensor.onProximityStarted = this.onProximityStarted.bind(this);
   },
 
   disable() {
     this.enabled = false;
-    userProximitySensor.onProximityStarted = undefined;
     this.closeAll();
   },
 
@@ -212,26 +218,30 @@ peer = {
     }
   },
 
-  onProximityStarted(user) {
-    if (!this.sensorEnabled) return;
+  onProximityStarted(nearUsers) {
+    if (!this.isEnabled()) return;
 
-    const userZone = zones.currentZone(user);
-    if (userZone?.disableCommunications) {
-      lp.notif.warning(`${user.profile.name} isn't available at the moment.<br /> Leave him a voice message by pressing "P"`);
-      return;
-    }
+    const user = Meteor.user();
+    if (user?.profile.guest) return; // disable proximity sensor for guest user
 
-    this.cancelCallClose(user._id);
-    this.cancelCallOpening(user._id);
+    nearUsers.forEach(nearUser => {
+      const zone = zones.currentZone(nearUser);
+      if (zone?.disableCommunications) {
+        lp.notif.warning(`${nearUser.profile.name} isn't available at the moment.<br /> Leave him a voice message by pressing "P"`);
+        return;
+      }
 
-    if (meet.api || Meteor.user()?.profile.guest) return;
-
-    this.callsOpening[user._id] = setTimeout(() => this.createPeerCalls(user), Meteor.settings.public.peer.callDelay);
+      this.cancelCallClose(nearUser._id);
+      this.cancelCallOpening(nearUser._id);
+      this.callsOpening[nearUser._id] = setTimeout(() => this.createPeerCalls(nearUser), Meteor.settings.public.peer.callDelay);
+    });
   },
 
-  onProximityEnded(user) {
-    if (this.lockedCalls[user._id]) return;
-    this.close(user._id, Meteor.settings.public.peer.delayBeforeClosingCall, 'proximity-ended');
+  onProximityEnded(users) {
+    users.forEach(user => {
+      if (this.lockedCalls[user._id]) return;
+      this.close(user._id, Meteor.settings.public.peer.delayBeforeClosingCall, 'proximity-ended');
+    });
   },
 
   cancelCallClose(userId) {
@@ -497,6 +507,6 @@ peer = {
   },
 
   isEnabled() {
-    return this.sensorEnabled;
+    return this.sensorEnabled && !meet.api;
   },
 };
