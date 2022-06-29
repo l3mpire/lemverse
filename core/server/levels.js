@@ -48,6 +48,17 @@ createLevel = options => {
         levelId: newLevelId,
       });
     });
+
+    const entities = Entities.find({ levelId: templateId }).fetch();
+    entities.forEach(entity => {
+      Entities.insert({
+        ...entity,
+        _id: Entities.id(),
+        createdAt: now,
+        createdBy: user._id,
+        levelId: newLevelId,
+      });
+    });
   } else {
     log('createLevel: create empty level');
     const { levelId } = user.profile;
