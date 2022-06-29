@@ -138,7 +138,11 @@ Meteor.methods({
 
     if (!user) {
       const userId = Accounts.createUser({ email });
+      const name = email.split('@')[0];
+      Meteor.users.update(userId, { $set: { 'profile.name': name } });
+
       user = Meteor.users.findOne(userId);
+
       analytics.createUser(user);
       analytics.track(user._id, '🐣 Sign Up', { source: 'admin' });
 
