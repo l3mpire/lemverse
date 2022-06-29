@@ -117,13 +117,15 @@ levelManager = {
   },
 
   destroyMapLayers() {
-    const { world } = this.scene.physics;
-    this.layers.forEach(layer => {
-      if (layer.playerCollider) world?.removeCollider(layer.playerCollider);
-      layer.destroy();
-    });
+    if (this.scene) {
+      const { world } = this.scene.physics;
+      this.layers.forEach(layer => {
+        if (layer.playerCollider) world?.removeCollider(layer.playerCollider);
+        layer.destroy();
+      });
+    }
 
-    this.map.removeAllLayers();
+    this.map?.removeAllLayers();
     this.layers = [];
   },
 
