@@ -110,13 +110,14 @@ WorldScene = new Phaser.Class({
     Session.set('sceneWorldReady', true);
     this.scene.setVisible(false);
     window.dispatchEvent(new CustomEvent(eventTypes.onWorldSceneCreated, { detail: { scene: this } }));
-  },
 
-  initFromLevel(level) {
     entityManager.init(this);
     levelManager.init(this);
     userManager.init(this);
     zones.init(this);
+  },
+
+  initFromLevel(level) {
     levelManager.createMapFromLevel(level);
 
     // cameras
