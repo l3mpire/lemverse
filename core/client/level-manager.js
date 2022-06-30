@@ -34,7 +34,7 @@ levelManager = {
   },
 
   createMapFromLevel(level) {
-    this.map = this.scene.make.tilemap({ ...level, ...defaultMapConfig });
+    this.map = this.scene.make.tilemap({ ...defaultMapConfig, ...level });
     this.initMapLayers();
     this.addTilesetsToLayers(Tilesets.find().fetch());
 
