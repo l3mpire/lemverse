@@ -1,0 +1,101 @@
+@import "../../../client/variables";
+
+$radius: 0.5rem;
+$menu-background-opacity: 0.8;
+$z-index: 4;
+
+.message-reaction {
+  position: absolute;
+  z-index: 50;
+  bottom: 100px;
+  right: 100px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  background-color: lighten($main-color, 20%);
+  border-radius: $radius;
+  width: 260px;
+  height: 36px;
+  padding: 3px;
+  pointer-events: none;
+
+  &.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    z-index: 1;
+    opacity: $menu-background-opacity;
+    background: radial-gradient(circle at 50% 50%, transparent 37%, #2b2d3d 37%);
+  }
+
+  ul {
+    list-style-type: none;
+    list-style-position: inside;
+    padding: 0;
+    margin: 0;
+    //border-radius: 50%;
+    max-height: 100%;
+    flex-direction: row;
+    display: flex;
+    gap: 3px;
+
+    li {
+      cursor: pointer;
+      box-sizing: border-box;
+      width: 100%;
+      height: 30px;
+      border-radius: 50px;
+      margin: 0;
+      color: white;
+
+      &.off {
+        button {
+          background-color: $light-red;
+
+          &:hover {
+            background-color: darken($light-red, 5%);
+          }
+        }
+      }
+
+      &.on {
+        button {
+          background-color: $light-green;
+
+          &:hover {
+            background-color: darken($light-green, 5%);
+          }
+        }
+      }
+
+      button {
+        border: 0;
+        background: none;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+        border-radius: 25%;
+        background-color: rgba($main-color, 0.95);
+        transition: background-color 0.1s linear;
+        padding: 0;
+        margin: 0;
+        font-size: 15pt;
+
+        &:hover {
+          background-color: #A9AABC;
+        }
+
+        &:active {
+          background-color: $light-blue;
+        }
+      }
+    }
+  }
+}

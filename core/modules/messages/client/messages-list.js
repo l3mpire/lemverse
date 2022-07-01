@@ -1,5 +1,14 @@
 import { messageModerationAllowed } from '../misc';
 
+function getOffset(element) {
+  const elemRect = element.getBoundingClientRect();
+  const parentRect = document.querySelector('.right-content').getBoundingClientRect();
+  return {
+    left: elemRect.left - parentRect.left + window.scrollX,
+    top: elemRect.top - parentRect.top + window.scrollY,
+  };
+}
+
 const getCurrentChannelName = () => {
   const channel = Session.get('messagesChannel');
   if (!channel) return '-';
@@ -44,6 +53,9 @@ Template.messagesListMessage.helpers({
   date() { return this.message.createdAt.toDateString(); },
   time() { return this.message.createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); },
   showActions() { return Template.instance().moderationAllowed; },
+  reactions() {
+    return Object.entries(this.message.reactions).map(reaction => ({ reaction: reaction[0], amount: reaction[1].length, owner: reaction[1].indexOf(Meteor.userId()) > -1 }));
+  },
 });
 
 Template.messagesListMessage.events({
@@ -56,6 +68,19 @@ Template.messagesListMessage.events({
   'click .js-message-remove'(event, templateInstance) {
     const messageId = templateInstance.data.message._id;
     lp.notif.confirm('Delete message', `Do you really want to delete this message?`, () => Messages.remove(messageId));
+  },
+  'click .js-message-reactions'(event, templateInstance) {
+    event.preventDefault();
+    event.stopPropagation();
+    const messageId = templateInstance.data.message._id;
+    const position = getOffset(event.target);
+    Session.set('messageReaction', { messageId, x: position.left, y: position.top });
+  },
+  'click .js-message-reaction'(event, templateInstance) {
+    event.preventDefault();
+    event.stopPropagation();
+    const messageId = templateInstance.data.message._id;
+    Meteor.call('toggleMessageReaction', messageId, event.target.dataset.reaction);
   },
   'load .files img'() { scrollToBottom(); },
 });

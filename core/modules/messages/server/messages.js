@@ -116,4 +116,22 @@ Meteor.methods({
 
     return messageId;
   },
+  toggleMessageReaction(messageId, reaction) {
+    if (!this.userId) return;
+
+    check(messageId, Match.Id);
+    check(reaction, String);
+
+    let message = Messages.findOne(messageId);
+    if (!message) throw new Meteor.Error('not-found', 'Not found');
+
+    if (!message.reactions || !message.reactions[reaction]?.includes(this.userId)) {
+      Messages.update(messageId, { $addToSet: { [`reactions.${reaction}`]: this.userId } });
+    } else {
+      Messages.update(messageId, { $pull: { [`reactions.${reaction}`]: this.userId } });
+    }
+
+    message = Messages.findOne(messageId);
+    if (message.reactions[reaction].length === 0) Messages.update(messageId, { $unset: { [`reactions.${reaction}`]: 1 } });
+  },
 });
