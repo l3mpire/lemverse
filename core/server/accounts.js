@@ -29,7 +29,7 @@ Accounts.onLogin(param => {
     generateRandomCharacterSkin(user._id, Meteor.settings.defaultLevelId);
   }
 
-  analytics.track(user._id, '👋 Sign In');
+  if (param.type !== 'resume') analytics.track(user._id, '👋 Sign In');
 });
 
 Accounts.validateLoginAttempt(param => {
