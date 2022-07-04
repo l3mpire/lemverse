@@ -146,6 +146,39 @@
             max-height: 300px;
           }
         }
+
+        .reactions {
+          display: flex;
+          gap: 3px;
+          list-style-type: none;
+          padding: 5px 0 0;
+
+          .reaction {
+            padding: 2px;
+            cursor: pointer;
+            box-sizing: border-box;
+            width: 40px;
+            border-radius: 1rem;
+            color: white;
+            text-align: center;
+            background-color: lighten($main-color, 20%);
+            user-select: none;
+            font-size: 0.9rem;
+
+            &.owner {
+              background-color: darken($light-blue, 10%);
+            }
+
+            &:hover {
+              background-color: $light-blue;
+            }
+          }
+        }
+      }
+
+      &:hover .owner-actions.show {
+        opacity: 1;
+        pointer-events: all;
       }
 
       &:hover .actions.show {
@@ -160,9 +193,9 @@
         margin-right: 10px;
       }
 
-      .actions {
+      .owner-actions {
         position: absolute;
-        right: 0;
+        right: 35px;
         top: 8px;
         pointer-events: none;
         opacity: 0;
@@ -181,6 +214,31 @@
 
           &:hover {
             background-color: darken($light-red, 10%);
+          }
+        }
+      }
+
+      .actions {
+        position: absolute;
+        right: 0px;
+        top: 8px;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.25s;
+
+        .js-message-open-reactions-box {
+          background-color: $light-blue;
+          color: white;
+          width: 30px;
+          height: 30px;
+          padding: 0;
+          margin: 0;
+          border: 0;
+          font-size: 0.9rem;
+          font-weight: bold;
+
+          &:hover {
+            background-color: darken($light-blue, 10%);
           }
         }
       }
