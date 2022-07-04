@@ -1,3 +1,5 @@
+const defaultSpawnPosition = { x: 200, y: 200 };
+
 createLevel = options => {
   log('createLevel: start', { options });
 
@@ -15,7 +17,7 @@ createLevel = options => {
   Levels.insert({
     _id: newLevelId,
     name: levelName,
-    spawn: { x: 200, y: 200 },
+    spawn: defaultSpawnPosition,
     apiKey: CryptoJS.MD5(now + Random.hexString(48)).toString(),
     createdAt: now,
     createdBy: user._id,
@@ -23,9 +25,8 @@ createLevel = options => {
 
   if (templateId) {
     log('createLevel: copy template', { templateId });
-    const templateLevel = Levels.findOne(templateId);
-    Levels.update({ _id: newLevelId }, { $set: { template: false, metadata: templateLevel.metadata, templateId } });
-    if (templateLevel.spawn) Levels.update({ _id: newLevelId }, { $set: { spawn: templateLevel.spawn } });
+    const { metadata, spawn, width, height } = Levels.findOne(templateId);
+    Levels.update(newLevelId, { $set: { template: false, metadata, spawn: spawn || defaultSpawnPosition, width, height, templateId } });
 
     const tiles = Tiles.find({ levelId: templateId }).fetch();
     tiles.forEach(tile => {
