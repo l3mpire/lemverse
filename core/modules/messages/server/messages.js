@@ -97,7 +97,7 @@ Meteor.methods({
 
     log('sendMessage: start', { channel, text, fileId, userId: this.userId });
     check([channel, text], [String]);
-    check(fileId, Match.Maybe(Match.Id));
+    check(fileId, Match.Maybe(String));
 
     if (!messagingAllowed(channel, this.userId)) throw new Meteor.Error('not-authorized', 'Not allowed');
 
