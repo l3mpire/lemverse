@@ -55,6 +55,7 @@ messagesModule = {
   autoSelectChannel() {
     if (userProximitySensor.isNearSomeone()) this.changeMessagesChannel(nearUserIdsToString());
     else if (zones.activeZone) this.changeMessagesChannel(zones.activeZone._id);
+    else this.changeMessagesChannel(Meteor.user().profile.levelId);
   },
 
   changeMessagesChannel(channel) {
