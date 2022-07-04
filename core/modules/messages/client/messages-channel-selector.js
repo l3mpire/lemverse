@@ -3,7 +3,7 @@ const show = () => Session.get('console') && !Session.get('quests');
 const allChannels = () => {
   if (!show()) return [];
 
-  const user = Meteor.user();
+  const user = Meteor.user({ fields: { 'profile.x': 1, 'profile.y': 1, 'profile.levelId': 1 } });
   if (!user) return [];
 
   const sortedZones = zones.currentZones(user).map(zone => ({ channel: zone._id, name: `📍 ${zone.name}`, priority: 1 }));
@@ -18,6 +18,23 @@ const allChannels = () => {
   return [...sortedZones, nearUsersChannel, levelChannel].filter(Boolean);
 };
 
+Template.messagesChannelSelector.onCreated(function () {
+  this.channels = new ReactiveVar([]);
+
+  const refreshChannelList = () => {
+    if (!show()) return;
+    this.channels.set(allChannels());
+  };
+
+  window.addEventListener(eventTypes.onUsersComeCloser, refreshChannelList);
+  window.addEventListener(eventTypes.onUsersMovedAway, refreshChannelList);
+
+  this.autorun(() => {
+    if (!show()) return;
+    Tracker.nonreactive(refreshChannelList);
+  });
+});
+
 Template.messagesChannelSelector.events({
   'click .js-channel-selector'(event) {
     event.preventDefault();
@@ -29,13 +46,13 @@ Template.messagesChannelSelector.events({
 });
 
 Template.messagesChannelSelector.helpers({
-  show() { return show(); },
+  active() { return Session.get('messagesChannel') === this.channel; },
   channels() {
-    return allChannels().sort((a, b) => {
+    return Template.instance().channels.get().sort((a, b) => {
       if (a.priority > b.priority) return -1;
 
       return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
     });
   },
-  active() { return Session.get('messagesChannel') === this.channel; },
+  show() { return show(); },
 });

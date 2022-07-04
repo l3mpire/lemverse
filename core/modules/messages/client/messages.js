@@ -31,25 +31,8 @@ messagesModule = {
       this.lastZoneEntered = undefined;
     };
 
-    const onUsersComeCloser = () => {
-      if (ignoreChannelAutoSwitch()) return;
-
-      this.changeMessagesChannel(nearUserIdsToString());
-    };
-
-    const onUsersMovedAway = () => {
-      if (ignoreChannelAutoSwitch()) return;
-
-      const channel = nearUserIdsToString();
-      if (!channel.length && this.lastZoneEntered) this.changeMessagesChannel(this.lastZoneEntered);
-      else if (channel.length) this.changeMessagesChannel(channel);
-      else this.stopListeningMessagesChannel();
-    };
-
     window.addEventListener(eventTypes.onZoneEntered, onZoneEntered);
     window.addEventListener(eventTypes.onZoneLeft, onZoneLeft);
-    window.addEventListener(eventTypes.onUsersComeCloser, onUsersComeCloser);
-    window.addEventListener(eventTypes.onUsersMovedAway, onUsersMovedAway);
   },
 
   autoSelectChannel() {
