@@ -6,14 +6,14 @@ const allChannels = () => {
   const user = Meteor.user();
   if (!user) return [];
 
-  const sortedZones = zones.currentZones(user).map(zone => ({ _id: zone._id, name: `📍 ${zone.name}` }));
+  const sortedZones = zones.currentZones(user).map(zone => ({ channel: zone._id, name: `📍 ${zone.name}` }));
 
   const nearUsersIds = nearUserIdsToString();
   let nearUsersChannel;
-  if (nearUsersIds.length) nearUsersChannel = { _id: nearUsersIds, name: '👥 Near users' };
+  if (nearUsersIds.length) nearUsersChannel = { channel: nearUsersIds, name: '👥 Near users' };
 
   const level = Levels.findOne(user.profile.levelId);
-  const levelChannel = { _id: level._id, name: `🗺️ ${(level.name || 'Level')}` };
+  const levelChannel = { channel: level._id, name: `🗺️ ${(level.name || 'Level')}` };
 
   return [...sortedZones, nearUsersChannel, levelChannel].filter(Boolean);
 };
