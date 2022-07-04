@@ -13,8 +13,8 @@ window.addEventListener('load', () => {
 
     Tracker.nonreactive(() => {
       registerRadialMenuModules([
-        { id: 'new-quest', icon: '📜', shortcut: 53, label: 'New quest', closeMenu: true, scope: 'other' },
-        { id: 'show-quests', icon: '📜', shortcut: 57, order: 42, label: 'Quests', closeMenu: true, scope: 'me' },
+        { id: 'new-quest', icon: '📜', shortcut: 53, label: 'New task', closeMenu: true, scope: 'other' },
+        { id: 'show-quests', icon: '📜', shortcut: 57, order: 42, label: 'Tasks', closeMenu: true, scope: 'me' },
       ]);
 
       registerUserListModules(['userListQuestButton']);
@@ -27,8 +27,8 @@ const onNotificationReceived = async e => {
   if (!notification.channelId.includes('qst_')) return;
 
   let message;
-  if (notification.type === 'quest-new') message = `📜 A new quest is available!`;
-  else if (notification.type === 'quest-updated') message = `📜 A quest has been updated`;
+  if (notification.type === 'quest-new') message = `📜 A new task is available!`;
+  else if (notification.type === 'quest-updated') message = `📜 A task has been updated`;
 
   const notificationInstance = await notify(Meteor.users.findOne(notification.createdBy), message);
   if (!notificationInstance) {
