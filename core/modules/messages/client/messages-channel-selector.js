@@ -6,14 +6,14 @@ const allChannels = () => {
   const user = Meteor.user();
   if (!user) return [];
 
-  const sortedZones = zones.currentZones(user).map(zone => ({ channel: zone._id, name: `📍 ${zone.name}` }));
+  const sortedZones = zones.currentZones(user).map(zone => ({ channel: zone._id, name: `📍 ${zone.name}`, priority: 1 }));
 
   const nearUsersIds = nearUserIdsToString();
   let nearUsersChannel;
-  if (nearUsersIds.length) nearUsersChannel = { channel: nearUsersIds, name: '👥 Near users' };
+  if (nearUsersIds.length) nearUsersChannel = { channel: nearUsersIds, name: '👥 Near users', priority: 3 };
 
   const level = Levels.findOne(user.profile.levelId);
-  const levelChannel = { channel: level._id, name: `🗺️ ${(level.name || 'Level')}` };
+  const levelChannel = { channel: level._id, name: `🗺️ ${(level.name || 'Level')}`, priority: 2 };
 
   return [...sortedZones, nearUsersChannel, levelChannel].filter(Boolean);
 };
@@ -30,6 +30,12 @@ Template.messagesChannelSelector.events({
 
 Template.messagesChannelSelector.helpers({
   show() { return show(); },
-  channels() { return allChannels().sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase())); },
+  channels() {
+    return allChannels().sort((a, b) => {
+      if (a.priority > b.priority) return -1;
+
+      return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+    });
+  },
   active() { return Session.get('messagesChannel') === this.channel; },
 });
