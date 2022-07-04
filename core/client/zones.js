@@ -176,7 +176,13 @@ zones = {
     let activeZone;
     if (zonesEntered.length) activeZone = zonesEntered[zonesEntered.length - 1];
     else if (this.activeZone && !availableZonesId.includes(this.activeZone._id)) activeZone = availableZones[availableZones.length - 1];
-    this.setActiveZone(activeZone);
+
+    // set as activate zone + check permissions
+    if (!this.setActiveZone(activeZone)) {
+      lp.notif.error('You cannot access this zone');
+      teleportUserOutsideZone(activeZone);
+      return;
+    }
 
     // compute zone toaster
     if (activeZone && !activeZone.hideName) {
@@ -200,17 +206,16 @@ zones = {
 
   setActiveZone(zone) {
     this.activeZone = zone;
-    if (!zone) return;
+    if (!zone) return true;
 
     try {
-      if (!canAccessZone(zone._id, Meteor.userId())) {
-        teleportUserOutsideZone(zone);
-        lp.notif.error('You cannot access this zone');
-      }
+      if (!canAccessZone(zone._id, Meteor.userId())) throw new Error('access-denied');
     } catch (err) {
-      teleportUserOutsideZone(zone);
-      lp.notif.error(err);
+      this.activeZone = undefined;
+      return false;
     }
+
+    return true;
   },
 
   closeIframeElement() {
