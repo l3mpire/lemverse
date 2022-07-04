@@ -86,7 +86,12 @@ $z-index: 4;
         transition: background-color 0.1s linear;
         padding: 0;
         margin: 0;
-        font-size: 15pt;
+        font-size: 1rem;
+
+        &.js-close {
+          font-size: 0.6rem;
+          background-color: lighten($light-red, 10%);
+        }
 
         &:hover {
           background-color: #A9AABC;

@@ -22,4 +22,9 @@ Template.messageReaction.events({
     Session.set('messageReaction', undefined);
     Meteor.call('toggleMessageReaction', messageId, event.target.innerText);
   },
+  'click .js-close'(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    Session.set('messageReaction', undefined);
+  },
 });
