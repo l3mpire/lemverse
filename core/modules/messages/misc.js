@@ -4,15 +4,10 @@ const messagingAllowed = (channel, userId) => {
 
   if (channel.includes('usr_')) return channel.split(';').includes(userId);
 
-  if (channel.includes('zon_')) {
-    check(channel, Match.Id);
-    return canAccessZone(channel, userId);
-  }
-
-  if (channel.includes('qst_')) {
-    check(channel, Match.Id);
-    return canAccessQuest && canAccessQuest(channel, userId);
-  }
+  check(channel, Match.Id);
+  if (channel.includes('zon_')) return canAccessZone(channel, userId);
+  if (channel.includes('qst_')) return canAccessQuest && canAccessQuest(channel, userId);
+  if (channel.includes('lvl_')) return Meteor.users.findOne(userId)?.profile.levelId === channel;
 
   return false;
 };
