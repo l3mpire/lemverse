@@ -151,7 +151,7 @@
           display: flex;
           gap: 3px;
           list-style-type: none;
-          padding: 2px;
+          padding: 5px 0 0;
 
           .reaction {
             padding: 2px;
@@ -162,6 +162,8 @@
             color: white;
             text-align: center;
             background-color: lighten($main-color, 20%);
+            user-select: none;
+            font-size: 0.9rem;
 
             &.owner {
               background-color: darken($light-blue, 10%);
@@ -224,7 +226,7 @@
         opacity: 0;
         transition: opacity 0.25s;
 
-        .js-message-reactions {
+        .js-message-open-reactions-box {
           background-color: $light-blue;
           color: white;
           width: 30px;
