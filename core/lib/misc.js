@@ -25,7 +25,7 @@ nearestDuration = duration => {
 
 userLevel = userId => {
   const user = Meteor.users.findOne(userId);
-  if (!user) return undefined;
+  if (!user) throw new Meteor.Error('not-found', 'User not found');
 
   return Levels.findOne(user.profile.levelId);
 };
@@ -79,10 +79,10 @@ canAccessZone = (zoneId, userId) => {
   }
 
   // verifies that the user is a member of the level guild
-  if (zone.restrictedToGuild) {
+  if (zone.accessRestrictedToGuild) {
     const level = userLevel(userId);
     if (!level) throw new Meteor.Error('not-found', 'Level not found');
-    if (!level.guildId) throw new Meteor.Error('configuration-missing', 'Guild not linked to the level. You must link a guild to the level or remove the "restrictedToGuild" attribute');
+    if (!level.guildId) throw new Meteor.Error('configuration-missing', 'Guild not linked to the level. You must link a guild to the level or remove the "accessRestrictedToGuild" attribute');
 
     if (level.guildId !== user.guildId) return false;
   }
