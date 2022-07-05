@@ -63,10 +63,6 @@ const onZoneUpdated = e => {
   const screenMode = zone.fullscreen ? viewportModes.small : viewportModes.splitScreen;
   updateViewport(game.scene.keys.WorldScene, screenMode);
 };
-
-window.addEventListener(eventTypes.onZoneEntered, onZoneEntered);
-window.addEventListener(eventTypes.onZoneLeft, onZoneLeft);
-window.addEventListener(eventTypes.onZoneUpdated, onZoneUpdated);
 window.addEventListener('load', () => {
   const head = document.querySelector('head');
 
@@ -77,16 +73,20 @@ window.addEventListener('load', () => {
   const scriptLowLevel = document.createElement('script');
   scriptLowLevel.src = `https://${Meteor.settings.public.meet.serverURL}/libs/lib-jitsi-meet.min.js`;
   head.appendChild(scriptLowLevel);
-});
 
-hotkeys('f', { scope: scopes.player }, event => {
-  if (event.repeat || !linkedZoneId) return;
-  event.preventDefault();
+  hotkeys('f', { scope: scopes.player }, event => {
+    if (event.repeat || !linkedZoneId) return;
+    event.preventDefault();
 
-  if (!isEditionAllowed(Meteor.userId())) return;
+    if (!isEditionAllowed(Meteor.userId())) return;
 
-  const zone = Zones.findOne(linkedZoneId);
-  if (zone) zones.setFullscreen(zone, !zone.fullscreen);
+    const zone = Zones.findOne(linkedZoneId);
+    if (zone) zones.setFullscreen(zone, !zone.fullscreen);
+  });
+
+  window.addEventListener(eventTypes.onZoneEntered, onZoneEntered);
+  window.addEventListener(eventTypes.onZoneLeft, onZoneLeft);
+  window.addEventListener(eventTypes.onZoneUpdated, onZoneUpdated);
 });
 
 meetHighLevel = {

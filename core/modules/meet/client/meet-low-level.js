@@ -2,6 +2,8 @@
 
 // https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-ljm-api/
 
+window.addEventListener('load', () => registerModules(['meetLowLevelTracks']));
+
 Template.meetLowLevelTracks.events({
   'click .js-fullscreen'() {
     Session.set('meetLowLevelFullscreenTrackId', Session.get('meetLowLevelFullscreenTrackId') === this.getId() ? undefined : this.getId());
