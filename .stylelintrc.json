@@ -13,6 +13,15 @@
     "number-leading-zero": null,
     "color-hex-case": null,
     "alpha-value-notation": null,
-    "scss/at-import-no-partial-leading-underscore": null
+    "scss/at-import-no-partial-leading-underscore": null,
+    "value-no-vendor-prefix": null,
+    "at-rule-empty-line-before": null,
+    "declaration-empty-line-before": null,
+    "scss/dollar-variable-empty-line-before": null,
+    "scss/comment-no-empty": null,
+    "custom-property-empty-line-before": null,
+    "rule-empty-line-before": null,
+    "number-max-precision": null,
+    "selector-no-vendor-prefix": null
   }
 }
