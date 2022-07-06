@@ -3,7 +3,7 @@ const notifsReadMaxDisplayed = 20;
 const formatedDuration = value => {
   if (value === 0 || value === Infinity) return '00:00';
 
-  const minutes = Math.floor(value % 3600 / 60).toString().padStart(2, '0');
+  const minutes = Math.floor((value % 3600) / 60).toString().padStart(2, '0');
   const seconds = Math.floor(Math.max(value % 60, 1)).toString().padStart(2, '0');
 
   return `${minutes}:${seconds}`;
@@ -133,7 +133,7 @@ notify = async (userPoly, message) => {
   if (user) {
     try {
       options.icon = await userAvatar(user);
-    } catch (err) { console.error('failed to get user avatar', { err }); }
+    } catch (err) { log('failed to get user avatar', { err }); }
 
     title = user.profile.name;
     options.body = message;

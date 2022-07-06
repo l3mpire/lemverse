@@ -145,7 +145,7 @@ EditorScene = new Phaser.Class({
           const selectedTileset = Tilesets.findOne(selectedTiles.tilesetId);
           for (let x = 0; x < selectedTiles.w; x++) {
             for (let y = 0; y < selectedTiles.h; y++) {
-              const selectedTileIndex = (selectedTiles.y + y) * selectedTileset.width / 16 + (selectedTiles.x + x);
+              const selectedTileIndex = ((selectedTiles.y + y) * selectedTileset.width) / 16 + (selectedTiles.x + x);
               const layer = levelManager.tileLayer(map.getTileset(selectedTileset._id), selectedTileIndex);
 
               const tiles = Tiles.find({ x: pointerTileX + x, y: pointerTileY + y }).fetch();

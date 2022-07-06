@@ -90,7 +90,7 @@ userVoiceRecorderAbility = {
     this.progress += delta / 1000;
     if (this.progress >= recordingMaxDuration) { this.stop(); return; }
 
-    const progress = 360 / recordingMaxDuration * this.progress;
+    const progress = (360 / recordingMaxDuration) * this.progress;
     const radialProgressBar = this.recordingIndicator.getAt(0);
     radialProgressBar.clear();
     radialProgressBar.fillStyle(0x0078e7);
