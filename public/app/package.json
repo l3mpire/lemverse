@@ -17,6 +17,7 @@
     "gm": "^1.23.1",
     "hotkeys-js": "^3.9.4",
     "jquery": "^3.6.0",
+    "jsonwebtoken": "^8.5.1",
     "meteor-node-stubs": "^1.2.3",
     "multer": "1.4.5-lts.1",
     "nipplejs": "^0.9.1",

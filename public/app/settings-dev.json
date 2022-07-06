@@ -166,6 +166,12 @@
     "from": "The lembot <contact@m.lemverse.com>"
   },
 
+  "meet": {
+    "encryptionPassphrase": "meet-dev",
+    "expiresIn": "6h",
+    "identifier": "lemverse"
+  },
+
   "peer": {
     "path": "/peer",
     "client": {
