@@ -12,7 +12,11 @@ BootScene = new Phaser.Class({
 
   preload() {
     this.load.image('circle', `${assetsRoute}/circle_white.png`);
-    this.load.image('pixel', `${assetsRoute}/pixel.png`);
+
+    // load pixel as base64 to avoid potential loading issue
+    const pixelImage = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=';
+    this.textures.once(Phaser.Loader.Events.ADD, () => this.add.image(1, 1, 'pixel'), this);
+    this.textures.addBase64('pixel', pixelImage);
 
     Tilesets.find().forEach(tileset => this.load.image(tileset.fileId, `${filesRoute}/${tileset.fileId}`));
 
