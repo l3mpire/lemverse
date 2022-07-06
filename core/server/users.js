@@ -79,15 +79,17 @@ Meteor.methods({
     if (entitySubscriptionIds.includes(entityId)) Meteor.users.update(this.userId, { $pull: { entitySubscriptionIds: entityId } });
     else Meteor.users.update(this.userId, { $push: { entitySubscriptionIds: entityId } });
   },
-  convertGuestAccountToRealAccount(email, name, password) {
+  convertGuestAccountToRealAccount(email, name, password, source = 'self') {
     if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
     check([email, name, password], [String]);
+    check(source, Match.OneOf('self', 'invite'));
+
     const user = Meteor.user();
     completeUserProfile(user, email, name);
     Accounts.setPassword(this.userId, password, { logout: false });
 
     analytics.createUser(user);
-    analytics.track(this.userId, '🐣 Sign Up', { source: 'self' });
+    analytics.track(this.userId, '🐣 Sign Up', { source });
   },
   teleportUserInLevel(levelId) {
     if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');

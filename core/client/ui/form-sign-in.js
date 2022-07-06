@@ -31,7 +31,8 @@ const onSubmit = template => {
     // auto-focus first input on each step
     Tracker.afterFlush(() => document.querySelector('.form-account form input')?.focus());
   } else {
-    Meteor.call('convertGuestAccountToRealAccount', template.email, template.nickname, template.password, err => {
+    const source = FlowRouter.getRouteName() === 'invite' ? 'invite' : 'self';
+    Meteor.call('convertGuestAccountToRealAccount', template.email, template.nickname, template.password, source, err => {
       if (err) {
         lp.notif.error(err.reason);
         template.step.set(2); // go back to the first step with a field
