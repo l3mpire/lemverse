@@ -24,8 +24,8 @@ elif command -v brew; then
   fi
 fi
 
-nvm install 14
-nvm use 14
+nvm install 14.19.3
+nvm use 14.19.3
 
 rm -rf ./node_modules
 
