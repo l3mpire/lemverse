@@ -16,12 +16,12 @@ services:
         build:
             context: .
             dockerfile: Dockerfile.dev
+        container_name: lemverse
         restart: unless-stopped
         networks:
             - net_lemverse
         depends_on:
             - mongodb
-            - peer
         ports:
             - '9001:9000' # Expose web port to see your change
             - '7010:7010' # expose peer port

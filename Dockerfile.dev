@@ -1,4 +1,4 @@
-FROM geoffreybooth/meteor-base:2.5
+FROM geoffreybooth/meteor-base:2.7.3
 # Disney Meteor base image
 
 # Copy app package.json and package-lock.json into container
