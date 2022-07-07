@@ -19,6 +19,7 @@
 
 <template name="layout">
   {{> onlineStatus}}
+  {{> reloadStatus}}
   {{> Template.dynamic template=main data=layoutData}}
 </template>
 
@@ -29,5 +30,14 @@
     {{#if contains disconnectedStatus status.status}}
       <div class="status disconnected">Disconnected {{#if eq status.status 'waiting'}}(retry in {{retryIn}}. <a href="#" class="retry">retry now</a>){{/if}}</div>
     {{/if}}
+  {{/if}}
+</template>
+
+<template name="reloadStatus">
+  {{#if Session 'needReload'}}
+    <div class="status success reload">
+      A new lemverse update has arrived 😎.
+      Simply <a href="#" class="js-reload"><b>reload</b></a> and let the magic happen 🎉.
+    </div>
   {{/if}}
 </template>

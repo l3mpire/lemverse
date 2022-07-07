@@ -46,3 +46,27 @@ remote = cmd => {
     console[(_.isArray(r) && r.length ? 'table' : 'log')](r);
   });
 };
+
+Template.reloadStatus.events({
+  'click .js-reload'() { Session.set('reload', true); return false; },
+});
+
+// block hot code push if in production
+if (lp.isProduction()) {
+  Reload._onMigrate(retry => {
+    Session.set('needReload', true);
+
+    if (Session.get('reload')) {
+      Session.set('needReload', false);
+      Session.set('reload', false);
+      return [true];
+    }
+
+    Tracker.autorun(() => {
+      if (Session.get('reload')) {
+        retry();
+      }
+    });
+    return [false];
+  });
+}
