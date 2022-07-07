@@ -24,7 +24,8 @@ window.addEventListener('load', () => {
 
 const onNotificationReceived = async e => {
   const { notification } = e.detail;
-  if (!notification.channelId.includes('qst_')) return;
+
+  if (!notification.channelId?.includes('qst_')) return;
 
   let message;
   if (notification.type === 'quest-new') message = `📜 A new task is available!`;

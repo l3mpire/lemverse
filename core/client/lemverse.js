@@ -80,10 +80,15 @@ Template.lemverse.onCreated(function () {
         // remove new notification when the notification is about a new message:
         // … and the interface showing textual messages is open
         // … or the sender is talking to the user in vocal (a bubble should be visible on the screen)
-        if (notification.channelId === Session.get('messagesChannel') ||
-          (notification.channelId.includes(Meteor.userId()) && userProximitySensor.isUserNear({ _id: notification.createdBy }))) {
-          Notifications.remove(notification._id);
-          return;
+        let ignoreNotification = false;
+        if (notification.type !== 'vocal') {
+          if (notification.channelId === Session.get('messagesChannel')) ignoreNotification = true;
+          else if (notification.channelId.includes(Meteor.userId()) && userProximitySensor.isUserNear({ _id: notification.createdBy })) ignoreNotification = true;
+
+          if (ignoreNotification) {
+            Notifications.remove(notification._id);
+            return;
+          }
         }
 
         if (!notification.type) {
