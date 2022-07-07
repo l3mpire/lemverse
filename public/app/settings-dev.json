@@ -167,6 +167,7 @@
   },
 
   "meet": {
+    "enableAuth": false,
     "encryptionPassphrase": "meet-dev",
     "expiresIn": "6h",
     "identifier": "lemverse"

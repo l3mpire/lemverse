@@ -25,13 +25,6 @@ const computeRoomName = (zoneId, userId) => {
 };
 
 Meteor.methods({
-  // todo: remove. Will be deprecated with the token feature
-  computeRoomName(zoneId) {
-    if (!this.userId) return undefined;
-    check(zoneId, Match.Id);
-
-    return computeRoomName(zoneId, this.userId);
-  },
   computeMeetRoomAccess(zoneId) {
     if (!this.userId) return undefined;
     check(zoneId, Match.Id);
@@ -53,28 +46,32 @@ Meteor.methods({
     if (user.roles?.admin) group = 'admin';
     else if (moderator) group = 'moderator';
 
-    const { encryptionPassphrase, expiresIn, identifier } = Meteor.settings.meet;
+    const { enableAuth, encryptionPassphrase, expiresIn, identifier } = Meteor.settings.meet;
     const { serverURL } = Meteor.settings.public.meet;
-    const roomName = computeRoomName(zoneId, this.userId);
 
-    const token = jwt.sign({
-      context: {
-        user: {
-          id: Meteor.userId(),
-          name: user._id,
-          email: user.emails[0].address,
+    const roomName = computeRoomName(zoneId, this.userId);
+    let token;
+
+    if (enableAuth) {
+      token = jwt.sign({
+        context: {
+          user: {
+            id: user._id,
+            name: user.profile.name,
+            email: user.emails[0].address,
+          },
+          group,
         },
-        group,
-      },
-      aud: identifier,
-      iss: Meteor.settings.public.lp.product,
-      sub: serverURL,
-      room: roomName,
-      moderator,
-    }, encryptionPassphrase, { expiresIn });
+        aud: identifier,
+        iss: Meteor.settings.public.lp.product,
+        sub: serverURL,
+        room: roomName,
+        moderator,
+      }, encryptionPassphrase, { expiresIn });
+    }
 
     log('computeMeetRoomAccess: end', { roomName, token });
 
-    return { room: roomName, token };
+    return { roomName, token };
   },
 });

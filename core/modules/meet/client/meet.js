@@ -20,7 +20,7 @@ const onZoneEntered = e => {
 
   if (!meet.api && roomName) {
     userManager.saveMediaStates();
-    Meteor.call('computeRoomName', _id, (err, data) => {
+    Meteor.call('computeMeetRoomAccess', _id, (err, data) => {
       if (err) { lp.notif.error('You cannot access this zone'); return; }
       if (!data) { lp.notif.error('Unable to load a room, please try later'); return; }
 
@@ -63,6 +63,7 @@ const onZoneUpdated = e => {
   const screenMode = zone.fullscreen ? viewportModes.small : viewportModes.splitScreen;
   updateViewport(game.scene.keys.WorldScene, screenMode);
 };
+
 window.addEventListener('load', () => {
   const head = document.querySelector('head');
 
@@ -93,14 +94,13 @@ meetHighLevel = {
   api: undefined,
   node: undefined,
 
-  open(roomName = Meteor.settings.public.meet.roomDefaultName) {
+  open(config) {
     if (meet.api) return;
 
     const user = Meteor.user();
     const currentZone = zones.currentZone();
 
     const options = {
-      roomName: kebabCase(roomName),
       width: '100%',
       height: '100%',
       parentNode: this.nodeElement(),
@@ -113,6 +113,8 @@ meetHighLevel = {
         startWithVideoMuted: !currentZone.unhide,
         disableTileView: !currentZone.unhide,
       },
+      roomName: config.roomName,
+      jwt: config.token,
     };
 
     meet.api = new window.JitsiMeetExternalAPI(Meteor.settings.public.meet.serverURL, options);
