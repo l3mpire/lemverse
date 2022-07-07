@@ -51,8 +51,7 @@ analytics = {
     log('analytics: createGuild', { guildId: guild._id, userId });
     const guildData = {
       guild_id: guild._id,
-      $name: '-',
-      $email: '-',
+      name: guild.name,
     };
 
     try {
