@@ -77,8 +77,8 @@ Template.zonesToolboxProperties.events({
 // zonesToolbox
 //
 
-Template.zonesToolbox.onCreated(() => {
-  Tracker.autorun(() => {
+Template.zonesToolbox.onCreated(function () {
+  this.autorun(() => {
     const zoneId = Session.get('displayZoneId');
 
     if (zoneId) Session.set('modal', { template: 'zonesToolboxProperties', zone: Zones.findOne(zoneId) });

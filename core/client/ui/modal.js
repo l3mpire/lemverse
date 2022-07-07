@@ -20,11 +20,11 @@ const keydownListener = e => {
 
 let modals = [];
 
-Template.modalContainer.onCreated(() => {
+Template.modalContainer.onCreated(function () {
   closeModal();
   document.addEventListener('keydown', keydownListener);
 
-  Tracker.autorun(() => {
+  this.autorun(() => {
     const modal = Session.get('modal');
 
     // allow multiple modals opened at the same time

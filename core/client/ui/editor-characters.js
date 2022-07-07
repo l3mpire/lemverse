@@ -9,7 +9,7 @@ Template.editorCharacters.onCreated(function () {
   this.subscribe('characters');
 
   Session.set('showDropZone', false);
-  Tracker.autorun(() => {
+  this.autorun(() => {
     Session.set('showDropZone', !Characters.find({}).count());
   });
 });
