@@ -328,6 +328,9 @@ Template.lemverse.onCreated(function () {
           log('loading level: all tiles loaded');
           uiScene.onLevelLoaded();
           levelManager.onLevelLoaded();
+
+          // force canvas focus on level loaded
+          document.activeElement.blur();
         });
       });
 
