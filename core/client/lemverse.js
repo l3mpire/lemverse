@@ -317,7 +317,8 @@ Template.lemverse.onCreated(function () {
           titleParts.push(level.name);
           loadingScene.setText(level.name);
         }
-        document.title = titleParts.reverse().join(' - ');
+        const title = titleParts.reverse().join(' - ');
+        window.history.replaceState({}, title, Meteor.settings.public.lp.website);
 
         worldScene.initFromLevel(level);
 
