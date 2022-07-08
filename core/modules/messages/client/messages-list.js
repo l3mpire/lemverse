@@ -66,7 +66,7 @@ Template.messagesListMessage.events({
     event.stopPropagation();
 
     const userId = templateInstance.data.message.createdBy;
-    if (userId) Session.set('modal', { template: 'profile', userId });
+    if (userId) Session.set('modal', { template: 'userProfile', userId });
   },
   'click .js-message-remove'(event, templateInstance) {
     const messageId = templateInstance.data.message._id;

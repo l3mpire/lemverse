@@ -13,6 +13,6 @@ Template.avatarViewer.events({
   'click .js-show-user-profile'(event) {
     event.preventDefault();
     event.stopPropagation();
-    Session.set('modal', { template: 'profile', userId: this.user._id });
+    Session.set('modal', { template: 'userProfile', userId: this.user._id });
   },
 });

@@ -1,4 +1,4 @@
-.profile {
+.user-profile {
   h1 {
     text-align: center;
   }
@@ -9,10 +9,9 @@
     margin-top: 15px;
     display: flex;
     flex-flow: column nowrap;
+    gap: 15px;
 
     div {
-      margin-bottom: 15px;
-
       label {
         padding-top: 0;
       }

@@ -74,7 +74,7 @@ const onMenuOptionSelected = e => {
   else if (option.id === 'shout') userVoiceRecorderAbility.recordVoice(true, sendAudioChunksToUsersInZone);
   else if (option.id === 'send-love' && user) setReaction(Random.choice(lovePhrases(user.profile.name)));
   else if (option.id === 'follow' && user) userManager.follow(user);
-  else if (option.id === 'show-profile') Session.set('modal', { template: 'profile', userId: Session.get('menu')?.userId });
+  else if (option.id === 'show-profile') Session.set('modal', { template: 'userProfile', userId: Session.get('menu')?.userId });
   else if (option.id === 'go-back') buildMenuFromOptions([...mainMenuItems, ...additionalOptions('me')]);
   else if (option.id === 'custom-reaction') setReaction(Meteor.user().profile.defaultReaction || Meteor.settings.public.defaultReaction);
   else if (option.id === 'emoji') setReaction(option.icon);

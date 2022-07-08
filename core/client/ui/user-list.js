@@ -30,7 +30,7 @@ Template.userListEntry.helpers({
 
 Template.userListEntry.events({
   'click .js-toggle-edition'() { Meteor.call('toggleLevelEditionPermission', this.user._id); },
-  'click .js-profile'() { Session.set('modal', { template: 'profile', userId: this.user._id, append: true }); },
+  'click .js-profile'() { Session.set('modal', { template: 'userProfile', userId: this.user._id, append: true }); },
   'click .js-guild'() { Session.set('modal', { template: 'guild', guildId: this.user.guildId, append: true }); },
 });
 

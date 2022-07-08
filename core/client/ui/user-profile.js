@@ -1,6 +1,6 @@
 const getUser = template => Meteor.users.findOne(template.data.userId);
 
-Template.profile.onCreated(function () {
+Template.userProfile.onCreated(function () {
   const { userId } = this.data;
   if (!userId) return;
 
@@ -21,7 +21,7 @@ Template.profile.onCreated(function () {
   });
 });
 
-Template.profile.helpers({
+Template.userProfile.helpers({
   guild() { return Template.instance().guild.get()?.name; },
   profile() { return getUser(Template.instance()).profile; },
   title() {
@@ -45,7 +45,7 @@ Template.profile.helpers({
   },
 });
 
-Template.profile.events({
+Template.userProfile.events({
   'input .js-company'(event) {
     event.preventDefault();
     event.stopPropagation();

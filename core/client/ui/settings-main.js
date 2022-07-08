@@ -39,6 +39,6 @@ Template.settingsMain.events({
   'click .js-inventory'() { Session.set('modal', { template: 'inventory', append: true }); },
   'click .js-character-designer'() { Session.set('modal', { template: 'settingsCharacter', append: true }); },
   'click .js-medias-settings'() { Session.set('modal', { template: 'settingsMedias', append: true }); },
-  'click .js-profile'() { Session.set('modal', { template: 'profile', userId: Meteor.userId(), append: true }); },
+  'click .js-profile'() { Session.set('modal', { template: 'userProfile', userId: Meteor.userId(), append: true }); },
   'click .js-password'() { Session.set('modal', { template: 'settingsPassword', userId: Meteor.userId(), append: true }); },
 });
