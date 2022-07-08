@@ -21,4 +21,10 @@ Meteor.methods({
     Meteor.users.update({ _id: { $in: userIds } }, { $set: { guildId } }, { multi: true });
     log('addGuildUsers: done');
   },
+  guilds(guildIds) {
+    check(guildIds, [Match.Id]);
+    if (!this.userId) throw new Meteor.Error('not-authorized', 'User not allowed');
+
+    return Guilds.find({ _id: { $in: guildIds } }).fetch();
+  },
 });

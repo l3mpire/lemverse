@@ -2,34 +2,34 @@
   {{#modal title=title}}
     <div class="profile {{#if editionAllowed}}edition-allowed{{/if}}">
       <div class="content container">
-        {{#if admin}}
+        {{#if guild}}
           <div>
-            <label class="label">Identifier</label>
-            <span class="js-copy-identifier">{{id}}</span>
+            <label for="team" class="label">Team</label>
+            <input type="text" name="team" id="team" class="js-team input" value="{{guild}}" disabled>
           </div>
         {{/if}}
         <div>
           <label for="company" class="label">Company</label>
-          <input type="text" id="company" name="company" class="js-company input" value={{profile.company.name}} placeholder="-" />
+          <input type="text" id="company" name="company" class="js-company input" value="{{profile.company.name}}" placeholder="-" />
         </div>
         <div>
           <label for="position" class="label">Position</label>
-          <input type="text" id="position" name="position" class="js-position input" value={{profile.company.position}} placeholder="-" />
+          <input type="text" id="position" name="position" class="js-position input" value="{{profile.company.position}}" placeholder="-" />
         </div>
         <div>
           <label for="website" class="label">Website</label>
           {{#if website}}<a href="{{website}}" class="website" target="_blank" rel="noopener">{{website}}</a> {{else}}<span class="website">-</span>{{/if}}
-          <input type="text" id="website" name="website" class="js-website input" value={{website}} placeholder="-" />
+          <input type="text" id="website" name="website" class="js-website input" value="{{website}}" placeholder="-" />
         </div>
         {{#if editionAllowed}}
           <div>
             <label for="avatar" class="label">Avatar preference</label>
-            <input type="text" name="avatar" id="avatar" class="js-avatar input" value={{#if profile.avatar}}{{profile.avatar}}{{else}}cat{{/if}}>
+            <input type="text" name="avatar" id="avatar" class="js-avatar input" value="{{#if profile.avatar}}{{profile.avatar}}{{else}}cat{{/if}}">
           </div>
         {{/if}}
         <div>
           <label for="bio" class="label">Bio/Hobbies</label>
-          <textarea id="bio" name="bio" placeholder="-" class="js-bio input" >{{profile.bio}}</textarea>
+          <textarea id="bio" name="bio" placeholder="-" class="js-bio input" >{{#if profile.bio}}{{profile.bio}}{{else}}-{{/if}}</textarea>
         </div>
       </div>
       <div class="age">{{age}} days old in lemverse</div>

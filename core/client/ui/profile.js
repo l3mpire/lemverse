@@ -2,14 +2,36 @@ const getUser = template => Meteor.users.findOne(template.data.userId);
 
 Template.profile.onCreated(function () {
   const { userId } = this.data;
-  if (userId) this.subscribe('userProfile', userId);
+  if (!userId) return;
+
+  this.guild = new ReactiveVar();
+
+  this.subscribe('userProfile', userId, () => {
+    const user = Meteor.users.findOne(userId);
+
+    if (!user.guildId) {
+      this.guild.set(undefined);
+      return;
+    }
+
+    Meteor.call('guilds', [user.guildId], (error, guilds) => {
+      if (!guilds.length) return;
+      this.guild.set(guilds[0]);
+    });
+  });
 });
 
 Template.profile.helpers({
-  admin() { return Meteor.user().roles?.admin; },
-  title() { return getUser(Template.instance()).profile.name; },
+  guild() { return Template.instance().guild.get()?.name; },
   profile() { return getUser(Template.instance()).profile; },
-  id() { return getUser(Template.instance())._id; },
+  title() {
+    const template = Template.instance();
+
+    const { name } = getUser(template).profile;
+    if (!Meteor.user().roles?.admin) return name;
+
+    return `${name} (${template.data.userId})`;
+  },
   age() { return moment().diff(getUser(Template.instance()).createdAt, 'days'); },
   editionAllowed() { return Template.instance().data.userId === Meteor.userId(); },
   website() {
@@ -78,7 +100,7 @@ Template.profile.events({
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.avatar': avatar } });
     return false;
   },
-  'click .js-copy-identifier'(event, templateInstance) {
+  'click #modal-title'(event, templateInstance) {
     navigator.clipboard.writeText(getUser(templateInstance)._id).then(() => lp.notif.success('✂️ Identifier copied to your clipboard'));
   },
 });
