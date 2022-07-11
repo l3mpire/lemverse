@@ -12,11 +12,11 @@
 </div>
 
 # Table of contents
-- [What is `lemverse`?](#what-is--lemverse--)
-- [What can I do in lemverse?](#what-can-i-do-in-lemverse-)
-- [Getting started!](#getting-started-)
-- [Deploy in production!](#deploy-in-production-)
-- [Useful commands/tricks](#useful-commands-tricks)
+- [What is `lemverse`?](#what-is-lemverse)
+- [What can I do in lemverse?](#what-can-i-do-in-lemverse)
+- [Getting started!](#getting-started)
+- [Deploy in production!](#deploy-in-production)
+- [Useful commands/tricks](#useful-commandstricks)
 - [Assets](#assets)
 - [License](#license)
 - [Credits](#credits)
