@@ -490,12 +490,14 @@ Please note, that as stated in section `Deploy in production`, there is an addit
 
 # Getting started!
 
-Once you have cloned the repo, launch `./bin/init` and wait, that's all!
+Once you have cloned the repo:
 
-Due to image manipulation, please read [GraphicsMagick & ImageMagick](https://www.npmjs.com/package/gm) to install any additional library.
+* Install [Meteor](https://docs.meteor.com/install.html)
+* Launch `./bin/init`
+* Go to `./public/app/`
+* Launch `./bin/run` to run the app
 
-Go to the `public/app` folder then launch `./bin/run` to run the app, accessible at `http://localhost:9000`.  
-The mongodb database is accessible at `http://localhost:9001`.
+The app should now be accessible at `http://localhost:9000`, and MongoDB at `mongodb://localhost:9001/meteor`.
 
 ## LocalTunnel to debug with other computers
 
