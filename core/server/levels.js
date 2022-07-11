@@ -47,6 +47,7 @@ createLevel = options => {
         createdAt: now,
         createdBy: user._id,
         levelId: newLevelId,
+        uuid: undefined,
       });
     });
 
