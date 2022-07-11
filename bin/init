@@ -16,6 +16,7 @@ if [ -f ~/.nvm/nvm.sh ]; then
   echo 'sourcing nvm from ~/.nvm'
   . ~/.nvm/nvm.sh
 elif command -v brew; then
+  brew install nvm
   # https://docs.brew.sh/Manpage#--prefix-formula
   BREW_PREFIX=$(brew --prefix nvm)
   if [ -f "$BREW_PREFIX/nvm.sh" ]; then
