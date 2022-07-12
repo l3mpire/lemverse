@@ -1,90 +1,85 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {
-		"editor.fontFamily": "Fira Code",
-		"editor.fontSize": 14,
-		"editor.fontLigatures": true,
-		"workbench.iconTheme": "vs-seti",
-		"editor.minimap.enabled": true,
-		"editor.tabSize": 2,
-		"search.exclude": {
-			"**/.git": true,
-			"**/.meteor": true,
-			"**/node_modules": true,
-			"*/**/packages": true,
-			"**/bower_components": true,
-			"**/tmp": true,
-			"**/.build": true
-		},
-		"git.confirmSync": false,
-		"editor.wordWrap": "on",
-		"git.enableSmartCommit": true,
-		"editor.autoIndent": "full",
-		"files.associations": {
-			"*.hbs.html": "handlebars"
-		},
-		"git.autofetch": true,
-		"explorer.confirmDragAndDrop": false,
-		"workbench.fontAliasing": "auto",
-		"search.smartCase": true,
-		"gitlens.advanced.messages": {
-			"suppressCommitHasNoPreviousCommitWarning": false,
-			"suppressCommitNotFoundWarning": false,
-			"suppressFileNotUnderSourceControlWarning": false,
-			"suppressGitVersionWarning": false,
-			"suppressLineUncommittedWarning": false,
-			"suppressNoRepositoryWarning": false,
-			"suppressResultsExplorerNotice": false,
-			"suppressShowKeyBindingsNotice": true
-		},
-		"breadcrumbs.enabled": true,
-		"gitlens.views.lineHistory.enabled": true,
-		"editor.suggestSelection": "first",
-		"vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
-		"editor.multiCursorModifier": "ctrlCmd",
-		"typescript.check.npmIsInstalled": false,
-		"diffEditor.ignoreTrimWhitespace": false,
-		"javascript.validate.enable": false,
-		"javascript.format.enable": false,
-		"editor.formatOnSave": true,
-		"eslint.format.enable": true,
-		"eslint.alwaysShowStatus": true,
-		"todohighlight.keywordsPattern": "XXX|TODO:|MMM",
-		"html.format.wrapLineLength": 0,
-		"editor.linkedEditing": true,
-		"html.format.indentHandlebars": true,
-		"html.format.indentInnerHtml": true,
-		"json.format.enable": false,
-		"html.format.endWithNewline": true,
-		"javascript.suggest.autoImports": false,
-		"cSpell.words": [
-			"autorun",
-			"eqeqeq",
-			"giphy",
-			"lempire",
-			"peerjs",
-			"Roki",
-			"spritesheet",
-			"tilemap",
-			"tileset",
-			"anims",
-			"usemap"
-		],
-		"stylelint.validate": [
-			"css",
-			"less",
-			"postcss",
-			"scss"
-		],
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "editor.fontFamily": "Fira Code",
+    "editor.fontSize": 14,
+    "editor.fontLigatures": true,
+    "workbench.iconTheme": "vs-seti",
+    "editor.minimap.enabled": true,
+    "editor.tabSize": 2,
     "search.exclude": {
-      "core/**": true
+      "**/core/**": true,
+      "**/.git": true,
+      "**/.meteor": true,
+      "**/node_modules": true,
+      "*/**/packages": true,
+      "**/bower_components": true,
+      "**/tmp": true,
+      "**/.build": true
     },
+    "git.confirmSync": false,
+    "editor.wordWrap": "on",
+    "git.enableSmartCommit": true,
+    "editor.autoIndent": "full",
+    "files.associations": {
+      "*.hbs.html": "handlebars"
+    },
+    "git.autofetch": true,
+    "explorer.confirmDragAndDrop": false,
+    "workbench.fontAliasing": "auto",
+    "search.smartCase": true,
+    "gitlens.advanced.messages": {
+      "suppressCommitHasNoPreviousCommitWarning": false,
+      "suppressCommitNotFoundWarning": false,
+      "suppressFileNotUnderSourceControlWarning": false,
+      "suppressGitVersionWarning": false,
+      "suppressLineUncommittedWarning": false,
+      "suppressNoRepositoryWarning": false
+    },
+    "breadcrumbs.enabled": true,
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "editor.multiCursorModifier": "ctrlCmd",
+    "typescript.check.npmIsInstalled": false,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "javascript.validate.enable": false,
+    "javascript.format.enable": false,
+    "editor.formatOnSave": true,
+    "eslint.format.enable": true,
+    "eslint.alwaysShowStatus": true,
+    "todohighlight.keywordsPattern": "XXX|TODO:|MMM",
+    "html.format.wrapLineLength": 0,
+    "editor.linkedEditing": true,
+    "html.format.indentHandlebars": true,
+    "html.format.indentInnerHtml": true,
+    "html.format.templating": true,
+
+    "[handlebars]": {
+      "editor.defaultFormatter": "vscode.html-language-features"
+    },
+    "json.format.enable": false,
+    "html.format.endWithNewline": true,
+    "javascript.suggest.autoImports": false,
+    "cSpell.words": [
+      "autorun",
+      "eqeqeq",
+      "giphy",
+      "lempire",
+      "peerjs",
+      "Roki",
+      "spritesheet",
+      "tilemap",
+      "tileset",
+      "anims",
+      "usemap"
+    ],
+    "stylelint.validate": ["css", "less", "postcss", "scss"],
     "files.exclude": {
       "core/**": true
     }
-	}
+  }
 }
