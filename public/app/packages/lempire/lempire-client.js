@@ -36,7 +36,7 @@ Template.body.events = function (events) {
             const el = $(e.currentTarget).get(0);
             const data = Blaze.getData(el);
             const tpl = (Blaze.getView(el) &&
-              _findThisTemplate(Blaze.getView(el), '_templateInstance')) ||
+              _findThisTemplate(Blaze.getView(el))) ||
               {};
             handler.apply(this, [e, data, tpl]);
           });
