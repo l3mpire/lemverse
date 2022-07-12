@@ -18,7 +18,7 @@
       </div>
       <div class="tileset-toolbox-img">
         {{#with selectedTileset}}
-          <img src="/api/files/{{fileId}}" style="width:{{zoom width 1}}px; height:{{zoom height 1}}px;" draggable="false">
+          <img src="/api/files/{{fileId}}" style="width:{{zoom width 1}}px; height:{{zoom height 1}}px;" draggable="false" alt="tileset image">
         {{/with}}
         {{> marker tileIndex=(Session 'pointerTileIndex') w=1 h=1 color='#00FF00'}}
 
