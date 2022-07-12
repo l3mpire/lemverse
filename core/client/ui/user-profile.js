@@ -86,19 +86,17 @@ Template.userProfile.events({
     event.preventDefault();
     event.stopPropagation();
     const { value } = event.target;
-    if (!value) return false;
+    if (!value) return;
 
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.bio': value } });
-    return false;
   },
   'input .js-avatar'(event) {
     event.preventDefault();
     event.stopPropagation();
     const avatar = event.target.value;
-    if (!avatar) return false;
+    if (!avatar) return;
 
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.avatar': avatar } });
-    return false;
   },
   'click #modal-title'(event, templateInstance) {
     navigator.clipboard.writeText(getUser(templateInstance)._id).then(() => lp.notif.success('✂️ Identifier copied to your clipboard'));
