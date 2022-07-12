@@ -229,14 +229,11 @@ EditorScene = new Phaser.Class({
   },
 
   computePositions(zone, mousePosition, editedPoint, snapPositions = false) {
-    let startPosition = { x: 0, y: 0 };
-    let endPosition = { x: 0, y: 0 };
-
     // snap
     if (snapPositions) mousePosition = this.snapToTile(mousePosition.x, mousePosition.y);
 
-    startPosition = { x: zone.x1 || mousePosition.x, y: zone.y1 || mousePosition.y };
-    endPosition = { x: zone.x2 || mousePosition.x, y: zone.y2 || mousePosition.y };
+    let startPosition = { x: zone.x1 || mousePosition.x, y: zone.y1 || mousePosition.y };
+    let endPosition = { x: zone.x2 || mousePosition.x, y: zone.y2 || mousePosition.y };
 
     // edit start or end
     if (editedPoint === 2) endPosition = mousePosition;
@@ -255,10 +252,7 @@ EditorScene = new Phaser.Class({
       endPosition.y = a;
     }
 
-    return {
-      startPosition,
-      endPosition,
-    };
+    return { startPosition, endPosition };
   },
 
   onEditorModeChanged(mode) {
