@@ -1,8 +1,6 @@
-<template name="editorAsset">
-  <li>
-    <span>{{fileName}}</span>
-    <span>{{lastUpdate}}</span>
-  </li>
+<template name="editorAssetListItem">
+  <span>{{fileName}}</span>
+  <span>{{lastUpdate}}</span>
 </template>
 
 <template name="editorAssets">
@@ -11,15 +9,17 @@
       <div class="asset-list">
         <ul>
           {{#each assets}}
-            {{> editorAsset}}
+            <li>
+              {{> editorAssetListItem}}
+            </li>
           {{/each}}
         </ul>
       </div>
     {{else}}
       <div class="drop-zone">
-        <img src='lemverse.png' />
-        <h2 class='drop-title'>Upload one or many files</h2>
-        <p class='drop-info'>Drop the files, categorize them and enjoy!</p>
+        <img src="lemverse.png" alt="logo" />
+        <h2 class="drop-title">Upload one or many files</h2>
+        <p class="drop-info">Drop the files, categorize them and enjoy!</p>
       </div>
     {{/unless}}
   </div>

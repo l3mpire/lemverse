@@ -1,4 +1,4 @@
-Template.editorAsset.helpers({
+Template.editorAssetListItem.helpers({
   lastUpdate() { return (this.updatedAt || this.createdAt).toLocaleString(); },
 });
 
