@@ -4,7 +4,6 @@ RUN apt update && apt install -y \
 		bash \
 		ca-certificates \
         imagemagick \
-        graphicsmagick \
         python3 make g++
 
 # Copy app package.json and package-lock.json into container
