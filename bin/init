@@ -33,7 +33,7 @@ npm install
 
 cd core
 rm -rf ./node_modules
-npm install
+meteor npm install
 cd ..
 
 cd public/app
