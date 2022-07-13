@@ -126,6 +126,17 @@ meetHighLevel = {
       if (shareVideo) this.unhide();
       else this.hide();
     });
+
+    meet.api.addEventListener('incomingMessage', event => {
+      const { nick, message } = event;
+
+      // We don't have a link between Jitsi and lemverse to identify the user at the moment. Waiting for the activation of the prosody plugin
+      const userEmitter = Meteor.users.findOne({ 'profile.name': nick });
+      if (!userEmitter) return;
+
+      userManager.onPeerDataReceived({ emitter: userEmitter._id, data: message, type: 'text' });
+    });
+
     this.show(true);
 
     peer.disable();
