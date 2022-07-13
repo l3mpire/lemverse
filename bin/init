@@ -37,12 +37,8 @@ rm -rf ./node_modules
 meteor npm install
 cd ..
 
-cd public/app
+cd app
 ./bin/init
-cd ../..
-
-cd public/mup
-./bin/init
-cd ../..
+cd ..
 
 echo init end!
