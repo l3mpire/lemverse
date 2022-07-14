@@ -393,6 +393,10 @@ Please note, that as stated in section `Deploy in production`, there is an addit
       "from": "The lembot <contact@domain.com>"
     },
 
+    "meet": {
+      "enableAuth": false
+    },
+
     "peer": {
       "path": "/peer",
       "client": {
