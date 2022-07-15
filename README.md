@@ -7,7 +7,7 @@
   [![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)](https://github.com/l3mpire/lemverse)
   [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
-  <img alt="lemverse" src="./public/app/public/lemverse.png" width="128" height="128" style="margin-top: 10px;">  
+  <img alt="lemverse" src="./app/public/lemverse.png" width="128" height="128" style="margin-top: 10px;">  
 
 </div>
 
@@ -48,7 +48,7 @@ To upload a new tileset, visit the url `http://localhost:9000/editor` or `http:/
 ℹ️  Only people with `admin` role can access this page.
 
 Here are the description of all parts:  
-<img alt="login" src="./public/app/public/tileset-editor.png">
+<img alt="login" src="./app/public/tileset-editor.png">
 
 1) As stated, you drag and drop your image file(s) to upload them.
 2) This part is just a reminder about the index of the layers for all tiles.
@@ -72,7 +72,7 @@ This editor takes place at the same place as the tilesets editor.
 To add a new resource, simply drag & drop over the page.
 
 Here are the description of all parts:  
-<img alt="login" src="./public/app/public/character-editor.png">
+<img alt="login" src="./app/public/character-editor.png">
 
 1) Different type of filter to change the dropdown
 2) Here are the list of all resources available in the current category
@@ -87,7 +87,7 @@ To move to the editor mode, simply it `e` and you should see it!
 ### Level edit
 
 Once you hit `e` you will see something like this:  
-<img alt="login" src="./public/app/public/level-editor.png">
+<img alt="login" src="./app/public/level-editor.png">
 
 Here are the description of all parts:  
 1. All tiles that you can select. Move your mouse over them and click to select.
@@ -104,7 +104,7 @@ Here are the description of all parts:
 ### Zone edit
 
 Once you hit `e` again you will see something like this:  
-<img alt="login" src="./public/app/public/zone-editor.png">
+<img alt="login" src="./app/public/zone-editor.png">
 
 You can add a zone then select on the map the top left followed by the bottom right corner of the new zone.
 
@@ -150,7 +150,7 @@ In lemverse you have only few but useful shortcuts!
 What to know more about the `explorers` in the same universe?  
 Hit `Tab` and you will see them! And maybe ghosts...
 
-<img alt="login" src="./public/app/public/tab.png">
+<img alt="login" src="./app/public/tab.png">
 
 Only `admin` can see others admin (with the 👑).  
 You can allow other users to edit your universe by clicking on the hammer and spanner 🛠.
@@ -494,7 +494,7 @@ Once you have cloned the repo:
 
 * Install [Meteor](https://docs.meteor.com/install.html)
 * Launch `./bin/init`
-* Go to `./public/app/`
+* Go to `./app/`
 * Launch `./bin/run` to run the app
 
 The app should now be accessible at `http://localhost:9000`, and MongoDB at `mongodb://localhost:9001/meteor`.
@@ -542,84 +542,6 @@ In lemverse you have different roles:
 - `God`: Same as `Admin` but can also run `remote` command from the console
 
 # Deploy in production!
-
-## Initial setup
-
-To enable the usage of conference room, you will need to install [JITSI](https://jitsi.org/downloads/) on the server.
-
-lemverse is using `MUP` to deploy application **that requires the root access**.  
-Prior to the setup, still on the server, please create the following folder using `mkdir -p /opt/lemverse/tmp`.
-
-For manipulating images, we are using [gm](https://www.npmjs.com/package/gm); please follow the setup in the package documentation.  
-It should looks like `sudo apt-get install graphicsmagick`.
-
-Now we need to configure the deployment. Please have a look to `mup.json` in the app folder and do the changes.  
-You can set `setupMongo` or `setupNode` to `true` if you want `MUP` to setup mongo or add the right nodejs version on server.  
-ℹ️ Please note, that `mup` can only be used with `root` access.
-
-It's necessary to have a replica set active on your Mongo instance (see the mup.json file), add the following lines to the `/etc/mongod.conf` file to activate it:
-```
-replication:
-  replSetName: rs0
-```
-
-Restart the Mongo service using `systemctl restart mongod` and initiate the replica set using `rs.initiate()` from the mongo shell.
-
-If you do have some sensitive information, you can copy the file `settings.json` and paste it on the server at `/usr/local/etc/lemverse.json` (Server side only).  
-At the startup of the application, those settings will be merged with the current ones.
-
-After those preparation steps, run `./bin/setup` from the `public/app` folder from your workstation.
-
-## Nginx configuration example
-
-Since the app is exposed on port `9000` you might want to expose as domain without specifying the port.
-
-Below is an example of a possible nginx config file:
-
-```nginx
-# we're in the http context here
-map $http_upgrade $connection_upgrade {
-    default upgrade;
-    ''      close;
-}
-
-server {
-    server_name lemverse.example.com;
-
-    client_max_body_size 20M;
-    access_log /var/log/nginx/access_lemverse.log;
-    error_log /var/log/nginx/error_lemverse.log;
-
-    location / {
-        proxy_pass http://localhost:9000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade; # allow websockets
-        proxy_set_header Connection $connection_upgrade;
-        proxy_set_header X-Forwarded-For $remote_addr; # preserve client IP
-        proxy_set_header Host $host;  # pass the host header - http://wiki.nginx.org/HttpProxyModule#proxy_pass
-    }
-
-    listen 443 ssl; # managed by Certbot
-    ssl_certificate /etc/letsencrypt/live/app.lemverse.com/fullchain.pem; # managed by Certbot
-    ssl_certificate_key /etc/letsencrypt/live/app.lemverse.com/privkey.pem; # managed by Certbot
-    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
-}
-
-server {
-    if ($host = lemverse.example.com) {
-        return 301 https://$host$request_uri;
-    } # managed by Certbot
-
-
-    server_name lemverse.example.com;
-    listen 80;
-    return 404; # managed by Certbot
-}
-```
-## Other deployments
-
-Once you have done it, the subsequent deployments will be done using the command `./public/app/bin/deploy`.
 
 ## Docker images
 
@@ -728,6 +650,6 @@ AGPLv3
 
 # Screenshots
 
-<img alt="login" src="./public/app/public/screenshot-login.png">  
-<img alt="Enter Zone" src="./public/app/public/screenshot-zone.png">  
-<img alt="I see ghost everywhere!" src="./public/app/public/screenshot-ghost.png">  
+<img alt="login" src="./app/public/screenshot-login.png">  
+<img alt="Enter Zone" src="./app/public/screenshot-zone.png">  
+<img alt="I see ghost everywhere!" src="./app/public/screenshot-ghost.png">  
