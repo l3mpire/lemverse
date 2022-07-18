@@ -93,11 +93,17 @@ Template.zonesToolbox.onRendered(function () {
     clearZoneRectangles();
 
     const hoveredZoneId = Session.get('hoveredZoneId');
+    const selectedZoneId = Session.get('selectedZoneId');
 
     Zones.find().forEach(zone => {
-      const r = game.scene.keys.WorldScene.add.rectangle(zone.x1, zone.y1, zone.x2 - zone.x1, zone.y2 - zone.y1, hoveredZoneId === zone._id ? 0x00FF00 : 0x9966ff, 0.2);
+      const alpha = selectedZoneId === zone._id ? 0.1 : 0.2;
+      const color = hoveredZoneId === zone._id ? 0x00FF00 : 0x9966ff;
+      const strokeColor = hoveredZoneId === zone._id ? 0x00FF00 : 0xefc53f;
+      const strokeAlpha = hoveredZoneId === zone._id ? 0.5 : 1;
+
+      const r = game.scene.keys.WorldScene.add.rectangle(zone.x1, zone.y1, zone.x2 - zone.x1, zone.y2 - zone.y1, color, alpha);
       r.setOrigin(0, 0);
-      r.setStrokeStyle(1, hoveredZoneId === zone._id ? 0x00FF00 : 0xefc53f);
+      r.setStrokeStyle(1, strokeColor, strokeAlpha);
       r.setDepth(20000);
       zoneRectangles.push(r);
     });
