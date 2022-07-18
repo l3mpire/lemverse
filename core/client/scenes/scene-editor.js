@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 
+const editorGraphicsDepth = 10002;
+
 const insertTile = data => {
   const user = Meteor.user();
   return Tiles.insert({ _id: Tiles.id(), createdAt: new Date(), createdBy: user._id, levelId: user.profile.levelId, ...data });
@@ -14,12 +16,19 @@ EditorScene = new Phaser.Class({
 
   init() {
     this.isMouseDown = false;
-    this.marker = game.scene.keys.WorldScene.add.graphics();
     this.undoTiles = [];
     this.redoTiles = [];
     this.mode = editorModes.tiles;
+
+    this.marker = game.scene.keys.WorldScene.add.graphics();
+    this.marker.lineStyle(2, 0xFFFFFF, 1);
+    this.marker.fillStyle(0xFFFFFF, 0.25);
+    this.marker.setDepth(editorGraphicsDepth);
+
     this.areaSelector = game.scene.keys.WorldScene.add.graphics();
     this.areaSelector.visible = false;
+    this.areaSelector.setDepth(editorGraphicsDepth);
+
     this.keys = this.input.keyboard.addKeys({
       alt: Phaser.Input.Keyboard.KeyCodes.ALT,
     }, false, false);
@@ -214,11 +223,8 @@ EditorScene = new Phaser.Class({
     const width = levelManager.map.tileWidth * (selectedTiles?.w || 1);
     const height = levelManager.map.tileHeight * (selectedTiles?.h || 1);
     this.marker.clear();
-    this.marker.lineStyle(2, 0xFFFFFF, 1);
     this.marker.strokeRect(0, 0, width, height);
-    this.marker.fillStyle(0xFFFFFF, 0.25);
     this.marker.fillRect(0, 0, width, height);
-    this.marker.setDepth(10002);
   },
 
   showSelection(x, y, width, height) {
