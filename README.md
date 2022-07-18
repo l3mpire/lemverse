@@ -636,6 +636,10 @@ We use paid assets from [limezu](https://limezu.itch.io/) on [itch.io](https://l
 
 By default lemverse appears in black because you have no textures in the project, you must go to the editor to upload the different textures.
 
+# Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=l3mpire/lemverse&type=Date)](https://star-history.com/#l3mpire/lemverse&Date)
+
 # License
 
 AGPLv3
