@@ -21,12 +21,32 @@ EditorScene = new Phaser.Class({
     this.mode = editorModes.tiles;
 
     this.marker = game.scene.keys.WorldScene.add.graphics();
-    this.marker.lineStyle(2, 0xFFFFFF, 1);
-    this.marker.fillStyle(0xFFFFFF, 0.25);
+    this.marker.setDefaultStyles({
+      lineStyle: {
+        width: 2,
+        color: 0xffffff,
+        alpha: 1,
+      },
+      fillStyle: {
+        color: 0xffffff,
+        alpha: 0.25,
+      },
+    });
     this.marker.setDepth(editorGraphicsDepth);
 
     this.areaSelector = game.scene.keys.WorldScene.add.graphics();
     this.areaSelector.visible = false;
+    this.areaSelector.setDefaultStyles({
+      lineStyle: {
+        width: 2,
+        color: 0x02a3ff,
+        alpha: 1,
+      },
+      fillStyle: {
+        color: 0x02a3ff,
+        alpha: 0.25,
+      },
+    });
     this.areaSelector.setDepth(editorGraphicsDepth);
 
     this.keys = this.input.keyboard.addKeys({
