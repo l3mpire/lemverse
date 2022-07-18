@@ -112,9 +112,7 @@ EditorScene = new Phaser.Class({
             this.areaSelector.visible = false;
           }
         }
-      }
-
-      if (zoneId) {
+      } else if (zoneId) {
         const zone = Zones.findOne(zoneId);
         if (!zone) return;
 
