@@ -7,6 +7,7 @@ RUN bash $SCRIPTS_FOLDER/build-app-npm-dependencies.sh
 
 # Copy app source into container
 COPY ./app $APP_SOURCE_FOLDER/
+COPY ./core $APP_SOURCE_FOLDER/core/
 
 RUN bash $SCRIPTS_FOLDER/build-meteor-bundle.sh
 
@@ -20,7 +21,6 @@ ENV SCRIPTS_FOLDER /docker
 RUN apk --no-cache add \
 		bash \
 		ca-certificates \
-        imagemagick \
         graphicsmagick \
         python3 make g++
 
