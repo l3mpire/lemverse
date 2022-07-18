@@ -20,7 +20,10 @@ EditorScene = new Phaser.Class({
     this.redoTiles = [];
     this.mode = editorModes.tiles;
 
-    this.marker = game.scene.keys.WorldScene.add.graphics();
+    // Use the camera of the main scene to have overlapping coordinates
+    this.cameras.addExisting(game.scene.keys.WorldScene.cameras.main);
+
+    this.marker = this.add.graphics();
     this.marker.setDefaultStyles({
       lineStyle: {
         width: 2,
@@ -34,8 +37,7 @@ EditorScene = new Phaser.Class({
     });
     this.marker.setDepth(editorGraphicsDepth);
 
-    this.areaSelector = game.scene.keys.WorldScene.add.graphics();
-    this.areaSelector.visible = false;
+    this.areaSelector = this.add.graphics();
     this.areaSelector.setDefaultStyles({
       lineStyle: {
         width: 2,
@@ -53,12 +55,6 @@ EditorScene = new Phaser.Class({
       alt: Phaser.Input.Keyboard.KeyCodes.ALT,
     }, false, false);
 
-    // put editor in sleep mode on load (no rendering, no update)
-    game.scene.keys.EditorScene.scene.sleep();
-    Session.set('editor', 0);
-    Session.set('selectedTiles', undefined);
-    Session.set('selectedTilesetId', undefined);
-
     this.events.on('wake', () => {
       Session.set('console', false);
       closeModal();
@@ -66,11 +62,12 @@ EditorScene = new Phaser.Class({
     });
 
     this.events.on('sleep', () => {
-      this.marker.visible = false;
-      this.areaSelector.visible = false;
-      entityManager.enableEdition(false);
-      Session.set('selectedEntityId', undefined);
+      Session.set('editor', 0);
+      this.resetState();
     });
+
+    // put editor in sleep mode on load (no rendering, no update)
+    this.scene.sleep();
   },
 
   update() {
@@ -293,5 +290,16 @@ EditorScene = new Phaser.Class({
       x: Math.floor(x / tileWidth) * tileWidth,
       y: Math.floor(y / tileHeight) * tileHeight,
     };
+  },
+
+  resetState() {
+    Session.set('selectedEntityId', undefined);
+    Session.set('selectedZoneId', undefined);
+    Session.set('selectedTiles', undefined);
+    Session.set('selectedTilesetId', undefined);
+    Session.set('selectedZonePoint', undefined);
+    this.marker.setVisible(false);
+    this.areaSelector.setVisible(false);
+    entityManager.enableEdition(false);
   },
 });
