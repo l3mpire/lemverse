@@ -18,6 +18,7 @@
 - [Deploy in production!](#deploy-in-production)
 - [Useful commands/tricks](#useful-commandstricks)
 - [Assets](#assets)
+- [Star History](#star-history)
 - [License](#license)
 - [Credits](#credits)
 - [Screenshots](#screenshots)
