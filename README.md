@@ -521,7 +521,8 @@ Access to your local instance at: `https://lemverse-USER-DOMAIN`.
 Simply create your account and voila!  
 You now have a nice player with everything is black!
 
-Since you are not admin, you can not change anything 😭.  
+The first user will always be an admin and so has the right to edit the level by pressing `E`.
+If you are not the first user, you are not admin, and so you can not change anything 😭.  
 Let's change that!
 
 Execute this command and you should become admin:
