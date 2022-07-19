@@ -1,6 +1,9 @@
 Accounts.onCreateUser((options, user) => {
   log('onCreateUser', { options, user });
   user._id = `usr_${Random.id()}`;
+  if (!Meteor.users.find().count()) { // Set the first account as admin
+    user.roles = { admin: true };
+  }
   user.profile = {
     ...options.profile,
     levelId: Meteor.settings.defaultLevelId,
