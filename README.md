@@ -439,7 +439,7 @@ Please note, that as stated in section `Deploy in production`, there is an addit
           "authUrl": "https://auth.example.org/oauth/authorize",
           "accessTokenUrl": "https://auth.example.org/oauth/access_token",
           "identityUrl": "https://auth.example.org/oauth/userinfo",
-          "serverURL": "http://localhost:9000/",
+          "serverURL": "http://localhost:3000/",
           "responseType": "code",
           "loginStyle": "redirect",
           "scope": "openid",
