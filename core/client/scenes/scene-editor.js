@@ -21,7 +21,9 @@ EditorScene = new Phaser.Class({
     this.mode = editorModes.tiles;
 
     // Use the camera of the main scene to have overlapping coordinates
-    this.cameras.addExisting(game.scene.keys.WorldScene.cameras.main);
+    const worldSceneCamera = game.scene.keys.WorldScene.cameras.main;
+    this.cameras.remove(this.cameras.main);
+    this.cameras.addExisting(worldSceneCamera);
 
     this.marker = this.add.graphics();
     this.marker.setDefaultStyles({

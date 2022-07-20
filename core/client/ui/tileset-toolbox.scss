@@ -1,15 +1,25 @@
 @import "../_variables";
 
 .tileset-toolbox {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  padding: 0;
+  padding: 0 10px 10px;
   margin: 0;
   display: flex;
-  flex-direction: row;
-  color: #2E3440;
-  z-index: 5;
+  flex-direction: column;
+  gap: 10px;
+
+  > :first-child {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: auto;
+    gap: 10px;
+  }
+
+  .tileset-selector {
+    height: 24px;
+    max-height: 24px;
+    min-height: 24px;
+  }
 
   .marker {
     position: absolute;
@@ -22,7 +32,6 @@
   .tileset-toolbox-img {
     position: relative;
     overflow: scroll;
-    height: 240px;
 
     img {
       image-rendering: pixelated;
@@ -34,12 +43,14 @@
   }
 
   .tileData {
-    display: inline-block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
     border: 1px solid #4C566A;
     color: #4C566A;
     background-color: white;
     border-radius: 4px;
-    margin: 5px 1px;
     padding: 4px;
 
     &.has-collision {
@@ -50,18 +61,26 @@
     }
   }
 
+  .hovered-tiles {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+  }
+
   .tileset-toolbox-erase {
-    height: 200px;
     display: grid;
-    grid-auto-flow: row;
-    grid-gap: 0px;
-    grid-template-columns: 60px 60px;
-    margin-left: 10px;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    width: 80%;
+    margin: 0 auto;
 
     .button {
-      width: 50px;
+      width: 45px;
       height: 30px;
       padding: 0 8px;
+      line-height: 29px;
+      font-size: 0.9rem;
 
       &.active {
         background-color: rgb(78, 87, 106);
@@ -71,8 +90,16 @@
   }
 
   .tileset-toolbox-info {
-    margin-left: 10px;
     height: 20px;
-    font-size: 16px;
+    font-size: 0.9rem;
+    color: white;
+    text-align: center;
+
+    > :first-child {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
   }
 }

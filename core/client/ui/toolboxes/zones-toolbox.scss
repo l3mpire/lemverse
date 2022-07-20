@@ -1,20 +1,23 @@
 .zones-toolbox {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  background-color: #ECEFF4;
-  border-radius: 10px;
-  padding: 5px;
-  margin: 5px;
-  width: 400px;
+  margin: 5px 10px;
   display: flex;
   flex-direction: column;
-  color: #2E3440;
-  z-index: 5;
+  color: white;
+
+  .js-zone-add {
+    margin: 0 0 5px;
+    font-size: 0.85rem;
+  }
+
+  .pointer {
+    display: block;
+    height: 30px;
+    text-align: center;
+  }
 
   .zones {
-    max-height: 200px;
     overflow: auto;
+    flex-grow: 1;
 
     .zone {
       display: block;

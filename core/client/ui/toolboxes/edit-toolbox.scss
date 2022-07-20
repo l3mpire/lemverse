@@ -1,6 +1,7 @@
+@import "../../_variables";
+
 :root {
-  --edit-content: 260px;
-  --edit-menus-size: 250px;
+  --edit-menus-size: 350px;
   --edit-menus-backdrop: 15px;
   --edit-menus-z-index: 6;
   --edit-menus-icons-size: 36px;
@@ -15,186 +16,71 @@
   top: 0;
   left: 0;
   bottom: 0;
-  right: 0;
+  width: 350px;
+  height: 100%;
+  background-color: $secondary-color;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  background-color: #FFF95E;
-  /* stylelint-disable-next-line max-line-length */
-  background-image: linear-gradient(135deg, rgba(230, 199, 15, 1) 25%, transparent 25%, transparent 50%, rgba(230, 199, 15, 1) 50%, rgba(230, 199, 15, 1) 75%, transparent 75%, transparent);
-  background-size: 4rem 4rem;
+  transform: translateX(-100%);
+  transition: transform 0.25s linear;
+  opacity: 0;
+  pointer-events: none;
 
-  .menus,
-  .menus-backdrop,
-  .menus-shrink {
-    z-index: var(--edit-menus-z-index);
-    position: absolute;
-    bottom: 0;
-    right: 0;
+  &.show {
+    transform: translateX(0%);
+    opacity: 1;
+    pointer-events: all;
   }
 
-  .menus-backdrop {
-    border-radius: 100% 0 0;
-    width: calc(var(--edit-menus-size) + var(--edit-menus-backdrop));
-    height: calc(var(--edit-menus-size) + var(--edit-menus-backdrop));
-    background-color: rgba(0, 0, 0, .25);
-    transition: height 0.25s ease-in, width 0.25s ease-in;
-  }
-
-  .menus-shrink {
-    width: 1.5rem;
-    height: 1.5rem;
-
-    svg {
-      fill: #fff;
-    }
-
-    .expand {
-      display: none;
-    }
-
-    .collapse {
-      display: block;
-    }
-  }
-
-  &.minimize > .menus-shrink {
-    background-color: #45BFF9;
-
-    .expand {
-      display: block;
-    }
-
-    .collapse {
-      display: none;
-    }
-  }
-
-  &.minimize > .menus-backdrop {
-    width: 0px;
-    height: 0px;
-    transition: height 0.25s ease-in, width 0.25s ease-in;
-  }
-
-  &.minimize > .menus {
-    width: 0px;
-    height: 0px;
-    transition: height 0.25s ease-in, width 0.25s ease-in;
-  }
-
-  &.minimize > .edit-content {
-    height: 0px;
-    transition: height 0.25s ease-in;
-
-    & * {
-      opacity: 0;
-      pointer-events: none;
-    }
-  }
-
-  .menus {
-    width: var(--edit-menus-size);
-    height: var(--edit-menus-size);
-    background-color: #45BFF9;
-    transition: height 0.25s ease-in, width 0.25s ease-in;
+  .tabs {
+    width: 100%;
+    padding: 0;
     display: flex;
-    border-radius: 100% 0 0;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    list-style-type: none;
+    max-width: 95%;
+    margin: 10px auto;
+    border-radius: 0.2rem;
+    overflow: hidden;
 
-    .menus-level,
-    .menus-tileset,
-    .menus-zone {
-      position: absolute;
-      width: 125px;
-      height: 125px;
-
-      & > .icon {
-        cursor: pointer;
-        position: absolute;
-        fill: white;
-        width: var(--edit-menus-icons-size);
-        height: var(--edit-menus-icons-size);
-      }
-
-      .shape {
-        path {
-          cursor: pointer;
-          fill: var(--edit-menus-shape-fill);
-          stroke: var(--edit-menus-shape-border);
-        }
-      }
-
-      &.selected {
-        .shape {
-          path {
-            fill: var(--edit-menus-shape-selected-fill);
-            stroke: var(--edit-menus-shape-selected-border);
-          }
-        }
-      }
-    }
-
-    .menus-tileset {
-      align-self: flex-end;
-      bottom: 17px;
-      left: 25px;
-
-      & > .icon {
-        bottom: 40px;
-        left: 34px;
-      }
-    }
-
-    .menus-zone {
-      right: 17px;
-      top: 30px;
-
-      & > .icon {
-        bottom: 55px;
-        left: 46px;
-      }
-    }
-
-    .menus-level {
-      & > .icon {
-        bottom: 34px;
-        left: 50px;
-      }
-
-      position: absolute;
-      left: 113px;
-      top: 113px;
-      height: 120px;
+    .tab {
+      flex-grow: 1;
+      max-height: 40px;
+      margin: 0;
+      background-color: #40435b;
+      filter: saturate(50%);
+      border-radius: 0;
+      padding: 5px;
+      transition: all 0.25s;
+      cursor: pointer;
+      pointer-events: all;
+      text-align: center;
       color: white;
+      font-size: 0.85rem;
+
+      &.active {
+        cursor: default;
+        pointer-events: none;
+        background-color: $light-blue;
+        filter: saturate(70%);
+
+        &:hover {
+          filter: saturate(100%);
+        }
+      }
     }
   }
 
-  .edit-content {
-    position: absolute;
-    bottom: var(--edit-border-size);
-    left: var(--edit-border-size);
-    z-index: calc(var(--edit-menus-z-index) - 1);
-    height: var(--edit-content);
-    width: calc(100% - 2 * var(--edit-border-size));
-    transition: height 0.25s ease-in;
+  .side-bar {
+    min-height: 0;
+    flex: 1;
 
-    & * {
-      opacity: 1;
-      transition: opacity 0.25s ease-in;
-    }
-
-    background-color: rgba(255, 255, 255, 0.75);
-
-    .zones-toolbox,
-    .tileset-toolbox {
-      position: absolute;
-      background-color: transparent;
+    > div {
+      max-height: 100%;
       height: 100%;
-
-      .zones {
-        max-height: unset;
-      }
-
-      .tileset-toolbox-img {
-        flex: 1;
-      }
     }
   }
 }

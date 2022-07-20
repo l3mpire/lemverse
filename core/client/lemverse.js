@@ -383,7 +383,6 @@ Template.lemverse.onCreated(function () {
 
       this.currentLevelId = levelId;
       Session.set('menu', undefined);
-      game.scene.getScene('EditorScene')?.init();
     });
   });
 

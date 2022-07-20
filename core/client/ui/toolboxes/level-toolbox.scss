@@ -1,20 +1,13 @@
 .level-toolbox {
-  padding: 5px;
-  margin: 5px;
-  width: 470px;
+  padding: 0 15px;
   display: flex;
   flex-direction: column;
-  color: #2E3440;
-  z-index: 5;
+  color: white;
 
-  h1 {
-    font-size: 14pt;
-    text-align: center;
-    margin-bottom: 0;
-  }
-
-  label[for="level-toolbox-hidden"] {
-    display: inline-block;
-    margin: 15px 5px 10px 0;
+  .label-option {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    margin: 15px 0;
   }
 }

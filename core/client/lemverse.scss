@@ -41,33 +41,8 @@ button:focus {
   &.edit {
     -webkit-app-region: no-drag;
 
-    .reactions-toolbox,
-    .js-streams,
-    .user-panel {
+    > *:not(.edit-toolbox):not(.simulation):not(.modal-container) {
       display: none;
-    }
-
-    #game {
-      overflow: hidden;
-      top: var(--edit-border-size);
-      bottom: var(--edit-border-size);
-      left: var(--edit-border-size);
-      right: var(--edit-border-size);
-      border-radius: var(--edit-border-radius);
-      box-sizing: border-box;
-
-      >canvas,
-      >div {
-        position: absolute;
-        top: calc(-1 * var(--edit-border-size));
-        left: calc(-1 * var(--edit-border-size));
-        bottom: calc(-1 * var(--edit-border-size));
-        right: calc(-1 * var(--edit-border-size));
-      }
-
-      >canvas {
-        pointer-events: all;
-      }
     }
   }
 }
