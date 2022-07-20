@@ -1,5 +1,20 @@
 <template name="editToolbox">
-  <div class="edit-toolbox {{#if neq (Session 'editor') 0}}show{{/if}}">
+  <div class="edit-toolbox {{#if neq (Session 'editor') 0}}show{{/if}} {{#if minimized}}minimized{{/if}}">
+    <div class="head">
+      <h1>Level editor</h1>
+      <div class="js-menus-shrink menus-shrink">
+        {{#if minimized}}
+        <svg class="expand" style="width:24px;height:24px" viewBox="0 0 24 24">
+          <path d="M12.08,4.08L20,12L12.08,19.92L10.67,18.5L16.17,13H2V11H16.17L10.67,5.5L12.08,4.08M20,12V22H22V2H20V12Z" />
+        </svg>
+        {{else}}
+        <svg class="collapse" style="width:24px;height:24px" viewBox="0 0 24 24">
+          <path d="M11.92,19.92L4,12L11.92,4.08L13.33,5.5L7.83,11H22V13H7.83L13.34,18.5L11.92,19.92M4,12V2H2V22H4V12Z" />
+        </svg>
+        {{/if}}
+      </div>
+    </div>
+
     <ul class="tabs">
       <li class="tab js-menus-select {{#if eq (Session 'editorSelectedMenu') 'tiles'}}active{{/if}}" data-menu="tiles">
         Tiles
@@ -26,13 +41,5 @@
       {{> entityToolbox}}
       {{/if}}
     </div>
-    {{!-- <div class="js-menus-shrink menus-shrink">
-      <svg class='collapse' xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24">
-        <path d="M19.5,3.09L20.91,4.5L16.41,9H20V11H13V4H15V7.59L19.5,3.09M20.91,19.5L19.5,20.91L15,16.41V20H13V13H20V15H16.41L20.91,19.5M4.5,3.09L9,7.59V4H11V11H4V9H7.59L3.09,4.5L4.5,3.09M3.09,19.5L7.59,15H4V13H11V20H9V16.41L4.5,20.91L3.09,19.5Z" />
-      </svg>
-      <svg class='expand' xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24">
-        <path d="M9.5,13.09L10.91,14.5L6.41,19H10V21H3V14H5V17.59L9.5,13.09M10.91,9.5L9.5,10.91L5,6.41V10H3V3H10V5H6.41L10.91,9.5M14.5,13.09L19,17.59V14H21V21H14V19H17.59L13.09,14.5L14.5,13.09M13.09,9.5L17.59,5H14V3H21V10H19V6.41L14.5,10.91L13.09,9.5Z" />
-      </svg>
-    </div> --}}
   </div>
 </template>

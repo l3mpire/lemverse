@@ -18,20 +18,50 @@
   bottom: 0;
   width: 350px;
   height: 100%;
-  background-color: $secondary-color;
+  background-color: rgba($secondary-color, 0.95);
   z-index: 100;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   transform: translateX(-100%);
-  transition: transform 0.25s linear;
+  transition: transform 0.2s cubic-bezier(0.55, 0.055, 0.675, 0.19), opacity 0.3s linear;
   opacity: 0;
   pointer-events: none;
+
+  .head {
+    color: white;
+    margin: 0 10px;
+    text-align: left;
+    width: 100%;
+    text-transform: uppercase;
+
+    h1 {
+      font-size: 1.15rem;
+    }
+
+    .menus-shrink {
+      position: absolute;
+      right: 7px;
+      top: 12px;
+      transform: scale(0.8);
+      cursor: pointer;
+    }
+  }
 
   &.show {
     transform: translateX(0%);
     opacity: 1;
     pointer-events: all;
+  }
+
+  &.minimized {
+    pointer-events: none;
+    transform: translateX(-89%);
+    height: 47px;
+
+    > *:not(.head) {
+      display: none;
+    }
   }
 
   .tabs {
@@ -42,7 +72,7 @@
     flex-wrap: wrap;
     list-style-type: none;
     max-width: 95%;
-    margin: 10px auto;
+    margin: 0 auto 10px;
     border-radius: 0.2rem;
     overflow: hidden;
 
@@ -81,6 +111,20 @@
     > div {
       max-height: 100%;
       height: 100%;
+    }
+  }
+
+  .menus-shrink {
+    pointer-events: all;
+
+    svg {
+      fill: white;
+    }
+
+    &:hover {
+      svg {
+        fill: $light-blue;
+      }
     }
   }
 }

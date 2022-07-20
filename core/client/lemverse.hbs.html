@@ -13,9 +13,7 @@
     {{/if}}
 
     {{#unless guest}}
-    {{#if neq (Session 'editor') 0}}
     {{> editToolbox}}
-    {{/if}}
 
     <div class="js-streams">
       {{#each remoteUser in allRemoteStreamsByUsers}}
