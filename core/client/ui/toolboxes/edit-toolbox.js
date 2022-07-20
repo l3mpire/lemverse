@@ -19,8 +19,10 @@ Template.editToolbox.onCreated(function () {
   Session.set('editorSelectedMenu', undefined);
 
   this.autorun(() => {
-    if (Session.get('editor')) wake();
-    else sleep();
+    if (Session.get('editor')) {
+      this.minimized.set(false);
+      wake();
+    } else sleep();
   });
 
   hotkeys('h', { scope: scopes.editor }, event => {
