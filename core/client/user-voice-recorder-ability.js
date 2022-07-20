@@ -1,3 +1,5 @@
+import audioManager from './audio-manager';
+
 let mediaRecorder;
 let recordedChunks = [];
 const minChunkSize = 1000; // ~100ms
@@ -41,7 +43,7 @@ userVoiceRecorderAbility = {
     this.loading = false;
 
     mediaRecorder = new MediaRecorder(stream, {
-      mimeType: sounds.getSupportedType(),
+      mimeType: audioManager.getSupportedType(),
       audio: true,
       video: false,
     });
@@ -121,8 +123,8 @@ userVoiceRecorderAbility = {
 
 const sendAudioChunksToTargets = (chunks, userIds) => {
   // Upload
-  const blob = sounds.generateBlob(chunks);
-  const file = new File([blob], `audio-record.${sounds.getExtension()}`, { type: blob.type });
+  const blob = audioManager.generateBlob(chunks);
+  const file = new File([blob], `audio-record.${audioManager.getExtension()}`, { type: blob.type });
   const uploadInstance = Files.insert({
     file,
     chunkSize: 'dynamic',

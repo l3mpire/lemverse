@@ -128,7 +128,6 @@ module.exports = {
     layers: 'writable',
     peer: 'writable',
     settings: 'writable',
-    sounds: 'writable',
     meet: 'writable',
     meetLowLevel: 'writable',
     meetHighLevel: 'writable',

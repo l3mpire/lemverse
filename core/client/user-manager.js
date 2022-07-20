@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import audioManager from './audio-manager';
 
 const userInterpolationInterval = 200;
 const defaultCharacterDirection = 'down';
@@ -166,9 +167,9 @@ userManager = {
 
   playReaction(player, reaction) {
     clearInterval(player.reactionHandler);
-    if (meet.api && this.canPlayReactionSound && sounds.reactionsSounds[reaction]) {
+    if (meet.api && this.canPlayReactionSound && audioManager.reactionsSounds[reaction]) {
       const otherUser = Meteor.users.findOne(player.userId);
-      if (otherUser && zones.isUserInSameZone(Meteor.user(), otherUser)) sounds.play(sounds.reactionsSounds[reaction]);
+      if (otherUser && zones.isUserInSameZone(Meteor.user(), otherUser)) audioManager.play(audioManager.reactionsSounds[reaction]);
 
       // avoid sound spamming
       this.canPlayReactionSound = false;
@@ -586,8 +587,8 @@ userManager = {
   punch(users) {
     if (!users || !users.length) return;
     this.scene.cameras.main.shake(250, 0.015, 0.02);
-    sounds.play('punch.mp3');
-    if (Math.random() > 0.95) sounds.play('punch2.mp3');
+    audioManager.play('punch.mp3');
+    if (Math.random() > 0.95) audioManager.play('punch2.mp3');
 
     users.forEach(user => this.takeDamage(this.players[user._id]));
     peer.sendData(users.map(user => user._id), { type: 'punch', emitter: Meteor.userId() });
@@ -626,7 +627,7 @@ userManager = {
 
     this.follow(undefined); // interrupts the follow action
     this.setTintFromState(this.player);
-    sounds.enabled = !enable;
+    audioManager.enabled = !enable;
   },
 
   setTintFromState(player) {
@@ -665,13 +666,13 @@ userManager = {
     const userEmitter = Meteor.users.findOne(emitterUserId);
     if (!userEmitter) return;
 
-    if (data.type === 'audio') sounds.playFromChunks(data.data);
+    if (data.type === 'audio') audioManager.playFromChunks(data.data);
     else if (data.type === 'punch') {
       if (!userProximitySensor.isUserNear(userEmitter)) return;
 
-      sounds.play('punch.mp3');
+      audioManager.play('punch.mp3');
       this.scene.cameras.main.shake(250, 0.015, 0.02);
-      if (Math.random() > 0.95) sounds.play('punch2.mp3');
+      if (Math.random() > 0.95) audioManager.play('punch2.mp3');
 
       this.takeDamage(this.players[Meteor.user()._id]);
     } else if (data.type === 'followed') {
@@ -688,7 +689,7 @@ userManager = {
 
       const { zoneMuted } = Meteor.user();
       const userEmitterZoneId = zones.currentZone(userEmitter)?._id;
-      if (!zoneMuted || !zoneMuted[userEmitterZoneId]) sounds.play('text-sound.wav', 0.5);
+      if (!zoneMuted || !zoneMuted[userEmitterZoneId]) audioManager.play('text-sound.wav', 0.5);
 
       const popInIdentifier = `${emitterUserId}-pop-in`;
       characterPopIns.createOrUpdate(

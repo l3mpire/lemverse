@@ -1,4 +1,5 @@
 import Peer from 'peerjs';
+import audioManager from './audio-manager';
 
 peer = {
   calls: {},
@@ -102,7 +103,7 @@ peer = {
 
     if (!activeCallsCount) return;
 
-    sounds.play('webrtc-out.mp3', 0.2);
+    audioManager.play('webrtc-out.mp3', 0.2);
   },
 
   close(userId, timeout = 0, origin = null) {
@@ -152,7 +153,7 @@ peer = {
     const { shareAudio, shareScreen, shareVideo } = Meteor.user().profile;
 
     if (!this.calls[`${user._id}-${streamTypes.main}`] && !this.calls[`${user._id}-${streamTypes.screen}`]) {
-      sounds.play('webrtc-in.mp3', 0.2);
+      audioManager.play('webrtc-in.mp3', 0.2);
       notify(user, `Wants to talk to you`);
 
       if (!this.hasActiveStreams() && !this.discussionStartDate) {

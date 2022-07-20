@@ -1,3 +1,5 @@
+import audioManager from '../../../client/audio-manager';
+
 window.addEventListener('load', () => {
   registerModules(['textualCommunicationTools']);
   registerUserListModules(['userListMessageButton']);
@@ -33,8 +35,8 @@ const onNotificationReceived = async e => {
 
   const notificationInstance = await notify(Meteor.users.findOne(notification.createdBy), message);
   if (!notificationInstance) {
-    if (notification.type === 'quest-new') sounds.play('trumpet-fanfare.mp3', 0.25);
-    else sounds.play('text-sound.wav', 0.5);
+    if (notification.type === 'quest-new') audioManager.play('trumpet-fanfare.mp3', 0.25);
+    else audioManager.play('text-sound.wav', 0.5);
 
     return;
   }

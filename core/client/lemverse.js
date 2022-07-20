@@ -1,5 +1,6 @@
 import hotkeys from 'hotkeys-js';
 import Phaser from 'phaser';
+import audioManager from './audio-manager';
 
 scopes = {
   player: 'player',
@@ -92,7 +93,7 @@ Template.lemverse.onCreated(function () {
         }
 
         if (!notification.type) {
-          sounds.play('text-sound.wav', 0.5);
+          audioManager.play('text-sound.wav', 0.5);
           notify(Meteor.users.findOne(notification.createdBy), `📢 You have received a new message`);
         }
 

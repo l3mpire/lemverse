@@ -1,4 +1,4 @@
-sounds = {
+export default {
   enabled: true,
   folder: '/assets/sounds/',
   reactionsSounds: {
