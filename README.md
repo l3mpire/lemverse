@@ -385,6 +385,7 @@ Please note, that as stated in section `Deploy in production`, there is an addit
     "forbiddenIPs": [], // Banned IPs
 
     "defaultLevelId": "lvl_iLOVEaLOTlemverse", // Default level Id created at first run.
+    "defaultKickLevelId": "lvl_IamINlemverseJAIL", // Default level Id when kicking people from current level
 
     "respawnDelay": 540, // Spawn users to the level's spawn point after 9 hours. Remove this to disable the respawn
 

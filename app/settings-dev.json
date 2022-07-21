@@ -2,7 +2,7 @@
   "public": {
     "lp": {
       "product": "lemverse",
-      "website": "https://app.lemverse.com",
+      "website": "http://localhost:9000",
       "process": "main",
       "gods": [],
       "production": false,
@@ -157,6 +157,7 @@
   "forbiddenIPs": [],
 
   "defaultLevelId": "lvl_iLOVEaLOTlemverse",
+  "defaultKickLevelId": "lvl_IamINlemverseJAIL",
 
   "botUserId": "",
 
