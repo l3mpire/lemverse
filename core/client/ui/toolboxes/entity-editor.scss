@@ -1,0 +1,11 @@
+.entity-editor {
+  .entity-form-element {
+    display: flex;
+    align-items: center;
+    height: 35px;
+
+    label {
+      width: 80px;
+    }
+  }
+}
