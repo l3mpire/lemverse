@@ -1,0 +1,19 @@
+<template name="entityTemplateEntry">
+  <div class="thumbnail js-entity-entry">
+    <div class="thumbnail-content" style="{{thumbnail}}"></div>
+  </div>
+</template>
+
+<template name="entityTemplateList">
+  {{#modal title="Entities"}}
+  <div class="entity-template-list">
+    <ul class="list">
+      {{#each entities}}
+      <li class="js-entity-entry">
+        {{> entityTemplateEntry}}
+      </li>
+      {{/each}}
+    </ul>
+  </div>
+  {{/modal}}
+</template>

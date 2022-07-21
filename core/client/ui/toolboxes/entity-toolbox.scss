@@ -5,58 +5,10 @@
   color: white;
 
   .create-entity-from-file {
+    text-align: center;
+
     input[type="file"] {
       display: none;
-    }
-  }
-
-  .list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 70px);
-    gap: 10px;
-    overflow-x: scroll;
-    max-width: 100%;
-    list-style-type: none;
-    overflow: scroll;
-    max-height: 250px;
-    margin: 0;
-    margin-right: 200px;
-    padding: 0;
-
-    li.js-entity-entry {
-      padding: 5px;
-      height: 70px;
-      width: 70px;
-      background-color: $main-color;
-      border-radius: $radius;
-      color: $main-text-color;
-      flex-direction: column;
-      justify-content: center;
-      overflow: hidden;
-
-      &:hover {
-        cursor: pointer;
-        background-color: lighten($main-color, 10%);
-      }
-
-      .thumbnail {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 100%;
-
-        * {
-          image-rendering: pixelated;
-          background-position: center;
-          background-repeat: no-repeat;
-        }
-      }
-
-      .name {
-        text-align: center;
-        margin-bottom: auto;
-      }
     }
   }
 }
