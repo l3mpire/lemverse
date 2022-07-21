@@ -32,8 +32,8 @@ Template.editToolbox.onCreated(function () {
   });
   hotkeys('shift+1', { scope: scopes.editor }, () => Session.set('editorSelectedMenu', editorModes.tiles));
   hotkeys('shift+2', { scope: scopes.editor }, () => Session.set('editorSelectedMenu', editorModes.zones));
-  hotkeys('shift+3', { scope: scopes.editor }, () => Session.set('editorSelectedMenu', editorModes.level));
-  hotkeys('shift+4', { scope: scopes.editor }, () => Session.set('editorSelectedMenu', editorModes.entities));
+  hotkeys('shift+3', { scope: scopes.editor }, () => Session.set('editorSelectedMenu', editorModes.entities));
+  hotkeys('shift+4', { scope: scopes.editor }, () => Session.set('editorSelectedMenu', editorModes.level));
   hotkeys('shift+0', { scope: scopes.editor }, event => {
     if (event.repeat) return;
     levelManager.drawTriggers(!levelManager.teleporterGraphics.length);

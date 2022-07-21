@@ -2,9 +2,12 @@
 
 .entity-toolbox {
   padding: 10px;
+  color: white;
 
   .create-entity-from-file {
-    margin: 10px 0;
+    input[type="file"] {
+      display: none;
+    }
   }
 
   .list {

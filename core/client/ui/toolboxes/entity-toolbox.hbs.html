@@ -18,30 +18,30 @@
 </template>
 
 <template name="entityToolboxEntry">
-  <li class="js-entity-entry">
-    <div class="thumbnail">
-      <div class="thumbnail-content" style="{{thumbnail}}"></div>
-    </div>
-  </li>
+  <div class="thumbnail js-entity-entry">
+    <div class="thumbnail-content" style="{{thumbnail}}"></div>
+  </div>
 </template>
 
 <template name="entityToolbox">
   <div class="entity-toolbox">
     {{#if showEntityList}}
-      {{#if customEntityUploadAllowed}}
-        <div class="create-entity-from-file">
-          <label for="js-entity-sprite-upload" class="custom-file-upload">Create new entity</label>
-          <input id="js-entity-sprite-upload" class="js-entity-sprite-upload" type="file" accept="image/png, image/jpeg, image/gif">
-        </div>
-      {{/if}}
+    {{#if customEntityUploadAllowed}}
+    <div class="create-entity-from-file button">
+      <label for="js-entity-sprite-upload" class="custom-file-upload">Upload custom image</label>
+      <input id="js-entity-sprite-upload" class="js-entity-sprite-upload" type="file" accept="image/png, image/jpeg, image/gif">
+    </div>
+    {{/if}}
 
-      <ul class="list">
-        {{#each entities}}
-          {{> entityToolboxEntry}}
-        {{/each}}
-      </ul>
+    <ul class="list">
+      {{#each entities}}
+      <li class="js-entity-entry">
+        {{> entityToolboxEntry}}
+      </li>
+      {{/each}}
+    </ul>
     {{else}}
-      {{> entityEditor}}
+    {{> entityEditor}}
     {{/if}}
   </div>
 </template>
