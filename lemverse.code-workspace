@@ -12,7 +12,7 @@
     "editor.minimap.enabled": true,
     "editor.tabSize": 2,
     "search.exclude": {
-      "**/core/**": true,
+      "core/**": true,
       "**/.git": true,
       "**/.meteor": true,
       "**/node_modules": true,
