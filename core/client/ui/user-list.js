@@ -16,7 +16,7 @@ const users = (mode, guildId) => {
 };
 
 Template.userListEntry.helpers({
-  canKick() { return (Meteor.user().roles?.admin || this.user.guildId === userLevel(Meteor.userId()).guildId) && !this.roles?.admin  && Meteor.userId() != this.user._id},
+  canKick() { return (Meteor.user().roles?.admin || Meteor.user().guildId === userLevel(Meteor.userId()).guildId) && !this.user.roles?.admin && Meteor.userId() !== this.user._id; },
   admin() { return this.user.roles?.admin; },
   canEditLevel() { return isEditionAllowed(this.user._id); },
   guild() { return Guilds.findOne(this.user.guildId)?.name; },
@@ -35,8 +35,8 @@ Template.userListEntry.events({
     Meteor.call('kickUser', this.user._id, err => {
       if (err) { lp.notif.error(err); return; }
 
-      lp.notif.success("Successfully Kicked!");
-    }); 
+      lp.notif.success('Successfully Kicked!');
+    });
   },
   'click .js-profile'() { Session.set('modal', { template: 'userProfile', userId: this.user._id, append: true }); },
   'click .js-guild'() { Session.set('modal', { template: 'guild', guildId: this.user.guildId, append: true }); },
