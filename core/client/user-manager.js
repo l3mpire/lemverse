@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import audioManager from './audio-manager';
+import { createConfettiEffect } from './effects/particles';
 
 const userInterpolationInterval = 200;
 const defaultCharacterDirection = 'down';
@@ -596,6 +597,9 @@ userManager = {
 
   takeDamage(player) {
     this.flashColor(player, 0xFF0000);
+
+    const confettiEffect = createConfettiEffect(this.scene, player.x, player.y);
+    confettiEffect.emitters.list.forEach(emitter => emitter.explode());
   },
 
   clearTint(player) {
