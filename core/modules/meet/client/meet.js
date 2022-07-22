@@ -1,4 +1,5 @@
 // https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe
+import escapeStringRegexp from 'escape-string-regexp';
 
 let linkedZoneId;
 
@@ -134,7 +135,7 @@ meetHighLevel = {
       const userEmitter = Meteor.users.findOne({ 'profile.name': nick });
       if (!userEmitter) return;
 
-      userManager.onPeerDataReceived({ emitter: userEmitter._id, data: message, type: 'text' });
+      userManager.onPeerDataReceived({ emitter: userEmitter._id, data: this.convertActionToEmojis(message), type: 'text' });
     });
 
     this.show(true);
@@ -145,6 +146,49 @@ meetHighLevel = {
       const { setupScreenSharingRender } = window.electron.jitsiMeetElectronUtils;
       setupScreenSharingRender(meet.api);
     }
+  },
+
+  convertActionToEmojis(message) {
+    // Taken from:
+    // https://github.com/jitsi/jitsi-meet/blob/master/react/features/reactions/constants.ts#L113
+    // https://github.com/jitsi/jitsi-meet/blob/master/react/features/chat/smileys.js
+    const smileyToConvert = [
+      { jitsi: ':thumbs_up:', emoji: '👍' },
+      { jitsi: ':clap:', emoji: '👏' },
+      { jitsi: ':grinning_face:', emoji: '😀' },
+      { jitsi: ':face_with_open_mouth:', emoji: '😮' },
+      { jitsi: ':slightly_frowning_face:', emoji: '🙁' },
+      { jitsi: ':face_without_mouth:', emoji: '😶' },
+      { jitsi: ':)', emoji: '😃' },
+      { jitsi: ':(', emoji: '😦' },
+      { jitsi: ':D', emoji: '😄' },
+      { jitsi: ':+1:', emoji: '👍' },
+      { jitsi: ':P', emoji: '😛' },
+      { jitsi: ':wave:', emoji: '👋' },
+      { jitsi: ':blush:', emoji: '😊' },
+      { jitsi: ':slightly_smiling_face:', emoji: '🙂' },
+      { jitsi: ':scream:', emoji: '😱' },
+      { jitsi: ':*', emoji: '😙' },
+      { jitsi: ':-1:', emoji: '👎' },
+      { jitsi: ':mag:', emoji: '🔍' },
+      { jitsi: ':heart:', emoji: '❤️' },
+      { jitsi: ':innocent:', emoji: '😇' },
+      { jitsi: ':angry:', emoji: '😠' },
+      { jitsi: ':angel:', emoji: '👼' },
+      { jitsi: ';(', emoji: '😭' },
+      { jitsi: ':clap:', emoji: '👏' },
+      { jitsi: ';)', emoji: '😉' },
+      { jitsi: ':beer:', emoji: '🍺' },
+    ];
+
+    let convertedMessage = message;
+
+    smileyToConvert.forEach(smiley => {
+      const reg = new RegExp(escapeStringRegexp(smiley.jitsi), 'g');
+      convertedMessage = convertedMessage.replace(reg, smiley.emoji);
+    });
+
+    return convertedMessage;
   },
 
   close() {
