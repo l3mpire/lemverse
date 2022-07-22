@@ -28,6 +28,12 @@
   opacity: 0;
   pointer-events: none;
 
+  hr {
+    width: 94%;
+    margin: 0 auto 15px;
+    opacity: 0.9;
+  }
+
   .head {
     color: white;
     margin: 0 10px;
@@ -41,7 +47,7 @@
 
     .menus-shrink {
       position: absolute;
-      right: 7px;
+      right: 10px;
       top: 12px;
       transform: scale(0.8);
       cursor: pointer;
@@ -80,8 +86,7 @@
       flex-grow: 1;
       max-height: 40px;
       margin: 0;
-      background-color: #40435b;
-      filter: saturate(50%);
+      background-color: #1c1d21;
       border-radius: 0;
       padding: 5px;
       transition: all 0.25s;
@@ -91,11 +96,14 @@
       color: white;
       font-size: 0.85rem;
 
+      &:hover {
+        background-color: lighten(#1c1d21, 20%);
+      }
+
       &.active {
         cursor: default;
         pointer-events: none;
         background-color: $light-blue;
-        filter: saturate(70%);
 
         &:hover {
           filter: saturate(100%);

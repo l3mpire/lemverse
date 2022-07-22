@@ -30,8 +30,7 @@
       &.show {
         cursor: pointer;
         pointer-events: all;
-        background-color: lighten($main-color, 10%);
-        filter: saturate(70%);
+        background-color: #1c1d21;
 
         &:hover {
           filter: saturate(100%);
