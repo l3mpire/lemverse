@@ -1,5 +1,5 @@
 addToInventory = (user, inventoryItems) => {
-  log('addToInventory: start', { user, inventoryItems });
+  log('addToInventory: start', { userId: user._id, inventoryItems });
   if (!user) throw new Meteor.Error(404, 'User not found.');
 
   const userInventory = user.inventory || {};
@@ -8,6 +8,7 @@ addToInventory = (user, inventoryItems) => {
   });
 
   Meteor.users.update(user._id, { $set: { inventory: userInventory } });
+  log('addToInventory: end', { userId: user._id, inventoryItems: userInventory });
 };
 
 removeFromInventory = (user, inventoryItems) => {
