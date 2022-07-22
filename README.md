@@ -650,7 +650,6 @@ AGPLv3
 # Credits
 
 * [Meteor](https://www.meteor.com/)
-* [Meteor Up](http://meteor-up.com/)
 * [Phaser](https://phaser.io/)
 * [Material Design Icons](https://materialdesignicons.com/) for their icons
 * [Everybody who contribute on it](https://github.com/l3mpire/lemverse/graphs/contributors)!
