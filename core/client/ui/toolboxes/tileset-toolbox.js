@@ -13,6 +13,13 @@ const pointerToTile = () => {
   return Tiles.find({ x, y });
 };
 
+const pointerToTilesetData = (pointerX, pointerY) => {
+  const x = (pointerX / (16 * zoom)) | 0;
+  const y = (pointerY / (16 * zoom)) | 0;
+
+  return { index: (y * selectedTileset().width) / 16 + x, x, y };
+};
+
 //
 // tilesetImg
 //
@@ -83,6 +90,7 @@ Template.tilesetToolbox.onCreated(() => {
 
 Template.tilesetToolbox.onDestroyed(() => {
   unbindKeyboardShortcuts();
+  Session.set('selectedTilesetId', undefined);
 });
 
 Template.tileData.helpers({
@@ -106,9 +114,7 @@ Template.tilesetToolbox.events({
   'mousedown img'(event) {
     event.preventDefault();
     event.stopPropagation();
-    const x = (event.offsetX / (16 * zoom)) | 0;
-    const y = (event.offsetY / (16 * zoom)) | 0;
-    const index = y * selectedTileset().width / 16 + x;
+    const { index, x, y } = pointerToTilesetData(event.offsetX, event.offsetY);
     Session.set('selectedTiles', { tilesetId: selectedTileset()._id, index, x, y, w: 1, h: 1, down: true });
     return false;
   },
@@ -120,9 +126,7 @@ Template.tilesetToolbox.events({
     }
   },
   'mousemove img'(event) {
-    const x = (event.offsetX / (16 * zoom)) | 0;
-    const y = ((event.offsetY) / (16 * zoom)) | 0;
-    const index = y * selectedTileset().width / 16 + x;
+    const { index, x, y } = pointerToTilesetData(event.offsetX, event.offsetY);
     Session.set('pointerTileIndex', index);
 
     const selectedTiles = Session.get('selectedTiles');
