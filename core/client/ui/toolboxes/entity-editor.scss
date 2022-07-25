@@ -1,4 +1,10 @@
+@import "../../_variables";
+
 .entity-editor {
+  h2 {
+    margin: 0 0 10px;
+  }
+
   .entity-form-element {
     display: flex;
     align-items: center;
@@ -7,5 +13,14 @@
     label {
       width: 80px;
     }
+  }
+
+  button.secondary {
+    background-color: transparent;
+    text-decoration: underline;
+  }
+
+  button.red {
+    background-color: $light-red;
   }
 }

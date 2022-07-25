@@ -1,6 +1,5 @@
 <template name="entityEditor">
   <div class="entity-editor">
-    <button type="button" class="js-close-entity-editor">✖</button>
     <h2>{{entity.name}}</h2>
 
     <div class="entity-form-element">
@@ -13,6 +12,7 @@
       <input type="range" id="entity-scale" name="scale" min="-2" max="2" step="0.1" value="{{or entity.gameObject.scale 1}}">
     </div>
 
-    <button type="button" class="button js-entity-delete">Delete</button>
+    <button type="button" class="button red js-entity-delete">Delete</button>
+    <button type="button" class="button secondary js-close-entity-editor">Cancel</button>
   </div>
 </template>
