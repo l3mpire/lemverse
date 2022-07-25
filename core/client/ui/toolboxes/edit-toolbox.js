@@ -12,6 +12,7 @@ const sleep = () => {
 
   game?.scene.keys.EditorScene.scene.sleep();
   levelManager.drawTriggers(false);
+  Session.set('editorSelectedMenu', undefined);
 };
 
 Template.editToolbox.onCreated(function () {
