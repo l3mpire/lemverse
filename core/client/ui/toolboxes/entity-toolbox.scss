@@ -4,6 +4,27 @@
   padding: 10px;
   color: white;
 
+  hr {
+    margin: 10px;
+  }
+
+  .entity-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+
+    .entity {
+      display: block;
+      padding: 4px 10px;
+      font-size: 0.9rem;
+
+      &:hover {
+        background-color: #E5E9F0;
+        color: $main-color;
+      }
+    }
+  }
+
   .create-entity-from-file {
     text-align: center;
 
