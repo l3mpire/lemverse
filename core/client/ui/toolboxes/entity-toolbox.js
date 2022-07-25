@@ -3,7 +3,7 @@ const customEntityUploadAllowed = () => lp.isLemverseBeta('custom-sprite');
 Template.entityToolbox.helpers({
   showEntityList() { return !Session.get('selectedEntityId'); },
   customEntityUploadAllowed() { return customEntityUploadAllowed(); },
-  entities() { return Entities.find({ actionType: { $ne: entityActionType.pickable } }).fetch(); },
+  entities() { return Entities.find({ actionType: { $ne: entityActionType.pickable }, prefab: { $exists: false } }).fetch(); },
 });
 
 Template.entityToolbox.events({
