@@ -3,7 +3,7 @@
     {{#if showEntityList}}
     <ul class="entity-list">
       {{#each entities}}
-      <li class="js-open-entity-editor entity">{{name}}</li>
+      <li class="js-open-entity-editor entity">{{or name "No name"}}</li>
       {{/each}}
     </ul>
     {{#if customEntityUploadAllowed}}
