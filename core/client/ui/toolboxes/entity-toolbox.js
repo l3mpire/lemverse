@@ -20,28 +20,49 @@ const onDrag = function (_pointer, dragX, dragY) {
   this.setDepth(this.y);
 };
 
-const onDragEnd = function () { Entities.update(this.getData('id'), { $set: { x: this.x, y: this.y } }); };
-const onPointerDown = function () { Session.set('selectedEntityId', this.getData('id')); };
+const onDragEnd = function () { Entities.update(this.name, { $set: { x: this.x, y: this.y } }); };
+const onPointerDown = function () { Session.set('selectedEntityId', this.name); };
+
+const addEntityAnchor = (scene, container, entity) => {
+  const anchor = scene.add.sprite(entity.x, entity.y, 'circle')
+    .setName(entity._id)
+    .setData('actionType', entity.actionType)
+    .setData('linkedSprite', entityManager.entities[entity._id])
+    .setScale(0.2)
+    .setDepth(10000)
+    .setTint(0x02a3ff)
+    .setInteractive(entityInteractionConfiguration)
+    .on('pointerdown', onPointerDown)
+    .on('drag', onDrag)
+    .on('dragend', onDragEnd);
+
+  container.add(anchor);
+};
+
+const removeEntityAnchor = (container, entity) => {
+  const anchor = container.getByName(entity._id);
+  if (!anchor) return;
+
+  this.entitiesEditAnchors.remove(anchor, true);
+};
 
 Template.entityToolbox.onCreated(() => {
   const editorScene = game.scene.keys.EditorScene;
   this.entitiesEditAnchors = editorScene.add.container(0, 0);
 
-  fetchEntities().forEach(entity => {
-    const anchor = editorScene.add.sprite(entity.x, entity.y, 'circle')
-      .setData('id', entity._id)
-      .setData('actionType', entity.actionType)
-      .setData('linkedSprite', entityManager.entities[entity._id])
-      .setScale(0.2)
-      .setDepth(10000)
-      .setTint(0x02a3ff)
-      .setInteractive(entityInteractionConfiguration)
-      .on('pointerdown', onPointerDown)
-      .on('drag', onDrag)
-      .on('dragend', onDragEnd);
+  this.onEntityAdded = e => addEntityAnchor(editorScene, this.entitiesEditAnchors, e.detail.entity);
+  this.onEntityRemoved = e => removeEntityAnchor(this.entitiesEditAnchors, e.detail.entity);
+  window.addEventListener(eventTypes.onEntityAdded, this.onEntityAdded);
+  window.addEventListener(eventTypes.onEntityRemoved, this.onEntityRemoved);
 
-    this.entitiesEditAnchors.add(anchor);
-  });
+  // spawn anchors for existing entities
+  fetchEntities().forEach(entity => addEntityAnchor(editorScene, this.entitiesEditAnchors, entity));
+});
+
+Template.entityToolbox.onDestroyed(() => {
+  window.removeEventListener(eventTypes.onEntityAdded, this.onEntityAdded);
+  window.removeEventListener(eventTypes.onEntityRemoved, this.onEntityRemoved);
+  this.entitiesEditAnchors.removeAll(true);
 });
 
 Template.entityToolbox.helpers({
