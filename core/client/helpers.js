@@ -12,7 +12,9 @@ editorModes = Object.freeze({
 });
 
 eventTypes = Object.freeze({
+  onEntityAdded: 'onEntityAdded',
   onEntityUpdated: 'onEntityUpdated',
+  onEntityRemoved: 'onEntityRemoved',
   onMenuOptionSelected: 'onMenuOptionSelected',
   onMenuOptionUnselected: 'onMenuOptionUnselected',
   onNotificationClicked: 'onNotificationClicked',

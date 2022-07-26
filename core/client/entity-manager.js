@@ -62,6 +62,7 @@ entityManager = {
 
     entityInstance.destroy();
     delete this.entities[entity._id];
+    window.dispatchEvent(new CustomEvent(eventTypes.onEntityRemoved, { detail: { entity } }));
   },
 
   onDocumentUpdated(newEntity, oldEntity) {
@@ -286,6 +287,7 @@ entityManager = {
         }
 
         this.updateEntityFromState(entity, entity.state);
+        window.dispatchEvent(new CustomEvent(eventTypes.onEntityAdded, { detail: { entity, gameObject } }));
       });
 
       if (callback) callback();
