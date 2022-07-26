@@ -16,7 +16,7 @@ const users = (mode, guildId) => {
 };
 
 Template.userListEntry.helpers({
-  canKick() { return (Meteor.user().roles?.admin || Meteor.user().guildId === userLevel(Meteor.userId()).guildId) && !this.user.roles?.admin && Meteor.userId() !== this.user._id; },
+  canKick() { return (Meteor.user().roles?.admin || Meteor.user().guildId === userLevel(Meteor.userId()).guildId) && !this.user.roles?.admin && Meteor.userId() !== this.user._id && this.user.guildId !== Meteor.user().guildId; },
   admin() { return this.user.roles?.admin; },
   canEditLevel() { return isEditionAllowed(this.user._id); },
   guild() { return Guilds.findOne(this.user.guildId)?.name; },
