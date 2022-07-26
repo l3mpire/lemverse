@@ -281,7 +281,6 @@ EditorScene = new Phaser.Class({
   onEditorModeChanged(mode) {
     this.updateEditionMarker(Session.get('selectedTiles'));
     this.marker.setVisible(mode === editorModes.tiles);
-    entityManager.enableEdition(mode === editorModes.entities);
     this.mode = mode;
   },
 
@@ -302,6 +301,5 @@ EditorScene = new Phaser.Class({
     Session.set('selectedZonePoint', undefined);
     this.marker.setVisible(false);
     this.areaSelector.setVisible(false);
-    entityManager.enableEdition(false);
   },
 });

@@ -30,22 +30,6 @@ const entityTooltipConfig = {
   style: 'tooltip with-arrow fade-in',
 };
 
-const entityInteractionConfiguration = {
-  hitArea: new Phaser.Geom.Circle(0, 0, 20),
-  hitAreaCallback: Phaser.Geom.Circle.Contains,
-  cursor: 'pointer',
-  draggable: true,
-};
-
-const onDrag = function (pointer, dragX, dragY) {
-  this.x = dragX;
-  this.y = dragY;
-  this.setDepth(this.y);
-};
-
-const onDragEnd = function () { Entities.update(this.getData('id'), { $set: { x: this.x, y: this.y } }); };
-const onPointerDown = function () { Session.set('selectedEntityId', this.getData('id')); };
-
 const entityCreatedThreshold = 1000; // In ms
 const floatingDistance = 20;
 const itemAddedToInventoryText = 'Item added to your inventory';
@@ -262,10 +246,7 @@ entityManager = {
           .setData('id', entity._id)
           .setData('actionType', entity.actionType)
           .setDepth(entity.gameObject?.depth || entity.y)
-          .setScale(entity.gameObject?.scale || 1)
-          .on('pointerdown', onPointerDown)
-          .on('drag', onDrag)
-          .on('dragend', onDragEnd);
+          .setScale(entity.gameObject?.scale || 1);
 
         this.entities[entity._id] = gameObject;
 
@@ -306,9 +287,6 @@ entityManager = {
 
         this.updateEntityFromState(entity, entity.state);
       });
-
-      // ensures spawned entities are editable if the entity editor is open
-      if (Session.get('editor', 0) && Session.get('editorSelectedMenu') === editorModes.entities) this.enableEdition(true);
 
       if (callback) callback();
     });
@@ -355,14 +333,6 @@ entityManager = {
     const pickable = entity.actionType === entityActionType.pickable;
 
     return { x: 0, y: -(mainSprite.displayHeight + (pickable ? floatingDistance : 0)) };
-  },
-
-  enableEdition(value) {
-    let func;
-    if (value) func = key => this.entities[key].setInteractive(entityInteractionConfiguration);
-    else func = key => this.entities[key].disableInteractive();
-
-    Object.keys(this.entities).forEach(func);
   },
 
   entityRecentlyCreated(entity) {
