@@ -45,7 +45,7 @@ You can either launch it locally, on a server or join us at [lemverse.com](https
 In order to be able to create your own universe, you will need some tilesets.  
 We recommend using tileset of 16x16 pixels.
 
-To upload a new tileset, visit the url `http://localhost:9000/editor` or `http://lemverse.example.com/editor`.  
+To upload a new tileset, visit the url `http://localhost:3000/editor` or `http://lemverse.example.com/editor`.
 ℹ️  Only people with `admin` role can access this page.
 
 Here are the description of all parts:  
@@ -393,6 +393,10 @@ Please note, that as stated in section `Deploy in production`, there is an addit
       "from": "The lembot <contact@domain.com>"
     },
 
+    "meet": {
+      "enableAuth": false
+    },
+
     "peer": {
       "path": "/peer",
       "client": {
@@ -435,7 +439,7 @@ Please note, that as stated in section `Deploy in production`, there is an addit
           "authUrl": "https://auth.example.org/oauth/authorize",
           "accessTokenUrl": "https://auth.example.org/oauth/access_token",
           "identityUrl": "https://auth.example.org/oauth/userinfo",
-          "serverURL": "http://localhost:9000/",
+          "serverURL": "http://localhost:3000/",
           "responseType": "code",
           "loginStyle": "redirect",
           "scope": "openid",
@@ -494,12 +498,14 @@ Please note, that as stated in section `Deploy in production`, there is an addit
 
 Once you have cloned the repo:
 
-* Install [Meteor](https://docs.meteor.com/install.html)
-* Launch `./bin/init`
+* Install system dependencies:
+  * [Meteor](https://docs.meteor.com/install.html) (you will need to [install NodeJS](https://nodejs.org/en/download/) if you are using Windows)
+  * GraphicsMagick (most likely available in your package manager, e.g. `brew install graphicsmagick`)
 * Go to `./app/`
-* Launch `./bin/run` to run the app
+* Install JS dependencies: `meteor npm install`
+* Run the app: `meteor --settings settings-dev.json`
 
-The app should now be accessible at `http://localhost:9000`, and MongoDB at `mongodb://localhost:9001/meteor`.
+The app should now be accessible at `http://localhost:3000`, and MongoDB at `mongodb://localhost:3001/meteor`.
 
 ## LocalTunnel to debug with other computers
 
@@ -509,7 +515,7 @@ You will need to use a tunnel to expose you laptop over internet.
 We decided to use [localtunnel](https://github.com/localtunnel/localtunnel).  
 Once it's installed on an accessible server, setup env variable `LT_DOMAIN` without http(s) so just the domain.
 
-After that, simply launch `run-lt`.
+After that, simply launch `ROOT_URL=https://lemverse-$(whoami).${LT_DOMAIN} meteor --settings settings-dev.json`.
 
 Modify `createMyPeer` in `peer.js` to change the host to `lemverse-peer-USER-DOMAIN` while `USER`=`whoami` and `DOMAIN`=`LT_DOMAIN` env variable.
 

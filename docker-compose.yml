@@ -23,7 +23,7 @@ services:
         depends_on:
             - mongodb
         ports:
-            - '9001:9000' # Expose web port to see your change
+            - '3000:3000' # Expose web port to see your change
             - '7010:7010' # expose peer port
         volumes:
             - lemverse:/var/tmp/lemverse # Necessary volume for upload tileset and keep them between restart

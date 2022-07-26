@@ -163,6 +163,9 @@ services:
                     "email": {
                         "from": "The lembot <contact@m.lemverse.com>"
                     },
+                    "meet": {
+                        "enableAuth": false
+                    },
                     "peer": {
                         "path": "/peer",
                         "client": {

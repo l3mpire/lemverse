@@ -1,3 +1,0 @@
-#!/bin/bash
-
-meteor --settings settings-dev.json --port 9000

@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# Please have LT_DOMAIN env variable (see README.md for more explanation)
-
-WHO=`whoami`
-
-export ROOT_URL="https://lemverse-${WHO}.${LT_DOMAIN}"
-
-meteor --settings settings-dev.json --port 9000
