@@ -149,9 +149,13 @@ entityManager = {
       if (action === 'modal') Session.set('modal', { template: value, entity: this.previousNearestEntity });
     }
 
+    // todo: remove this to use previousNearestEntity
     Entities.find().fetch().forEach(entity => {
       if (entity.states && this.isEntityTriggered(entity, interactionPosition)) Meteor.call('useEntity', entity._id);
     });
+
+    // entity linked to another one
+    if (this.previousNearestEntity?.entityId) Meteor.call('useEntity', this.previousNearestEntity?.entityId);
   },
 
   allowedToUseEntity(user, entity) {
