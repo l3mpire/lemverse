@@ -72,8 +72,8 @@ entityManager = {
     const { gameObject } = newEntity;
     if (gameObject) {
       entityInstance
-        .setPosition(newEntity.x, newEntity.y)
         .setDepth(gameObject.depth || newEntity.y)
+        .setPosition(newEntity.x, newEntity.y)
         .setScale(gameObject.scale || 1, Math.abs(gameObject.scale || 1));
     }
 
@@ -310,7 +310,7 @@ entityManager = {
       frameRate: config.framerate || 16,
     });
 
-    if (animation.frames.length) sprite.play({ key: config.key, repeat: -1 });
+    if (animation.frames.length) sprite.play({ key: config.key, repeat: config.repeat ?? -1 });
 
     return sprite;
   },
