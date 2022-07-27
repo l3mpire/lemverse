@@ -324,6 +324,7 @@ entityManager = {
     if (config.assetId) sprite = this.scene.add.sprite(0, 0, config.assetId, config.key);
     else sprite = this.scene.add.sprite(0, 0, config.key);
     sprite.name = 'main-sprite';
+    sprite.setOrigin(0.5, 1);
 
     // animations
     if (!config.framerate) return sprite;
