@@ -96,11 +96,18 @@ entityManager = {
         const color = state.sprite.tint || 0xffffff;
         sprite.setTint(color, color, color, color);
 
+        // deprecated
         if (state.sprite.animation) {
           if (state.sprite.animation === 'pause') sprite.anims.pause();
           else sprite.anims.resume();
         }
       }
+    }
+
+    if (state.animation) {
+      const sprite = entityInstance.getByName('main-sprite');
+      const fullAnimationKey = `${entity.gameObject.sprite.key}-${state.animation}`;
+      sprite.play(fullAnimationKey);
     }
 
     if (state.text) {
@@ -258,10 +265,12 @@ entityManager = {
         if (!entity.gameObject) return;
 
         let mainSprite;
-        const { collide, sprite, text } = entity.gameObject;
+        const { collide, sprite, animations, text } = entity.gameObject;
         if (sprite) {
           mainSprite = this.spawnSpriteFromConfig(sprite);
           gameObject.add(mainSprite);
+
+          if (animations) this.createAnimationsFromConfig(sprite, animations);
         }
         if (text) gameObject.add(this.spawnTextFromConfig(text, entity.state));
         if (collide) this.scene.physics.world.enableBody(gameObject);
@@ -295,6 +304,17 @@ entityManager = {
       });
 
       if (callback) callback();
+    });
+  },
+
+  createAnimationsFromConfig(sprite, config) {
+    Object.entries(config).forEach(([key, animConfig]) => {
+      this.scene.anims.create({
+        key: `${sprite.key}-${key}`,
+        frames: this.scene.anims.generateFrameNames(sprite.key, { ...animConfig }),
+        frameRate: animConfig.framerate || 16,
+        repeat: animConfig.repeat,
+      });
     });
   },
 
