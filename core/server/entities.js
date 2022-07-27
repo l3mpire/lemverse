@@ -62,7 +62,16 @@ const spawnEntityFromFile = (fileId, options = {}) => {
 switchEntityState = (entity, forcedState = undefined) => {
   check(forcedState, Match.Maybe(String));
   log('switchEntityState: start', { entity, forcedState });
-  if (!entity || !entity.states) throw new Error(`Entity without states`);
+
+  if (!entity) throw new Meteor.Error(404, 'Entity not found');
+
+  // the entity is a trigger linked to another entity
+  if (entity.entityId) {
+    switchEntityState(Entities.findOne(entity.entityId));
+    return;
+  }
+
+  if (!entity.states) throw new Error(`Entity without states`);
 
   const toggledState = entity.state === 'on' ? 'off' : 'on';
   const newState = forcedState !== undefined ? forcedState : toggledState;
@@ -97,16 +106,40 @@ Meteor.methods({
     check(value, Match.OneOf(undefined, null, Number, String));
     check(entityId, Match.Id);
 
+    log('useEntity: start', { userId: this.userId, entityId, value });
+
     const entity = Entities.findOne(entityId);
     if (!entity) throw new Meteor.Error(404, 'Entity not found.');
 
-    if (!entity.actionType || entity.actionType === entityActionType.actionable) switchEntityState(entity, value);
-    else if (entity.actionType === entityActionType.pickable) {
+    if (entity.actionType === entityActionType.pickable) {
       pickEntityInventory(entity);
       Entities.remove(entity._id);
-    } else throw new Error('entity action not implemented');
+    } else if (entity.states) switchEntityState(entity, value);
+    else throw new Error('entity action not implemented');
+
+    log('useEntity: done', { userId: this.userId, entityId, value });
 
     return entity;
+  },
+  updateEntityTarget(entityId, targetEntityId) {
+    check(entityId, Match.Id);
+    check(targetEntityId, Match.OneOf(undefined, null, String));
+
+    log('updateEntityTarget: start', { userId: this.userId, entityId, targetEntityId });
+
+    const entity = Entities.findOne(entityId);
+    if (!entity) throw new Meteor.Error(404, 'Entity not found.');
+
+    if (!isEditionAllowed(this.userId)) throw new Meteor.Error('permission-error', `You can't edit this level`);
+
+    // unlink the target
+    if (!targetEntityId) Entities.update(entityId, { $unset: { entityId: 1 } });
+    else {
+      check(targetEntityId, Match.Id);
+      Entities.update(entityId, { $set: { entityId: targetEntityId } });
+    }
+
+    log('updateEntityTarget: done', { userId: this.userId, entityId, targetEntityId });
   },
   subscribedUsers(entityId) {
     check(entityId, Match.Id);
