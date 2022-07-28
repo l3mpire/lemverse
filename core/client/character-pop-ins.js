@@ -102,7 +102,7 @@ characterPopIns = {
     // parse urls
     if (options.parseURL) newText = formatURLs(text, true);
 
-    return `<p class="${options.classList}">${newText}</p>`;
+    return `<p class="${options.classList || ''}">${newText}</p>`;
   },
 
   setContent(popInIdentifier, content) {

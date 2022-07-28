@@ -23,6 +23,11 @@
     }
   }
 
+  button {
+    margin-top: 0;
+    transition: none; // disable transitions to avoid weird positions between phaser & the DOM
+  }
+
   &.fade-in {
     animation: fade-in 0.25s linear;
   }
