@@ -80,6 +80,7 @@ WorldScene = new Phaser.Class({
       this.nippleManager = nipplejs.create({
         mode: 'dynamic',
         catchDistance: 150,
+        dynamicPage: true,
       });
 
       this.nippleManager.on('added', (evt, nipple) => {
