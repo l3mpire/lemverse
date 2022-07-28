@@ -20,11 +20,6 @@ EditorScene = new Phaser.Class({
     this.redoTiles = [];
     this.mode = editorModes.tiles;
 
-    // Use the camera of the main scene to have overlapping coordinates
-    const worldSceneCamera = game.scene.keys.WorldScene.cameras.main;
-    this.cameras.remove(this.cameras.main);
-    this.cameras.addExisting(worldSceneCamera);
-
     this.marker = this.add.graphics();
     this.marker.setDefaultStyles({
       lineStyle: {
@@ -55,11 +50,13 @@ EditorScene = new Phaser.Class({
 
     this.keys = this.input.keyboard.addKeys({
       alt: Phaser.Input.Keyboard.KeyCodes.ALT,
+      shift: Phaser.Input.Keyboard.KeyCodes.SHIFT,
     }, false, false);
 
     this.events.on('wake', () => {
       Session.set('console', false);
       closeModal();
+      this.bindWorldSceneCamera();
       this.onEditorModeChanged(Session.get('editorSelectedMenu'));
     });
 
@@ -72,13 +69,24 @@ EditorScene = new Phaser.Class({
     this.scene.sleep();
   },
 
+  // We need to use the world scene camera to have the same camera transformation matrix
+  bindWorldSceneCamera() {
+    const worldSceneCamera = game.scene.keys.WorldScene.cameras.main;
+    this.cameras.addExisting(worldSceneCamera, true);
+
+    const camerasToDestroy = this.cameras.cameras.filter(camera => camera !== worldSceneCamera);
+    this.cameras.remove(camerasToDestroy, true);
+  },
+
   update() {
     if (!Session.get('editor')) return;
 
+    const shiftIsDown = this.keys.shift.isDown;
     const altIsDown = this.keys.alt.isDown;
-    const { WorldScene } = game.scene.keys;
+    const canvasClicked = this.input.manager.activePointer.downElement.nodeName === 'CANVAS';
     const { map } = levelManager;
-    const worldPoint = this.input.activePointer.positionToCamera(WorldScene.cameras.main);
+
+    const worldPoint = this.input.activePointer.positionToCamera(this.cameras.main);
     // Rounds down to nearest tile
     const pointerTileX = map.worldToTileX(worldPoint.x);
     const pointerTileY = map.worldToTileY(worldPoint.y);
@@ -87,7 +95,7 @@ EditorScene = new Phaser.Class({
 
     const zoneId = Session.get('selectedZoneId');
     if (this.mode === editorModes.zones) {
-      if (this.input.manager.activePointer.isDown && this.input.manager.activePointer.downElement.nodeName === 'CANVAS') this.isMouseDown = true;
+      if (this.input.manager.activePointer.isDown && canvasClicked) this.isMouseDown = true;
 
       if (this.isMouseDown && !this.input.manager.activePointer.isDown) {
         this.isMouseDown = false;
@@ -130,7 +138,7 @@ EditorScene = new Phaser.Class({
 
       let selectedTiles = Session.get('selectedTiles');
 
-      if (WorldScene.keys.shift.isDown && this.input.manager.activePointer.isDown && this.input.manager.activePointer.downElement.nodeName === 'CANVAS') {
+      if (shiftIsDown && this.input.manager.activePointer.isDown && canvasClicked) {
         let selectedTileGlobalIndex;
         for (let l = map.layers.length; l >= 0; l--) {
           selectedTileGlobalIndex = map.getTileAt(pointerTileX, pointerTileY, false, l)?.index;
@@ -152,7 +160,7 @@ EditorScene = new Phaser.Class({
 
           Session.set('selectedTiles', selectedTiles);
         }
-      } else if (this.input.manager.activePointer.isDown && this.input.manager.activePointer.downElement.nodeName === 'CANVAS') {
+      } else if (this.input.manager.activePointer.isDown && canvasClicked) {
         if (selectedTiles?.index === -99) {
           Tiles.find({ x: pointerTileX, y: pointerTileY }).forEach(tile => {
             this.undoTiles.push(tile);
