@@ -589,7 +589,7 @@ userManager = {
     if (!users || !users.length) return;
     this.scene.cameras.main.shake(250, 0.015, 0.02);
     audioManager.play('punch.mp3');
-    if (Math.random() > 0.95) audioManager.play('punch2.mp3');
+    if (Math.random() > 0.95) audioManager.play('punch2.mp3'); // NOSONAR
 
     users.forEach(user => this.takeDamage(this.players[user._id]));
     peer.sendData(users.map(user => user._id), { type: 'punch', emitter: Meteor.userId() });
@@ -676,7 +676,7 @@ userManager = {
 
       audioManager.play('punch.mp3');
       this.scene.cameras.main.shake(250, 0.015, 0.02);
-      if (Math.random() > 0.95) audioManager.play('punch2.mp3');
+      if (Math.random() > 0.95) audioManager.play('punch2.mp3'); // NOSONAR
 
       this.takeDamage(this.players[Meteor.user()._id]);
     } else if (data.type === 'followed') {
