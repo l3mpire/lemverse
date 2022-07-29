@@ -106,8 +106,10 @@ entityManager = {
 
     if (state.animation) {
       const sprite = entityInstance.getByName('main-sprite');
-      const fullAnimationKey = `${entity.gameObject.sprite.key}-${state.animation}`;
-      sprite.play(fullAnimationKey);
+      if (sprite) {
+        const fullAnimationKey = `${entity.gameObject.sprite.key}-${state.animation}`;
+        sprite.play(fullAnimationKey);
+      }
     }
 
     if (state.text) {
@@ -117,6 +119,10 @@ entityManager = {
         text.setTint(color, color, color, color);
         text.setText(state.text.text || entity.state);
       }
+    }
+
+    if (state.collider && entityInstance.body) {
+      entityInstance.body.enable = state.collider.enable ?? entityInstance.body.enable;
     }
 
     return true;
@@ -357,6 +363,7 @@ entityManager = {
     if (config.assetId) sprite = this.scene.add.sprite(0, 0, config.assetId, config.key);
     else sprite = this.scene.add.sprite(0, 0, config.key);
     sprite.name = 'main-sprite';
+    sprite.y = config.y || 0;
     sprite.setOrigin(0.5, 1);
 
     // animations
