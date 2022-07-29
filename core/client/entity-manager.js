@@ -175,6 +175,8 @@ entityManager = {
   postUpdate() {
     const { player, playerWasMoving } = userManager;
     if (player && playerWasMoving && !Meteor.user().profile.guest) this.handleNearestEntityTooltip(player);
+
+    Object.values(this.entities).forEach(entity => entity.setDepth(entity.y));
   },
 
   handleNearestEntityTooltip(position) {
@@ -265,15 +267,19 @@ entityManager = {
         if (!entity.gameObject) return;
 
         let mainSprite;
-        const { collide, sprite, animations, text } = entity.gameObject;
+        const { collider, sprite, animations, text } = entity.gameObject;
         if (sprite) {
           mainSprite = this.spawnSpriteFromConfig(sprite);
           gameObject.add(mainSprite);
 
           if (animations) this.createAnimationsFromConfig(sprite, animations);
         }
+
+        // configuration: https://rexrainbow.github.io/phaser3-rex-notes/docs/site/bitmaptext/
         if (text) gameObject.add(this.spawnTextFromConfig(text, entity.state));
-        if (collide) this.scene.physics.world.enableBody(gameObject);
+
+        // configuration: https://rexrainbow.github.io/phaser3-rex-notes/docs/site/arcade-body/
+        if (collider) this.spawnColliderFromConfig(gameObject, collider);
 
         // pickable/loots animations
         const pickable = entity.actionType === entityActionType.pickable;
@@ -316,6 +322,33 @@ entityManager = {
         repeat: animConfig.repeat,
       });
     });
+  },
+
+  spawnColliderFromConfig(gameObject, config) {
+    this.scene.physics.add.existing(gameObject);
+
+    const { body } = gameObject;
+    const { radius, width, height, offsetX, offsetY, immovable, bounce, dragX, dragY, damping, worldBounds, collideTilemap } = config;
+
+    if (radius) body.setCircle(radius);
+    else body.setSize(width || 1, height || 1);
+
+    body.setOffset(offsetX || 0, offsetY || 0);
+    body.immovable = immovable ?? true;
+    body.setBounce(bounce || 0.1);
+    body.setAllowDrag();
+    body.setDragX(dragX || 0.15);
+    body.setDragY(dragY || 0.15);
+    body.useDamping = damping ?? true;
+    body.collideWorldBounds = true;
+    body.allowGravity = worldBounds || false;
+    body.enable = true;
+
+    if (collideTilemap) {
+      levelManager.layers.forEach(layer => this.scene.physics.add.collider(gameObject, layer));
+    }
+
+    this.scene.physics.add.collider(userManager.player, gameObject);
   },
 
   spawnSpriteFromConfig(config) {
