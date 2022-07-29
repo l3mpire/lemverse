@@ -8,8 +8,10 @@ const defaultUserMediaColorError = '0xd21404';
 const characterPopInOffset = { x: 0, y: -90 };
 const characterSpritesOrigin = { x: 0.5, y: 1 };
 const characterInteractionDistance = { x: 32, y: 32 };
-const characterFootOffset = { x: -20, y: -10 };
-const characterColliderSize = { x: 38, y: 16 };
+const characterCollider = {
+  radius: 15,
+  offset: { x: -12, y: -20 },
+};
 const characterInteractionConfiguration = {
   hitArea: new Phaser.Geom.Circle(0, -13, 13),
   hitAreaCallback: Phaser.Geom.Circle.Contains,
@@ -48,7 +50,6 @@ userManager = {
   entityFollowed: undefined,
   inputVector: new Phaser.Math.Vector2(),
   player: undefined,
-  playerVelocity: new Phaser.Math.Vector2(),
   playerWasMoving: false,
   players: {},
   scene: undefined,
@@ -60,7 +61,6 @@ userManager = {
     this.entityFollowed = undefined;
     this.inputVector = new Phaser.Math.Vector2();
     this.player = undefined;
-    this.playerVelocity = new Phaser.Math.Vector2();
     this.players = {};
     this.scene = scene;
     this.userMediaStates = undefined;
@@ -332,10 +332,10 @@ userManager = {
     const level = Levels.findOne(user.profile.levelId);
     // enable collisions for the user only, each client has its own physics simulation and there isn't collision between characters
     this.scene.physics.world.enableBody(player);
-    player.body.setImmovable(true);
+    player.body.setImmovable(false);
     player.body.setCollideWorldBounds(true);
-    player.body.setSize(characterColliderSize.x, characterColliderSize.y);
-    player.body.setOffset(characterFootOffset.x, characterFootOffset.y);
+    player.body.setCircle(characterCollider.radius);
+    player.body.setOffset(characterCollider.offset.x, characterCollider.offset.y);
 
     // add character's physic body to layers
     levelManager.layers.forEach(layer => {
@@ -451,11 +451,11 @@ userManager = {
     const { keys, nippleMoving, nippleData } = this.scene;
     let speed = keys.shift.isDown ? Meteor.settings.public.character.runSpeed : Meteor.settings.public.character.walkSpeed;
 
-    this.playerVelocity.set(0, 0);
-    const inputPressed = this.handleUserInputs(keys, nippleMoving, nippleData);
+    this.player.body.setVelocity(0);
 
+    const inputPressed = this.handleUserInputs(keys, nippleMoving, nippleData);
     if (inputPressed) {
-      this.playerVelocity.set(this.inputVector.x, this.inputVector.y);
+      this.player.body.setVelocity(this.inputVector.x, this.inputVector.y);
       this.follow(undefined); // interrupts the follow action
       Session.set('menu', false);
     } else if (this.entityFollowed) {
@@ -466,15 +466,14 @@ userManager = {
       if (distance >= minimumDistance) {
         const { sensorNearDistance, runSpeed, walkSpeed } = Meteor.settings.public.character;
         speed = distance > sensorNearDistance ? runSpeed : walkSpeed;
-        this.playerVelocity.set(diff.x, diff.y);
+        this.player.body.setVelocity(diff.x, diff.y);
       }
     }
 
-    this.playerVelocity.normalize().scale(speed);
-    this.player.body.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
+    this.player.body.velocity.normalize().scale(speed);
     this.player.setDepth(this.player.y);
 
-    const direction = this.directionFromVector(this.playerVelocity);
+    const direction = this.directionFromVector(this.player.body.velocity);
     const running = keys.shift.isDown && direction;
     if (!peer.hasActiveStreams()) peer.enableSensor(!running);
 
@@ -526,7 +525,7 @@ userManager = {
 
     return {
       x: player.x + directionVector[0] * (distance || characterInteractionDistance.x),
-      y: player.y + characterFootOffset.y + directionVector[1] * (distance || characterInteractionDistance.y),
+      y: player.y + characterCollider.offset.y + directionVector[1] * (distance || characterInteractionDistance.y),
     };
   },
 
