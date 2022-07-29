@@ -158,7 +158,6 @@ WorldScene = new Phaser.Class({
   },
 
   sleep() {
-    entityManager.onSleep();
     userManager.onSleep();
   },
 

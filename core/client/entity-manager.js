@@ -10,7 +10,7 @@ const entityAnimations = {
       scaleY: { value: 1, duration: 300, ease: 'Bounce.easeOut' },
     });
   },
-  floating: (x, y) => ({
+  floating: (_x, y) => ({
     y: { value: y, duration: 1300, ease: 'Sine.easeIn', yoyo: true, repeat: -1 },
   }),
   picked: (x, y) => ({
@@ -49,8 +49,6 @@ entityManager = {
     this.entities = {};
     this.previousNearestEntity = undefined;
   },
-
-  onSleep() { },
 
   onDocumentAdded(entity) {
     this.spawnEntities([entity]);
@@ -95,12 +93,6 @@ entityManager = {
       if (sprite) {
         const color = state.sprite.tint || 0xffffff;
         sprite.setTint(color, color, color, color);
-
-        // deprecated
-        if (state.sprite.animation) {
-          if (state.sprite.animation === 'pause') sprite.anims.pause();
-          else sprite.anims.resume();
-        }
       }
     }
 
@@ -128,54 +120,57 @@ entityManager = {
     return true;
   },
 
-  onInteraction(tiles, interactionPosition) {
+  interactWithNearestEntity() {
     if (!this.previousNearestEntity || this.previousNearestEntity.actionType === entityActionType.none) return;
 
-    const user = Meteor.user();
-    if (user.profile.guest) return;
-    if (!this.allowedToUseEntity(user, this.previousNearestEntity)) {
-      lp.notif.error('You are not allowed to use this item.');
+    if (!this.allowedToUseEntity(this.previousNearestEntity)) {
+      lp.notif.error('Action not allowed.');
       return;
     }
 
     if (this.previousNearestEntity.actionType === entityActionType.pickable) {
-      const previousNearestEntityId = this.previousNearestEntity._id;
-      const animation = entityAnimations.picked(user.profile.x, user.profile.y - 30);
-      this.scene.tweens.add({
-        targets: this.entities[previousNearestEntityId],
-        ...animation,
-        onComplete: () => {
-          Meteor.call('useEntity', previousNearestEntityId, error => {
-            if (error) { lp.notif.error(itemAlreadyPickedText); return; }
-
-            lp.notif.success(itemAddedToInventoryText);
-            this.handleNearestEntityTooltip(userManager.player);
-          });
-        },
-      });
-
+      this.pickEntity(this.previousNearestEntity);
       return;
     }
 
     if (this.previousNearestEntity.action) {
       const [action, value] = this.previousNearestEntity.action.split(':');
       if (action === 'modal') Session.set('modal', { template: value, entity: this.previousNearestEntity });
+
+      return;
     }
 
-    // todo: remove this to use previousNearestEntity
-    Entities.find().fetch().forEach(entity => {
-      if (entity.states && this.isEntityTriggered(entity, interactionPosition)) Meteor.call('useEntity', entity._id);
-    });
-
     // entity linked to another one
-    if (this.previousNearestEntity?.entityId) Meteor.call('useEntity', this.previousNearestEntity?.entityId);
+    Meteor.call('useEntity', this.previousNearestEntity?.entityId || this.previousNearestEntity._id);
   },
 
-  allowedToUseEntity(user, entity) {
+  allowedToUseEntity(entity) {
+    const user = Meteor.user();
+    if (user.profile.guest) return false;
+
     if (!entity.requiredItems?.length) return true;
 
     const userItems = Object.keys(user.inventory || {});
     return entity.requiredItems.every(item => userItems.includes(item));
+  },
+
+  pickEntity(entity) {
+    const { _id } = entity;
+
+    const user = Meteor.user();
+    const animation = entityAnimations.picked(user.profile.x, user.profile.y - 30);
+    this.scene.tweens.add({
+      targets: this.entities[_id],
+      ...animation,
+      onComplete: () => {
+        Meteor.call('useEntity', _id, error => {
+          if (error) { lp.notif.error(itemAlreadyPickedText); return; }
+
+          lp.notif.success(itemAddedToInventoryText);
+          this.handleNearestEntityTooltip(userManager.player);
+        });
+      },
+    });
   },
 
   postUpdate() {
@@ -231,24 +226,65 @@ entityManager = {
     return (position.x - entity.x) ** 2 + (position.y - entity.y) ** 2;
   },
 
-  isEntityTriggered(entity, position) {
-    const area = entity.triggerArea;
-    if (!area) return false;
-
-    if (position.x < entity.x + area.x) return false;
-    if (position.x > entity.x + area.x + area.w) return false;
-    if (position.y < entity.y + area.y) return false;
-    if (position.y > entity.y + area.y + area.h) return false;
-
-    return true;
-  },
-
   tooltipTextFromActionType(actionType) {
     if (actionType === entityActionType.none || !actionType) return '';
     if (actionType === entityActionType.actionable) return 'Press the key <b>u</b> to use';
     if (actionType === entityActionType.pickable) return 'Press the key <b>u</b> to pick';
 
     throw new Error('entity action not implemented');
+  },
+
+  entityToGameObject(entity) {
+    const gameObject = this.scene.add.container(entity.x, entity.y)
+      .setData('id', entity._id)
+      .setData('actionType', entity.actionType)
+      .setDepth(entity.gameObject?.depth || entity.y)
+      .setScale(entity.gameObject?.scale || 1);
+
+    this.entities[entity._id] = gameObject;
+
+    if (!entity.gameObject) return undefined;
+
+    let mainSprite;
+    const { collider, sprite, animations, text } = entity.gameObject;
+    if (sprite) {
+      mainSprite = this.spawnSpriteFromConfig(sprite);
+      gameObject.add(mainSprite);
+
+      if (animations) this.createAnimationsFromConfig(sprite, animations);
+    }
+
+    // configuration: https://rexrainbow.github.io/phaser3-rex-notes/docs/site/bitmaptext/
+    if (text) gameObject.add(this.spawnTextFromConfig(text, entity.state));
+
+    // configuration: https://rexrainbow.github.io/phaser3-rex-notes/docs/site/arcade-body/
+    if (collider) this.spawnColliderFromConfig(gameObject, collider);
+
+    // pickable/loots animations
+    const pickable = entity.actionType === entityActionType.pickable;
+    if (pickable && mainSprite) {
+      const animation = entityAnimations.floating(0, -floatingDistance);
+      this.scene.tweens.add({
+        targets: mainSprite,
+        ...animation,
+        onUpdate: () => gameObject.setDepth(gameObject.y + floatingDistance),
+      });
+
+      const shadow = createFakeShadow(this.scene, 0, floatingDistance, 0.3, 0.15);
+      gameObject.add(shadow);
+
+      this.scene.tweens.add({
+        targets: shadow,
+        scaleX: { value: 0.25, duration: 1300, ease: 'Sine.easeIn', yoyo: true, repeat: -1 },
+        scaleY: { value: 0.1, duration: 1300, ease: 'Sine.easeIn', yoyo: true, repeat: -1 },
+      });
+
+      mainSprite.setOrigin(0.5, 1);
+    } else if (mainSprite && this.isEntityRecentlyCreated(entity)) {
+      entityAnimations.spawn(mainSprite, this.scene);
+    }
+
+    return gameObject;
   },
 
   spawnEntities(entities, callback) {
@@ -262,54 +298,7 @@ entityManager = {
         // the spawn being asynchronous, an entity may have disappeared before being created
         if (!Entities.findOne(entity._id)) return;
 
-        const gameObject = this.scene.add.container(entity.x, entity.y)
-          .setData('id', entity._id)
-          .setData('actionType', entity.actionType)
-          .setDepth(entity.gameObject?.depth || entity.y)
-          .setScale(entity.gameObject?.scale || 1);
-
-        this.entities[entity._id] = gameObject;
-
-        if (!entity.gameObject) return;
-
-        let mainSprite;
-        const { collider, sprite, animations, text } = entity.gameObject;
-        if (sprite) {
-          mainSprite = this.spawnSpriteFromConfig(sprite);
-          gameObject.add(mainSprite);
-
-          if (animations) this.createAnimationsFromConfig(sprite, animations);
-        }
-
-        // configuration: https://rexrainbow.github.io/phaser3-rex-notes/docs/site/bitmaptext/
-        if (text) gameObject.add(this.spawnTextFromConfig(text, entity.state));
-
-        // configuration: https://rexrainbow.github.io/phaser3-rex-notes/docs/site/arcade-body/
-        if (collider) this.spawnColliderFromConfig(gameObject, collider);
-
-        // pickable/loots animations
-        const pickable = entity.actionType === entityActionType.pickable;
-        if (pickable && mainSprite) {
-          const animation = entityAnimations.floating(0, -floatingDistance);
-          this.scene.tweens.add({
-            targets: mainSprite,
-            ...animation,
-            onUpdate: () => gameObject.setDepth(gameObject.y + floatingDistance),
-          });
-
-          const shadow = createFakeShadow(this.scene, 0, floatingDistance, 0.3, 0.15);
-          gameObject.add(shadow);
-
-          this.scene.tweens.add({
-            targets: shadow,
-            scaleX: { value: 0.25, duration: 1300, ease: 'Sine.easeIn', yoyo: true, repeat: -1 },
-            scaleY: { value: 0.1, duration: 1300, ease: 'Sine.easeIn', yoyo: true, repeat: -1 },
-          });
-
-          mainSprite.setOrigin(0.5, 1);
-        } else if (mainSprite && this.entityRecentlyCreated(entity)) {
-          entityAnimations.spawn(mainSprite, this.scene);
-        }
+        const gameObject = this.entityToGameObject(entity);
 
         this.updateEntityFromState(entity, entity.state);
         window.dispatchEvent(new CustomEvent(eventTypes.onEntityAdded, { detail: { entity, gameObject } }));
@@ -402,7 +391,7 @@ entityManager = {
     return { x: 0, y: -(mainSprite.displayHeight + (pickable ? floatingDistance : 0)) };
   },
 
-  entityRecentlyCreated(entity) {
+  isEntityRecentlyCreated(entity) {
     return Date.now() - entity.createdAt.getTime() <= entityCreatedThreshold;
   },
 };

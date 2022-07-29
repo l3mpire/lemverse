@@ -498,9 +498,7 @@ userManager = {
   },
 
   interact() {
-    const tiles = this.getTilesInFrontOfPlayer(this.player, [4, 0]);
-    const positionInFrontOfPlayer = this.getPositionInFrontOfPlayer(this.player);
-    entityManager.onInteraction(tiles, positionInFrontOfPlayer);
+    entityManager.interactWithNearestEntity();
   },
 
   getTilesUnderPlayer(player, layers = []) {
