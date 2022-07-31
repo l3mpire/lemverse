@@ -323,13 +323,13 @@ entityManager = {
     this.scene.physics.add.existing(gameObject);
 
     const { body } = gameObject;
-    const { radius, width, height, offsetX, offsetY, immovable, bounce, dragX, dragY, damping, worldBounds, collideTilemap } = config;
+    const { radius, width, height, x, y, immovable, bounce, dragX, dragY, damping, worldBounds, collideTilemap } = config;
 
     if (radius) body.setCircle(radius);
     else body.setSize(width || 1, height || 1);
 
-    body.setOffset(offsetX || 0, offsetY || 0);
     body.immovable = immovable ?? true;
+    body.setOffset(x || 0, y || 0);
     body.setBounce(bounce || 0.1);
     body.setAllowDrag();
     body.setDragX(dragX || 0.15);
