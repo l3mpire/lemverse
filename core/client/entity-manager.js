@@ -45,7 +45,6 @@ entityManager = {
   },
 
   destroy() {
-    this.onSleep();
     this.entities = {};
     this.previousNearestEntity = undefined;
   },
