@@ -6,8 +6,8 @@
   height: 100%;
 
   .list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 70px);
+    display: flex;
+    flex-direction: column;
     gap: 10px;
     overflow-x: scroll;
     max-width: 100%;
@@ -18,26 +18,29 @@
 
     li.js-entity-entry {
       padding: 5px;
-      height: 70px;
-      width: 70px;
-      background-color: $main-color;
+      height: 45px;
+      width: 100%;
       border-radius: $radius;
       color: $main-text-color;
-      flex-direction: column;
-      justify-content: center;
-      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 15px;
 
       &:hover {
         cursor: pointer;
         background-color: lighten($main-color, 10%);
+
+        .thumbnail {
+          background-color: transparent;
+        }
       }
 
       .thumbnail {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 100%;
+        height: 45px;
+        width: 45px;
+        background-color: $main-color;
+        padding: 10px;
 
         * {
           image-rendering: pixelated;
