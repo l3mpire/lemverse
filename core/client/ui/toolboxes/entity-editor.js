@@ -30,6 +30,9 @@ Template.entityEditor.events({
   'change #js-entity-target'(event) {
     Meteor.call('updateEntityTarget', Session.get('selectedEntityId'), event.target.value);
   },
+  'blur .js-edit-entity-name'(event) {
+    Entities.update(Session.get('selectedEntityId'), { $set: { name: event.currentTarget.value } });
+  },
 });
 
 Template.entityEditor.helpers({

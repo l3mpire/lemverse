@@ -1,7 +1,12 @@
 @import "../../_variables";
 
 .entity-editor {
-  h2 {
+  .js-edit-entity-name {
+    font-size: 1.2rem;
+    background: transparent;
+    padding: 0;
+    color: white;
+    font-weight: bold;
     margin: 0 0 10px;
   }
 
