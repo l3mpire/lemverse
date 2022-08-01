@@ -84,11 +84,10 @@ Meteor.methods({
     check([email, name, password], [String]);
     check(source, Match.OneOf('self', 'invite'));
 
-    const user = Meteor.user();
-    completeUserProfile(user, email, name);
+    completeUserProfile(Meteor.user(), email, name);
     Accounts.setPassword(this.userId, password, { logout: false });
 
-    analytics.createUser(user);
+    analytics.createUser(Meteor.user());
     analytics.track(this.userId, '🐣 Sign Up', { source });
   },
   teleportUserInLevel(levelId) {
