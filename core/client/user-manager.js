@@ -10,7 +10,7 @@ const characterSpritesOrigin = { x: 0.5, y: 1 };
 const characterInteractionDistance = { x: 32, y: 32 };
 const characterCollider = {
   radius: 15,
-  offset: { x: -12, y: -20 },
+  offset: { x: -12, y: -30 },
 };
 const characterInteractionConfiguration = {
   hitArea: new Phaser.Geom.Circle(0, -13, 13),
