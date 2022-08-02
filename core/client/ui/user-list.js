@@ -82,8 +82,8 @@ Template.userList.helpers({
       });
   },
   title() {
-    const userOnlineCount = users(tabs.level).count();
-    return `Users (${userOnlineCount} online)`;
+    const activeTab = Template.instance().activeTab.get();
+    return activeTab === tabs.level ? `Users online` : 'Team';
   },
   activeTab(name) { return Template.instance().activeTab.get() === name; },
   canEditGuild() {
