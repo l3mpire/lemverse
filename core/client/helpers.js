@@ -39,11 +39,28 @@ eventTypes = Object.freeze({
 
 toggleUserProperty = (propertyName, value) => {
   const user = Meteor.user();
+  const toggleMicOn = value || (value === undefined && !user.profile.shareAudio);
+  const toggleCamOn = value || (value === undefined && !user.profile.shareVideo);
 
-  // the user must not be able to deactivate his microphone in the unmute zones
-  if (propertyName === 'shareAudio' && (value || (value === undefined && !user.profile.shareAudio))) {
-    if (meet.api && !zones.currentZone()?.unmute) {
-      lp.notif.warning(`Your microphone is only accessible on stage`);
+  if (toggleMicOn || toggleCamOn) {
+    const zone = zones.currentZone();
+
+    // disable medias switch in meeting
+    if (zone && meet.api) {
+      if (propertyName === 'shareAudio' && !zone.unmute) {
+        lp.notif.warning(`Your microphone is only accessible on stage `);
+        return;
+      }
+
+      if (propertyName === 'shareVideo' && !zone.unhide) {
+        lp.notif.warning(`Your camera is only accessible on stage `);
+        return;
+      }
+    }
+
+    // disable medias switch in focus zones
+    if (zone?.disableCommunications) {
+      lp.notif.warning(`You can't activate your camera and microphone in a focus zone`);
       return;
     }
   }
