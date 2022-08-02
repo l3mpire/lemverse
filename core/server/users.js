@@ -2,16 +2,6 @@ import { completeUserProfile } from '../lib/misc';
 
 const mainFields = { options: 1, profile: 1, roles: 1, status: { online: 1 }, beta: 1, guildId: 1 };
 
-isolateUser = userId => {
-  check(userId, Match.Id);
-  if (!isEditionAllowed(Meteor.userId())) throw new Meteor.Error('missing-permissions', `You don't have the permissions`);
-
-  const { levelId } = Meteor.user().profile;
-  const { isolationPosition } = Levels.findOne(levelId);
-  if (!isolationPosition) throw new Meteor.Error('missing-isolation-position', 'isolationPosition not set on the level');
-  Meteor.users.update(userId, { $set: { 'profile.x': +isolationPosition.x, 'profile.y': +isolationPosition.y } });
-};
-
 Meteor.publish('users', function (levelId) {
   check(levelId, Match.Maybe(Match.Id));
   if (!this.userId) return undefined;

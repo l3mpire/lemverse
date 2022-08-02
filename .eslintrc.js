@@ -106,7 +106,6 @@ module.exports = {
     openConsole: 'writable',
     closeConsole: 'writable',
     createQuestDraft: 'writable',
-    isolateUser: 'writable',
     fileOnBeforeUpload: 'writable',
 
     analytics: 'writable',
