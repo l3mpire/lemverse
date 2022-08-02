@@ -1,10 +1,12 @@
 <template name="guild">
-  {{#modal title=title}}
+  {{#modal title="Team"}}
     <div class="guild">
       <div class="content container">
-        {{#if logo}}<div class="logo"><img src="{{logo}}" alt="logo"></div>{{/if}}
-        <p>{{description}}</p>
-        {{#if website}}<a href="{{website}}" class="link" target="_blank" rel="noopener">Website</a>{{/if}}
+        {{#if guild}}
+          {{#if guild.logo}}<div class="logo"><img src="{{guild.logo}}" alt="logo"></div>{{/if}}
+          <p>{{guild.description}}</p>
+          {{#if guild.website}}<a href="{{guild.website}}" class="link" target="_blank" rel="noopener">Website</a>{{/if}}
+        {{/if}}
       </div>
     </div>
   {{/modal}}

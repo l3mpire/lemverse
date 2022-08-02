@@ -1,3 +1,5 @@
+import { isLevelOwner } from '../../lib/misc';
+
 const listMode = 'list';
 
 const levelQueryFilters = ignoredLevelId => ({
@@ -56,7 +58,7 @@ Template.levels.events({
 });
 
 Template.levels.helpers({
-  isLevelOwner(level) { return Meteor.userId() === level.createdBy; },
+  isLevelOwner(level) { return isLevelOwner(Meteor.user(), level); },
   levels() {
     const currentLevelId = Meteor.user()?.profile.levelId;
     const levels = Levels.find(levelQueryFilters(currentLevelId), { sort: { visit: -1 } }).fetch();

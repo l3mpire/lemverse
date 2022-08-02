@@ -4,7 +4,7 @@
       <span class="js-profile">{{user.profile.name}}</span>
     </div>
     <div class="guild">
-      {{#if guild}}<span class="js-guild">{{guild}}</span>{{else}}<span>-</span>{{/if}}
+      <span class="js-guild">{{or guildName "-"}}</span>
     </div>
     <div class="zone">
       <span>{{zone}}</span>
@@ -26,7 +26,7 @@
           <span class="js-toggle-edition denied" title="Click to allow edition">🔨</span>
         {{/if}}
       {{/if}}
-      {{#if canKick}}
+      {{#if canModerateUser}}
         <span class="js-kick-user" title="Click to kick">🦵</span>
       {{/if}}
     </div>
@@ -43,7 +43,7 @@
       <ul class="users">
         {{#each user in users}}
           <li class="user">
-            {{> userListEntry user=user canEditPermissions=canEditPermissions}}
+            {{> userListEntry user=user level=level canEditPermissions=canEditPermissions canModerateLevel=canModerateLevel}}
           </li>
         {{/each}}
       </ul>

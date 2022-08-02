@@ -40,28 +40,6 @@ levelSpawnPosition = levelId => {
   return { x: Number.isNaN(x) ? defaultSpawnPosition.x : x, y: Number.isNaN(y) ? defaultSpawnPosition.y : y };
 };
 
-isLevelOwner = userId => {
-  const level = userLevel(userId);
-  if (!level) return false;
-
-  return level.createdBy === userId;
-};
-
-canEditGuild = (userId, guildId) => {
-  check([userId, guildId], [Match.Id]);
-
-  const user = Meteor.users.findOne(userId);
-  if (!user) return false;
-
-  const guild = Guilds.findOne(guildId);
-  if (!guild) return false;
-
-  if (user.roles?.admin) return true;
-  if (!user.guildId) return false;
-
-  return user.guildId === guildId && guild.owners?.includes(userId);
-};
-
 canAccessZone = (zoneId, userId) => {
   check([zoneId, userId], [Match.Id]);
 
@@ -236,4 +214,52 @@ fileOnBeforeUpload = (file, mime) => {
   }
 
   return 'Source of upload not set';
+};
+
+const isLevelOwner = (user, level) => {
+  check([user._id, level.createdBy], [Match.Id]);
+  return level.createdBy === user._id;
+};
+
+const canEditGuild = (user, guild) => {
+  check([user._id, guild._id], [Match.Id]);
+
+  if (user.roles?.admin) return true;
+  if (!user.guildId) return false;
+  if (guild.createdBy === user._id) return true;
+
+  return user.guildId === guild._id && guild.owners?.includes(user._id) === true;
+};
+
+const canEditUserPermissions = (user, level) => {
+  check([user._id, level._id], [Match.Id]);
+  return user.roles?.admin || isLevelOwner(user, level);
+};
+
+const canModerateLevel = (level, user) => {
+  check([user._id, level._id], [Match.Id]);
+  return user.roles?.admin || user.guildId === level.guildId;
+};
+
+const canModerateUser = (user, otherUser) => {
+  check([user._id, otherUser._id], [Match.Id]);
+
+  if (user._id === otherUser._id) return false;
+  if (user.roles?.admin || otherUser.roles?.admin) return false;
+
+  return user.guildId !== otherUser.guildId;
+};
+
+const currentLevel = user => {
+  check(user._id, Match.Id);
+  return Levels.findOne(user.profile.levelId);
+};
+
+export {
+  canEditGuild,
+  canEditUserPermissions,
+  canModerateLevel,
+  canModerateUser,
+  currentLevel,
+  isLevelOwner,
 };

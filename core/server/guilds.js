@@ -1,6 +1,5 @@
 const guilds = guildIds => {
   check(guildIds, [Match.Id]);
-
   return Guilds.find({ _id: { $in: guildIds } });
 };
 
@@ -32,6 +31,6 @@ Meteor.methods({
     if (!this.userId) throw new Meteor.Error('not-authorized', 'User not allowed');
     check(guildIds, [Match.Id]);
 
-    return guilds(guildIds);
+    return guilds(guildIds).fetch();
   },
 });
