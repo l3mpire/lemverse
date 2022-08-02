@@ -1,7 +1,14 @@
-// For the moment we return all the guilds, later we will have to publish only those useful to the user
-Meteor.publish('guilds', function () {
+const guilds = guildIds => {
+  check(guildIds, [Match.Id]);
+
+  return Guilds.find({ _id: { $in: guildIds } });
+};
+
+Meteor.publish('guilds', function (guildIds) {
   if (!this.userId) return undefined;
-  return Guilds.find();
+  check(guildIds, [Match.Id]);
+
+  return guilds(guildIds);
 });
 
 Meteor.methods({
@@ -22,9 +29,9 @@ Meteor.methods({
     log('addGuildUsers: done');
   },
   guilds(guildIds) {
-    check(guildIds, [Match.Id]);
     if (!this.userId) throw new Meteor.Error('not-authorized', 'User not allowed');
+    check(guildIds, [Match.Id]);
 
-    return Guilds.find({ _id: { $in: guildIds } }).fetch();
+    return guilds(guildIds);
   },
 });

@@ -46,7 +46,9 @@ Template.userList.onCreated(function () {
   const user = Meteor.user();
   this.activeTab = new ReactiveVar(localStorage.getItem(userListTabKey) || (user.guildId ? tabs.guild : tabs.level));
   this.hasLevelRights = user.roles?.admin || isLevelOwner(user._id);
-  this.subscribe('guilds');
+
+  const guildIds = Meteor.users.find().map(u => u.guildId).filter(Boolean);
+  this.subscribe('guilds', [...new Set(guildIds)]);
 });
 
 Template.userList.onDestroyed(function () {

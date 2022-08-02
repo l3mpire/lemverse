@@ -1,5 +1,4 @@
 <template name="userListEntry">
-  <li class="user">
     <div class="main">
       {{> avatarViewer user=user showStatus=true}}
       <span class="js-profile">{{user.profile.name}}</span>
@@ -31,7 +30,6 @@
         <span class="js-kick-user" title="Click to kick">🦵</span>
       {{/if}}
     </div>
-  </li>
 </template>
 
 <template name="userList">
@@ -44,7 +42,9 @@
 
       <ul class="users">
         {{#each user in users}}
-          {{> userListEntry user=user canEditPermissions=canEditPermissions}}
+          <li class="user">
+            {{> userListEntry user=user canEditPermissions=canEditPermissions}}
+          </li>
         {{/each}}
       </ul>
 
