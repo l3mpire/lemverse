@@ -1,3 +1,5 @@
+import { canEditGuild } from '../lib/misc';
+
 const guilds = guildIds => {
   check(guildIds, [Match.Id]);
   return Guilds.find({ _id: { $in: guildIds } });
