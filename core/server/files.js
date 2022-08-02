@@ -1,6 +1,7 @@
 import FileType from 'file-type';
 import '../collections';
 import gm from 'gm';
+import { fileOnBeforeUpload } from '../lib/misc';
 
 const filesAfterUploadEditorTileset = (user, fileRef) => {
   log('filesAfterUploadEditorTileset: start', { userId: user._id, fileRef });

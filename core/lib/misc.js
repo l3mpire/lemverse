@@ -119,7 +119,7 @@ subscribedUsersToEntity = entityId => {
   ).fetch();
 };
 
-fileOnBeforeUpload = (file, mime) => {
+const fileOnBeforeUpload = (file, mime) => {
   const { meta, size } = file;
 
   if (size > 5000000) return `File too big (> 5MB)`;
@@ -262,6 +262,7 @@ export {
   canModerateUser,
   completeUserProfile,
   currentLevel,
+  fileOnBeforeUpload,
   generateRandomCharacterSkin,
   isLevelOwner,
 };

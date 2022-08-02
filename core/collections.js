@@ -1,3 +1,5 @@
+import { fileOnBeforeUpload } from './lib/misc';
+
 // Meteor Collections
 
 Assets = lp.collectionRegister('assets', 'ast', [], {
@@ -54,6 +56,5 @@ Files = new FilesCollection({
   downloadRoute: Meteor.settings.public.files.route,
   public: true,
   allowClientCode: false,
-  // debug: true,
   onBeforeUpload(file) { return fileOnBeforeUpload(file, file.mime); },
 });
