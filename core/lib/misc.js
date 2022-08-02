@@ -104,14 +104,9 @@ const currentLevel = user => {
   return Levels.findOne(user.profile.levelId);
 };
 
-canAccessZone = (zoneId, userId) => {
-  check([zoneId, userId], [Match.Id]);
+const canAccessZone = (zone, user) => {
+  check([zone._id, user._id], [Match.Id]);
 
-  const zone = Zones.findOne(zoneId);
-  if (!zone) throw new Meteor.Error('not-found', 'Zone not found');
-
-  const user = Meteor.users.findOne(userId);
-  if (!user) throw new Meteor.Error('not-found', 'User not found');
   if (user.roles?.admin) return true;
 
   // make sure that all the necessary items are in the user's inventory
@@ -245,6 +240,7 @@ const teleportUserInLevel = (user, level, source = 'teleporter') => {
 };
 
 export {
+  canAccessZone,
   canEditGuild,
   canEditUserPermissions,
   canModerateLevel,

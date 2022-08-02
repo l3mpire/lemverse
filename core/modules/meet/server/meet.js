@@ -1,22 +1,18 @@
 import * as jwt from 'jsonwebtoken';
 
+import { canAccessZone } from '../../../lib/misc';
+
 const { randomUUID } = require('crypto');
 
-const computeRoomName = (zoneId, userId) => {
-  check(zoneId, Match.Id);
+const computeRoomName = zone => {
+  check(zone._id, Match.Id);
 
-  log('computeRoomName: start', { zoneId, userId });
+  log('computeRoomName: start', { zoneId: zone._id });
 
-  if (!canAccessZone(zoneId, userId)) {
-    log('computeRoomName: user not allowed');
-    throw new Meteor.Error('not-allowed', 'User not allowed in the zone');
-  }
-
-  const zone = Zones.findOne(zoneId);
   let { uuid } = zone;
   if (!uuid) {
     uuid = randomUUID();
-    Zones.update(zoneId, { $set: { uuid } });
+    Zones.update(zone._id, { $set: { uuid } });
   }
 
   log('computeRoomName: end', { uuid });
@@ -41,6 +37,11 @@ Meteor.methods({
     const user = Meteor.user();
     if (user.profile.levelId !== level._id) throw new Meteor.Error('invalid-action', 'Access from another level deny');
 
+    if (!canAccessZone(zone, user)) {
+      log('computeMeetRoomAccess: user not allowed');
+      throw new Meteor.Error('not-allowed', 'User not allowed in the zone');
+    }
+
     const moderator = user.roles?.admin || level.guildId === user.guildId;
     let group = 'guest';
     if (user.roles?.admin) group = 'admin';
@@ -48,8 +49,7 @@ Meteor.methods({
 
     const { enableAuth, encryptionPassphrase, expiresIn, identifier } = Meteor.settings.meet;
     const { serverURL } = Meteor.settings.public.meet;
-
-    const roomName = computeRoomName(zoneId, this.userId);
+    const roomName = computeRoomName(zone);
     let token;
 
     if (enableAuth) {

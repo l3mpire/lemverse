@@ -94,7 +94,6 @@ module.exports = {
     isEditionAllowed: 'writable',
     isLevelOwner: 'writable',
     canAccessQuest: 'writable',
-    canAccessZone: 'writable',
     canEditGuild: 'writable',
     remote: 'writable',
     _: 'readable',

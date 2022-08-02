@@ -1,3 +1,5 @@
+import { canAccessZone } from '../lib/misc';
+
 const iframeAllowAttributeSettings = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
 
 const getZoneCenter = zone => [(zone.x1 + zone.x2) * 0.5, (zone.y1 + zone.y2) * 0.5];
@@ -209,7 +211,7 @@ zones = {
     if (!zone) return true;
 
     try {
-      if (!canAccessZone(zone._id, Meteor.userId())) throw new Error('access-denied');
+      if (!canAccessZone(zone, Meteor.user())) throw new Error('access-denied');
     } catch (err) {
       this.activeZone = undefined;
       return false;
