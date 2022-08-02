@@ -1,10 +1,12 @@
+import { currentLevel } from '../../lib/misc';
+
 const zoneMessagingAllowed = (zoneId, userId) => {
   if (!canAccessZone(zoneId, userId)) return false;
 
   const zone = Zones.findOne(zoneId);
   if (!zone.messagingRestrictedToGuild) return true;
 
-  const level = userLevel(userId);
+  const level = currentLevel(Meteor.users.findOne(userId));
   if (!level) throw new Meteor.Error('not-found', 'Level not found');
   if (!level.guildId) throw new Meteor.Error('configuration-missing', 'Guild not linked to the level. You must link a guild to the level or remove the "messagingRestrictedToGuild" attribute');
 

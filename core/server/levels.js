@@ -1,3 +1,5 @@
+import { currentLevel } from '../lib/misc';
+
 const defaultSpawnPosition = { x: 200, y: 200 };
 
 createLevel = options => {
@@ -150,7 +152,7 @@ Meteor.methods({
     check(position, { x: Number, y: Number });
     check(hide, Boolean);
 
-    const level = userLevel(this.userId);
+    const level = currentLevel(Meteor.user());
     if (!level || level.sandbox) throw new Meteor.Error('invalid-level', 'A valid level is required');
     if (!isEditionAllowed(this.userId)) throw new Meteor.Error('permission-error', `You can't edit this level`);
 

@@ -23,41 +23,6 @@ nearestDuration = duration => {
   return message.join(':');
 };
 
-userLevel = userId => {
-  const user = Meteor.users.findOne(userId);
-  if (!user) throw new Meteor.Error('not-found', 'User not found');
-
-  return Levels.findOne(user.profile.levelId);
-};
-
-canAccessZone = (zoneId, userId) => {
-  check([zoneId, userId], [Match.Id]);
-
-  const zone = Zones.findOne(zoneId);
-  if (!zone) throw new Meteor.Error('not-found', 'Zone not found');
-
-  const user = Meteor.users.findOne(userId);
-  if (!user) throw new Meteor.Error('not-found', 'User not found');
-  if (user.roles?.admin) return true;
-
-  // make sure that all the necessary items are in the user's inventory
-  if (zone.requiredItems?.length) {
-    const userItems = Object.keys(user.inventory || {});
-    if (!zone.requiredItems.every(tag => userItems.includes(tag))) return false;
-  }
-
-  // verifies that the user is a member of the level guild
-  if (zone.accessRestrictedToGuild) {
-    const level = userLevel(userId);
-    if (!level) throw new Meteor.Error('not-found', 'Level not found');
-    if (!level.guildId) throw new Meteor.Error('configuration-missing', 'Guild not linked to the level. You must link a guild to the level or remove the "accessRestrictedToGuild" attribute');
-
-    if (level.guildId !== user.guildId) return false;
-  }
-
-  return true;
-};
-
 isEditionAllowed = userId => {
   check(userId, Match.Id);
 
@@ -134,6 +99,39 @@ const isLevelOwner = (user, level) => {
   return level.createdBy === user._id;
 };
 
+const currentLevel = user => {
+  check(user._id, Match.Id);
+  return Levels.findOne(user.profile.levelId);
+};
+
+canAccessZone = (zoneId, userId) => {
+  check([zoneId, userId], [Match.Id]);
+
+  const zone = Zones.findOne(zoneId);
+  if (!zone) throw new Meteor.Error('not-found', 'Zone not found');
+
+  const user = Meteor.users.findOne(userId);
+  if (!user) throw new Meteor.Error('not-found', 'User not found');
+  if (user.roles?.admin) return true;
+
+  // make sure that all the necessary items are in the user's inventory
+  if (zone.requiredItems?.length) {
+    const userItems = Object.keys(user.inventory || {});
+    if (!zone.requiredItems.every(tag => userItems.includes(tag))) return false;
+  }
+
+  // verifies that the user is a member of the level guild
+  if (zone.accessRestrictedToGuild) {
+    const level = currentLevel(user);
+    if (!level) throw new Meteor.Error('not-found', 'Level not found');
+    if (!level.guildId) throw new Meteor.Error('configuration-missing', 'Guild not linked to the level. You must link a guild to the level or remove the "accessRestrictedToGuild" attribute');
+
+    if (level.guildId !== user.guildId) return false;
+  }
+
+  return true;
+};
+
 const canEditGuild = (user, guild) => {
   check([user._id, guild._id], [Match.Id]);
 
@@ -161,11 +159,6 @@ const canModerateUser = (user, otherUser) => {
   if (user.roles?.admin || otherUser.roles?.admin) return false;
 
   return user.guildId !== otherUser.guildId;
-};
-
-const currentLevel = user => {
-  check(user._id, Match.Id);
-  return Levels.findOne(user.profile.levelId);
 };
 
 const generateRandomCharacterSkin = (userId, levelId = undefined) => {
