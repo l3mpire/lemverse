@@ -30,16 +30,6 @@ userLevel = userId => {
   return Levels.findOne(user.profile.levelId);
 };
 
-levelSpawnPosition = levelId => {
-  const level = Levels.findOne(levelId);
-  if (!level?.spawn) return defaultSpawnPosition;
-
-  const x = +level.spawn.x;
-  const y = +level.spawn.y;
-
-  return { x: Number.isNaN(x) ? defaultSpawnPosition.x : x, y: Number.isNaN(y) ? defaultSpawnPosition.y : y };
-};
-
 canAccessZone = (zoneId, userId) => {
   check([zoneId, userId], [Match.Id]);
 
@@ -85,26 +75,6 @@ isEditionAllowed = userId => {
   if (level.editorUserIds?.includes(userId)) return true;
 
   return false;
-};
-
-teleportUserInLevel = (levelId, userId, source = 'teleporter') => {
-  check([levelId, userId], [Match.Id]);
-
-  log('teleportUserInLevel: start', { levelId, userId });
-  const loadingLevelId = levelId;
-  const level = Levels.findOne(loadingLevelId);
-  if (!level) throw new Meteor.Error('missing-level', `Level not found`);
-
-  const user = Meteor.users.findOne(userId);
-  if (!user) throw new Meteor.Error('missing-user', `User not found`);
-  if (user.profile.levelId === levelId) throw new Meteor.Error('already-here', `User already in the level`);
-
-  const { x, y } = levelSpawnPosition(loadingLevelId);
-  Meteor.users.update(userId, { $set: { 'profile.levelId': level._id, 'profile.x': x, 'profile.y': y } });
-
-  analytics.track(userId, '🧳 Level Teleport', { user_id: userId, level_id: levelId, source, level_name: level.name });
-
-  return level.name;
 };
 
 subscribedUsersToEntity = entityId => {
@@ -255,6 +225,32 @@ const completeUserProfile = (user, email, name) => {
   return generateRandomCharacterSkin(Meteor.userId(), user.profile.levelId);
 };
 
+const levelSpawnPosition = level => {
+  check(level._id, Match.Id);
+  if (!level?.spawn) return defaultSpawnPosition;
+
+  const x = +level.spawn.x;
+  const y = +level.spawn.y;
+
+  return { x: Number.isNaN(x) ? defaultSpawnPosition.x : x, y: Number.isNaN(y) ? defaultSpawnPosition.y : y };
+};
+
+const teleportUserInLevel = (user, level, source = 'teleporter') => {
+  check([user._id, level._id], [Match.Id]);
+  if (user.profile.levelId === level._id) return level.name;
+
+  log('teleportUserInLevel: start', { levelId: level._id, userId: user._id, currentLevel: user.profile.levelId });
+
+  const { x, y } = levelSpawnPosition(level);
+  Meteor.users.update(user._id, { $set: { 'profile.levelId': level._id, 'profile.x': x, 'profile.y': y } });
+
+  analytics.track(user._id, '🧳 Level Teleport', { user_id: user._id, level_id: level._id, source, level_name: level.name });
+
+  log('teleportUserInLevel: done', { levelId: level._id, userId: user._id });
+
+  return level.name;
+};
+
 export {
   canEditGuild,
   canEditUserPermissions,
@@ -265,4 +261,6 @@ export {
   fileOnBeforeUpload,
   generateRandomCharacterSkin,
   isLevelOwner,
+  levelSpawnPosition,
+  teleportUserInLevel,
 };

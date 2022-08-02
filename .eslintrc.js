@@ -110,8 +110,6 @@ module.exports = {
     analytics: 'writable',
     game: 'writable',
     createLevel: 'writable',
-    escapeTransport: 'writable',
-    escapeA: 'writable',
     chest: 'writable',
     click: 'writable',
     beep: 'writable',

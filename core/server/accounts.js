@@ -1,4 +1,4 @@
-import { generateRandomCharacterSkin } from '../lib/misc';
+import { generateRandomCharacterSkin, levelSpawnPosition } from '../lib/misc';
 
 Accounts.onCreateUser((options, user) => {
   log('onCreateUser', { options, user });
@@ -22,7 +22,8 @@ Accounts.onLogin(param => {
   log('onLogin: start', { userId: user._id, ip: param.connection?.httpHeaders?.['x-forwarded-for'], userAgent: param.connection?.httpHeaders?.['user-agent'], languages: param.connection?.httpHeaders?.['accept-language'] });
 
   if (!user.profile.x) {
-    const spawnPosition = levelSpawnPosition(Meteor.settings.defaultLevelId);
+    const level = Levels.findOne(Meteor.settings.defaultLevelId);
+    const spawnPosition = levelSpawnPosition(level);
     Meteor.users.update(user._id, { $set: { 'profile.x': spawnPosition.x, 'profile.y': spawnPosition.y } });
   }
 

@@ -1,4 +1,4 @@
-import { completeUserProfile } from '../lib/misc';
+import { completeUserProfile, levelSpawnPosition, teleportUserInLevel } from '../lib/misc';
 
 const mainFields = { options: 1, profile: 1, roles: 1, status: { online: 1 }, beta: 1, guildId: 1 };
 
@@ -57,11 +57,11 @@ Meteor.methods({
 
     log('teleportToGuildLevel: done', { userId: this.userId, guildId, levelId: level._id });
 
-    return teleportUserInLevel(level._id, this.userId, 'onboarding-button');
+    return teleportUserInLevel(Meteor.user(), level, 'onboarding-button');
   },
   teleportToDefaultLevel() {
     if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
-    return teleportUserInLevel(Meteor.settings.defaultLevelId, this.userId, 'onboarding-button');
+    return teleportUserInLevel(Meteor.user(), Levels.findOne(Meteor.settings.defaultLevelId), 'onboarding-button');
   },
   toggleEntitySubscription(entityId) {
     check(entityId, Match.Id);
@@ -86,7 +86,7 @@ Meteor.methods({
     if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
     check(levelId, Match.Id);
 
-    return teleportUserInLevel(levelId, Meteor.userId(), 'teleporter');
+    return teleportUserInLevel(Meteor.user(), Levels.findOne(levelId), 'teleporter');
   },
   markNotificationAsRead(notificationId) {
     if (!this.userId) return;
@@ -146,7 +146,7 @@ Meteor.users.find({ 'status.online': true }).observeChanges({
     const levelId = user.profile.levelId || Meteor.settings.defaultLevelId;
     const currentLevel = Levels.findOne(levelId);
     if (currentLevel?.spawn) {
-      const spawnPosition = levelSpawnPosition(levelId);
+      const spawnPosition = levelSpawnPosition(currentLevel);
       Meteor.users.update(user._id, { $set: { 'profile.x': spawnPosition.x, 'profile.y': spawnPosition.y } });
     }
   },
