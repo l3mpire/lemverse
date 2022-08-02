@@ -87,63 +87,6 @@ isEditionAllowed = userId => {
   return false;
 };
 
-completeUserProfile = (user, email, name) => {
-  try {
-    Promise.await(Meteor.users.update(user._id, {
-      $set: {
-        emails: [{
-          address: email,
-          verified: false,
-        }],
-        profile: {
-          ...user.profile,
-          name,
-          shareAudio: true,
-          shareVideo: true,
-        },
-      },
-    }));
-  } catch (err) { throw new Meteor.Error('email-duplicate', 'Email already exists'); }
-
-  Meteor.users.update(user._id, { $unset: { 'profile.guest': true, username: true } });
-
-  return generateRandomCharacterSkin(Meteor.userId(), user.profile.levelId);
-};
-
-generateRandomCharacterSkin = (userId, levelId = undefined) => {
-  check(levelId, Match.Maybe(Match.Id));
-  check(userId, Match.Id);
-  const characterPartsKeys = Object.keys(charactersParts);
-
-  const user = Meteor.users.findOne(userId);
-  if (!user) throw new Meteor.Error('not-found', 'User not found');
-
-  let newProfile = { ...user.profile };
-  const currentLevel = Levels.findOne(levelId);
-  if (!user.profile?.body && currentLevel?.skins?.default) {
-    newProfile = {
-      ...newProfile,
-      ...currentLevel.skins.default,
-    };
-  } else if (Characters.find().count() === 0) {
-    newProfile = {
-      ...newProfile,
-      ...Meteor.settings.public.skins.default,
-    };
-  } else {
-    characterPartsKeys.forEach(part => {
-      log('generateRandomCharacterSkin: Randomize character parts...');
-      const parts = Characters.find({ category: part, $or: [{ hide: { $exists: false } }, { hide: false }] }).fetch();
-      if (parts.length) newProfile[part] = parts[_.random(0, parts.length - 1)]._id;
-    });
-  }
-
-  // Updates only the attributes related to the user skin elements
-  const queryFields = {};
-  characterPartsKeys.forEach(characterPartKey => { queryFields[`profile.${characterPartKey}`] = newProfile[characterPartKey]; });
-  Meteor.users.update(user._id, { $set: { ...queryFields } });
-};
-
 teleportUserInLevel = (levelId, userId, source = 'teleporter') => {
   check([levelId, userId], [Match.Id]);
 
@@ -255,11 +198,70 @@ const currentLevel = user => {
   return Levels.findOne(user.profile.levelId);
 };
 
+const generateRandomCharacterSkin = (userId, levelId = undefined) => {
+  check(levelId, Match.Maybe(Match.Id));
+  check(userId, Match.Id);
+  const characterPartsKeys = Object.keys(charactersParts);
+
+  const user = Meteor.users.findOne(userId);
+  if (!user) throw new Meteor.Error('not-found', 'User not found');
+
+  let newProfile = { ...user.profile };
+  const level = currentLevel(user);
+  if (!user.profile?.body && level?.skins?.default) {
+    newProfile = {
+      ...newProfile,
+      ...level.skins.default,
+    };
+  } else if (Characters.find().count() === 0) {
+    newProfile = {
+      ...newProfile,
+      ...Meteor.settings.public.skins.default,
+    };
+  } else {
+    characterPartsKeys.forEach(part => {
+      log('generateRandomCharacterSkin: Randomize character parts...');
+      const parts = Characters.find({ category: part, $or: [{ hide: { $exists: false } }, { hide: false }] }).fetch();
+      if (parts.length) newProfile[part] = parts[_.random(0, parts.length - 1)]._id;
+    });
+  }
+
+  // Updates only the attributes related to the user skin elements
+  const queryFields = {};
+  characterPartsKeys.forEach(characterPartKey => { queryFields[`profile.${characterPartKey}`] = newProfile[characterPartKey]; });
+  Meteor.users.update(user._id, { $set: { ...queryFields } });
+};
+
+const completeUserProfile = (user, email, name) => {
+  try {
+    Promise.await(Meteor.users.update(user._id, {
+      $set: {
+        emails: [{
+          address: email,
+          verified: false,
+        }],
+        profile: {
+          ...user.profile,
+          name,
+          shareAudio: true,
+          shareVideo: true,
+        },
+      },
+    }));
+  } catch (err) { throw new Meteor.Error('email-duplicate', 'Email already exists'); }
+
+  Meteor.users.update(user._id, { $unset: { 'profile.guest': true, username: true } });
+
+  return generateRandomCharacterSkin(Meteor.userId(), user.profile.levelId);
+};
+
 export {
   canEditGuild,
   canEditUserPermissions,
   canModerateLevel,
   canModerateUser,
+  completeUserProfile,
   currentLevel,
+  generateRandomCharacterSkin,
   isLevelOwner,
 };

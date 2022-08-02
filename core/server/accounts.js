@@ -1,3 +1,5 @@
+import { generateRandomCharacterSkin } from '../lib/misc';
+
 Accounts.onCreateUser((options, user) => {
   log('onCreateUser', { options, user });
   user._id = `usr_${Random.id()}`;

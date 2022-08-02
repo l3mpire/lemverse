@@ -140,8 +140,6 @@ module.exports = {
     userVoiceRecorderAbility: 'writable',
     charactersParts: 'writable',
     characterPopIns: 'writable',
-    generateRandomCharacterSkin: 'writable',
-    completeUserProfile: 'writable',
     capitalize: 'writable',
     generateTURNCredentials: 'writable',
     isModalOpen: 'writable',
