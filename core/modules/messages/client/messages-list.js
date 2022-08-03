@@ -1,4 +1,5 @@
 import { messageModerationAllowed } from '../misc';
+import { currentLevel } from '../../../lib/misc';
 
 function computeReactionToolboxPosition(element) {
   const elemRect = element.getBoundingClientRect();
@@ -15,6 +16,7 @@ const getCurrentChannelName = () => {
   if (!channel) return '-';
 
   if (channel.includes('zon_')) return Zones.findOne(channel)?.name || 'Zone';
+  else if (channel.includes('lvl_')) return currentLevel(Meteor.user())?.name || 'Level';
   else if (channel.includes('qst_')) return '';
 
   const userIds = channel.split(';');
