@@ -39,8 +39,10 @@ const formatText = text => {
   return finalText.replace(/(?:\r\n|\r|\n)/g, '<br>');
 };
 
+const collectionDependenciesCount = 2; // users and files
+
 Template.messagesListMessage.onCreated(function () {
-  this.moderationAllowed = messageModerationAllowed(Meteor.userId(), this.data.message);
+  this.moderationAllowed = messageModerationAllowed(Meteor.user(), this.data.message);
 });
 
 Template.messagesListMessage.helpers({
@@ -93,11 +95,13 @@ Template.messagesListMessage.events({
 Template.messagesList.onCreated(function () {
   this.userSubscribeHandler = undefined;
   this.fileSubscribeHandler = undefined;
+  this.loadedDependencies = new ReactiveVar(0);
 
   this.autorun(() => {
     if (!Session.get('console')) {
       this.fileSubscribeHandler?.stop();
       this.userSubscribeHandler?.stop();
+      this.loadedDependencies.set(0);
       messagesModule.stopListeningMessagesChannel();
       return;
     }
@@ -105,10 +109,15 @@ Template.messagesList.onCreated(function () {
     const messages = Messages.find({}, { fields: { createdBy: 1, fileId: 1 } }).fetch();
 
     const userIds = messages.map(message => message.createdBy).filter(Boolean);
-    this.userSubscribeHandler = this.subscribe('usernames', userIds, () => scrollToBottom());
+    this.userSubscribeHandler = this.subscribe('usernames', userIds, () => {
+      scrollToBottom();
+      this.loadedDependencies.set(+this.loadedDependencies.get() + 1);
+    });
 
     const filesIds = messages.map(message => message.fileId).filter(Boolean);
-    this.fileSubscribeHandler = this.subscribe('files', filesIds);
+    this.fileSubscribeHandler = this.subscribe('files', filesIds, () => {
+      this.loadedDependencies.set(+this.loadedDependencies.get() + 1);
+    });
   });
 });
 
@@ -146,6 +155,10 @@ Template.messagesList.helpers({
     if (messageDate.getDate() === date.getDate() - 1) return 'Yesterday';
 
     return messageDate.toDateString();
+  },
+  ready() {
+    // todo: find a better way to do this with Meteor
+    return Template.instance().loadedDependencies.get() >= collectionDependenciesCount;
   },
 });
 

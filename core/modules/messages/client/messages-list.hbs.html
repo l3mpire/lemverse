@@ -51,14 +51,16 @@
       {{/if}}
     </div>
     <div class="messages-list">
-      {{#each message in messages}}
-        {{#unless sameDay @index}}
-          <div class="separation-day">
-            <div class="text">{{formattedSeparationDate @index}}</div>
-          </div>
-        {{/unless}}
-        {{> messagesListMessage message=message }}
-      {{/each}}
+      {{#if ready}}
+        {{#each message in messages}}
+          {{#unless sameDay @index}}
+            <div class="separation-day">
+              <div class="text">{{formattedSeparationDate @index}}</div>
+            </div>
+          {{/unless}}
+          {{> messagesListMessage message=message }}
+        {{/each}}
+      {{/if}}
     </div>
     {{> messageReaction}}
   </div>
