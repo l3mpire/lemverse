@@ -119,12 +119,12 @@ Template.messagesList.onCreated(function () {
       }
 
       const userIds = messages.map(message => message.createdBy).filter(Boolean);
-      this.userSubscribeHandler = await this.subscribe('usernames', userIds, () => {
+      this.userSubscribeHandler = this.subscribe('usernames', userIds, () => {
         this.loadedDependencies.set(+this.loadedDependencies.get() + 1);
       });
 
       const filesIds = messages.map(message => message.fileId).filter(Boolean);
-      this.fileSubscribeHandler = await this.subscribe('files', filesIds, () => {
+      this.fileSubscribeHandler = this.subscribe('files', filesIds, () => {
         this.loadedDependencies.set(+this.loadedDependencies.get() + 1);
       });
     });
