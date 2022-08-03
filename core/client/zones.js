@@ -221,8 +221,11 @@ zones = {
   },
 
   closeIframeElement() {
-    this.getIframeElement().src = '';
-    this.getWebpageElement().classList.remove('show');
+    const iframe = this.getIframeElement();
+    if (iframe) iframe.src = '';
+
+    const webpageElement = this.getWebpageElement();
+    if (webpageElement) webpageElement.classList.remove('show');
   },
 
   showNewContentIndicator(zone) {
