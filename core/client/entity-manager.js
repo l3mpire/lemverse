@@ -69,9 +69,10 @@ entityManager = {
     const { gameObject } = newEntity;
     if (gameObject) {
       entityInstance
-        .setDepth(gameObject.depth || newEntity.y)
         .setPosition(newEntity.x, newEntity.y)
         .setScale(gameObject.scale || 1, Math.abs(gameObject.scale || 1));
+
+      entityInstance.setData('customDepth', gameObject.depth);
     }
 
     if (newEntity.state !== oldEntity.state) this.updateEntityFromState(newEntity, newEntity.state);
@@ -177,7 +178,10 @@ entityManager = {
     const { player, playerWasMoving } = userManager;
     if (player && playerWasMoving && !Meteor.user().profile.guest) this.handleNearestEntityTooltip(player);
 
-    Object.values(this.entities).forEach(entity => entity.setDepth(entity.y));
+    Object.values(this.entities).forEach(entity => {
+      const customDepth = entity.getData('customDepth');
+      entity.setDepth(customDepth ?? entity.y);
+    });
   },
 
   handleNearestEntityTooltip(position) {
@@ -238,7 +242,7 @@ entityManager = {
     const gameObject = this.scene.add.container(entity.x, entity.y)
       .setData('id', entity._id)
       .setData('actionType', entity.actionType)
-      .setDepth(entity.gameObject?.depth || entity.y)
+      .setData('customDepth', entity.gameObject?.depth)
       .setScale(entity.gameObject?.scale || 1);
 
     this.entities[entity._id] = gameObject;

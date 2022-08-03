@@ -28,6 +28,12 @@ Template.entityEditor.events({
     const { valueAsNumber: value } = event.target;
     if (value !== 0) Entities.update(entity._id, { $set: { 'gameObject.scale': value } });
   },
+  'click .js-reset-depth'() {
+    const entity = selectedEntity();
+    if (!entity) return;
+
+    Entities.update(entity._id, { $unset: { 'gameObject.depth': 1 } });
+  },
   'click .js-close-entity-editor'() { closeInterface(); },
   'change #js-entity-target'(event) {
     Meteor.call('updateEntityTarget', Session.get('selectedEntityId'), event.target.value);

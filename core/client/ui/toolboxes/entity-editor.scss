@@ -32,4 +32,12 @@
   button.red {
     background-color: $light-red;
   }
+
+  button.reset-attribute {
+    width: 30px;
+    padding: 5px;
+    font-size: 1.2rem;
+    margin: 0;
+    transform: scale(0.8);
+  }
 }
