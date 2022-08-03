@@ -1,4 +1,4 @@
-import { canAccessZone, currentLevel } from '../../lib/misc';
+import { canAccessZone, canModerateUser, currentLevel } from '../../lib/misc';
 
 const zoneMessagingAllowed = (zone, user) => {
   if (!canAccessZone(zone, user)) return false;
@@ -25,11 +25,12 @@ const messagingAllowed = (channel, userId) => {
   return false;
 };
 
-const messageModerationAllowed = (userId, message) => {
-  if (!userId || !message) return false;
-  if (message.createdBy === userId) return true;
+const messageModerationAllowed = (user, message) => {
+  check([user._id, message._id], [Match.Id]);
 
-  return isEditionAllowed(userId);
+  if (message.createdBy === user._id) return true;
+
+  return canModerateUser(user, Meteor.users.findOne(message.createdBy));
 };
 
 export {
