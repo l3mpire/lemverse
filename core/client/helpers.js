@@ -209,3 +209,12 @@ registerRadialMenuModules = modules => {
 
   Session.set('radialMenuModules', loadedModules);
 };
+
+const toggleUIInputs = value => {
+  hotkeys.setScope(value ? scopes.form : scopes.player);
+  game.scene.keys.WorldScene.enableKeyboard(!value, false);
+};
+
+export {
+  toggleUIInputs,
+};

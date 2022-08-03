@@ -1,3 +1,5 @@
+import { toggleUIInputs } from '../../helpers';
+
 const closeInterface = () => Session.set('selectedEntityId', undefined);
 const selectedEntity = () => Entities.findOne(Session.get('selectedEntityId'));
 const targets = () => {
@@ -31,7 +33,17 @@ Template.entityEditor.events({
     Meteor.call('updateEntityTarget', Session.get('selectedEntityId'), event.target.value);
   },
   'blur .js-edit-entity-name'(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    toggleUIInputs(false);
+
     Entities.update(Session.get('selectedEntityId'), { $set: { name: event.currentTarget.value } });
+  },
+  'focus .js-edit-entity-name'(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    toggleUIInputs(true);
   },
 });
 
