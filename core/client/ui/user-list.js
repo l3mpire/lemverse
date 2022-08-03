@@ -63,7 +63,6 @@ Template.userListEntry.events({
 
 Template.userList.onCreated(function () {
   const user = Meteor.user();
-  this.level = currentLevel(user);
   this.activeTab = new ReactiveVar(localStorage.getItem(userListTabKey) || (user.guildId ? tabs.guild : tabs.level));
 
   const guildIds = Meteor.users.find().map(u => u.guildId).filter(Boolean);
@@ -79,19 +78,20 @@ Template.userList.helpers({
     return Template.instance().activeTab.get() === name;
   },
   canEditGuild() {
-    const guild = Guilds.findOne(Template.instance().level.guildId);
+    const level = currentLevel(Meteor.user());
+    const guild = Guilds.findOne(level.guildId);
     if (!guild) return false;
 
     return canEditGuild(Meteor.user(), guild);
   },
   canEditUserPermissions() {
-    return canEditUserPermissions(Meteor.user(), Template.instance().level);
+    return canEditUserPermissions(Meteor.user(), currentLevel(Meteor.user()));
   },
   canModerateLevel() {
-    return canModerateLevel(Meteor.user(), Template.instance().level);
+    return canModerateLevel(Meteor.user(), currentLevel(Meteor.user()));
   },
   level() {
-    return Template.instance().level;
+    return currentLevel(Meteor.user());
   },
   title() {
     const activeTab = Template.instance().activeTab.get();
