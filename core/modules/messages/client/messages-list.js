@@ -26,6 +26,8 @@ const getCurrentChannelName = () => {
   return userNames.join(' & ');
 };
 
+const sortedMessages = () => Messages.find({}, { sort: { createdAt: 1 } }).fetch();
+
 const scrollToBottom = () => {
   const messagesElement = document.querySelector('.messages-list');
   if (messagesElement) messagesElement.scrollTop = messagesElement.scrollHeight;
@@ -38,8 +40,6 @@ const formatText = text => {
 
   return finalText.replace(/(?:\r\n|\r|\n)/g, '<br>');
 };
-
-const collectionDependenciesCount = 2; // users and files
 
 Template.messagesListMessage.onCreated(function () {
   this.moderationAllowed = messageModerationAllowed(Meteor.user(), this.data.message);
@@ -95,48 +95,27 @@ Template.messagesListMessage.events({
 Template.messagesList.onCreated(function () {
   this.userSubscribeHandler = undefined;
   this.fileSubscribeHandler = undefined;
-  this.loadedDependencies = new ReactiveVar(false);
-  this.messages = new ReactiveVar();
 
   this.autorun(() => {
-    const consoleOpen = Session.get('console');
+    if (!Session.get('console')) {
+      this.fileSubscribeHandler?.stop();
+      this.userSubscribeHandler?.stop();
+      messagesModule.stopListeningMessagesChannel();
+      return;
+    }
+
     const messages = Messages.find({}, { fields: { createdBy: 1, fileId: 1 } }).fetch();
 
-    Tracker.nonreactive(async () => {
-      this.loadedDependencies.set(0);
-
-      if (!messages.length) {
-        this.fileSubscribeHandler?.stop();
-        this.userSubscribeHandler?.stop();
-        this.messages.set(undefined);
-        return;
-      }
-
-      if (!consoleOpen) {
-        this.fileSubscribeHandler?.stop();
-        this.userSubscribeHandler?.stop();
-        this.messages.set(undefined);
-        messagesModule.stopListeningMessagesChannel();
-        return;
-      }
-
-      const userIds = messages.map(message => message.createdBy).filter(Boolean);
-      this.userSubscribeHandler = this.subscribe('usernames', userIds, () => {
-        this.loadedDependencies.set(+this.loadedDependencies.get() + 1);
-      });
-
-      const filesIds = messages.map(message => message.fileId).filter(Boolean);
-      this.fileSubscribeHandler = this.subscribe('files', filesIds, () => {
-        this.loadedDependencies.set(+this.loadedDependencies.get() + 1);
+    const userIds = messages.map(message => message.createdBy).filter(Boolean);
+    this.userSubscribeHandler = this.subscribe('usernames', userIds, () => {
+      Tracker.afterFlush(() => {
+        scrollToBottom();
       });
     });
 
-    // todo: find a better way to handle UI updates with asynchronous dependencies
-    this.autorun(() => {
-      if (this.loadedDependencies.get() < collectionDependenciesCount) return;
-
-      Tracker.nonreactive(() => {
-        this.messages.set(Messages.find({}, { sort: { createdAt: 1 } }).fetch());
+    const filesIds = messages.map(message => message.fileId).filter(Boolean);
+    this.fileSubscribeHandler = this.subscribe('files', filesIds, () => {
+      Tracker.afterFlush(() => {
         scrollToBottom();
       });
     });
@@ -145,7 +124,7 @@ Template.messagesList.onCreated(function () {
 
 Template.messagesList.helpers({
   channelName() { return getCurrentChannelName(); },
-  messages() { return Template.instance().messages.get(); },
+  messages() { return sortedMessages(); },
   canSubscribe() { return Session.get('messagesChannel')?.includes('zon_'); },
   subscribed() {
     const channel = Session.get('messagesChannel');
@@ -164,12 +143,12 @@ Template.messagesList.helpers({
   sameDay(index) {
     if (index === 0) return true;
 
-    const messages = Template.instance().messages.get() || [];
+    const messages = sortedMessages();
     if (index >= messages.length) return true;
     return new Date(messages[index].createdAt).getDate() === new Date(messages[index - 1].createdAt).getDate();
   },
   formattedSeparationDate(index) {
-    const messages = Template.instance().messages.get() || [];
+    const messages = sortedMessages();
     const messageDate = new Date(messages[index].createdAt);
 
     const date = new Date();

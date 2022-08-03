@@ -30,7 +30,10 @@ const messageModerationAllowed = (user, message) => {
 
   if (message.createdBy === user._id) return true;
 
-  return canModerateUser(user, Meteor.users.findOne(message.createdBy));
+  const userOwningMessage = Meteor.users.findOne(message.createdBy);
+  if (!userOwningMessage) return false;
+
+  return canModerateUser(user, userOwningMessage);
 };
 
 export {
