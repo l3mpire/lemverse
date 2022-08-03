@@ -83,7 +83,7 @@ EditorScene = new Phaser.Class({
 
     const shiftIsDown = this.keys.shift.isDown;
     const altIsDown = this.keys.alt.isDown;
-    const canvasClicked = this.input.manager.activePointer.downElement.nodeName === 'CANVAS';
+    const canvasClicked = this.input.manager.activePointer.downElement?.nodeName === 'CANVAS';
     const { map } = levelManager;
 
     const worldPoint = this.input.activePointer.positionToCamera(this.cameras.main);
