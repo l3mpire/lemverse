@@ -143,7 +143,7 @@ const canModerateUser = (user, otherUser) => {
   if (!user.roles?.admin && otherUser.roles?.admin) return false;
   if (user.roles?.admin && !otherUser.roles?.admin) return true;
 
-  return !!user.guildId;
+  return !otherUser.guildId;
 };
 
 const generateRandomCharacterSkin = (userId, levelId = undefined) => {
