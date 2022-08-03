@@ -1,3 +1,5 @@
+import { canEditActiveLevel, subscribedUsersToEntity } from '../lib/misc';
+
 const applyEntityState = (entity, stateActions) => {
   const { levelId } = entity;
 
@@ -136,7 +138,7 @@ Meteor.methods({
     const entity = Entities.findOne(entityId);
     if (!entity) throw new Meteor.Error(404, 'Entity not found.');
 
-    if (!isEditionAllowed(this.userId)) throw new Meteor.Error('permission-error', `You can't edit this level`);
+    if (!canEditActiveLevel(Meteor.user())) throw new Meteor.Error('permission-error', `You can't edit this level`);
 
     // unlink the target
     if (!targetEntityId) Entities.update(entityId, { $unset: { entityId: 1 } });

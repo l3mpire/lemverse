@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 
+import { canEditActiveLevel } from '../../lib/misc';
+
 const editorGraphicsDepth = 10002;
 
 const insertTile = data => {
@@ -67,6 +69,11 @@ EditorScene = new Phaser.Class({
 
     // put editor in sleep mode on load (no rendering, no update)
     this.scene.sleep();
+
+    hotkeys('e', { scope: 'all' }, event => {
+      if (event.repeat || !canEditActiveLevel(Meteor.user())) return;
+      Session.set('editor', !Session.get('editor'));
+    });
   },
 
   // We need to use the world scene camera to have the same camera transformation matrix
@@ -290,6 +297,10 @@ EditorScene = new Phaser.Class({
     this.updateEditionMarker(Session.get('selectedTiles'));
     this.marker.setVisible(mode === editorModes.tiles);
     this.mode = mode;
+  },
+
+  shutdown() {
+    hotkeys.unbind('e', scopes.player);
   },
 
   snapToTile(x, y) {

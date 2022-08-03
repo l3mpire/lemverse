@@ -387,11 +387,6 @@ Template.lemverse.onCreated(function () {
     });
   });
 
-  hotkeys('e', { scope: 'all' }, event => {
-    if (event.repeat || !isEditionAllowed(Meteor.userId())) return;
-    Session.set('editor', !Session.get('editor'));
-  });
-
   hotkeys('shift+r', { scope: 'all' }, event => {
     if (event.repeat) return;
     game.scene.getScene('WorldScene')?.resetZoom();
@@ -458,7 +453,6 @@ Template.lemverse.onDestroyed(function () {
   if (this.handleZonesSubscribe) this.handleZonesSubscribe.stop();
   if (this.resizeObserver) this.resizeObserver.disconnect();
 
-  hotkeys.unbind('e', scopes.player);
   hotkeys.unbind('f', scopes.player);
   hotkeys.unbind('j', scopes.player);
   hotkeys.unbind('l', scopes.player);

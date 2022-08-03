@@ -14,26 +14,7 @@ charactersParts = Object.freeze({
 
 const defaultSpawnPosition = { x: 100, y: 100 };
 
-isEditionAllowed = userId => {
-  check(userId, Match.Id);
-
-  const user = Meteor.users.findOne(userId);
-  if (!user) return false;
-
-  if (user.roles?.admin) return true;
-
-  const { levelId } = user.profile;
-  const level = Levels.findOne(levelId);
-  if (!level) return false;
-
-  if (userId === level.createdBy) return true;
-  if (level.sandbox) return true;
-  if (level.editorUserIds?.includes(userId)) return true;
-
-  return false;
-};
-
-subscribedUsersToEntity = entityId => {
+const subscribedUsersToEntity = entityId => {
   check(entityId, Match.Id);
 
   return Meteor.users.find(
@@ -126,6 +107,22 @@ const canEditGuild = (user, guild) => {
   if (guild.createdBy === user._id) return true;
 
   return user.guildId === guild._id && guild.owners?.includes(user._id) === true;
+};
+
+const canEditLevel = (user, level) => {
+  check([user._id, level._id], [Match.Id]);
+
+  if (user.roles?.admin) return true;
+
+  if (user._id === level.createdBy) return true;
+  if (level.sandbox) return true;
+
+  return !!level.editorUserIds?.includes(user._id);
+};
+
+const canEditActiveLevel = user => {
+  check(user._id, Match.Id);
+  return canEditLevel(user, Levels.findOne(user.profile.levelId));
 };
 
 const canEditUserPermissions = (user, level) => {
@@ -233,6 +230,8 @@ const teleportUserInLevel = (user, level, source = 'teleporter') => {
 export {
   canAccessZone,
   canEditGuild,
+  canEditActiveLevel,
+  canEditLevel,
   canEditUserPermissions,
   canModerateLevel,
   canModerateUser,
@@ -242,6 +241,6 @@ export {
   generateRandomCharacterSkin,
   isLevelOwner,
   levelSpawnPosition,
-  nearestDuration,
+  subscribedUsersToEntity,
   teleportUserInLevel,
 };

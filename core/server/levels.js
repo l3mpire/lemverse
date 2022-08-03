@@ -1,4 +1,4 @@
-import { currentLevel } from '../lib/misc';
+import { canEditLevel, canEditActiveLevel, currentLevel } from '../lib/misc';
 
 const defaultSpawnPosition = { x: 200, y: 200 };
 
@@ -134,10 +134,13 @@ Meteor.publish('currentLevel', function () {
 Meteor.methods({
   toggleLevelEditionPermission(userId) {
     check(userId, Match.Id);
-    if (!isEditionAllowed(this.userId)) return;
 
-    const { levelId } = Meteor.user().profile;
-    if (!isEditionAllowed(userId)) Levels.update(levelId, { $addToSet: { editorUserIds: { $each: [userId] } } });
+    const user = Meteor.user();
+    const { levelId } = user.profile;
+
+    if (!canEditActiveLevel(user)) return;
+
+    if (!canEditActiveLevel(Meteor.users.findOne(userId))) Levels.update(levelId, { $addToSet: { editorUserIds: { $each: [userId] } } });
     else Levels.update(levelId, { $pull: { editorUserIds: userId } });
   },
   createLevel(templateId = undefined) {
@@ -152,9 +155,10 @@ Meteor.methods({
     check(position, { x: Number, y: Number });
     check(hide, Boolean);
 
+    const user = Meteor.user();
     const level = currentLevel(Meteor.user());
     if (!level || level.sandbox) throw new Meteor.Error('invalid-level', 'A valid level is required');
-    if (!isEditionAllowed(this.userId)) throw new Meteor.Error('permission-error', `You can't edit this level`);
+    if (!canEditLevel(user, level)) throw new Meteor.Error('permission-error', `You can't edit this level`);
 
     const query = { $set: { name, spawn: { x: position.x, y: position.y } } };
     if (hide) query.$set.hide = true;

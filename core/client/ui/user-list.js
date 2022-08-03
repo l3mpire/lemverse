@@ -1,4 +1,4 @@
-import { canEditGuild, canModerateLevel, canModerateUser, canEditUserPermissions, currentLevel, isLevelOwner } from '../../lib/misc';
+import { canEditLevel, canEditGuild, canModerateLevel, canModerateUser, canEditUserPermissions, currentLevel, isLevelOwner } from '../../lib/misc';
 
 const tabs = Object.freeze({
   level: 'level',
@@ -19,7 +19,7 @@ const users = (mode, guildId) => {
 
 Template.userListEntry.helpers({
   admin() { return this.user.roles?.admin; },
-  canEditLevel() { return isEditionAllowed(this.user._id); },
+  canEditLevel() { return canEditLevel(this.user, this.level); },
   canModerateUser() {
     if (!this.canModerateLevel) return false;
     if (!this.user.status.online) return false;

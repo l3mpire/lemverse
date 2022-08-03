@@ -1,4 +1,5 @@
 import { messagingAllowed } from '../misc';
+import { subscribedUsersToEntity } from '../../../lib/misc';
 
 const limit = 20;
 
