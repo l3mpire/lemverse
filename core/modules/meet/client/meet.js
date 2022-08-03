@@ -80,8 +80,6 @@ window.addEventListener('load', () => {
     if (event.repeat || !linkedZoneId) return;
     event.preventDefault();
 
-    if (!isEditionAllowed(Meteor.userId())) return;
-
     const zone = Zones.findOne(linkedZoneId);
     if (zone) zones.setFullscreen(zone, !zone.fullscreen);
   });
@@ -234,9 +232,13 @@ meetHighLevel = {
     });
   },
 
-  shareScreen() {},
+  shareScreen() {
+    throw new Error('"shareScreen" is not implemented');
+  },
 
-  unshareScreen() {},
+  unshareScreen() {
+    throw new Error('"unshareScreen" is not implemented');
+  },
 
   nodeElement() {
     if (!this.node) this.node = document.querySelector('#meet');
