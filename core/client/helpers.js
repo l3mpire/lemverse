@@ -86,6 +86,8 @@ updateViewport = (scene, mode) => {
   scene.viewportMode = mode;
 };
 
+clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
 formatURL = url => {
   let formattedURL;
   try {

@@ -14,7 +14,13 @@
 
     "defaultReaction": "❤️",
 
-    "zoom": 1,
+    "zoom": {
+      "default": 1,
+      "min": 0.6,
+      "max": 1.6,
+      "factor": 0.001,
+      "maxDelta": 100
+    },
 
     "peer": {
       "answerMaxAttempt": 5,

@@ -1,11 +1,7 @@
 import nipplejs from 'nipplejs';
 import Phaser from 'phaser';
 
-const zoomConfig = Object.freeze({
-  min: 0.6,
-  max: 1.6,
-  delta: 100,
-});
+const zoomConfig = Meteor.settings.public.zoom;
 
 const onZoneEntered = e => {
   const { zone } = e.detail;
@@ -43,10 +39,7 @@ WorldScene = new Phaser.Class({
     this.nippleMoving = false;
     this.viewportMode = viewportModes.fullscreen;
     this.sleepMethod = this.sleep.bind(this);
-    this.updateViewportMethod = mode => {
-      updateViewport(this, mode);
-      levelManager.markCullingAsDirty();
-    };
+    this.resizeMethod = this.resize.bind(this);
     this.postUpdateMethod = this.postUpdate.bind(this);
     this.shutdownMethod = this.shutdown.bind(this);
 
@@ -71,8 +64,10 @@ WorldScene = new Phaser.Class({
 
     // Notes: tilesets with extrusion are required to avoid potential black lines between tiles (see https://github.com/sporadic-labs/tile-extruder)
     this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY) => {
-      const zoom = Math.min(Math.max(this.cameras.main.zoom + (deltaY / zoomConfig.delta), zoomConfig.min), zoomConfig.max);
-      this.cameras.main.setZoom(zoom);
+      const linearFactor = this.cameras.main.zoom * zoomConfig.factor;
+      const clampedDelta = clamp(deltaY, -zoomConfig.maxDelta, zoomConfig.maxDelta);
+      const zoom = clamp(this.cameras.main.zoom - (clampedDelta * linearFactor), zoomConfig.min, zoomConfig.max);
+      this.setClampedZoom(this.cameras.main, zoom);
       levelManager.markCullingAsDirty();
     });
 
@@ -99,7 +94,7 @@ WorldScene = new Phaser.Class({
     this.events.on('sleep', this.sleepMethod, this);
     this.events.on('postupdate', this.postUpdateMethod, this);
     this.events.once('shutdown', this.shutdownMethod, this);
-    this.scale.on('resize', this.updateViewportMethod, this);
+    this.scale.on('resize', this.resizeMethod, this);
     hotkeys.setScope('guest');
 
     // custom events
@@ -124,6 +119,7 @@ WorldScene = new Phaser.Class({
     // cameras
     this.cameras.main.setBounds(0, 0, levelManager.map.widthInPixels, levelManager.map.heightInPixels);
     this.cameras.main.setRoundPixels(true);
+    this.resetZoom();
     this.scene.setVisible(true);
   },
 
@@ -153,8 +149,24 @@ WorldScene = new Phaser.Class({
   },
 
   resetZoom() {
-    this.cameras.main.setZoom(zoomConfig.default);
+    this.setClampedZoom(this.cameras.main, zoomConfig.default);
     levelManager.markCullingAsDirty();
+  },
+
+  resize(mode) {
+    this.setClampedZoom(this.cameras.main, this.cameras.main.zoom);
+    updateViewport(this, mode);
+    levelManager.markCullingAsDirty();
+  },
+
+  setClampedZoom(camera, zoom) {
+    const bounds = camera.getBounds();
+    const { height, width } = camera;
+
+    if (bounds.height * zoom < height || bounds.width * zoom < width) {
+      zoom = Math.max(height / bounds.height, width / bounds.width);
+    }
+    camera.setZoom(zoom);
   },
 
   sleep() {
