@@ -21,7 +21,7 @@ Meteor.methods({
     if (!userIds.length) return;
     if (!this.userId) throw new Meteor.Error('not-authorized', 'User not allowed');
 
-    if (!canEditGuild(this.userId, guildId)) throw new Meteor.Error('not-authorized', 'User not allowed');
+    if (!canEditGuild(Meteor.user(), Guilds.findOne(guildId))) throw new Meteor.Error('not-authorized', `Missing permissions to edit team members`);
 
     const userCount = Meteor.users.find({ _id: { $in: userIds }, guildId: { $exists: true } }).count();
     if (userCount) throw new Meteor.Error('users-invalid', 'Some users are already in a Guild');
