@@ -1,6 +1,6 @@
-zoom = 1.5;
-selectedCharactersPart = () => Characters.findOne(Session.get('selectedCharacterId')) || {};
-findFirstCharacters = () => {
+const selectedCharactersPart = () => Characters.findOne(Session.get('selectedCharacterId')) || {};
+
+const findFirstCharacters = () => {
   const filter = { category: Session.get('editorCharactersFilter') || { $exists: false } };
   return Characters.findOne(filter);
 };
