@@ -61,15 +61,8 @@ const spawnEntityFromFile = (fileId, options = {}) => {
 
 switchEntityState = (entity, forcedState = undefined) => {
   check(forcedState, Match.Maybe(String));
+  check(entity._id, Match.Id);
   log('switchEntityState: start', { entity, forcedState });
-
-  if (!entity) throw new Meteor.Error(404, 'Entity not found');
-
-  // the entity is a trigger linked to another entity
-  if (entity.entityId) {
-    switchEntityState(Entities.findOne(entity.entityId));
-    return;
-  }
 
   if (!entity.states) throw new Error(`Entity without states`);
 
@@ -101,25 +94,38 @@ const pickEntityInventory = entity => {
   Entities.update(entity._id, { $set: { inventory: {} } });
 };
 
+const useEntity = (entityId, value = undefined) => {
+  check(value, Match.OneOf(undefined, null, Number, String));
+  check(entityId, Match.Id);
+
+  log('useEntity: start', { userId: this.userId, entityId, value });
+
+  const entity = Entities.findOne(entityId);
+  if (!entity) throw new Meteor.Error(404, 'Entity not found.');
+
+  if (entity.actionType === entityActionType.pickable) {
+    pickEntityInventory(entity);
+    Entities.remove(entity._id);
+  } else if (entity.actionType === entityActionType.actionable) {
+    if (entity.entityId) {
+      if (entity.entityId === entityId) throw new Error('The entity is linked to itself');
+      useEntity(entity.entityId, value);
+    }
+
+    if (entity.states) switchEntityState(entity, value);
+  } else if (entity.actionType === entityActionType.none && entity.states) switchEntityState(entity, value);
+  else throw new Error('entity action not implemented');
+
+  log('useEntity: done', { userId: this.userId, entityId, value });
+
+  return entity;
+};
+
 Meteor.methods({
   useEntity(entityId, value = undefined) {
     check(value, Match.OneOf(undefined, null, Number, String));
     check(entityId, Match.Id);
-
-    log('useEntity: start', { userId: this.userId, entityId, value });
-
-    const entity = Entities.findOne(entityId);
-    if (!entity) throw new Meteor.Error(404, 'Entity not found.');
-
-    if (entity.actionType === entityActionType.pickable) {
-      pickEntityInventory(entity);
-      Entities.remove(entity._id);
-    } else if (entity.states) switchEntityState(entity, value);
-    else throw new Error('entity action not implemented');
-
-    log('useEntity: done', { userId: this.userId, entityId, value });
-
-    return entity;
+    return useEntity(entityId, value);
   },
   updateEntityTarget(entityId, targetEntityId) {
     check(entityId, Match.Id);
