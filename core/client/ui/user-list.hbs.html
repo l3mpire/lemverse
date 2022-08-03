@@ -19,13 +19,16 @@
         <span title="Is admin">👑</span>
       {{else if levelOwner}}
         <span title="Is level owner">🗺️</span>
-      {{else if canEditPermissions}}
+      {{else if canEditUserPermissions}}
         {{#if canEditLevel}}
           <span class="js-toggle-edition" title="Edition allowed">🔨</span>
         {{else}}
           <span class="js-toggle-edition denied" title="Click to allow edition">🔨</span>
         {{/if}}
+      {{else if canEditLevel}}
+        <span title="Can edit level">👷</span>
       {{/if}}
+
       {{#if canModerateUser}}
         <span class="js-kick-user" title="Click to kick">🦵</span>
       {{/if}}
@@ -43,7 +46,7 @@
       <ul class="users">
         {{#each user in users}}
           <li class="user">
-            {{> userListEntry user=user level=level canEditPermissions=canEditPermissions canModerateLevel=canModerateLevel}}
+            {{> userListEntry user=user level=level canEditUserPermissions=canEditUserPermissions canModerateLevel=canModerateLevel}}
           </li>
         {{/each}}
       </ul>

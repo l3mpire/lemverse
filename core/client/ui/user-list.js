@@ -22,7 +22,6 @@ Template.userListEntry.helpers({
   canEditLevel() { return canEditLevel(this.user, this.level); },
   canModerateUser() {
     if (!this.canModerateLevel) return false;
-    if (!this.user.status.online) return false;
 
     return canModerateUser(Meteor.user(), this.user);
   },
