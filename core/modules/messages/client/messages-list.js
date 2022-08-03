@@ -24,8 +24,6 @@ const getCurrentChannelName = () => {
   return userNames.join(' & ');
 };
 
-const sortedMessages = () => Messages.find({}, { sort: { createdAt: 1 } }).fetch();
-
 const scrollToBottom = () => {
   const messagesElement = document.querySelector('.messages-list');
   if (messagesElement) messagesElement.scrollTop = messagesElement.scrollHeight;
@@ -95,35 +93,57 @@ Template.messagesListMessage.events({
 Template.messagesList.onCreated(function () {
   this.userSubscribeHandler = undefined;
   this.fileSubscribeHandler = undefined;
-  this.loadedDependencies = new ReactiveVar(0);
+  this.loadedDependencies = new ReactiveVar(false);
+  this.messages = new ReactiveVar();
 
   this.autorun(() => {
-    if (!Session.get('console')) {
-      this.fileSubscribeHandler?.stop();
-      this.userSubscribeHandler?.stop();
-      this.loadedDependencies.set(0);
-      messagesModule.stopListeningMessagesChannel();
-      return;
-    }
-
+    const consoleOpen = Session.get('console');
     const messages = Messages.find({}, { fields: { createdBy: 1, fileId: 1 } }).fetch();
 
-    const userIds = messages.map(message => message.createdBy).filter(Boolean);
-    this.userSubscribeHandler = this.subscribe('usernames', userIds, () => {
-      scrollToBottom();
-      this.loadedDependencies.set(+this.loadedDependencies.get() + 1);
+    Tracker.nonreactive(async () => {
+      this.loadedDependencies.set(0);
+
+      if (!messages.length) {
+        this.fileSubscribeHandler?.stop();
+        this.userSubscribeHandler?.stop();
+        this.messages.set(undefined);
+        return;
+      }
+
+      if (!consoleOpen) {
+        this.fileSubscribeHandler?.stop();
+        this.userSubscribeHandler?.stop();
+        this.messages.set(undefined);
+        messagesModule.stopListeningMessagesChannel();
+        return;
+      }
+
+      const userIds = messages.map(message => message.createdBy).filter(Boolean);
+      this.userSubscribeHandler = await this.subscribe('usernames', userIds, () => {
+        this.loadedDependencies.set(+this.loadedDependencies.get() + 1);
+      });
+
+      const filesIds = messages.map(message => message.fileId).filter(Boolean);
+      this.fileSubscribeHandler = await this.subscribe('files', filesIds, () => {
+        this.loadedDependencies.set(+this.loadedDependencies.get() + 1);
+      });
     });
 
-    const filesIds = messages.map(message => message.fileId).filter(Boolean);
-    this.fileSubscribeHandler = this.subscribe('files', filesIds, () => {
-      this.loadedDependencies.set(+this.loadedDependencies.get() + 1);
+    // todo: find a better way to handle UI updates with asynchronous dependencies
+    this.autorun(() => {
+      if (this.loadedDependencies.get() < collectionDependenciesCount) return;
+
+      Tracker.nonreactive(() => {
+        this.messages.set(Messages.find({}, { sort: { createdAt: 1 } }).fetch());
+        scrollToBottom();
+      });
     });
   });
 });
 
 Template.messagesList.helpers({
   channelName() { return getCurrentChannelName(); },
-  messages() { return sortedMessages(); },
+  messages() { return Template.instance().messages.get(); },
   canSubscribe() { return Session.get('messagesChannel')?.includes('zon_'); },
   subscribed() {
     const channel = Session.get('messagesChannel');
@@ -142,12 +162,12 @@ Template.messagesList.helpers({
   sameDay(index) {
     if (index === 0) return true;
 
-    const messages = sortedMessages();
+    const messages = Template.instance().messages.get() || [];
     if (index >= messages.length) return true;
     return new Date(messages[index].createdAt).getDate() === new Date(messages[index - 1].createdAt).getDate();
   },
   formattedSeparationDate(index) {
-    const messages = sortedMessages();
+    const messages = Template.instance().messages.get() || [];
     const messageDate = new Date(messages[index].createdAt);
 
     const date = new Date();
@@ -155,10 +175,6 @@ Template.messagesList.helpers({
     if (messageDate.getDate() === date.getDate() - 1) return 'Yesterday';
 
     return messageDate.toDateString();
-  },
-  ready() {
-    // todo: find a better way to do this with Meteor
-    return Template.instance().loadedDependencies.get() >= collectionDependenciesCount;
   },
 });
 
