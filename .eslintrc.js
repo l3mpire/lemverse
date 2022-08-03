@@ -90,7 +90,6 @@ module.exports = {
     Guilds: 'writable',
     Items: 'writable',
     Quests: 'writable',
-    nearestDuration: 'writable',
     isEditionAllowed: 'writable',
     canAccessQuest: 'writable',
     remote: 'writable',

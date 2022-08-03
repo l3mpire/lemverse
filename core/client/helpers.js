@@ -210,11 +210,21 @@ registerRadialMenuModules = modules => {
   Session.set('radialMenuModules', loadedModules);
 };
 
+const nearestDuration = duration => {
+  const message = [];
+  message.push(lp.s.lpad(moment.duration(duration).asHours() | 0, 2, '0'));
+  message.push(lp.s.lpad(moment.duration(duration).minutes(), 2, '0'));
+  message.push(lp.s.lpad(moment.duration(duration).seconds(), 2, '0'));
+
+  return message.join(':');
+};
+
 const toggleUIInputs = value => {
   hotkeys.setScope(value ? scopes.form : scopes.player);
   game.scene.keys.WorldScene.enableKeyboard(!value, false);
 };
 
 export {
+  nearestDuration,
   toggleUIInputs,
 };

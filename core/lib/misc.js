@@ -14,15 +14,6 @@ charactersParts = Object.freeze({
 
 const defaultSpawnPosition = { x: 100, y: 100 };
 
-nearestDuration = duration => {
-  const message = [];
-  message.push(lp.s.lpad(moment.duration(duration).asHours() | 0, 2, '0'));
-  message.push(lp.s.lpad(moment.duration(duration).minutes(), 2, '0'));
-  message.push(lp.s.lpad(moment.duration(duration).seconds(), 2, '0'));
-
-  return message.join(':');
-};
-
 isEditionAllowed = userId => {
   check(userId, Match.Id);
 
@@ -251,5 +242,6 @@ export {
   generateRandomCharacterSkin,
   isLevelOwner,
   levelSpawnPosition,
+  nearestDuration,
   teleportUserInLevel,
 };
