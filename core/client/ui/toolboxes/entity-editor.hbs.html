@@ -1,10 +1,10 @@
 <template name="entityEditor">
   <div class="entity-editor">
-    <input type="text" value="{{entity.name}}" class="input js-edit-entity-name">
+    <input type="text" value="{{entity.name}}" class="input js-edit-entity-name" placeholder="[No Name]">
 
     <div class="entity-form-element">
       <label for="entity-state">State</label>
-      <input type="text" value="{{state}}" disabled="disabled">
+      <input type="text" value="{{state}}" disabled="disabled" placeholder="off">
     </div>
 
     {{#if isActionable}}
