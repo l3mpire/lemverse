@@ -9,8 +9,8 @@
     "desktop": "meteor-desktop"
   },
   "dependencies": {
-    "@babel/runtime": "^7.18.3",
-    "analytics-node": "^6.0.0",
+    "@babel/runtime": "^7.18.9",
+    "analytics-node": "^6.2.0",
     "body-parser": "^1.20.0",
     "escape-string-regexp": "^5.0.0",
     "fast-json-stable-stringify": "^2.1.0",
@@ -19,7 +19,7 @@
     "hotkeys-js": "^3.9.4",
     "jquery": "^3.6.0",
     "jsonwebtoken": "^8.5.1",
-    "meteor-node-stubs": "^1.2.3",
+    "meteor-node-stubs": "^1.2.5",
     "multer": "1.4.5-lts.1",
     "nipplejs": "^0.9.1",
     "node-cron": "^3.0.1",
