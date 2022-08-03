@@ -139,8 +139,9 @@ entityManager = {
       return;
     }
 
-    // entity linked to another one
-    Meteor.call('useEntity', this.previousNearestEntity?.entityId || this.previousNearestEntity._id);
+    Meteor.call('useEntity', this.previousNearestEntity?.entityId || this.previousNearestEntity._id, error => {
+      if (error) lp.notif.error('Unable to use this for now');
+    });
   },
 
   allowedToUseEntity(entity) {
