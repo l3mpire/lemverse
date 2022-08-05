@@ -1,9 +1,10 @@
+import { currentLevel } from '../../../lib/misc';
+import { toggleUIInputs } from '../../helpers';
+
 const checkLevelName = value => {
   if (!value) throw new Error('A name is required');
   if (value.length < 3) throw new Error('Level\'s name must be at least 2 characters');
 };
-
-const currentLevel = () => Levels.findOne(Meteor.user().profile.levelId);
 
 const updateLevel = (name, spawnPosition, hide = false) => {
   try {
@@ -20,22 +21,31 @@ const updateLevel = (name, spawnPosition, hide = false) => {
 };
 
 Template.levelToolbox.events({
-  'focus input'() { hotkeys.setScope('form'); game?.scene?.keys?.WorldScene?.enableKeyboard(false, false); },
-  'blur input'() { hotkeys.setScope(scopes.player); game?.scene?.keys?.WorldScene?.enableKeyboard(true, false); },
-  'blur .js-name'(event) { updateLevel(event.target.value, currentLevel().spawn, currentLevel().hide); },
-  'change .js-hidden'(event) { updateLevel(currentLevel().name, currentLevel().spawn, event.target.checked); },
+  'focus input'() { toggleUIInputs(true); },
+  'blur input'() { toggleUIInputs(false); },
+  'blur .js-name'(event) {
+    const user = Meteor.user();
+    const level = currentLevel(user);
+    updateLevel(event.target.value, level.spawn, level.hide);
+  },
+  'change .js-hidden'(event) {
+    const user = Meteor.user();
+    const level = currentLevel(user);
+    updateLevel(level.name, level.spawn, event.target.checked);
+  },
   'click .js-spawn-position'() {
-    const { name } = currentLevel();
-    const { x, y } = Meteor.user().profile;
-    updateLevel(name, { x, y }, currentLevel().hide);
+    const user = Meteor.user();
+    const level = currentLevel(user);
+    const { x, y } = user.profile;
+    updateLevel(level.name, { x, y }, level.hide);
   },
 });
 
 Template.levelToolbox.helpers({
-  name() { return currentLevel().name; },
-  hidden() { return currentLevel().hide || false; },
+  name() { return currentLevel(Meteor.user()).name; },
+  hidden() { return currentLevel(Meteor.user()).hide || false; },
   spawnPosition() {
-    const { spawn } = currentLevel();
+    const { spawn } = currentLevel(Meteor.user());
     return `${Math.round(spawn.x)} - ${Math.round(spawn.y)}`;
   },
 });
