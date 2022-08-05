@@ -1,6 +1,8 @@
 import nipplejs from 'nipplejs';
 import Phaser from 'phaser';
 
+import { clamp } from '../helpers';
+
 const zoomConfig = Meteor.settings.public.zoom;
 
 const onZoneEntered = e => {
@@ -63,7 +65,7 @@ WorldScene = new Phaser.Class({
     });
 
     // Notes: tilesets with extrusion are required to avoid potential black lines between tiles (see https://github.com/sporadic-labs/tile-extruder)
-    this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY) => {
+    this.input.on('wheel', (_pointer, _gameObjects, _deltaX, deltaY) => {
       const linearFactor = this.cameras.main.zoom * zoomConfig.factor;
       const clampedDelta = clamp(deltaY, -zoomConfig.maxDelta, zoomConfig.maxDelta);
       const zoom = clamp(this.cameras.main.zoom - (clampedDelta * linearFactor), zoomConfig.min, zoomConfig.max);
@@ -78,7 +80,7 @@ WorldScene = new Phaser.Class({
         dynamicPage: true,
       });
 
-      this.nippleManager.on('added', (evt, nipple) => {
+      this.nippleManager.on('added', (_event, nipple) => {
         nipple.on('start move end dir plain', (evt2, data) => {
           if (evt2.type === 'move') {
             this.nippleMoving = true;

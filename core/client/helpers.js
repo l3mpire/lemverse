@@ -86,7 +86,7 @@ updateViewport = (scene, mode) => {
   scene.viewportMode = mode;
 };
 
-clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
 formatURL = url => {
   let formattedURL;
@@ -245,6 +245,7 @@ const generateEntityThumbnail = (entity, thumbnailMaxSize = 35) => {
 };
 
 export {
+  clamp,
   generateEntityThumbnail,
   nearestDuration,
   toggleUIInputs,
