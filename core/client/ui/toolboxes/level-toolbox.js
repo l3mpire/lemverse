@@ -1,15 +1,17 @@
 const checkLevelName = value => {
-  if (!value) return 'A name is required';
-  if (value.length < 3) return 'Level\'s name must be at least 2 characters';
-
-  return true;
+  if (!value) throw new Error('A name is required');
+  if (value.length < 3) throw new Error('Level\'s name must be at least 2 characters');
 };
 
 const currentLevel = () => Levels.findOne(Meteor.user().profile.levelId);
 
 const updateLevel = (name, spawnPosition, hide = false) => {
-  const levelNameState = checkLevelName(name);
-  if (levelNameState !== true) { lp.notif.error(levelNameState); return; }
+  try {
+    checkLevelName(name);
+  } catch (e) {
+    lp.notif.error(e.name);
+    return;
+  }
 
   Meteor.call('updateLevel', name, spawnPosition, hide, err => {
     if (err) { lp.notif.error(err.reason); return; }
