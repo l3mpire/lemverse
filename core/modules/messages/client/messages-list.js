@@ -29,8 +29,10 @@ const getCurrentChannelName = () => {
 const sortedMessages = () => Messages.find({}, { sort: { createdAt: 1 } }).fetch();
 
 const scrollToBottom = () => {
-  const messagesElement = document.querySelector('.messages-list');
-  if (messagesElement) messagesElement.scrollTop = messagesElement.scrollHeight;
+  Tracker.afterFlush(() => {
+    const messagesElement = document.querySelector('.messages-list');
+    if (messagesElement) messagesElement.scrollTop = messagesElement.scrollHeight;
+  });
 };
 
 const formatText = text => {
@@ -107,18 +109,10 @@ Template.messagesList.onCreated(function () {
     const messages = Messages.find({}, { fields: { createdBy: 1, fileId: 1 } }).fetch();
 
     const userIds = messages.map(message => message.createdBy).filter(Boolean);
-    this.userSubscribeHandler = this.subscribe('usernames', userIds, () => {
-      Tracker.afterFlush(() => {
-        scrollToBottom();
-      });
-    });
+    this.userSubscribeHandler = this.subscribe('usernames', userIds, scrollToBottom);
 
     const filesIds = messages.map(message => message.fileId).filter(Boolean);
-    this.fileSubscribeHandler = this.subscribe('files', filesIds, () => {
-      Tracker.afterFlush(() => {
-        scrollToBottom();
-      });
-    });
+    this.fileSubscribeHandler = this.subscribe('files', filesIds, scrollToBottom);
   });
 });
 
