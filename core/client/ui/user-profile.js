@@ -50,37 +50,31 @@ Template.userProfile.events({
     event.preventDefault();
     event.stopPropagation();
     const { value } = event.target;
-    if (!value) return false;
+    if (!value) return;
 
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.company.name': value } });
-    return false;
   },
   'input .js-position'(event) {
     event.preventDefault();
     event.stopPropagation();
     const { value } = event.target;
-    if (!value) return false;
+    if (!value) return;
 
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.company.position': value } });
-    return false;
   },
   'blur .js-website'(event) {
     event.preventDefault();
     event.stopPropagation();
     const { value } = event.target;
 
-    if (value) {
-      const url = formatURL(value);
-      if (!url) {
-        lp.notif.error('invalid website URL');
-        Meteor.users.update(Meteor.userId(), { $unset: { 'profile.website': 1 } });
-        return null;
-      }
+    const url = formatURL(value);
+    if (!url) {
+      if (value) lp.notif.error('invalid website URL');
+      Meteor.users.update(Meteor.userId(), { $unset: { 'profile.website': 1 } });
+      return;
+    }
 
-      Meteor.users.update(Meteor.userId(), { $set: { 'profile.website': url.href } });
-    } else Meteor.users.update(Meteor.userId(), { $unset: { 'profile.website': 1 } });
-
-    return false;
+    Meteor.users.update(Meteor.userId(), { $set: { 'profile.website': url.href } });
   },
   'input .js-bio'(event) {
     event.preventDefault();
