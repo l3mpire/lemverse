@@ -153,8 +153,13 @@ meetLowLevel = {
     meet.isJoined = false;
   },
 
-  show() {},
-  fullscreen() {},
+  show() {
+    throw new Error('"show" is not implemented');
+  },
+
+  fullscreen() {
+    throw new Error('"fullscreen" is not implemented');
+  },
 
   mute() {
     const track = meet.tracks.find(t => t.isLocal() && t.getType() === 'audio');
