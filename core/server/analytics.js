@@ -117,27 +117,67 @@ Meteor.methods({
 
     analytics.updateUser(editedUserId, traits);
   },
-  analyticsDiscussionAttend(traits) {
+  analyticsDiscussionStart(properties) {
     const { userId } = this;
     if (!userId) return;
 
-    check(traits, {
-      users_attending_count: Number,
+    check(properties, {
+      peerUserId: String,
     });
 
     const user = Meteor.user();
-    analytics.track(userId, '💬 Discussion Attend', { level_id: user.profile.levelId });
+    analytics.track(userId, '💬 ✅ Discussion Start', {
+      level_id: user.profile.levelId,
+      peer_user_id: properties.peerUserId,
+    });
   },
-  analyticsDiscussionEnd(traits) {
+  analyticsDiscussionJoin(properties) {
     const { userId } = this;
     if (!userId) return;
 
-    check(traits, {
-      duration: Number,
+    check(properties, {
+      peerUserId: String,
     });
 
     const user = Meteor.user();
-    analytics.track(userId, '💬 Discussion End', { level_id: user.profile.levelId, duration: traits.duration });
+    analytics.track(userId, '💬 ➡️ Discussion Join', {
+      level_id: user.profile.levelId,
+      peer_user_id: properties.peerUserId,
+    });
+  },
+  analyticsDiscussionEnd(properties) {
+    const { userId } = this;
+    if (!userId) return;
+
+    check(properties, {
+      totalDuration: Number,
+      duration: Number,
+      peerUserId: String,
+    });
+
+    const user = Meteor.user();
+    analytics.track(userId, '💬 🛑 Discussion End', {
+      level_id: user.profile.levelId,
+      duration: properties.duration,
+      total_duration: properties.totalDuration,
+      peer_user_id: properties.peerUserId,
+    });
+  },
+  analyticsDiscussionLeft(properties) {
+    const { userId } = this;
+    if (!userId) return;
+
+    check(properties, {
+      duration: Number,
+      peerUserId: String,
+    });
+
+    const user = Meteor.user();
+    analytics.track(userId, '💬 ⬅️ Discussion Left', {
+      level_id: user.profile.levelId,
+      duration: properties.duration,
+      peer_user_id: properties.peerUserId,
+    });
   },
   analyticsConferenceAttend(traits) {
     const { userId } = this;

@@ -5,6 +5,7 @@ peer = {
   calls: {},
   callsToClose: {},
   callsOpening: {},
+  callStartDates: [],
   discussionStartDate: undefined,
   remoteCalls: {},
   peerInstance: undefined,
@@ -88,14 +89,15 @@ peer = {
     streamsByUsers = streamsByUsers.filter(usr => usr.main.srcObject !== undefined || usr.screen.srcObject !== undefined || usr.waitingCallAnswer);
     this.remoteStreamsByUsers.set(streamsByUsers);
 
+    const duration = this.getCallDuration(userId);
     if (!this.hasActiveStreams()) {
       userStreams.destroyStream(streamTypes.main);
-
-      if (this.discussionStartDate) {
-        const duration = (Date.now() - this.discussionStartDate) / 1000;
-        Meteor.call('analyticsDiscussionEnd', { duration });
-        this.discussionStartDate = undefined;
+      const totalDuration = this.getDiscussionDuration(userId);
+      if (duration && totalDuration) {
+        Meteor.call('analyticsDiscussionEnd', { peerUserId: userId, duration, totalDuration });
       }
+    } else if (duration) {
+      Meteor.call('analyticsDiscussionLeft', { peerUserId: userId, duration });
     }
 
     $(`.js-video-${userId}-user`).remove();
@@ -104,6 +106,22 @@ peer = {
     if (!activeCallsCount) return;
 
     audioManager.play('webrtc-out.mp3', 0.2);
+  },
+
+  getDiscussionDuration(user) {
+    const totalDuration = this.getDuration(this.discussionStartDate);
+    this.discussionStartDate = undefined;
+    return totalDuration;
+  },
+
+  getCallDuration(userId) {
+    const duration = this.getDuration(this.callStartDates[userId]);
+    delete this.callStartDates[userId];
+    return duration;
+  },
+
+  getDuration(date) {
+    return (Date.now() - date) / 1000;
   },
 
   close(userId, timeout = 0, origin = null) {
@@ -156,9 +174,13 @@ peer = {
       audioManager.play('webrtc-in.mp3', 0.2);
       notify(user, `Wants to talk to you`);
 
-      if (!this.hasActiveStreams() && !this.discussionStartDate) {
-        this.discussionStartDate = new Date();
-        Meteor.call('analyticsDiscussionAttend', { users_attending_count: userProximitySensor.nearUsersCount() });
+      const now = Date.now();
+      this.callStartDates[user._id] = now;
+      if (!this.hasActiveStreams()) {
+        this.discussionStartDate = now;
+        Meteor.call('analyticsDiscussionStart', { peerUserId: user._id });
+      } else {
+        Meteor.call('analyticsDiscussionJoin', { peerUserId: user._id });
       }
     }
 
