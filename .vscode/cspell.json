@@ -41,6 +41,7 @@
     "mkdir",
     "mongoexport",
     "mongoimport",
+    "multiatlas",
     "NOSONAR",
     "notif",
     "occured",
@@ -82,5 +83,7 @@
     "websockets",
     "yoyo"
   ],
-  "flagWords": ["hte"]
+  "flagWords": [
+    "hte"
+  ]
 }
