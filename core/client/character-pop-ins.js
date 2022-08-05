@@ -41,18 +41,24 @@ characterPopIns = {
     this.createOrUpdate(`${Meteor.userId()}-${zone._id}`, zone.inlineURL, config);
   },
 
+  createPopIn(popInIdentifier, content) {
+    const popIn = this.scene.add.dom().createFromHTML(content);
+    popIn.addListener('click');
+    popIn.on('click', event => {
+      if (!event.target.classList.contains('toggle-full-screen')) return;
+      popIn.node.classList.toggle('full-screen');
+    });
+    this.popIns[popInIdentifier] = popIn;
+
+    return popIn;
+  },
+
   createOrUpdate(popInIdentifier, popInContent, config = {}) {
     const content = config.iframe ? this.createIframeFromURL(popInContent) : this.formatText(popInContent, config);
 
     let popIn = this.popIns[popInIdentifier];
-    if (!popIn) {
-      popIn = this.scene.add.dom().createFromHTML(content);
-      popIn.addListener('click');
-      popIn.on('click', event => {
-        if (!event.target.classList.contains('toggle-full-screen')) return;
-        popIn.node.classList.toggle('full-screen');
-      });
-    } else if (content !== popIn.node.innerHTML) popIn.setHTML(content);
+    if (!popIn) popIn = this.createPopIn(popInIdentifier, content);
+    else if (content !== popIn.node.innerHTML) popIn.setHTML(content);
 
     const { style } = popIn.node;
     if (config.width) style.width = `${config.width}px`;
@@ -68,8 +74,6 @@ characterPopIns = {
 
     clearTimeout(popIn.autoCloseHandler);
     if (config.autoClose) popIn.autoCloseHandler = window.setTimeout(() => this.destroyPopIn(popInIdentifier), config.autoClose);
-
-    this.popIns[popInIdentifier] = popIn;
 
     return popIn;
   },

@@ -43,7 +43,7 @@ UIScene = new Phaser.Class({
     };
   },
 
-  update(time, delta) {
+  update(_time, delta) {
     userVoiceRecorderAbility.update(delta);
   },
 

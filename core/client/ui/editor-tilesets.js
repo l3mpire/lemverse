@@ -100,9 +100,6 @@ Template.editorTilesets.onCreated(function () {
   });
 });
 
-Template.editorTilesets.onRendered(() => {
-});
-
 Template.editorTilesets.onDestroyed(() => {
   hotkeys.unbind('c');
   hotkeys.unbind('0');
@@ -161,13 +158,13 @@ Template.editorTilesets.events({
   'mousemove img'(event) {
     const x = (event.offsetX / (16 * zoom)) | 0;
     const y = (event.offsetY / (16 * zoom)) | 0;
-    const index = y * selectedTileset().width / 16 + x;
+    const index = (y * selectedTileset().width) / 16 + x;
     Session.set('pointerTileIndex', index);
   },
   'click img'(event) {
     const x = (event.offsetX / (16 * zoom)) | 0;
     const y = (event.offsetY / (16 * zoom)) | 0;
-    const index = y * selectedTileset().width / 16 + x;
+    const index = (y * selectedTileset().width) / 16 + x;
     Session.set('selectedTiles', { tilesetId: selectedTileset()._id, index });
   },
   'click .js-tilesets-select'() {

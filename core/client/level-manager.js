@@ -155,7 +155,7 @@ levelManager = {
   },
 
   tileRefresh(x, y) {
-    this.layers.forEach((layer, i) => this.map.removeTileAt(x, y, false, false, i));
+    this.layers.forEach((_layer, i) => this.map.removeTileAt(x, y, false, false, i));
 
     Tiles.find({ x, y }).forEach(tile => {
       const tileset = this.map.getTileset(tile.tilesetId) || defaultTileset;

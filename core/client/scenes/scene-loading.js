@@ -78,7 +78,7 @@ LoadingScene = new Phaser.Class({
     this.text?.setText(`Loading ${levelName}…`);
   },
 
-  update(time, delta) {
+  update(_time, delta) {
     this.background_characters.tilePositionX += this.backgroundSpeed * delta;
     this.background_characters.tilePositionY += this.backgroundSpeed * delta;
   },
