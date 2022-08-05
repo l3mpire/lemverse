@@ -224,7 +224,26 @@ const toggleUIInputs = value => {
   game.scene.keys.WorldScene.enableKeyboard(!value, false);
 };
 
+const generateEntityThumbnail = (entity, thumbnailMaxSize = 35) => {
+  if (entity.thumbnail) {
+    const filesRoute = Meteor.settings.public.files.route;
+    const [x, y, w, h] = entity.thumbnail.rect;
+    const url = `${filesRoute}/${entity.thumbnail.fileId}`;
+
+    const maxSize = Math.max(w, h);
+    const ratio = thumbnailMaxSize / maxSize;
+
+    return `background-image: url("./${url}"); background-position: -${x}px -${y}px; width: ${w}px; height: ${h}px; transform: scale(${ratio});`;
+  }
+
+  const spriteURL = entity.gameObject?.sprite?.path;
+  if (spriteURL) return `background-image: url("${spriteURL}"); background-size: contain; width: 100%; height: 100%;`;
+
+  return `background-image: url("lemverse.png"); background-size: contain; width: 100%; height: 100%;`;
+};
+
 export {
+  generateEntityThumbnail,
   nearestDuration,
   toggleUIInputs,
 };
