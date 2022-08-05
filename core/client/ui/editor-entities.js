@@ -1,22 +1,10 @@
-const filesRoute = Meteor.settings.public.files.route;
+import { generateEntityThumbnail } from '../helpers';
+
 const thumbnailMaxSize = 20;
 
 Template.editorEntity.helpers({
   label() { return this.label || this.name; },
-  thumbnail() {
-    if (!this.thumbnail) {
-      const url = this.gameObject?.sprite?.path;
-      return `background-image: url("${url}"); background-size: contain; width: 100%; height: 100%;`;
-    }
-
-    const [x, y, w, h] = this.thumbnail.rect;
-    const url = `${filesRoute}/${this.thumbnail.fileId}`;
-
-    const maxSize = Math.max(w, h);
-    const ratio = thumbnailMaxSize / maxSize;
-
-    return `background-image: url("./${url}"); background-position: -${x}px -${y}px; width: ${w}px; height: ${h}px; transform: scale(${ratio});`;
-  },
+  thumbnail() { return generateEntityThumbnail(this, thumbnailMaxSize); },
 });
 
 Template.editorEntity.events({

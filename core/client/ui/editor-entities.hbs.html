@@ -1,11 +1,9 @@
 <template name="editorEntity">
-  <li>
-    <div class="thumbnail">
-      <div class="thumbnail-content" style="{{thumbnail}}"></div>
-    </div>
-    <input type="text" value="{{label}}" class="entity-label">
-    <input type="checkbox" checked="{{validated}}" class="validated">
-  </li>
+  <div class="thumbnail">
+    <div class="thumbnail-content" style="{{thumbnail}}"></div>
+  </div>
+  <input type="text" value="{{label}}" class="entity-label">
+  <input type="checkbox" checked="{{validated}}" class="validated">
 </template>
 
 <template name="editorEntities">
@@ -13,7 +11,9 @@
     <div class="entity-list">
       <ul>
         {{#each entities}}
-          {{> editorEntity}}
+          <li>
+            {{> editorEntity}}
+          </li>
         {{/each}}
       </ul>
     </div>
