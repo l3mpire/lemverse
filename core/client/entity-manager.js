@@ -1,5 +1,3 @@
-import Phaser from 'phaser';
-
 const entityAnimations = {
   spawn: (sprite, scene) => {
     sprite.scaleY = 1.35;
