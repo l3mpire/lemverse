@@ -177,7 +177,7 @@ generateRandomAvatarURLForUser = user => Meteor.settings.public.peer.avatarAPI
   .replace('[user_avatar]', encodeURI(user.profile.avatar || 'cat'));
 
 sendEvent = (command, data = {}) => {
-  window.parent.postMessage(JSON.parse(JSON.stringify({ command, ...data })), '*');
+  window.parent.postMessage(JSON.parse(JSON.stringify({ command, ...data })), Meteor.settings.public.lp.website);
 };
 
 meteorCall = (method, ...args) => new Promise((resolve, reject) => {
