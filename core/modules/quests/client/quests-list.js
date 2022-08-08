@@ -173,6 +173,13 @@ Template.questsList.helpers({
   draftQuestId() { return draftQuestId(); },
   questListModeIsActive(mode) { return Template.instance().questListMode.get() === mode; },
   draftQuestSelected() { return Session.get('selectedQuestId') === draftQuestId(); },
+  questSelected() { return Session.get('selectedQuestId') === this._id; },
+  questHasUpdates() {
+    const notification = Notifications.findOne({ channelId: this._id });
+    if (!notification) return false;
+
+    return !notification.read;
+  },
 });
 
 Template.questListEntry.helpers({
@@ -189,13 +196,6 @@ Template.questListEntry.helpers({
     else if (this.targets?.length === 1) return `> ${Meteor.users.findOne(this.targets[0])?.profile.name || '[deleted]'}`;
     else return `> ${this.targets.length} users`;
   },
-  hasUpdates() {
-    const notification = Notifications.findOne({ channelId: this._id });
-    if (!notification) return false;
-
-    return !notification.read;
-  },
-  selected() { return Session.get('selectedQuestId') === this._id; },
   user() {
     if (this.createdBy === Meteor.userId()) return Meteor.user();
     return Meteor.users.findOne(this.createdBy);
