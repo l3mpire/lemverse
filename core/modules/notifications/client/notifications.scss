@@ -7,22 +7,24 @@
 
     li {
       position: relative;
-      display: flex;
       width: 100%;
-      padding: 10px 0 1px;
-      background-color: darken($light-blue, 20%);
-      color: $main-text-color;
 
       &:not(:last-child) {
         border-bottom: 1px dashed #5c5e6b;
       }
 
-      &.js-notification-clickable:hover {
+      .notification-entry {
+        display: flex;
         cursor: pointer;
-        background-color: darken($light-blue, 15%) !important;
-      }
+        background-color: darken($light-blue, 20%);
+        padding: 10px 0 1px;
+        color: $main-text-color;
 
-      &.notification {
+        &.js-notification-clickable:hover {
+          cursor: pointer;
+          background-color: darken($light-blue, 15%) !important;
+        }
+
         .notification-content {
           width: 100%;
         }

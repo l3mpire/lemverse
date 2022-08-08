@@ -4,7 +4,7 @@
 </template>
 
 <template name="notification">
-  <li class="notification {{#if read}}read{{/if}} {{#unless fileId}}js-notification-clickable{{/unless}}">
+  <div class="notification-entry {{#if read}}read{{/if}} {{#unless fileId}}js-notification-clickable{{/unless}}">
     {{> avatarViewer user=user}}
     <div class="notification-content">
       <div class="date">{{date}}</div>
@@ -19,7 +19,7 @@
         {{/if}}
       </div>
     </div>
-  </li>
+  </div>
 </template>
 
 <template name="notificationButton">
@@ -33,7 +33,9 @@
     <div class="notifications">
       <ul>
         {{#each notifications}}
-          {{> notification}}
+          <li class="notification">
+            {{> notification}}  
+          </li>
         {{/each}}
       </ul>
     </div>
