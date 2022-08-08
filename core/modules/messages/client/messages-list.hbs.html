@@ -12,13 +12,13 @@
             </a>
           </div>
         {{/if}}
-        <div class="reactions">
+        <ul class="reactions">
           {{#each reaction in reactions}}
             {{#if reaction.amount}}
               <li data-reaction="{{reaction.reaction}}" class="reaction {{#if reaction.owner}}owner{{/if}} js-message-reaction">{{reaction.reaction}} {{reaction.amount}}</li>
             {{/if}}
           {{/each}}
-        </div>
+        </ul>
       </div>
       <div class="actions show">
         <button type="button" class="button js-message-open-reactions-box" tabindex="-1">👍</button> 
