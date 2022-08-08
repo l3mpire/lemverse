@@ -93,7 +93,7 @@ $z-index: 4;
     border-radius: 50%;
     z-index: 2;
 
-    li {
+    li > div {
       cursor: pointer;
       box-sizing: border-box;
       position: absolute;
