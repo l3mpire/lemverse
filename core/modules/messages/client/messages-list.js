@@ -1,5 +1,6 @@
 import { messageModerationAllowed } from '../misc';
 import { currentLevel } from '../../../lib/misc';
+import { formatURLs, replaceTextVars } from '../../../client/helpers';
 
 function computeReactionToolboxPosition(element) {
   const elemRect = element.getBoundingClientRect();

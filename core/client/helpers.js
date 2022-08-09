@@ -88,7 +88,7 @@ updateViewport = (scene, mode) => {
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
-formatURL = url => {
+const formatURL = url => {
   let formattedURL;
   try {
     formattedURL = new URL(url);
@@ -99,7 +99,7 @@ formatURL = url => {
   return formattedURL;
 };
 
-formatURLs = (text, shortName = false) => text.replace(/(https?:\/\/[^\s]+)/g, url => {
+const formatURLs = (text, shortName = false) => text.replace(/(https?:\/\/[^\s]+)/g, url => {
   const formatedURL = formatURL(url);
   if (!formatedURL) return url;
 
@@ -162,7 +162,7 @@ waitFor = (condition, attempt, delay = 250) => new Promise((resolve, reject) => 
   waitFunc();
 });
 
-replaceTextVars = text => text.replaceAll(/\{{[^)]*\}}/g, element => {
+const replaceTextVars = text => text.replaceAll(/\{{[^)]*\}}/g, element => {
   const value = element.replace('{{', '').replace('}}', '');
   const [type] = value.split('_');
 
@@ -246,7 +246,10 @@ const generateEntityThumbnail = (entity, thumbnailMaxSize = 35) => {
 
 export {
   clamp,
+  formatURLs,
+  formatURL,
   generateEntityThumbnail,
   nearestDuration,
+  replaceTextVars,
   toggleUIInputs,
 };

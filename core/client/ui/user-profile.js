@@ -1,3 +1,5 @@
+import { formatURL } from '../helpers';
+
 const getUser = template => Meteor.users.findOne(template.data.userId);
 
 Template.userProfile.onCreated(function () {

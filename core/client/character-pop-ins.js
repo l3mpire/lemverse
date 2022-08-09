@@ -1,3 +1,5 @@
+import { formatURL, formatURLs } from './helpers';
+
 const dispatchPopInEvent = event => {
   if (characterPopIns.onPopInEvent) characterPopIns.onPopInEvent(event);
 };

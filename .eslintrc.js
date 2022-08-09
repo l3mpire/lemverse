@@ -142,7 +142,6 @@ module.exports = {
     waitFor: 'writable',
     userStreams: 'writable',
     streamTypes: 'writable',
-    replaceTextVars: 'writable',
     generateRandomAvatarURLForUser: 'writable',
     levelManager: 'writable',
     userManager: 'writable',
@@ -161,13 +160,11 @@ module.exports = {
     callHooks: 'writable',
     createFakeShadow: 'writable',
     userLevel: 'writable',
-    formatURLs: 'writable',
     spawnEntityFromPrefab: 'writable',
     levelSpawnPosition: 'writable',
 
     relativePositionToCamera: 'writable',
     updateViewport: 'writable',
-    formatURL: 'writable',
     sendDataToUsers: 'writable',
     sendDataToUsersInZone: 'writable',
 
