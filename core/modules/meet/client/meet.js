@@ -136,6 +136,10 @@ meetHighLevel = {
       userManager.onPeerDataReceived({ emitter: userEmitter._id, data: this.convertActionToEmojis(message), type: 'text' });
     });
 
+    meet.api.addEventListener('participantLeft', () => {
+      if (meet.api.getNumberOfParticipants() <= 1) Meteor.call('clearConferenceMessages', config.roomName);
+    });
+
     this.show(true);
 
     peer.disable();

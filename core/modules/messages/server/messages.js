@@ -93,6 +93,22 @@ Meteor.publish('messages', function (channel) {
 });
 
 Meteor.methods({
+  clearConferenceMessages(conferenceUUID) {
+    if (!this.userId) return;
+
+    log('clearConferenceMessages: start', { conferenceUUID, userId: this.userId });
+    check(conferenceUUID, String);
+
+    const user = Meteor.user();
+    const zone = Zones.findOne({ uuid: conferenceUUID, levelId: user.profile.levelId });
+    if (!zone) throw new Meteor.Error('not-found', 'Zone not found');
+    if (!zone.roomName) throw new Meteor.Error('invalid-zone', 'Zone invalid (not a conference zone)');
+    if (!zone.uuid) throw new Meteor.Error('invalid-zone', 'Zone without uuid (Conference room not initialized)');
+
+    Messages.remove({ channel: zone._id });
+
+    log('clearConferenceMessages: done', { zoneId: zone._id, conferenceUUID, userId: this.userId });
+  },
   sendMessage(channel, text, fileId) {
     if (!this.userId) return undefined;
 
