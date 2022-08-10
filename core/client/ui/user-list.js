@@ -57,7 +57,7 @@ Template.userListEntry.events({
   },
   'click .js-profile'() { Session.set('modal', { template: 'userProfile', userId: this.user._id, append: true }); },
   'click .js-guild'() {
-    if (this.user.guildId) Session.set('modal', { template: 'guild', guildId: this.user.guildId, append: true });
+    if (this.user.guildId) Session.set('modal', { template: 'teamProfile', teamId: this.user.guildId, append: true });
   },
 });
 

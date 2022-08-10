@@ -1,0 +1,13 @@
+<template name="teamProfile">
+  {{#modal title=title}}
+    <div class="team-profile">
+      <div class="content container">
+        {{#if team}}
+          {{#if team.logo}}<div class="logo"><img src="{{team.logo}}" alt="logo"></div>{{/if}}
+          <p>{{team.description}}</p>
+          {{#if team.website}}<a href="{{team.website}}" class="link" target="_blank" rel="noopener">Website</a>{{/if}}
+        {{/if}}
+      </div>
+    </div>
+  {{/modal}}
+</template>
