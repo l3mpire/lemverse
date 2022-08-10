@@ -2,7 +2,7 @@ import { canEditLevel, canEditGuild, canModerateLevel, canModerateUser, canEditU
 
 const tabs = Object.freeze({
   level: 'level',
-  guild: 'guild',
+  team: 'team',
 });
 
 const userListTabKey = 'userListTab';
@@ -12,7 +12,7 @@ const users = (mode, guildId) => {
   if (mode === tabs.level) {
     const { levelId } = Meteor.user({ fields: { 'profile.levelId': 1 } }).profile;
     filters = { ...filters, 'status.online': true, 'profile.levelId': levelId };
-  } else if (mode === tabs.guild) filters = { ...filters, $and: [{ guildId: { $exists: true } }, { guildId }] };
+  } else if (mode === tabs.team) filters = { ...filters, $and: [{ guildId: { $exists: true } }, { guildId }] };
 
   return Meteor.users.find(filters, { sort: { 'profile.name': 1 } });
 };
@@ -63,7 +63,7 @@ Template.userListEntry.events({
 
 Template.userList.onCreated(function () {
   const user = Meteor.user();
-  this.activeTab = new ReactiveVar(localStorage.getItem(userListTabKey) || (user.guildId ? tabs.guild : tabs.level));
+  this.activeTab = new ReactiveVar(localStorage.getItem(userListTabKey) || (user.guildId ? tabs.team : tabs.level));
 
   const guildIds = Meteor.users.find().map(u => u.guildId).filter(Boolean);
   this.subscribe('guilds', [...new Set(guildIds)]);
@@ -77,7 +77,7 @@ Template.userList.helpers({
   activeTab(name) {
     return Template.instance().activeTab.get() === name;
   },
-  canEditGuild() {
+  canEditTeam() {
     const level = currentLevel(Meteor.user());
     const guild = Guilds.findOne(level.guildId);
     if (!guild) return false;
@@ -115,8 +115,8 @@ Template.userList.events({
     const { tab } = event.currentTarget.dataset;
     templateInstance.activeTab.set(tab);
   },
-  'click .js-guild-add-users'() {
-    Session.set('modal', { template: 'userListSelection', scope: 'level', append: true });
+  'click .js-team-manage'() {
+    Session.set('modal', { template: 'team', scope: 'level', append: true });
 
     Tracker.autorun(computation => {
       if (Session.get('modal')?.template === 'userListSelection') return;

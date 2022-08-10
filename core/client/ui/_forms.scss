@@ -22,6 +22,15 @@
     background-color: darken($light-blue, 5%);
     color: #fff;
   }
+
+  &.green {
+    background-color: darken($light-green, 15%);
+
+    &:hover {
+      background-color: darken($light-green, 5%);
+      color: #fff;
+    }
+  }
 }
 
 .label {

@@ -1,0 +1,99 @@
+@import "../_variables";
+
+.team {
+  .separator {
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    margin: 15px 0;
+  }
+
+  .user-block {
+
+    .actions {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+
+      .js-add-team-user {
+        float: right;
+        max-width: 150px;
+      }
+    }
+
+    .team-users {
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+      font-size: 0.9rem;
+      max-height: 400px;
+      overflow: scroll;
+
+      .team-user {
+        margin: 2px 0;
+        padding: 0;
+        border-radius: 5px;
+        line-height: 26px;
+        display: grid;
+        grid-template-columns: auto 30px;
+        align-items: center;
+
+        &:hover {
+          background-color: darken($main-color, 5%);
+        }
+
+        .main {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+
+          .js-profile {
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 215px;
+
+            &:hover {
+              color: $light-blue;
+            }
+          }
+
+          .avatar-viewer {
+            width: 30px;
+            height: 35px;
+            margin-right: 5px;
+
+            .character-body-part-container {
+              transform: scale(0.4) translate(-24px, -70px);
+            }
+
+            .avatar::before {
+              bottom: 4px;
+              right: 4px;
+              width: 6px;
+              height: 6px;
+            }
+          }
+        }
+
+        .actions {
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+
+          button {
+            cursor: pointer;
+            appearance: none;
+            border: 0;
+            background: none;
+            opacity: 0.9;
+            margin: 0;
+            padding: 0;
+
+            &:hover {
+              opacity: 1;
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -29,6 +29,21 @@ Meteor.methods({
     Meteor.users.update({ _id: { $in: userIds } }, { $set: { guildId } }, { multi: true });
     log('addGuildUsers: done');
   },
+  removeTeamUser(guildId, userId) {
+    check([guildId, userId], [Match.Id]);
+    log('removeTeamUser: start', { guildId, userId });
+
+    if (!this.userId) throw new Meteor.Error('not-authorized', 'User not allowed');
+
+    if (!canEditGuild(Meteor.user(), Guilds.findOne(guildId))) throw new Meteor.Error('not-authorized', `Missing permissions to edit team members`);
+
+    const user = Meteor.users.findOne(userId);
+    if (user.guildId !== guildId) throw new Meteor.Error('user-invalid', 'Given user is not in the team');
+
+    Meteor.users.update(userId, { $unset: { guildId: 1 } });
+
+    log('addGuildUsers: done');
+  },
   guilds(guildIds) {
     if (!this.userId) throw new Meteor.Error('not-authorized', 'User not allowed');
     check(guildIds, [Match.Id]);
