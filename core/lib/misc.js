@@ -31,12 +31,7 @@ const fileOnBeforeUpload = (file, mime) => {
 
   if (size > 5000000) return `File too big (> 5MB)`;
 
-  if (meta.source === 'editor-tilesets') {
-    if (!['image/png', 'image/jpeg'].includes(mime)) return `Only jpeg and png can be uploaded`;
-    return true;
-  }
-
-  if (meta.source === 'editor-characters') {
+  if (['editor-tilesets', 'editor-characters', 'toolbox-entity'].includes(meta.source)) {
     if (!['image/png', 'image/jpeg'].includes(mime)) return `Only jpeg and png can be uploaded`;
     return true;
   }
@@ -55,11 +50,6 @@ const fileOnBeforeUpload = (file, mime) => {
 
   if (meta.source === 'user-console') {
     if (!['image/png', 'image/jpeg', 'image/gif'].includes(mime)) return `Only jpeg, png and gif files can be uploaded`;
-    return true;
-  }
-
-  if (meta.source === 'toolbox-entity') {
-    if (!['image/png', 'image/jpeg'].includes(mime)) return `Only jpeg and png files can be uploaded`;
     return true;
   }
 
