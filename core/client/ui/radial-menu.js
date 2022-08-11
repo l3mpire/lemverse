@@ -117,7 +117,7 @@ const buildMenuFromOptions = options => {
       newOptions.push({ ...options[i], x, y: horizontalMenuItemDistance.y });
     }
   } else {
-    const theta = 2 * Math.PI / allOptions.length;
+    const theta = (2 * Math.PI) / allOptions.length;
     const offset = Math.PI / 2 - theta;
 
     for (let i = 0; i < allOptions.length; i++) {
