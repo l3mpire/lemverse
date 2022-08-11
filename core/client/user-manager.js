@@ -626,21 +626,24 @@ userManager = {
     this.userMediaStates = undefined;
   },
 
-  onPeerDataReceived(data) {
-    const emitterUserId = data.emitter;
+  onPeerDataReceived(dataReceived) {
+    const { emitter: emitterUserId, type, data } = dataReceived;
+
     const userEmitter = Meteor.users.findOne(emitterUserId);
     if (!userEmitter) return;
 
-    if (data.type === 'audio') audioManager.playFromChunks(data.data);
-    else if (data.type === 'followed') {
+    const meta = {};
+
+    if (type === 'audio') audioManager.playFromChunks(data);
+    else if (type === 'followed') {
       peer.lockCall(emitterUserId);
       lp.notif.warning(`${userEmitter.profile.name} is following you 👀`);
-    } else if (data.type === 'unfollowed') {
+    } else if (type === 'unfollowed') {
       peer.unlockCall(emitterUserId);
 
       if (this.entityFollowed?.userId === emitterUserId) this.follow(undefined);
       else lp.notif.warning(`${userEmitter.profile.name} has finally stopped following you 🎉`);
-    } else if (data.type === 'text') {
+    } else if (type === 'text') {
       const emitterPlayer = userManager.players[emitterUserId];
       if (!emitterPlayer) return;
 
@@ -649,15 +652,15 @@ userManager = {
       if (!zoneMuted || !zoneMuted[userEmitterZoneId]) audioManager.play('text-sound.wav', 0.5);
 
       const popInIdentifier = `${emitterUserId}-pop-in`;
-      characterPopIns.createOrUpdate(
+      meta['pop-in'] = characterPopIns.createOrUpdate(
         popInIdentifier,
-        data.data,
+        data.content,
         { target: emitterPlayer, className: messageReceived.style, autoClose: messageReceived.duration, parseURL: true, classList: 'copy', offset: characterPopInOffset },
       );
 
-      if (emitterUserId !== Meteor.userId()) notify(userEmitter, `${userEmitter.profile.name}: ${data.data}`);
+      if (emitterUserId !== Meteor.userId()) notify(userEmitter, `${userEmitter.profile.name}: ${data}`);
     }
 
-    window.dispatchEvent(new CustomEvent(eventTypes.onPeerDataReceived, { detail: { data, userEmitter } }));
+    window.dispatchEvent(new CustomEvent(eventTypes.onPeerDataReceived, { detail: { data: dataReceived, userEmitter, meta } }));
   },
 };
