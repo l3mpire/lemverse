@@ -413,11 +413,6 @@ Template.lemverse.onCreated(function () {
     userManager.interact();
   });
 
-  hotkeys('r', { keyup: true, scope: scopes.player }, event => {
-    if (event.repeat) return;
-    userVoiceRecorderAbility.recordVoice(event.type === 'keydown', sendAudioChunksToUsersInZone);
-  });
-
   hotkeys('p', { keyup: true, scope: scopes.player }, event => {
     if (event.repeat) return;
 

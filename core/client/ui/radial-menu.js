@@ -52,7 +52,6 @@ const reactionMenuItems = [
 const mainMenuItems = [
   { id: 'reactions', icon: '😃', order: 1, shortcut: 53, label: 'Reactions' },
   { id: 'notifications', icon: '🔔', order: 2, shortcut: 54, label: 'Notifications', closeMenu: true },
-  { id: 'shout', icon: '📢', label: 'Shout', order: 40, shortcut: 55 },
 ];
 
 const otherUserMenuItems = [
@@ -71,7 +70,6 @@ const onMenuOptionSelected = e => {
 
   if (option.id === 'reactions') buildMenuFromOptions(reactionMenuItems);
   else if (option.id === 'notifications') toggleModal('notifications');
-  else if (option.id === 'shout') userVoiceRecorderAbility.recordVoice(true, sendAudioChunksToUsersInZone);
   else if (option.id === 'send-love' && user) setReaction(Random.choice(lovePhrases(user.profile.name)));
   else if (option.id === 'follow' && user) userManager.follow(user);
   else if (option.id === 'show-profile') Session.set('modal', { template: 'userProfile', userId: Session.get('menu')?.userId });
@@ -93,8 +91,7 @@ const onMenuOptionSelected = e => {
 const onMenuOptionUnselected = e => {
   const { option } = e.detail;
 
-  if (option.id === 'shout') userVoiceRecorderAbility.recordVoice(false, sendAudioChunksToUsersInZone);
-  else if (option.id === 'send-love') setReaction();
+  if (option.id === 'send-love') setReaction();
   else if (option.id === 'send-vocal') userVoiceRecorderAbility.recordVoice(false, sendAudioChunksToNearUsers);
   else if (option.id === 'custom-reaction') setReaction();
   else if (option.id === 'emoji') setReaction();
