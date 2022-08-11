@@ -582,16 +582,6 @@ userManager = {
     peer.lockCall(user._id, true);
   },
 
-  punch(users) {
-    if (!users || !users.length) return;
-    this.scene.cameras.main.shake(250, 0.015, 0.02);
-    audioManager.play('punch.mp3');
-    if (Math.random() > 0.95) audioManager.play('punch2.mp3'); // NOSONAR
-
-    users.forEach(user => this.takeDamage(this.players[user._id]));
-    peer.sendData(users.map(user => user._id), { type: 'punch', emitter: Meteor.userId() });
-  },
-
   takeDamage(player) {
     this.flashColor(player, 0xFF0000);
 
@@ -668,15 +658,7 @@ userManager = {
     if (!userEmitter) return;
 
     if (data.type === 'audio') audioManager.playFromChunks(data.data);
-    else if (data.type === 'punch') {
-      if (!userProximitySensor.isUserNear(userEmitter)) return;
-
-      audioManager.play('punch.mp3');
-      this.scene.cameras.main.shake(250, 0.015, 0.02);
-      if (Math.random() > 0.95) audioManager.play('punch2.mp3'); // NOSONAR
-
-      this.takeDamage(this.players[Meteor.user()._id]);
-    } else if (data.type === 'followed') {
+    else if (data.type === 'followed') {
       peer.lockCall(emitterUserId);
       lp.notif.warning(`${userEmitter.profile.name} is following you 👀`);
     } else if (data.type === 'unfollowed') {
@@ -702,6 +684,6 @@ userManager = {
       if (emitterUserId !== Meteor.userId()) notify(userEmitter, `${userEmitter.profile.name}: ${data.data}`);
     }
 
-    window.dispatchEvent(new CustomEvent(eventTypes.onPeerDataReceived, { detail: { data } }));
+    window.dispatchEvent(new CustomEvent(eventTypes.onPeerDataReceived, { detail: { data, userEmitter } }));
   },
 };

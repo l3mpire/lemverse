@@ -431,13 +431,6 @@ Template.lemverse.onCreated(function () {
     e.stopPropagation();
     toggleModal('userList');
   });
-
-  hotkeys('x', { scope: scopes.player }, e => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.repeat) return;
-    userManager.punch(Object.values(userProximitySensor.nearUsers));
-  });
 });
 
 Template.lemverse.onDestroyed(function () {
