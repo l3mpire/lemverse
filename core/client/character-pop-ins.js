@@ -43,23 +43,23 @@ characterPopIns = {
     this.createOrUpdate(`${Meteor.userId()}-${zone._id}`, zone.inlineURL, config);
   },
 
-  createPopIn(popInIdentifier, content) {
+  createPopIn(popInIdentifier, content, callback) {
     const popIn = this.scene.add.dom().createFromHTML(content);
     popIn.addListener('click');
     popIn.on('click', event => {
-      if (!event.target.classList.contains('toggle-full-screen')) return;
-      popIn.node.classList.toggle('full-screen');
+      if (event.target.classList.contains('toggle-full-screen')) popIn.node.classList.toggle('full-screen');
+      if (callback) callback(event);
     });
     this.popIns[popInIdentifier] = popIn;
 
     return popIn;
   },
 
-  createOrUpdate(popInIdentifier, popInContent, config = {}) {
+  createOrUpdate(popInIdentifier, popInContent, config = {}, callback = undefined) {
     const content = config.iframe ? this.createIframeFromURL(popInContent) : this.formatText(popInContent, config);
 
     let popIn = this.popIns[popInIdentifier];
-    if (!popIn) popIn = this.createPopIn(popInIdentifier, content);
+    if (!popIn) popIn = this.createPopIn(popInIdentifier, content, callback);
     else if (content !== popIn.node.innerHTML) popIn.setHTML(content);
 
     const { style } = popIn.node;
