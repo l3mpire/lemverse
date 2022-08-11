@@ -24,6 +24,12 @@ window.addEventListener('load', () => {
   });
 });
 
+const openMessagingInterface = channel => {
+  closeModal();
+  messagesModule.changeMessagesChannel(channel);
+  openConsole();
+};
+
 const onNotificationReceived = async e => {
   const { notification } = e.detail;
 
@@ -56,11 +62,7 @@ const onNotificationClicked = e => {
   if (questNotification) {
     closeModal();
     Session.set('quests', { selectedQuestId: questId, origin: 'notifications' });
-  } else if (!this.fileId) {
-    closeModal();
-    messagesModule.changeMessagesChannel(questId);
-    openConsole();
-  }
+  } else if (!this.fileId) openMessagingInterface(questId);
 };
 
 const onMenuOptionSelected = e => {
@@ -70,9 +72,19 @@ const onMenuOptionSelected = e => {
   else if (option.id === 'open-console') openConsole(true);
   else if (option.id === 'send-text') {
     const channel = [user._id, Meteor.userId()].sort().join(';');
-    messagesModule.changeMessagesChannel(channel);
-    openConsole();
+    openMessagingInterface(channel);
   } else if (option.id === 'new-quest' && user) createQuestDraft([user._id], Meteor.userId());
+};
+
+const onPeerDataReceived = e => {
+  const { data, meta } = e.detail;
+  if (data.type !== 'text') return;
+  if (!meta['pop-in']) return;
+
+  meta['pop-in'].on('click', () => {
+    if (!data.data.channel) return;
+    openMessagingInterface(data.data.channel);
+  });
 };
 
 Template.textualCommunicationTools.onCreated(() => {
@@ -80,15 +92,17 @@ Template.textualCommunicationTools.onCreated(() => {
   window.addEventListener(eventTypes.onMenuOptionSelected, onMenuOptionSelected);
   window.addEventListener(eventTypes.onNotificationClicked, onNotificationClicked);
   window.addEventListener(eventTypes.onNotificationReceived, onNotificationReceived);
+  window.addEventListener(eventTypes.onPeerDataReceived, onPeerDataReceived);
 });
 
 Template.textualCommunicationTools.onDestroyed(() => {
   window.removeEventListener(eventTypes.onMenuOptionSelected, onMenuOptionSelected);
   window.removeEventListener(eventTypes.onNotificationClicked, onNotificationClicked);
   window.removeEventListener(eventTypes.onNotificationReceived, onNotificationReceived);
+  window.removeEventListener(eventTypes.onPeerDataReceived, onPeerDataReceived);
 });
 
 Template.textualCommunicationTools.helpers({
-  guest: () => Meteor.user()?.profile.guest,
+  guest: () => Meteor.user({ fields: { 'profile.guest': 1 } })?.profile.guest,
   show: () => Session.get('console'),
 });
