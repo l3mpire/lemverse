@@ -118,14 +118,6 @@ Template.lemverse.onCreated(function () {
 
     Tracker.nonreactive(() => {
       if (!Meteor.user()?.profile.guest) peer.createMyPeer();
-
-      // listen for click events on bubbles
-      document.querySelector('#game div:first-of-type').addEventListener('click', e => {
-        if (e.target.classList.contains('copy')) {
-          const content = e.target.textContent;
-          navigator.clipboard.writeText(content).then(() => lp.notif.success('Copied to clipboard! ✂️'));
-        }
-      });
     });
   });
 
