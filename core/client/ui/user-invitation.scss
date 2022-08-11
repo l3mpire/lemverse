@@ -1,25 +1,37 @@
 @import "../_variables";
 
-.user-invitation {
-  margin-bottom: 15px;
+.invitation-url-field {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 10px 25px;
+  background-color: #1e2029;
+  padding: 20px;
+  border-radius: 5px;
+  gap: 5px;
 
-  .invitation-url-field {
+  label {
+    font-size: 0.9rem;
+  }
+
+  input {
+    border-radius: $radius 0 0 $radius;
+  }
+
+  .field-content {
     display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-    input {
-      border-radius: $radius 0 0 $radius;
-    }
+  button {
+    border-radius: 0 $radius $radius 0;
+    width: 145px;
+    margin-top: 5px;
 
-    button {
-      border-radius: 0 $radius $radius 0;
-      width: 45px;
-      margin-top: 5px;
-
-      svg {
-        width: 18px;
-        height: 18px;
-        transform: translate(-2px, 3px);
-      }
+    svg {
+      width: 18px;
+      height: 18px;
+      transform: translate(-2px, 3px);
     }
   }
 }

@@ -38,6 +38,9 @@
 <template name="userList">
   {{#modal id="displayUserList" title=title}}
     <div class="user-list">
+
+      {{> userInvitationField}}
+
       <div class="tabs">
         <button type="button" class="button js-toggle-tab {{#unless activeTab "level"}}show{{/unless}}" data-tab="level">Level</button>
         <button type="button" class="button js-toggle-tab {{#unless activeTab "team"}}show{{/unless}}" data-tab="team">Team</button>

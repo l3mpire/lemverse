@@ -14,7 +14,7 @@
 
   .js-stream-me {
     position: relative;
-    width: 242px;
+    width: 280px;
     height: 53px;
     background-color: rgba($main-color, 0.9);
     border-radius: 15px;
@@ -26,7 +26,7 @@
     overflow: hidden;
 
     &.active {
-      width: 240px;
+      width: 280px;
       height: 180px;
       background-color: rgba($main-color, 1);
 
@@ -79,11 +79,15 @@
         }
 
         &:hover {
-          background-color: lighten($main-color, 70%);
+          background-color: lighten($light-blue, 35%);
         }
 
         &.active {
           background-color: $light-green;
+
+          &:hover {
+            background-color: lighten($light-green, 10%);
+          }
         }
 
         &:not(.active):nth-child(-n+3)::before {

@@ -1,3 +1,5 @@
+@import "../_variables";
+
 div.settings {
   .name-section {
     width: 100%;
@@ -13,5 +15,9 @@ div.settings {
 
   .reaction-section {
     width: 100%;
+  }
+
+  .js-logout {
+    background-color: $light-red;
   }
 }

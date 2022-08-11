@@ -41,7 +41,7 @@ div.settings {
   }
 
   .highlight {
-    background-color: lighten($highlight-color, 5%);
+    background-color: $light-red;
   }
 
   video {
@@ -55,6 +55,7 @@ div.settings {
 
   .shortcuts {
     flex-grow: 1;
+    padding-bottom: 20px;
 
     ul {
       display: flex;

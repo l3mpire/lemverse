@@ -1,14 +1,14 @@
-<template name="userInvitation">
-  {{#modal title="Invite users"}}
-    <div class="user-invitation container">
-      <div class="invitation-url-field">
-        <input type="text" class="input" disabled value="{{invitationURL}}">
-        <button class="js-copy-invitation button">
-          <svg viewBox="0 0 24 24">
-              <path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z" />
-          </svg>
-        </button>
-      </div>
+<template name="userInvitationField">
+  <div class="invitation-url-field">
+    <label for="copy-link-field">Invite someone to your office</label>
+    <div class="field-content">
+      <input type="text" class="input" id="copy-link-field" disabled value="{{invitationURL}}">
+      <button class="js-copy-invitation button">
+        <span>Copy link</span>
+        <svg viewBox="0 0 24 24">
+          <path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z" />
+        </svg>
+      </button> 
     </div>
-  {{/modal}}
+  </div>
 </template>

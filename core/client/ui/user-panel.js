@@ -70,9 +70,14 @@ Template.userPanel.events({
     event.stopPropagation();
     toggleModal('settingsMain');
   },
-  'mouseup .button.js-user-invitation'(event) {
+  'mouseup .button.js-show-messaging-interface'(event) {
     event.preventDefault();
     event.stopPropagation();
-    toggleModal('userInvitation', 'height-auto');
+    openConsole(true);
+  },
+  'mouseup .button.js-show-users'(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    toggleModal('userList');
   },
 });
