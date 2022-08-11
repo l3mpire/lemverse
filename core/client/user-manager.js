@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import audioManager from './audio-manager';
 import { createConfettiEffect } from './effects/particles';
+import { textDirectionToVector, vectorToTextDirection } from './helpers';
 
 const userInterpolationInterval = 200;
 const defaultCharacterDirection = 'down';
@@ -415,18 +416,6 @@ userManager = {
     this.interpolatePlayerPositions();
   },
 
-  directionFromVector(vector) {
-    if (Math.abs(vector.x) > Math.abs(vector.y)) {
-      if (vector.x <= -1) return 'left';
-      else if (vector.x >= 1) return 'right';
-    }
-
-    if (vector.y <= -1) return 'up';
-    else if (vector.y >= 1) return 'down';
-
-    return undefined;
-  },
-
   handleUserInputs(keys, nippleMoving, nippleData) {
     this.inputVector.set(0, 0);
     if (isModalOpen()) return false;
@@ -473,7 +462,7 @@ userManager = {
     this.player.body.velocity.normalize().scale(speed);
     this.player.setDepth(this.player.y);
 
-    const direction = this.directionFromVector(this.player.body.velocity);
+    const direction = vectorToTextDirection(this.player.body.velocity);
     const running = keys.shift.isDown && direction;
     if (!peer.hasActiveStreams()) peer.enableSensor(!running);
 
@@ -510,7 +499,7 @@ userManager = {
 
     const positionOffset = { x: 0, y: 0 };
     if (player.direction) {
-      const directionVector = this.directionToVector(player.direction);
+      const directionVector = textDirectionToVector(player.direction);
       positionOffset.x = directionVector[0] * characterInteractionDistance.x;
       positionOffset.y = directionVector[1] * characterInteractionDistance.y;
     }
@@ -519,7 +508,7 @@ userManager = {
   },
 
   getPositionInFrontOfPlayer(player, distance = undefined) {
-    const directionVector = this.directionToVector(player.direction);
+    const directionVector = textDirectionToVector(player.direction);
 
     return {
       x: player.x + directionVector[0] * (distance || characterInteractionDistance.x),
@@ -548,21 +537,6 @@ userManager = {
     }
 
     return tiles;
-  },
-
-  directionToVector(direction) {
-    switch (direction) {
-      case 'left':
-        return [-1, 0];
-      case 'right':
-        return [1, 0];
-      case 'up':
-        return [0, -1];
-      case 'down':
-        return [0, 1];
-      default:
-        return [0, 0];
-    }
   },
 
   follow(user) {

@@ -1,3 +1,5 @@
+import Phaser from 'phaser';
+
 viewportModes = Object.freeze({
   fullscreen: 'fullscreen',
   small: 'small',
@@ -244,6 +246,27 @@ const generateEntityThumbnail = (entity, thumbnailMaxSize = 35) => {
   return `background-image: url("lemverse.png"); background-size: contain; width: 100%; height: 100%;`;
 };
 
+const textDirectionToVector = direction => {
+  if (direction === 'left') return Phaser.Math.Vector2.LEFT;
+  if (direction === 'right') return Phaser.Math.Vector2.RIGHT;
+  if (direction === 'up') return Phaser.Math.Vector2.UP;
+  if (direction === 'down') return Phaser.Math.Vector2.DOWN;
+
+  return Phaser.Math.Vector2.ZERO;
+};
+
+const vectorToTextDirection = vector => {
+  if (Math.abs(vector.x) > Math.abs(vector.y)) {
+    if (vector.x <= -1) return 'left';
+    else if (vector.x >= 1) return 'right';
+  }
+
+  if (vector.y <= -1) return 'up';
+  else if (vector.y >= 1) return 'down';
+
+  return undefined;
+};
+
 export {
   clamp,
   formatURLs,
@@ -252,4 +275,6 @@ export {
   nearestDuration,
   replaceTextVars,
   toggleUIInputs,
+  textDirectionToVector,
+  vectorToTextDirection,
 };
