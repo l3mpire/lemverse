@@ -151,6 +151,10 @@ Meteor.users.find({ 'status.online': true }).observeChanges({
     }
   },
   removed(id) {
+    const user = Meteor.users.findOne(id);
+    if (!user?.profile?.guest) {
+      analytics.track(id, '🚪 Log Out');
+    }
     Meteor.users.update(id, { $set: { 'status.lastLogoutAt': new Date() } });
   },
 });
