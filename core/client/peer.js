@@ -147,9 +147,6 @@ peer = {
     // ensures peers are using last stream & tracks available
     this.updatePeersStream(stream, type);
 
-    call.on('close', () => debug(`createPeerCall: call closed`, { userId: user._id }));
-    call.on('stream', remoteStream => debug(`createPeerCall: received stream !!!`, { userId: user._id, stream: remoteStream }));
-
     debug(`createPeerCall: call in progress`, { user: user._id, type });
   },
 
@@ -200,7 +197,8 @@ peer = {
         if (existingSenderVideoTrack) existingSenderVideoTrack.replaceTrack(videoTrack);
         else call.peerConnection.addTrack(videoTrack);
 
-        debug(`updatePeersStream: stream main track updated for user`, { key });
+        if (!existingSenderAudioTrack || !existingSenderVideoTrack) debug(`updatePeersStream: stream main track added for user`, { key });
+        else debug(`updatePeersStream: stream main track updated for user`, { key });
       });
     } else if (type === streamTypes.screen) {
       debug(`updatePeersStream: screen share stream ${stream.id}`, { stream });
@@ -344,17 +342,6 @@ peer = {
     // Send global notification
     sendEvent('proximity-started', { user: remoteUser });
 
-    // IMPORTANT :
-    // It looks like Meteor update locale collection when user focus the tab (chrome put asleep the tab maybe)
-    // So, the locale position is probably the old-one, blocking the logic below
-    // ensures users is still near on answer
-    // userProximitySensor.checkDistance(Meteor.user(), remoteUser);
-    // if (!userProximitySensor.isUserNear(remoteUser)) {
-    //   log(`answer call: user is too far`, remoteUserId);
-    //   this.close(remoteUserId);
-    //   return false;
-    // }
-
     // answer the call
     remoteCall.answer();
 
@@ -374,10 +361,6 @@ peer = {
       debug(`remoteCall: closed`, { userId: remoteUserId, type: remoteCall.metadata.type });
       this.close(remoteUserId, 0, 'peerjs-event');
     });
-
-    // ensures a call to the other user exists on an answer to avoid one-way calls, do nothing if a call is already started
-    // note: should not be necessary, disabled for now to avoid multiple calls
-    // this.createPeerCalls(remoteUser);
 
     return true;
   },
@@ -440,7 +423,7 @@ peer = {
     const { port, url: host, path, config } = result;
 
     const peerConfig = {
-      debug: debug ? 2 : 0,
+      debug: Meteor.user().options?.debug ? 2 : 0,
       host,
       port,
       path,
