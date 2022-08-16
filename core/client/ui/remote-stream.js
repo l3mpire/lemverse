@@ -1,6 +1,13 @@
 const maxAttempt = 10;
 const delayBetweenAttempt = 2000; // in ms
 
+const findRemoteUser = userId => Meteor.users.findOne({ _id: userId,
+  fields: {
+    'profile.userMediaError': 1,
+    'profile.shareAudio': 1,
+    'profile.shareVideo': 1,
+  } });
+
 const isRemoteUserSharingMedia = (user, type) => (type === streamTypes.screen ? user.shareScreen : user.shareAudio || user.shareVideo);
 
 const removeAllFullScreenElement = ignoredElement => {
@@ -75,15 +82,13 @@ Template.remoteStream.onDestroyed(() => {
 });
 
 Template.remoteStream.helpers({
-  mediaState() { return Meteor.users.findOne({ _id: this.remoteUser._id })?.profile; },
+  mediaState() { return findRemoteUser(this.remoteUser._id)?.profile; },
   hasMainStream() { return this.remoteUser.main?.srcObject; },
   hasScreenStream() { return this.remoteUser.screen?.srcObject; },
   state() {
-    const user = Meteor.users.findOne({ _id: this.remoteUser._id });
+    const user = findRemoteUser(this.remoteUser._id);
     if (!user) return 'user-error';
-
-    const { profile } = user;
-    if (profile.userMediaError) return 'media-error';
+    if (user.profile.userMediaError) return 'media-error';
 
     return this.remoteUser.waitingCallAnswer ? 'calling' : 'connected';
   },
