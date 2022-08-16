@@ -104,7 +104,6 @@ Template.tileData.helpers({
 
 Template.tilesetToolbox.helpers({
   pointerTile() { return pointerToTile(); },
-  user(userId) { return Meteor.users.findOne(userId); },
   email() { return this?.emails?.[0]?.address; },
   selectedTilesIndex() { return Session.get('selectedTiles')?.index; },
   selectedTilesId() { return Session.get('selectedTilesetId'); },
