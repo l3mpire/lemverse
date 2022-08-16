@@ -116,13 +116,11 @@ peer = {
     this.callsToClose[userId] = setTimeout(() => this.closeCall(userId, origin), timeout);
   },
 
-  createPeerCall(peer, stream, user) {
-    const type = stream === userStreams.streams.main.instance ? 'main' : 'screen';
-
-    debug(`createPeerCall: calling remote user`, { user: user._id, type });
+  createPeerCall(peer, user, stream, streamType) {
+    debug(`createPeerCall: calling remote user`, { user: user._id, streamType });
     if (!stream) { error(`createPeerCall: stream is undefined`, { user, stream }); return; }
 
-    if (this.calls[`${user._id}-${type}`]) {
+    if (this.calls[`${user._id}-${streamType}`]) {
       debug(`createPeerCall: creation cancelled (call already started)`);
       return;
     }
@@ -133,7 +131,7 @@ peer = {
       return;
     }
 
-    const call = peer.call(user._id, stream, { metadata: { userId: Meteor.userId(), type } });
+    const call = peer.call(user._id, stream, { metadata: { userId: Meteor.userId(), type: streamType } });
     if (!call) {
       error(`createPeerCall: an error occured during call creation (peerjs error)`);
       this.close(user._id, 0, 'peer-error');
@@ -141,13 +139,13 @@ peer = {
     }
 
     // update html element with the last stream instance
-    this.calls[`${user._id}-${type}`] = call;
-    this.createOrUpdateRemoteStream(user, type);
+    this.calls[`${user._id}-${streamType}`] = call;
+    this.createOrUpdateRemoteStream(user, streamType);
 
     // ensures peers are using last stream & tracks available
-    this.updatePeersStream(stream, type);
+    this.updatePeersStream(stream, streamType);
 
-    debug(`createPeerCall: call in progress`, { user: user._id, type });
+    debug(`createPeerCall: call in progress`, { user: user._id, streamType });
   },
 
   async createPeerCalls(user) {
@@ -164,8 +162,8 @@ peer = {
     }
 
     const peer = await this.getPeer();
-    if (shareAudio || shareVideo) userStreams.createStream().then(stream => this.createPeerCall(peer, stream, user));
-    if (shareScreen) userStreams.createScreenStream().then(stream => this.createPeerCall(peer, stream, user));
+    if (shareAudio || shareVideo) userStreams.createStream().then(stream => this.createPeerCall(peer, user, stream, streamTypes.main));
+    if (shareScreen) userStreams.createScreenStream().then(stream => this.createPeerCall(peer, user, stream, streamTypes.screen));
   },
 
   destroy() {
