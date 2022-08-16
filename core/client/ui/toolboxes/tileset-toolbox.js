@@ -83,7 +83,7 @@ Template.tilesetToolbox.onCreated(() => {
   bindKeyboardShortcuts();
 
   if (!Session.get('selectedTilesetId')) {
-    const firstTileset = Tilesets.findOne({}, { sort: { name: 1 } });
+    const firstTileset = Tilesets.findOne({ hidden: { $exists: false } }, { sort: { name: 1 } });
     Session.set('selectedTilesetId', firstTileset);
   }
 });
