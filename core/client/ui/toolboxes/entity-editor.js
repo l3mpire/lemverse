@@ -1,4 +1,7 @@
-import { toggleUIInputs } from '../../helpers';
+import { clamp, toggleUIInputs } from '../../helpers';
+
+const entityMaxScale = 3;
+const entityDepthRange = { min: -1, max: 1000 };
 
 const closeInterface = () => Session.set('selectedEntityId', undefined);
 const selectedEntity = () => Entities.findOne(Session.get('selectedEntityId'));
@@ -19,14 +22,14 @@ Template.entityEditor.events({
     if (!entity) return;
 
     const { valueAsNumber: value } = event.target;
-    Entities.update(entity._id, { $set: { 'gameObject.depth': value } });
+    Entities.update(entity._id, { $set: { 'gameObject.depth': clamp(value, entityDepthRange.min, entityDepthRange.max) } });
   },
   'input #entity-scale'(event) {
     const entity = selectedEntity();
     if (!entity) return;
 
     const { valueAsNumber: value } = event.target;
-    if (value !== 0) Entities.update(entity._id, { $set: { 'gameObject.scale': value } });
+    if (value !== 0) Entities.update(entity._id, { $set: { 'gameObject.scale': clamp(value, -entityMaxScale, entityMaxScale) } });
   },
   'click .js-reset-depth'() {
     const entity = selectedEntity();
