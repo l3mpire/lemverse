@@ -1,5 +1,6 @@
 import Peer from 'peerjs';
 import audioManager from './audio-manager';
+import { canAnswerCall } from './helpers';
 
 const debug = (text, meta) => {
   if (!Meteor.user().options?.debug) return;
@@ -125,7 +126,7 @@ peer = {
       return;
     }
 
-    if (!userProximitySensor.isUserNear(user)) {
+    if (!canAnswerCall(user)) {
       debug(`createPeerCall: creation cancelled (user is too far)`);
       this.close(user._id, 0, 'far-user');
       return;

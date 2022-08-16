@@ -267,7 +267,16 @@ const vectorToTextDirection = vector => {
   return undefined;
 };
 
+// To avoid bugs related to network latency we accept a distance greater than that which launches a call to limit false negatives behaviors
+const canAnswerCall = user => {
+  if (userProximitySensor.isUserNear(user)) return true;
+
+  const callDistanceThreshold = Meteor.settings.public.character.callDistanceThreshold || 300;
+  return userProximitySensor.distance(Meteor.user(), user) <= callDistanceThreshold;
+};
+
 export {
+  canAnswerCall,
   clamp,
   formatURLs,
   formatURL,
