@@ -8,8 +8,6 @@ const findRemoteUser = userId => Meteor.users.findOne(userId,
     'profile.shareVideo': 1,
   } });
 
-const isRemoteUserSharingMedia = (user, type) => (type === streamTypes.screen ? user.shareScreen : user.shareAudio || user.shareVideo);
-
 const removeAllFullScreenElement = ignoredElement => {
   document.querySelectorAll('.stream .fullscreen').forEach(stream => {
     if (stream.parentElement !== ignoredElement) stream.classList.remove('fullscreen');
@@ -32,11 +30,6 @@ const checkMediaAvailable = (template, type) => {
   if (!remoteUserIsNear) {
     log(`Stop retry to get ${remoteUser.name}'s ${type}, ${remoteUser.name} is too far`);
     return;
-  }
-
-  const user = Meteor.users.findOne({ _id: remoteUser._id }).profile;
-  if (!isRemoteUserSharingMedia(user, type)) {
-    log(`Remote user has nothing to share`);
   }
 
   const source = type === streamTypes.screen ? remoteUser.screen?.srcObject : remoteUser.main?.srcObject;
