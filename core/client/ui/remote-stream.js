@@ -1,8 +1,8 @@
 const maxAttempt = 10;
 const delayBetweenAttempt = 2000; // in ms
 
-const findRemoteUser = userId => Meteor.users.findOne({ _id: userId,
-  fields: {
+const findRemoteUser = userId => Meteor.users.findOne(userId,
+  { fields: {
     'profile.userMediaError': 1,
     'profile.shareAudio': 1,
     'profile.shareVideo': 1,
