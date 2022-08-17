@@ -8,7 +8,7 @@ const onMediaStreamStateChanged = event => {
     if (!stream) destroyVideoSource(this.videoScreenShareElement);
     else this.videoScreenShareElement.srcObject = stream;
 
-    const user = Meteor.user();
+    const user = Meteor.user({ fields: { 'profile.shareScreen': 1 } });
     if (user) this.videoScreenShareElement.classList.toggle('active', user.profile.shareScreen);
   } else if (type === streamTypes.main) {
     if (!this.videoElement) this.videoElement = document.querySelector('.js-stream-me video');
