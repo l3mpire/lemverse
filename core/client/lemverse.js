@@ -211,12 +211,16 @@ Template.lemverse.onCreated(function () {
 
   this.autorun(() => {
     if (!Session.get('sceneWorldReady')) return;
-    game.scene.getScene('EditorScene')?.updateEditionMarker(Session.get('selectedTiles'));
+    const selectedMenu = Session.get('editorSelectedMenu');
+
+    Tracker.nonreactive(() => game.scene.getScene('EditorScene')?.updateEditionMarker(selectedMenu));
   });
 
   this.autorun(() => {
     if (!Session.get('sceneWorldReady')) return;
-    game.scene.getScene('EditorScene')?.onEditorModeChanged(Session.get('editorSelectedMenu'));
+    const selectedMenu = Session.get('editorSelectedMenu');
+
+    Tracker.nonreactive(() => game.scene.getScene('EditorScene')?.onEditorModeChanged(selectedMenu));
   });
 
   this.autorun(() => {
