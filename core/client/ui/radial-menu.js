@@ -14,14 +14,14 @@ const radialMenuStartingAngle = 3.8; // in radians
 let menuHandler;
 Session.set('radialMenuModules', []);
 
-const menuCurrentUser = () => {
+const menuCurrentUser = (options = {}) => {
   const menu = Session.get('menu');
   if (!menu) return undefined;
 
   const { userId } = menu;
   if (!userId) return undefined;
 
-  return Meteor.users.findOne(userId);
+  return Meteor.users.findOne(userId, options);
 };
 
 const lovePhrases = userName => [
@@ -236,5 +236,5 @@ Template.radialMenu.helpers({
   position() { return computeMenuPosition(); },
   showBackground() { return menuOptions.get().length > itemAmountRequiredForBackground; },
   showShortcuts() { return Template.instance().showShortcuts.get(); },
-  username() { return menuCurrentUser()?.profile.name; },
+  username() { return menuCurrentUser({ fields: { 'profile.name': 1 } })?.profile.name; },
 });
