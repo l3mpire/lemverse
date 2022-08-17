@@ -6,6 +6,7 @@ const tabs = Object.freeze({
 });
 
 const userListTabKey = 'userListTab';
+const userFields = { 'status.online': 1, 'profile.name': 1, 'profile.x': 1, 'profile.y': 1, 'profile.levelId': 1, roles: 1, guildId: 1 };
 
 const users = (mode, guildId) => {
   let filters = { 'profile.guest': { $not: true } };
@@ -14,7 +15,7 @@ const users = (mode, guildId) => {
     filters = { ...filters, 'status.online': true, 'profile.levelId': levelId };
   } else if (mode === tabs.team) filters = { ...filters, $and: [{ guildId: { $exists: true } }, { guildId }] };
 
-  return Meteor.users.find(filters, { sort: { 'profile.name': 1 } });
+  return Meteor.users.find(filters, { sort: { 'profile.name': 1 }, fields: userFields });
 };
 
 Template.userListEntry.helpers({
@@ -23,7 +24,7 @@ Template.userListEntry.helpers({
   canModerateUser() {
     if (!this.canModerateLevel) return false;
 
-    return canModerateUser(Meteor.user(), this.user);
+    return canModerateUser(Meteor.user({ fields: { guildId: 1, roles: 1 } }), this.user);
   },
   guildName() { return Guilds.findOne(this.user.guildId)?.name; },
   levelOwner() { return isLevelOwner(this.user, this.level); },
@@ -31,14 +32,14 @@ Template.userListEntry.helpers({
   user() { return this.user; },
   zone() {
     if (!this.user.status.online) return '-';
-    if (this.user.profile.levelId !== Meteor.user().profile.levelId) return 'In another level';
+    if (this.user.profile.levelId !== Meteor.user({ fields: { 'profile.levelId': 1 } }).profile.levelId) return 'In another level';
 
     const zone = Zones.findOne({
       x1: { $lte: this.user.profile.x },
       x2: { $gte: this.user.profile.x },
       y1: { $lte: this.user.profile.y },
       y2: { $gte: this.user.profile.y },
-    });
+    }, { fields: { name: 1, hideName: 1 } });
 
     if (zone && zone.name && !zone.hideName) return zone.name;
 
