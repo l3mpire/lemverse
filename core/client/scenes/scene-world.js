@@ -192,7 +192,6 @@ WorldScene = new Phaser.Class({
     userProximitySensor.callProximityEndedForAllNearUsers();
     peer.closeAll();
 
-    Session.set('showScoreInterface', false);
     Session.set('sceneWorldReady', false);
   },
 });
