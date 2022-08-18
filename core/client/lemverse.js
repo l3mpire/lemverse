@@ -147,7 +147,6 @@ Template.lemverse.onCreated(function () {
     Tracker.nonreactive(() => {
       const interfaceOpen = menuOpen || modalOpen;
       const worldScene = game.scene.getScene('WorldScene');
-      userManager.pauseAnimation(undefined, modalOpen);
       worldScene.enableMouse(!interfaceOpen);
       worldScene.enableKeyboard(!modalOpen, !modalOpen);
     });

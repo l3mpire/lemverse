@@ -214,6 +214,8 @@ registerRadialMenuModules = modules => {
   Session.set('radialMenuModules', loadedModules);
 };
 
+const allowPhaserMouseInputs = () => !Session.get('editor') && !Session.get('console');
+
 const nearestDuration = duration => {
   const message = [];
   message.push(lp.s.lpad(moment.duration(duration).asHours() | 0, 2, '0'));
@@ -276,6 +278,7 @@ const canAnswerCall = user => {
 };
 
 export {
+  allowPhaserMouseInputs,
   canAnswerCall,
   clamp,
   formatURLs,
