@@ -73,11 +73,11 @@ class Character extends Phaser.GameObjects.Container {
     });
   }
 
-  playAnimation(animationName, direction) {
+  playAnimation(animationName, direction, forceUpdate = false) {
     this.setAnimationPaused(false);
 
     const key = animationName + direction;
-    if (this.lastAnimationDirection === key) return;
+    if (this.lastAnimationDirection === key && !forceUpdate) return;
     this.lastAnimationDirection = key;
     this.direction = direction;
 

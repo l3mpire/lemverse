@@ -136,7 +136,9 @@ userManager = {
   updateUser(user, oldUser) {
     const player = this.players[user._id];
     if (!player) return;
-    const { x, y, reaction, shareAudio, guest, userMediaError, name, nameColor } = user.profile;
+    const { x, y, direction, reaction, shareAudio, guest, userMediaError, name, nameColor } = user.profile;
+
+    player.direction = direction;
 
     // show reactions
     if (reaction) this.playReaction(player, reaction);
@@ -166,12 +168,12 @@ userManager = {
         hair: user.profile.hair,
         accessory: user.profile.accessory,
       });
+    }
 
-      if (player.direction) {
-        const wasAnimationPaused = player.animationPaused;
-        player.playAnimation('run', player.direction || 'down');
-        if (wasAnimationPaused) player.setAnimationPaused(true);
-      }
+    if (hasSkinUpdate || user.profile.direction !== oldUser?.profile.direction) {
+      const wasAnimationPaused = player.animationPaused;
+      player.playAnimation('run', player.direction || 'down', true);
+      if (wasAnimationPaused) player.setAnimationPaused(true);
     }
 
     if (guest) player.skinPartsContainer.alpha = 0.7;
@@ -294,11 +296,11 @@ userManager = {
       if (player === this.player) return;
 
       if (!player.lwTargetDate) {
-        player.pauseAnimation(true);
+        player.setAnimationPaused(true);
         return;
       }
 
-      player.playAnimation(characterAnimations.run, player);
+      player.playAnimation(characterAnimations.run, player.direction);
 
       if (player.lwTargetDate <= now) {
         player.x = player.lwTargetX;
