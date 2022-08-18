@@ -22,7 +22,7 @@ BootScene = new Phaser.Class({
 
     const { frameHeight, frameWidth } = Meteor.settings.public.assets.character;
     Characters.find().forEach(character => {
-      this.load.spritesheet(character.fileId, `${filesRoute}/${character.fileId}`, {
+      this.load.spritesheet(character._id, `${filesRoute}/${character.fileId}`, {
         frameWidth: frameWidth || 16,
         frameHeight: frameHeight || 32,
       });
@@ -52,7 +52,7 @@ BootScene = new Phaser.Class({
         Object.entries(animation).forEach(([key, direction]) => {
           this.anims.create({
             key: `${animationName}-${key}-${character._id}`,
-            frames: this.anims.generateFrameNumbers(character.fileId, { frames: direction.frames }),
+            frames: this.anims.generateFrameNumbers(character._id, { frames: direction.frames }),
             frameRate: direction.frameRate,
             repeat: direction.repeat,
           });
