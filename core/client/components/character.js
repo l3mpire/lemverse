@@ -78,6 +78,13 @@ class Character extends Phaser.GameObjects.Container {
     });
   }
 
+  onDamage() {
+    this.flashColor(configuration.colorStates.takeDamage);
+
+    const confettiEffect = createConfettiEffect(this.scene, this.x, this.y);
+    confettiEffect.emitters.list.forEach(emitter => emitter.explode());
+  }
+
   playAnimation(animationName, direction, forceUpdate = false) {
     this.setAnimationPaused(false);
 
@@ -125,13 +132,6 @@ class Character extends Phaser.GameObjects.Container {
 
   setName(name, color) {
     game.scene.getScene('UIScene').updateUserName(this.getData('userId'), name, color);
-  }
-
-  onDamage() {
-    this.flashColor(configuration.colorStates.takeDamage);
-
-    const confettiEffect = createConfettiEffect(this.scene, this.x, this.y);
-    confettiEffect.emitters.list.forEach(emitter => emitter.explode());
   }
 
   toggleMouseInteraction(value = true) {

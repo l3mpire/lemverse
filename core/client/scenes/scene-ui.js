@@ -77,9 +77,9 @@ UIScene = new Phaser.Class({
     _.each(this.characterNamesObjects, text => text?.destroy());
     this.characterNamesObjects = {};
 
-    _.each(userManager.players, player => {
-      clearInterval(player.reactionHandler);
-      delete player.reactionHandler;
+    _.each(userManager.characters, character => {
+      clearInterval(character.reactionHandler);
+      delete character.reactionHandler;
     });
   },
 
@@ -113,7 +113,7 @@ UIScene = new Phaser.Class({
     let textInstance = this.characterNamesObjects[userId];
 
     if (!textInstance) {
-      const player = userManager.players[userId];
+      const player = userManager.getCharacter(userId);
       if (!player) return;
 
       textInstance = new CharacterNameText(this, player, name, colorName);

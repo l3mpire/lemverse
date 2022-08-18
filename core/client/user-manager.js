@@ -42,7 +42,7 @@ userManager = {
   inputVector: new Phaser.Math.Vector2(),
   player: undefined,
   playerWasMoving: false,
-  players: {},
+  characters: {},
   scene: undefined,
   canPlayReactionSound: true,
   userMediaStates: undefined,
@@ -52,7 +52,7 @@ userManager = {
     this.entityFollowed = undefined;
     this.inputVector = new Phaser.Math.Vector2();
     this.player = undefined;
-    this.players = {};
+    this.characters = {};
     this.scene = scene;
     this.userMediaStates = undefined;
   },
@@ -60,7 +60,7 @@ userManager = {
   destroy() {
     this.onSleep();
     this.player = undefined;
-    this.players = {};
+    this.characters = {};
   },
 
   onSleep() {
@@ -70,14 +70,14 @@ userManager = {
   },
 
   createUser(user) {
-    if (this.players[user._id]) return null;
+    if (this.characters[user._id]) return null;
 
     const { x, y, guest, direction, name, nameColor } = user.profile;
 
     const character = new Character(this.scene, x, y);
     character.setData('userId', user._id);
     character.direction = direction;
-    this.players[user._id] = character;
+    this.characters[user._id] = character;
 
     if (guest) character.updateSkin(guestSkin()); // init with custom skin
     else character.setName(name, nameColor);
@@ -135,7 +135,7 @@ userManager = {
   },
 
   updateUser(user, oldUser) {
-    const player = this.players[user._id];
+    const player = this.characters[user._id];
     if (!player) return;
 
     const { x, y, direction, reaction, shareAudio, guest, userMediaError, name, nameColor } = user.profile;
@@ -203,7 +203,7 @@ userManager = {
   },
 
   removeUser(user) {
-    const character = this.players[user._id];
+    const character = this.characters[user._id];
     if (!character) return;
 
     clearInterval(character.reactionHandler);
@@ -212,13 +212,13 @@ userManager = {
 
     if (user._id === Meteor.userId()) this.unsetMainPlayer();
 
-    delete this.players[user._id];
+    delete this.characters[user._id];
   },
 
   setAsMainPlayer(userId) {
     if (this.player) this.scene.physics.world.disableBody(this.player);
 
-    const player = this.players[userId];
+    const player = this.characters[userId];
     if (!player) throw new Error(`Can't set as main player a non spawned character`);
     player.enablePhysics();
 
@@ -255,7 +255,7 @@ userManager = {
 
   interpolatePlayerPositions() {
     const now = Date.now();
-    Object.values(this.players).forEach(player => {
+    Object.values(this.characters).forEach(player => {
       if (player === this.player) return;
 
       if (!player.lwTargetDate) {
@@ -421,7 +421,7 @@ userManager = {
       return;
     }
 
-    this.entityFollowed = this.players[user._id];
+    this.entityFollowed = this.characters[user._id];
     lp.notif.success(`You are following ${user.profile.name}`);
     peer.lockCall(user._id, true);
   },
@@ -479,7 +479,7 @@ userManager = {
       if (this.entityFollowed?.userId === emitterUserId) this.follow(undefined);
       else lp.notif.warning(`${userEmitter.profile.name} has finally stopped following you 🎉`);
     } else if (type === 'text') {
-      const emitterPlayer = userManager.players[emitterUserId];
+      const emitterPlayer = this.getCharacter(emitterUserId);
       if (!emitterPlayer) return;
 
       const { zoneMuted } = Meteor.user();
@@ -499,7 +499,7 @@ userManager = {
     window.dispatchEvent(new CustomEvent(eventTypes.onPeerDataReceived, { detail: { data: dataReceived, userEmitter, meta } }));
   },
 
-  getCharacter(user) {
-    return this.players[user._id];
+  getCharacter(userId) {
+    return this.characters[userId];
   },
 };
