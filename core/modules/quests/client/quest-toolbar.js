@@ -1,3 +1,5 @@
+import { toggleUIInputs } from '../../../client/helpers';
+
 const activeQuest = () => {
   const questId = Session.get('selectedQuestId');
   if (!questId) return undefined;
@@ -98,12 +100,12 @@ Template.questToolbar.events({
   'focus .js-quest-name'(event) {
     event.preventDefault();
     event.stopPropagation();
-    hotkeys.setScope(scopes.form); game.scene.keys.WorldScene.enableKeyboard(false, false);
+    toggleUIInputs(true);
   },
   'blur .js-quest-name'(event) {
     event.preventDefault();
     event.stopPropagation();
-    hotkeys.setScope(scopes.player); game.scene.keys.WorldScene.enableKeyboard(true, false);
+    toggleUIInputs(false);
     updateTitle(event.currentTarget.value);
   },
   'click .js-quest-join'(event) {

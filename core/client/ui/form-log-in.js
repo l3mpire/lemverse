@@ -1,3 +1,5 @@
+import { toggleUIInputs } from '../helpers';
+
 const onPasswordRecoverSubmit = template => {
   const { email } = template;
   if (!email) { lp.notif.error('Who are you mister anonymous? 🤔'); return; }
@@ -39,7 +41,7 @@ const onSubmit = template => {
       });
     }
 
-    hotkeys.setScope(scopes.player);
+    toggleUIInputs(false);
   });
 };
 
@@ -51,8 +53,8 @@ Template.formLogIn.onCreated(function () {
 
 Template.formLogIn.events({
   'click .js-next-step'() { onSubmit(Template.instance()); },
-  'focus input'() { hotkeys.setScope('form'); game?.scene?.keys?.WorldScene?.enableKeyboard(false, false); },
-  'blur input'() { hotkeys.setScope(scopes.player); game?.scene?.keys?.WorldScene?.enableKeyboard(true, false); },
+  'focus input'() { toggleUIInputs(true); },
+  'blur input'() { toggleUIInputs(false); },
   'keyup .js-email'(event, templateInstance) { templateInstance.email = event.target.value; },
   'keyup .js-password'(event, templateInstance) { templateInstance.password = event.target.value; },
   'click .js-cancel-login-mode'() { Template.instance().loginMode.set(true); },

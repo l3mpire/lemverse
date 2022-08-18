@@ -1,3 +1,5 @@
+import { toggleUIInputs } from '../helpers';
+
 const checkEmail = value => {
   if (!value) return 'Who are you mister anonymous? 🤔';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Invalid email';
@@ -40,7 +42,7 @@ const onSubmit = template => {
         return;
       }
 
-      hotkeys.setScope(scopes.player);
+      toggleUIInputs(false);
     });
   }
 };
@@ -54,8 +56,8 @@ Template.formSignIn.onCreated(function () {
 
 Template.formSignIn.events({
   'click .js-next-step'() { onSubmit(Template.instance()); },
-  'focus input'() { hotkeys.setScope('form'); game?.scene?.keys?.WorldScene?.enableKeyboard(false, false); },
-  'blur input'() { hotkeys.setScope(scopes.player); game?.scene?.keys?.WorldScene?.enableKeyboard(true, false); },
+  'focus input'() { toggleUIInputs(true); },
+  'blur input'() { toggleUIInputs(false); },
   'click .js-previous-step'() { Template.instance().step.set(Template.instance().step.get() - 1); },
   'keyup .js-email'(event, templateInstance) { templateInstance.email = event.target.value; },
   'keyup .js-password'(event, templateInstance) { templateInstance.password = event.target.value; },
