@@ -127,7 +127,7 @@ class Character extends Phaser.GameObjects.Container {
     game.scene.getScene('UIScene').updateUserName(this.getData('userId'), name, color);
   }
 
-  takeDamage() {
+  onDamage() {
     this.flashColor(configuration.colorStates.takeDamage);
 
     const confettiEffect = createConfettiEffect(this.scene, this.x, this.y);

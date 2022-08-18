@@ -498,4 +498,8 @@ userManager = {
 
     window.dispatchEvent(new CustomEvent(eventTypes.onPeerDataReceived, { detail: { data: dataReceived, userEmitter, meta } }));
   },
+
+  getCharacter(user) {
+    return this.players[user._id];
+  },
 };
