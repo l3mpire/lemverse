@@ -248,6 +248,12 @@ const generateEntityThumbnail = (entity, thumbnailMaxSize = 35) => {
   return `background-image: url("lemverse.png"); background-size: contain; width: 100%; height: 100%;`;
 };
 
+const guestSkin = () => {
+  if (_.isObject(Meteor.settings.public.skins.guest)) return Meteor.settings.public.skins.guest;
+
+  return Levels.findOne().skins?.guest || {};
+};
+
 const textDirectionToVector = direction => {
   if (direction === 'left') return Phaser.Math.Vector2.LEFT;
   if (direction === 'right') return Phaser.Math.Vector2.RIGHT;
@@ -281,6 +287,7 @@ export {
   allowPhaserMouseInputs,
   canAnswerCall,
   clamp,
+  guestSkin,
   formatURLs,
   formatURL,
   generateEntityThumbnail,

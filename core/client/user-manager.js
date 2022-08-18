@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import Character from './components/character';
 import audioManager from './audio-manager';
-import { textDirectionToVector, vectorToTextDirection } from './helpers';
+import { guestSkin, textDirectionToVector, vectorToTextDirection } from './helpers';
 
 const userInterpolationInterval = 200;
 const defaultUserMediaColorError = '0xd21404';
@@ -74,30 +74,8 @@ userManager = {
     if (meet.api) meet.userName(name);
   },
 
-  computeGuestSkin(user) {
-    if (!user.profile.guest) return user;
-
-    if (_.isObject(Meteor.settings.public.skins.guest)) {
-      user.profile = {
-        ...user.profile,
-        ...Meteor.settings.public.skins.guest,
-      };
-    }
-
-    const level = Levels.findOne(user.profile.levelId);
-    if (level?.skins?.guest) {
-      user.profile = {
-        ...user.profile,
-        ...level.skins?.guest,
-      };
-    }
-
-    return user;
-  },
-
   createUser(user) {
     if (this.players[user._id]) return null;
-    if (user.profile.guest) user = this.computeGuestSkin(user);
 
     const { x, y, shareAudio, guest, direction } = user.profile;
     const character = new Character(this.scene, x, y);
@@ -108,6 +86,9 @@ userManager = {
     userStateIndicator.visible = !guest && !shareAudio;
     userStateIndicator.name = 'stateIndicator';
     character.add(userStateIndicator);
+
+    // add default skin for guest
+    if (guest) character.updateSkin(guestSkin());
 
     this.players[user._id] = character;
 
@@ -133,26 +114,12 @@ userManager = {
     player.reactionHandler = setInterval(() => UIScene.spawnReaction(player, reaction, animation, { randomOffset: 10 }), 250);
   },
 
-  updateUser(user, oldUser) {
-    const player = this.players[user._id];
-    if (!player) return;
-    const { x, y, direction, reaction, shareAudio, guest, userMediaError, name, nameColor } = user.profile;
-
-    player.direction = direction;
-
-    // show reactions
-    if (reaction) this.playReaction(player, reaction);
-    else clearInterval(player.reactionHandler);
-
-    if (oldUser?.profile.guest && !user.profile.guest) {
-      player.toggleMouseInteraction(true);
-      game.scene.getScene('UIScene')?.updateUserName(user._id, name, nameColor);
-      player.skinPartsContainer.alpha = 1.0;
-    }
+  _checkForSkinUpdate(character, user, oldUser) {
+    const { guest } = user.profile;
 
     // check for skin updates
-    let hasSkinUpdate = !oldUser;
-    if (!hasSkinUpdate) {
+    let hasSkinUpdate = !oldUser && !guest;
+    if (!hasSkinUpdate && !guest) {
       const charactersPartsKeys = Object.keys(charactersParts);
       charactersPartsKeys.forEach(characterPart => {
         if (user.profile[characterPart] === oldUser.profile[characterPart]) return;
@@ -161,7 +128,7 @@ userManager = {
     }
 
     if (hasSkinUpdate) {
-      player.updateSkin({
+      character.updateSkin({
         body: user.profile.body,
         outfit: user.profile.outfit,
         eye: user.profile.eye,
@@ -171,12 +138,30 @@ userManager = {
     }
 
     if (hasSkinUpdate || user.profile.direction !== oldUser?.profile.direction) {
-      const wasAnimationPaused = player.animationPaused;
-      player.playAnimation('run', player.direction || 'down', true);
-      if (wasAnimationPaused) player.setAnimationPaused(true);
+      const wasAnimationPaused = character.animationPaused;
+      character.playAnimation('run', character.direction || 'down', true);
+      if (wasAnimationPaused) character.setAnimationPaused(true);
+    }
+  },
+
+  updateUser(user, oldUser) {
+    const player = this.players[user._id];
+    if (!player) return;
+
+    const { x, y, direction, reaction, shareAudio, guest, userMediaError, name, nameColor } = user.profile;
+    player.direction = direction;
+
+    // show reactions
+    if (reaction) this.playReaction(player, reaction);
+    else clearInterval(player.reactionHandler);
+
+    if (oldUser?.profile.guest && !user.profile.guest) {
+      player.toggleMouseInteraction(true);
+      game.scene.getScene('UIScene')?.updateUserName(user._id, name, nameColor);
     }
 
-    if (guest) player.skinPartsContainer.alpha = 0.7;
+    // check for skin updates
+    this._checkForSkinUpdate(player, user, oldUser);
 
     // update tint
     if (userMediaError !== oldUser?.profile.userMediaError) {
