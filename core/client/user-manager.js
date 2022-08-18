@@ -69,28 +69,18 @@ userManager = {
     this.entityFollowed = undefined;
   },
 
-  rename(name, color) {
-    game.scene.getScene('UIScene')?.updateUserName(this.player.getData('userId'), name, color);
-    if (meet.api) meet.userName(name);
-  },
-
   createUser(user) {
     if (this.players[user._id]) return null;
 
-    const { x, y, shareAudio, guest, direction } = user.profile;
+    const { x, y, guest, direction, name, nameColor } = user.profile;
+
     const character = new Character(this.scene, x, y);
     character.setData('userId', user._id);
     character.direction = direction;
-
-    const userStateIndicator = this.createUserStateIndicator();
-    userStateIndicator.visible = !guest && !shareAudio;
-    userStateIndicator.name = 'stateIndicator';
-    character.add(userStateIndicator);
-
-    // add default skin for guest
-    if (guest) character.updateSkin(guestSkin());
-
     this.players[user._id] = character;
+
+    if (guest) character.updateSkin(guestSkin()); // init with custom skin
+    else character.setName(name, nameColor);
 
     window.setTimeout(() => this.updateUser(user), 0);
 
@@ -149,16 +139,26 @@ userManager = {
     if (!player) return;
 
     const { x, y, direction, reaction, shareAudio, guest, userMediaError, name, nameColor } = user.profile;
+
+    // update character instance
     player.direction = direction;
+    player.lwOriginX = player.x;
+    player.lwOriginY = player.y;
+    player.lwOriginDate = Date.now();
+    player.lwTargetX = user.profile.x;
+    player.lwTargetY = user.profile.y;
+    player.lwTargetDate = player.lwOriginDate + userInterpolationInterval;
+    player.showMutedStateIndicator(!guest && !shareAudio);
+
+    // is account transformed from guest to user?
+    if (!user.profile.guest && oldUser?.profile.guest) {
+      player.toggleMouseInteraction(true);
+      player.setName(name, nameColor);
+    }
 
     // show reactions
     if (reaction) this.playReaction(player, reaction);
     else clearInterval(player.reactionHandler);
-
-    if (oldUser?.profile.guest && !user.profile.guest) {
-      player.toggleMouseInteraction(true);
-      game.scene.getScene('UIScene')?.updateUserName(user._id, name, nameColor);
-    }
 
     // check for skin updates
     this._checkForSkinUpdate(player, user, oldUser);
@@ -169,15 +169,14 @@ userManager = {
       else player.clearTint();
     }
 
-    if (!guest && (name !== oldUser?.profile.name || nameColor !== oldUser?.profile.nameColor)) game.scene.getScene('UIScene')?.updateUserName(user._id, name, nameColor);
-
-    let hasMoved = false;
-    if (oldUser) {
-      const { x: oldX, y: oldY } = oldUser.profile;
-      hasMoved = x !== oldX || y !== oldY;
+    if (!guest && (name !== oldUser?.profile.name || nameColor !== oldUser?.profile.nameColor)) {
+      player.setName(name, nameColor);
+      if (meet.api) meet.userName(name);
     }
+
+    const userHasMoved = x !== oldUser?.profile.x || y !== oldUser?.profile.y;
     const loggedUser = Meteor.user();
-    const shouldCheckDistance = hasMoved && !guest;
+    const shouldCheckDistance = userHasMoved && !guest;
 
     if (user._id === loggedUser._id) {
       // network rubber banding
@@ -187,40 +186,30 @@ userManager = {
         player.y = y;
       }
 
-      // ensures this.player is assigned to the logged user
+      // ensures this.character is assigned to the logged user
       if (player.getData('userId') !== loggedUser._id || !player.body) this.setAsMainPlayer(loggedUser._id);
 
-      if (hasMoved) this.checkZones = true;
+      if (userHasMoved) this.checkZones = true;
 
       if (shouldCheckDistance) {
         const otherUsers = Meteor.users.find({ _id: { $ne: loggedUser._id }, 'status.online': true, 'profile.levelId': loggedUser.profile.levelId }).fetch();
         userProximitySensor.checkDistances(loggedUser, otherUsers);
       }
     } else {
-      if (hasMoved) {
-        player.lwOriginX = player.x;
-        player.lwOriginY = player.y;
-        player.lwOriginDate = Date.now();
-        player.lwTargetX = user.profile.x;
-        player.lwTargetY = user.profile.y;
-        player.lwTargetDate = player.lwOriginDate + userInterpolationInterval;
-        if (shouldCheckDistance) userProximitySensor.checkDistance(loggedUser, user);
-      }
-
+      if (shouldCheckDistance) userProximitySensor.checkDistance(loggedUser, user);
       if (!guest && user.profile.shareScreen !== oldUser?.profile.shareScreen) peer.onStreamSettingsChanged(user);
     }
 
-    player.getByName('stateIndicator').visible = !guest && !shareAudio;
+    player.showMutedStateIndicator(!guest && !shareAudio);
   },
 
   removeUser(user) {
-    if (!user || !this.players[user._id]) return;
+    const character = this.players[user._id];
+    if (!character) return;
 
-    clearInterval(this.players[user._id].reactionHandler);
-    delete this.players[user._id].reactionHandler;
-
-    this.players[user._id].destroy();
-    game.scene.getScene('UIScene').destroyUserName(user._id);
+    clearInterval(character.reactionHandler);
+    delete character.reactionHandler;
+    character.destroy();
 
     if (user._id === Meteor.userId()) this.unsetMainPlayer();
 
@@ -263,16 +252,6 @@ userManager = {
     hotkeys.setScope('guest');
 
     this.player = undefined;
-  },
-
-  createUserStateIndicator() {
-    const muteIndicatorMic = this.scene.add.text(0, -40, '🎤', { font: '23px Sans Open' }).setDepth(99996).setOrigin(0.5, 1);
-    const muteIndicatorCross = this.scene.add.text(0, -40, '🚫', { font: '23px Sans Open' }).setDepth(99995).setOrigin(0.5, 1).setScale(0.8);
-
-    const userStateIndicatorContainer = this.scene.add.container(0, 0);
-    userStateIndicatorContainer.add([muteIndicatorMic, muteIndicatorCross]);
-
-    return userStateIndicatorContainer;
   },
 
   interpolatePlayerPositions() {

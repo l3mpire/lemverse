@@ -46,9 +46,14 @@ class Character extends Phaser.GameObjects.Container {
     this.add(this.shadow);
 
     this._initMouseEvents();
+    this._createStateIndicator();
     this.setDepthFromPosition();
 
     this.scene.add.existing(this);
+
+    this.once('destroy', () => {
+      game.scene.getScene('UIScene').destroyUserName(this.getData('userId'));
+    }, this);
   }
 
   clearTint() {
@@ -114,6 +119,14 @@ class Character extends Phaser.GameObjects.Container {
     this.setTint(color);
   }
 
+  showMutedStateIndicator(value) {
+    this.getByName('stateIndicator').visible = value;
+  }
+
+  setName(name, color) {
+    game.scene.getScene('UIScene').updateUserName(this.getData('userId'), name, color);
+  }
+
   takeDamage() {
     this.flashColor(configuration.colorStates.takeDamage);
 
@@ -173,6 +186,16 @@ class Character extends Phaser.GameObjects.Container {
     });
 
     this.toggleMouseInteraction(true);
+  }
+
+  _createStateIndicator() {
+    const muteIndicatorMic = this.scene.add.text(0, -40, '🎤', { font: '23px Sans Open' }).setDepth(99996).setOrigin(0.5, 1);
+    const muteIndicatorCross = this.scene.add.text(0, -40, '🚫', { font: '23px Sans Open' }).setDepth(99995).setOrigin(0.5, 1).setScale(0.8);
+
+    const userStateIndicator = this.scene.add.container(0, 0);
+    userStateIndicator.name = 'stateIndicator';
+    userStateIndicator.add([muteIndicatorMic, muteIndicatorCross]);
+    this.add(userStateIndicator);
   }
 }
 

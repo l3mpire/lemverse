@@ -11,7 +11,6 @@ Template.settingsMain.events({
     if (!name) return;
 
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.name': name } });
-    userManager.rename(name, Meteor.user().profile.nameColor);
   },
   'input .js-name-color'(event) {
     event.preventDefault();
@@ -20,7 +19,6 @@ Template.settingsMain.events({
     if (!color) return;
 
     Meteor.users.update(Meteor.userId(), { $set: { 'profile.nameColor': color } });
-    userManager.rename(Meteor.user().profile.name, color);
   },
   'input .js-reaction'(event) {
     event.preventDefault();
