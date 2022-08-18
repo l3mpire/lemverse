@@ -169,6 +169,7 @@ userManager = {
       else player.clearTint();
     }
 
+    // update name
     if (!guest && (name !== oldUser?.profile.name || nameColor !== oldUser?.profile.nameColor)) {
       player.setName(name, nameColor);
       if (meet.api) meet.userName(name);
@@ -199,8 +200,6 @@ userManager = {
       if (shouldCheckDistance) userProximitySensor.checkDistance(loggedUser, user);
       if (!guest && user.profile.shareScreen !== oldUser?.profile.shareScreen) peer.onStreamSettingsChanged(user);
     }
-
-    player.showMutedStateIndicator(!guest && !shareAudio);
   },
 
   removeUser(user) {
