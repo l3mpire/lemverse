@@ -35,7 +35,7 @@ characterPopIns = {
 
       config.x = position.x;
       config.y = position.y;
-    } else config.target = userManager.player;
+    } else config.target = userManager.getControlledCharacter();
 
     // allow zones to show iframe
     config.iframe = !!formatURL(zone.inlineURL);

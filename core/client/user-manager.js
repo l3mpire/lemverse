@@ -40,9 +40,9 @@ const throttledSavePlayer = throttle(savePlayer, userInterpolationInterval, { le
 userManager = {
   entityFollowed: undefined,
   inputVector: new Phaser.Math.Vector2(),
-  player: undefined,
-  playerWasMoving: false,
   characters: {},
+  controlledCharacter: undefined,
+  controlledCharacterWasMoving: false,
   scene: undefined,
   canPlayReactionSound: true,
   userMediaStates: undefined,
@@ -51,7 +51,7 @@ userManager = {
   init(scene) {
     this.entityFollowed = undefined;
     this.inputVector = new Phaser.Math.Vector2();
-    this.player = undefined;
+    this.controlledCharacter = undefined;
     this.characters = {};
     this.scene = scene;
     this.userMediaStates = undefined;
@@ -59,13 +59,13 @@ userManager = {
 
   destroy() {
     this.onSleep();
-    this.player = undefined;
     this.characters = {};
+    this.controlledCharacter = undefined;
   },
 
   onSleep() {
     throttledSavePlayer.cancel();
-    this.playerWasMoving = false;
+    this.controlledCharacterWasMoving = false;
     this.entityFollowed = undefined;
   },
 
@@ -188,7 +188,7 @@ userManager = {
       }
 
       // ensures this.character is assigned to the logged user
-      if (player.getData('userId') !== loggedUser._id || !player.body) this.setAsMainPlayer(loggedUser._id);
+      if (player.getData('userId') !== loggedUser._id || !player.body) this.setAsControlled(loggedUser._id);
 
       if (userHasMoved) this.checkZones = true;
 
@@ -215,33 +215,33 @@ userManager = {
     delete this.characters[user._id];
   },
 
-  setAsMainPlayer(userId) {
-    if (this.player) this.scene.physics.world.disableBody(this.player);
+  setAsControlled(userId) {
+    if (this.controlledCharacter) this.scene.physics.world.disableBody(this.controlledCharacter);
 
-    const player = this.characters[userId];
-    if (!player) throw new Error(`Can't set as main player a non spawned character`);
-    player.enablePhysics();
+    const character = this.characters[userId];
+    if (!character) throw new Error(`Can't set as main player a non spawned character`);
+    character.enablePhysics();
 
     // add character's physic body to layers
     levelManager.layers.forEach(layer => {
       if (layer.playerCollider) this.scene.physics.world.removeCollider(layer.playerCollider);
-      layer.playerCollider = this.scene.physics.add.collider(player, layer);
+      layer.playerCollider = this.scene.physics.add.collider(character, layer);
     });
 
     // ask camera to follow the player
-    this.scene.cameras.main.startFollow(player, true, 0.1, 0.1);
+    this.scene.cameras.main.startFollow(character, true, 0.1, 0.1);
 
     if (Meteor.user().guest) hotkeys.setScope('guest');
     else hotkeys.setScope(scopes.player);
 
-    this.player = player;
+    this.controlledCharacter = character;
   },
 
   unsetMainPlayer(destroy = false) {
-    if (!this.player) return;
+    if (!this.controlledCharacter) return;
 
-    this.scene.physics.world.disableBody(this.player);
-    if (destroy) this.player.destroy();
+    this.scene.physics.world.disableBody(this.controlledCharacter);
+    if (destroy) this.controlledCharacter.destroy();
 
     levelManager.layers.forEach(layer => {
       if (layer.playerCollider) this.scene.physics.world.removeCollider(layer.playerCollider);
@@ -250,13 +250,13 @@ userManager = {
     this.scene.cameras.main.stopFollow();
     hotkeys.setScope('guest');
 
-    this.player = undefined;
+    this.controlledCharacter = undefined;
   },
 
   interpolatePlayerPositions() {
     const now = Date.now();
     Object.values(this.characters).forEach(player => {
-      if (player === this.player) return;
+      if (player === this.controlledCharacter) return;
 
       if (!player.lwTargetDate) {
         player.setAnimationPaused(true);
@@ -282,7 +282,7 @@ userManager = {
 
   update() {
     if (this.checkZones) {
-      zones.checkDistances(this.player);
+      zones.checkDistances(this.controlledCharacter);
       this.checkZones = false;
     }
 
@@ -308,52 +308,52 @@ userManager = {
   },
 
   postUpdate(time, delta) {
-    if (!this.player) return;
+    if (!this.controlledCharacter) return;
 
     const { keys, nippleMoving, nippleData } = this.scene;
     let speed = keys.shift.isDown ? Meteor.settings.public.character.runSpeed : Meteor.settings.public.character.walkSpeed;
 
-    this.player.body.setVelocity(0);
+    this.controlledCharacter.body.setVelocity(0);
 
     const inputPressed = this.handleUserInputs(keys, nippleMoving, nippleData);
     if (inputPressed) {
-      this.player.body.setVelocity(this.inputVector.x, this.inputVector.y);
+      this.controlledCharacter.body.setVelocity(this.inputVector.x, this.inputVector.y);
       this.follow(undefined); // interrupts the follow action
       Session.set('menu', false);
     } else if (this.entityFollowed) {
       const minimumDistance = Meteor.settings.public.character.sensorNearDistance / 2;
-      const diff = { x: this.entityFollowed.x - this.player.x, y: this.entityFollowed.y - this.player.y };
+      const diff = { x: this.entityFollowed.x - this.controlledCharacter.x, y: this.entityFollowed.y - this.controlledCharacter.y };
 
       const distance = Math.hypot(diff.x, diff.y);
       if (distance >= minimumDistance) {
         const { sensorNearDistance, runSpeed, walkSpeed } = Meteor.settings.public.character;
         speed = distance > sensorNearDistance ? runSpeed : walkSpeed;
-        this.player.body.setVelocity(diff.x, diff.y);
+        this.controlledCharacter.body.setVelocity(diff.x, diff.y);
       }
     }
 
-    this.player.body.velocity.normalize().scale(speed);
-    this.player.setDepthFromPosition();
+    this.controlledCharacter.body.velocity.normalize().scale(speed);
+    this.controlledCharacter.setDepthFromPosition();
 
-    const direction = vectorToTextDirection(this.player.body.velocity);
+    const direction = vectorToTextDirection(this.controlledCharacter.body.velocity);
     const running = keys.shift.isDown && direction;
     if (!peer.hasActiveStreams()) peer.enableSensor(!running);
 
-    if (direction) this.player.playAnimation(characterAnimations.run, direction);
-    else this.player.setAnimationPaused(true);
+    if (direction) this.controlledCharacter.playAnimation(characterAnimations.run, direction);
+    else this.controlledCharacter.setAnimationPaused(true);
 
     const moving = !!direction;
-    if (moving || this.playerWasMoving) {
+    if (moving || this.controlledCharacterWasMoving) {
       this.scene.physics.world.update(time, delta);
-      throttledSavePlayer(this.player);
+      throttledSavePlayer(this.controlledCharacter);
     }
-    this.playerWasMoving = moving;
+    this.controlledCharacterWasMoving = moving;
   },
 
   teleportMainUser(x, y) {
-    this.player.x = x;
-    this.player.y = y;
-    savePlayer(this.player);
+    this.controlledCharacter.x = x;
+    this.controlledCharacter.y = y;
+    savePlayer(this.controlledCharacter);
   },
 
   interact() {
@@ -427,7 +427,7 @@ userManager = {
   },
 
   setUserInDoNotDisturbMode(enable) {
-    if (!this.player) return;
+    if (!this.controlledCharacter) return;
 
     if (enable) {
       this.saveMediaStates();
@@ -443,7 +443,7 @@ userManager = {
     }
 
     this.follow(undefined); // interrupts the follow action
-    this.player.setTintFromState();
+    this.controlledCharacter.setTintFromState();
     audioManager.enabled = !enable;
   },
 
@@ -501,5 +501,9 @@ userManager = {
 
   getCharacter(userId) {
     return this.characters[userId];
+  },
+
+  getControlledCharacter() {
+    return this.controlledCharacter;
   },
 };

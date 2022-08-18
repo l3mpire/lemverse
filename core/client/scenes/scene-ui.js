@@ -56,10 +56,10 @@ UIScene = new Phaser.Class({
       text.setPosition(x, y + this.UIElementsOffset);
     });
 
-    const { player } = userManager;
-    if (!player) return;
+    const controlledCharacter = userManager.getControlledCharacter();
+    if (!controlledCharacter) return;
 
-    const relativePlayerPosition = relativePositionToCamera(player, worldMainCamera);
+    const relativePlayerPosition = relativePositionToCamera(controlledCharacter, worldMainCamera);
     characterPopIns.update(worldMainCamera);
     userChatCircle.visible(peer.isEnabled() && !Session.get('menu') && userProximitySensor.nearUsersCount() > 0);
     userChatCircle.update(relativePlayerPosition.x, relativePlayerPosition.y, worldMainCamera);

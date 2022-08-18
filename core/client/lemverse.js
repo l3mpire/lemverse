@@ -373,7 +373,7 @@ Template.lemverse.onCreated(function () {
           });
 
           log('loading level: all zones loaded');
-          zones.checkDistances(userManager.player);
+          zones.checkDistances(userManager.getControlledCharacter());
         });
       });
 
