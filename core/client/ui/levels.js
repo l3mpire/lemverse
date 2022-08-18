@@ -58,9 +58,9 @@ Template.levels.events({
 });
 
 Template.levels.helpers({
-  isLevelOwner(level) { return isLevelOwner(Meteor.user(), level); },
+  isLevelOwner(level) { return isLevelOwner({ _id: Meteor.userId() }, level); },
   levels() {
-    const currentLevelId = Meteor.user()?.profile.levelId;
+    const currentLevelId = Meteor.user({ fields: { 'profile.levelId': 1 } })?.profile.levelId;
     const levels = Levels.find(levelQueryFilters(currentLevelId), { sort: { visit: -1 } }).fetch();
     const userId = Meteor.userId();
 
@@ -74,7 +74,7 @@ Template.levels.helpers({
   levelName(level) {
     if (level.name) return level.name;
 
-    const user = Meteor.users.findOne(level.createdBy);
+    const user = Meteor.users.findOne(level.createdBy, { fields: { 'profile.name': 1 } });
     if (!user && level.createdBy) return `${level.createdBy}'s world`;
     else if (!user) return `Guest's world`;
 
