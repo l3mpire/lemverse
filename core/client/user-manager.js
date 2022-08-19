@@ -135,43 +135,43 @@ userManager = {
   },
 
   updateUser(user, oldUser) {
-    const player = this.characters[user._id];
-    if (!player) return;
+    const character = this.characters[user._id];
+    if (!character) return;
 
     const { x, y, direction, reaction, shareAudio, guest, userMediaError, name, nameColor } = user.profile;
 
     // update character instance
-    player.direction = direction;
-    player.lwOriginX = player.x;
-    player.lwOriginY = player.y;
-    player.lwOriginDate = Date.now();
-    player.lwTargetX = user.profile.x;
-    player.lwTargetY = user.profile.y;
-    player.lwTargetDate = player.lwOriginDate + userInterpolationInterval;
-    player.showMutedStateIndicator(!guest && !shareAudio);
+    character.direction = direction;
+    character.lwOriginX = character.x;
+    character.lwOriginY = character.y;
+    character.lwOriginDate = Date.now();
+    character.lwTargetX = user.profile.x;
+    character.lwTargetY = user.profile.y;
+    character.lwTargetDate = character.lwOriginDate + userInterpolationInterval;
+    character.showMutedStateIndicator(!guest && !shareAudio);
 
     // is account transformed from guest to user?
     if (!user.profile.guest && oldUser?.profile.guest) {
-      player.toggleMouseInteraction(true);
-      player.setName(name, nameColor);
+      character.toggleMouseInteraction(true);
+      character.setName(name, nameColor);
     }
 
     // show reactions
-    if (reaction) this.playReaction(player, reaction);
-    else clearInterval(player.reactionHandler);
+    if (reaction) this.playReaction(character, reaction);
+    else clearInterval(character.reactionHandler);
 
     // check for skin updates
-    this._checkForSkinUpdate(player, user, oldUser);
+    this._checkForSkinUpdate(character, user, oldUser);
 
     // update tint
     if (userMediaError !== oldUser?.profile.userMediaError) {
-      if (userMediaError) player.setTint(defaultUserMediaColorError);
-      else player.clearTint();
+      if (userMediaError) character.setTint(defaultUserMediaColorError);
+      else character.clearTint();
     }
 
     // update name
     if (!guest && (name !== oldUser?.profile.name || nameColor !== oldUser?.profile.nameColor)) {
-      player.setName(name, nameColor);
+      character.setName(name, nameColor);
       if (meet.api) meet.userName(name);
     }
 
@@ -181,14 +181,14 @@ userManager = {
 
     if (user._id === loggedUser._id) {
       // network rubber banding
-      const dist = Math.hypot(player.x - x, player.y - y);
+      const dist = Math.hypot(character.x - x, character.y - y);
       if (dist >= rubberBandingDistance) {
-        player.x = x;
-        player.y = y;
+        character.x = x;
+        character.y = y;
       }
 
       // ensures this.character is assigned to the logged user
-      if (player.getData('userId') !== loggedUser._id || !player.body) this.setAsControlled(loggedUser._id);
+      if (character.getData('userId') !== loggedUser._id || !character.body) this.setAsControlled(loggedUser._id);
 
       if (userHasMoved) this.checkZones = true;
 
