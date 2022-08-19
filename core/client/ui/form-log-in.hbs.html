@@ -1,6 +1,11 @@
 <template name="formLogIn">
   <div class="form-account {{#unless visible}}visible{{/unless}}">
-    <h1 class="title">Log to my account</h1>
+    {{#if restrictedRegistration}}
+      <h1 class="title">Welcome to lemverse</h1>
+      <h2 class="title">Log to my account</h2>
+    {{else}}
+      <h1 class="title">Log to my account or create a new one</h1>
+    {{/if}}
     <div class="step">
       <form>
         <div class="group-field">
@@ -20,12 +25,18 @@
       </form>
     </div>
 
-    <div class="bottom">
-      {{#if loginMode}}
-        <a href="?mode=create" class="link">Missing an account, join there!</a>
-      {{else}}
-        <button type="button" class="link js-cancel-login-mode" aria-label="cancel">Cancel</button>
-      {{/if}}
-    </div>
+    {{#if not restrictedRegistration}}
+      <div class="bottom">
+        {{#if loginMode}}
+          <a href="?mode=create" class="link">Missing an account, join there!</a>
+        {{else}}
+          <button type="button" class="link js-cancel-login-mode" aria-label="cancel">Cancel</button>
+        {{/if}}
+      </div>
+    {{else if (and restrictedRegistration contactURL)}}
+      <div class="bottom">
+        <p><a href="{{contactURL}}" target="_blank" rel="noopener">Contact us</a> to create your own customized virtual office on lemverse</p>
+      </div>
+    {{/if}}
   </div>
 </template>
