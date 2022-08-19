@@ -280,9 +280,11 @@ userManager = {
     this.interpolatePlayerPositions();
   },
 
-  handleUserInputs(keys, nippleMoving, nippleData) {
+  handleUserInputs() {
     this.inputVector.set(0, 0);
     if (isModalOpen()) return false;
+
+    const { keys, nippleMoving, nippleData } = this.scene;
 
     if (nippleMoving) this.inputVector.set(nippleData.vector.x, -nippleData.vector.y);
     else {
@@ -301,12 +303,12 @@ userManager = {
   postUpdate(time, delta) {
     if (!this.controlledCharacter) return;
 
-    const { keys, nippleMoving, nippleData } = this.scene;
+    const { keys } = this.scene;
     let speed = keys.shift.isDown ? Meteor.settings.public.character.runSpeed : Meteor.settings.public.character.walkSpeed;
 
     this.controlledCharacter.body.setVelocity(0);
 
-    const inputPressed = this.handleUserInputs(keys, nippleMoving, nippleData);
+    const inputPressed = this.handleUserInputs();
     if (inputPressed) {
       this.controlledCharacter.body.setVelocity(this.inputVector.x, this.inputVector.y);
       this.follow(undefined); // interrupts the follow action
