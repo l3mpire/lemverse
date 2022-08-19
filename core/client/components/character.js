@@ -60,12 +60,14 @@ class Character extends Phaser.GameObjects.Container {
     this.setTint(configuration.colorStates.default);
   }
 
-  enablePhysics() {
-    this.scene.physics.world.enableBody(this);
-    this.body.setImmovable(false);
-    this.body.setCollideWorldBounds(true);
-    this.body.setCircle(configuration.colliderConfiguration.radius);
-    this.body.setOffset(configuration.colliderConfiguration.offset.x, configuration.colliderConfiguration.offset.y);
+  enablePhysics(value = true) {
+    if (value) {
+      this.scene.physics.world.enableBody(this);
+      this.body.setImmovable(false);
+      this.body.setCollideWorldBounds(true);
+      this.body.setCircle(configuration.colliderConfiguration.radius);
+      this.body.setOffset(configuration.colliderConfiguration.offset.x, configuration.colliderConfiguration.offset.y);
+    } else this.scene.physics.world.disableBody(this);
   }
 
   flashColor(color) {

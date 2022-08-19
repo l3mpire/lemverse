@@ -206,51 +206,42 @@ userManager = {
     const character = this.characters[user._id];
     if (!character) return;
 
+    if (user._id === Meteor.userId()) this.setAsControlled();
+
     clearInterval(character.reactionHandler);
     delete character.reactionHandler;
     character.destroy();
-
-    if (user._id === Meteor.userId()) this.unsetMainPlayer();
 
     delete this.characters[user._id];
   },
 
   setAsControlled(userId) {
-    if (this.controlledCharacter) this.scene.physics.world.disableBody(this.controlledCharacter);
-
-    const character = this.characters[userId];
-    if (!character) throw new Error(`Can't set as main player a non spawned character`);
-    character.enablePhysics();
-
-    // add character's physic body to layers
-    levelManager.layers.forEach(layer => {
-      if (layer.playerCollider) this.scene.physics.world.removeCollider(layer.playerCollider);
-      layer.playerCollider = this.scene.physics.add.collider(character, layer);
-    });
-
-    // ask camera to follow the player
-    this.scene.cameras.main.startFollow(character, true, 0.1, 0.1);
-
-    if (Meteor.user().guest) hotkeys.setScope('guest');
-    else hotkeys.setScope(scopes.player);
-
-    this.controlledCharacter = character;
-  },
-
-  unsetMainPlayer(destroy = false) {
-    if (!this.controlledCharacter) return;
-
-    this.scene.physics.world.disableBody(this.controlledCharacter);
-    if (destroy) this.controlledCharacter.destroy();
-
-    levelManager.layers.forEach(layer => {
-      if (layer.playerCollider) this.scene.physics.world.removeCollider(layer.playerCollider);
-    });
-
+    // reset
+    this.controlledCharacter?.enablePhysics(false);
     this.scene.cameras.main.stopFollow();
     hotkeys.setScope('guest');
-
     this.controlledCharacter = undefined;
+
+    levelManager.layers.forEach(layer => {
+      if (layer.playerCollider) this.scene.physics.world.removeCollider(layer.playerCollider);
+    });
+
+    if (userId) {
+      const character = this.characters[userId];
+      if (!character) throw new Error(`Can't set as main player a non spawned character`);
+      character.enablePhysics();
+
+      levelManager.layers.forEach(layer => {
+        layer.playerCollider = this.scene.physics.add.collider(character, layer);
+      });
+
+      this.scene.cameras.main.startFollow(character, true, 0.1, 0.1);
+
+      if (Meteor.user().guest) hotkeys.setScope('guest');
+      else hotkeys.setScope(scopes.player);
+
+      this.controlledCharacter = character;
+    }
   },
 
   interpolatePlayerPositions() {
