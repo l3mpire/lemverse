@@ -364,19 +364,6 @@ userManager = {
     return this.getTilesRelativeToPlayer(player, { x: 0, y: 0 }, layers);
   },
 
-  getTilesInFrontOfPlayer(player, layers = []) {
-    if (!player) return undefined;
-
-    const positionOffset = { x: 0, y: 0 };
-    if (player.direction) {
-      const directionVector = textDirectionToVector(player.direction);
-      positionOffset.x = directionVector[0] * characterInteractionDistance.x;
-      positionOffset.y = directionVector[1] * characterInteractionDistance.y;
-    }
-
-    return this.getTilesRelativeToPlayer(player, positionOffset, layers);
-  },
-
   getPositionInFrontOfPlayer(player, distance = undefined) {
     const directionVector = textDirectionToVector(player.direction);
 
