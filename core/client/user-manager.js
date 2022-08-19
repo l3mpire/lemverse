@@ -38,17 +38,16 @@ savePlayer = player => {
 const throttledSavePlayer = throttle(savePlayer, userInterpolationInterval, { leading: false });
 
 userManager = {
-  inputVector: new Phaser.Math.Vector2(),
+  inputVector: undefined,
   characters: {},
   controlledCharacter: undefined,
-  controlledCharacterWasMoving: false,
   scene: undefined,
   canPlayReactionSound: true,
   userMediaStates: undefined,
   checkZones: false,
 
   init(scene) {
-    this.inputVector = new Phaser.Math.Vector2();
+    this.inputVector = Phaser.Math.Vector2.ZERO;
     this.controlledCharacter = undefined;
     this.characters = {};
     this.scene = scene;
@@ -63,7 +62,6 @@ userManager = {
 
   onSleep() {
     throttledSavePlayer.cancel();
-    this.controlledCharacterWasMoving = false;
   },
 
   createUser(user) {
@@ -294,53 +292,37 @@ userManager = {
       else if (keys.down.isDown || keys.s.isDown) this.inputVector.y = 1;
     }
 
-    return this.inputVector.x !== 0 || this.inputVector.y !== 0;
+    const moving = this.inputVector.x !== 0 || this.inputVector.y !== 0;
+    if (moving) {
+      Session.set('menu', false);
+      this.follow(undefined); // interrupts the follow action
+    }
+
+    return moving;
   },
 
   postUpdate(time, delta) {
     if (!this.controlledCharacter) return;
 
-    const { keys } = this.scene;
-    let speed = keys.shift.isDown ? Meteor.settings.public.character.runSpeed : Meteor.settings.public.character.walkSpeed;
+    this.handleUserInputs();
+    this.controlledCharacter.running = this.scene.keys.shift.isDown;
+    this.controlledCharacter.moveDirection = this.inputVector;
 
-    this.controlledCharacter.body.setVelocity(0);
+    const newVelocity = this.controlledCharacter.physicsStep();
+    const moving = Math.abs(newVelocity.x) > 0.1 || Math.abs(newVelocity.y) > 0.1;
 
-    const inputPressed = this.handleUserInputs();
-    if (inputPressed) {
-      this.controlledCharacter.body.setVelocity(this.inputVector.x, this.inputVector.y);
-      this.follow(undefined); // interrupts the follow action
-      Session.set('menu', false);
-    } else if (this.controlledCharacter.followedGameObject) {
-      const minimumDistance = Meteor.settings.public.character.sensorNearDistance / 2;
-      const diff = {
-        x: this.controlledCharacter.followedGameObject.x - this.controlledCharacter.x,
-        y: this.controlledCharacter.followedGameObject.y - this.controlledCharacter.y,
-      };
+    if (moving) {
+      const direction = vectorToTextDirection(this.controlledCharacter.body.velocity);
+      if (direction) this.controlledCharacter.playAnimation(characterAnimations.run, direction);
+    } else this.controlledCharacter.setAnimationPaused(true);
 
-      const distance = Math.hypot(diff.x, diff.y);
-      if (distance >= minimumDistance) {
-        const { sensorNearDistance, runSpeed, walkSpeed } = Meteor.settings.public.character;
-        speed = distance > sensorNearDistance ? runSpeed : walkSpeed;
-        this.controlledCharacter.body.setVelocity(diff.x, diff.y);
-      }
-    }
-
-    this.controlledCharacter.body.velocity.normalize().scale(speed);
-    this.controlledCharacter.setDepthFromPosition();
-
-    const direction = vectorToTextDirection(this.controlledCharacter.body.velocity);
-    const running = keys.shift.isDown && direction;
-    if (!peer.hasActiveStreams()) peer.enableSensor(!running);
-
-    if (direction) this.controlledCharacter.playAnimation(characterAnimations.run, direction);
-    else this.controlledCharacter.setAnimationPaused(true);
-
-    const moving = !!direction;
-    if (moving || this.controlledCharacterWasMoving) {
+    if (moving || this.controlledCharacter.wasMoving) {
       this.scene.physics.world.update(time, delta);
       throttledSavePlayer(this.controlledCharacter);
     }
-    this.controlledCharacterWasMoving = moving;
+
+    if (!peer.hasActiveStreams()) peer.enableSensor(!(this.controlledCharacter.running && moving));
+    this.controlledCharacter.wasMoving = moving;
   },
 
   teleportMainUser(x, y) {

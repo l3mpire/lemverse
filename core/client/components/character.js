@@ -36,6 +36,8 @@ class Character extends Phaser.GameObjects.Container {
     this.lwTargetY = y || 0;
     this.direction = configuration.defaultDirection;
     this.followedGameObject = undefined;
+    this.moveDirection = { x: 0, y: 0 };
+    this.running = false;
 
     this.skinPartsContainer = this.scene.add.container(0, 0);
     this.skinPartsContainer.setScale(3);
@@ -148,6 +150,27 @@ class Character extends Phaser.GameObjects.Container {
   toggleMouseInteraction(value = true) {
     if (value) this.skinPartsContainer.setInteractive(configuration.interactionConfiguration);
     else this.skinPartsContainer.disableInteractive();
+  }
+
+  physicsStep() {
+    if (!this.body) return Phaser.Math.Vector2.ZERO;
+
+    const { runSpeed, sensorNearDistance, walkSpeed } = Meteor.settings.public.character;
+    let speed = this.running ? runSpeed : walkSpeed;
+    this.body.setVelocity(0);
+
+    if (this.followedGameObject) {
+      const diff = { x: this.followedGameObject.x - this.x, y: this.followedGameObject.y - this.y };
+      const distance = Math.hypot(diff.x, diff.y);
+      if (distance >= sensorNearDistance / 2.0) {
+        speed = distance > sensorNearDistance ? runSpeed : walkSpeed;
+        this.moveDirection = diff;
+      }
+    }
+
+    this.body.setVelocity(this.moveDirection.x, this.moveDirection.y);
+
+    return this.body.velocity.normalize().scale(speed);
   }
 
   updateSkin(skinElements) {
