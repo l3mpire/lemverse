@@ -35,6 +35,7 @@ class Character extends Phaser.GameObjects.Container {
     this.lwTargetX = x || 0;
     this.lwTargetY = y || 0;
     this.direction = configuration.defaultDirection;
+    this.followedGameObject = undefined;
 
     this.skinPartsContainer = this.scene.add.container(0, 0);
     this.skinPartsContainer.setScale(3);
@@ -78,6 +79,10 @@ class Character extends Phaser.GameObjects.Container {
       callback() { this.clearTint(); },
       callbackScope: this,
     });
+  }
+
+  follow(gameObject) {
+    this.followedGameObject = gameObject;
   }
 
   onDamage() {
@@ -134,6 +139,10 @@ class Character extends Phaser.GameObjects.Container {
 
   setName(name, color) {
     game.scene.getScene('UIScene').updateUserName(this.getData('userId'), name, color);
+  }
+
+  stopFollow() {
+    this.followedGameObject = undefined;
   }
 
   toggleMouseInteraction(value = true) {

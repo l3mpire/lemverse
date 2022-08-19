@@ -38,7 +38,6 @@ savePlayer = player => {
 const throttledSavePlayer = throttle(savePlayer, userInterpolationInterval, { leading: false });
 
 userManager = {
-  entityFollowed: undefined,
   inputVector: new Phaser.Math.Vector2(),
   characters: {},
   controlledCharacter: undefined,
@@ -49,7 +48,6 @@ userManager = {
   checkZones: false,
 
   init(scene) {
-    this.entityFollowed = undefined;
     this.inputVector = new Phaser.Math.Vector2();
     this.controlledCharacter = undefined;
     this.characters = {};
@@ -66,7 +64,6 @@ userManager = {
   onSleep() {
     throttledSavePlayer.cancel();
     this.controlledCharacterWasMoving = false;
-    this.entityFollowed = undefined;
   },
 
   createUser(user) {
@@ -313,9 +310,12 @@ userManager = {
       this.controlledCharacter.body.setVelocity(this.inputVector.x, this.inputVector.y);
       this.follow(undefined); // interrupts the follow action
       Session.set('menu', false);
-    } else if (this.entityFollowed) {
+    } else if (this.controlledCharacter.followedGameObject) {
       const minimumDistance = Meteor.settings.public.character.sensorNearDistance / 2;
-      const diff = { x: this.entityFollowed.x - this.controlledCharacter.x, y: this.entityFollowed.y - this.controlledCharacter.y };
+      const diff = {
+        x: this.controlledCharacter.followedGameObject.x - this.controlledCharacter.x,
+        y: this.controlledCharacter.followedGameObject.y - this.controlledCharacter.y,
+      };
 
       const distance = Math.hypot(diff.x, diff.y);
       if (distance >= minimumDistance) {
@@ -390,18 +390,19 @@ userManager = {
   },
 
   follow(user) {
-    if (!user || (user && this.entityFollowed)) {
-      if (this.entityFollowed) {
+    if (!user || (user && this.controlledCharacter.followedGameObject)) {
+      if (this.controlledCharacter.followedGameObject) {
         lp.notif.success(`You no longer follow anyone`);
-        peer.unlockCall(this.entityFollowed.userId, true);
+        peer.unlockCall(this.controlledCharacter.followedGameObject.getData('userId'), true);
       }
 
-      this.entityFollowed = undefined;
+      this.controlledCharacter.stopFollow();
 
       return;
     }
 
-    this.entityFollowed = this.characters[user._id];
+    this.controlledCharacter.follow(this.getCharacter(user._id));
+
     lp.notif.success(`You are following ${user.profile.name}`);
     peer.lockCall(user._id, true);
   },
@@ -456,7 +457,8 @@ userManager = {
     } else if (type === 'unfollowed') {
       peer.unlockCall(emitterUserId);
 
-      if (this.entityFollowed?.userId === emitterUserId) this.follow(undefined);
+      const followedUserId = this.controlledCharacter.followedGameObject?.getData('userId');
+      if (followedUserId === emitterUserId) this.controlledCharacter.stopFollow();
       else lp.notif.warning(`${userEmitter.profile.name} has finally stopped following you 🎉`);
     } else if (type === 'text') {
       const emitterPlayer = this.getCharacter(emitterUserId);
