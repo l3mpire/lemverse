@@ -32,7 +32,8 @@
 
     "meet": {
       "serverURL": "meet.jit.si",
-      "roomDefaultName": "lemverse-test"
+      "roomDefaultName": "lemverse-test",
+      "configOverwrite": {}
     },
 
     "character": {
