@@ -22,9 +22,11 @@
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 201;
-      width: 750px;
-      height: 600px;
-      background-color: rgba($main-color, 0.95);
+      width: 100%;
+      max-width: 930px;
+      max-height: 750px;
+      height: calc(100vh - 3.5rem);
+      background-color: $new-dark-secondary;
       color: white;
       border: 0;
       border-radius: $radius;
@@ -43,26 +45,22 @@
         flex-direction: column;
         height: 100%;
         overflow: hidden;
-
-        .container {
-          padding-left: 15px;
-          padding-right: 15px;
-        }
       }
 
       .js-modal-close {
         position: absolute;
-        right: 10px;
-        top: 13px;
+        right: 20px;
+        top: 20px;
         appearance: none;
         background: none;
         border: 0;
         cursor: pointer;
-        font-size: 1.2rem;
+        font-size: 1.55rem;
         font-weight: 700;
         line-height: 1;
         opacity: 0.8;
         color: white;
+        padding: 8px;
 
         &:hover {
           opacity: 1;
@@ -81,8 +79,21 @@
 
       .modal-content {
         color: $main-text-color;
-        overflow-y: auto;
         height: 100%;
+
+        .header {
+          padding: 0 20px;
+
+          .h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin: 24px 0 20px;
+          }
+
+          .separator {
+            margin: 0;
+          }
+        }
       }
     }
 

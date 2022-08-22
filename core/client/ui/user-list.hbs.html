@@ -37,8 +37,12 @@
 
 <template name="userList">
   {{#modal id="displayUserList" title=title}}
-    <div class="user-list">
+    <div class="header">
+      <h2 class="h2">Users</h2>
+      <hr class="separator">
+    </div>
 
+    <div class="user-list">
       {{> userInvitationField}}
 
       <div class="tabs">

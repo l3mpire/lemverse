@@ -3,6 +3,8 @@ import { toggleUIInputs } from '../../../client/helpers';
 const inputSelector = '.console .js-command-input';
 const inputFileSelector = '.console .console-file';
 
+const canOpenConsole = () => !Session.get('console') && !Session.get('editor') && !Session.get('modal');
+
 const markInputFileWithContent = value => {
   const label = document.querySelector('label[for="console-file"]');
   if (!label) return;
@@ -38,7 +40,7 @@ closeConsole = () => {
 };
 
 openConsole = (autoSelectChannel = false) => {
-  if (Session.get('console') || Session.get('editor')) return false;
+  if (!canOpenConsole()) return false;
 
   if (autoSelectChannel) messagesModule.autoSelectChannel();
   clearInputFields(true);

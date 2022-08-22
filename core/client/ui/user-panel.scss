@@ -64,7 +64,7 @@
 
       .button {
         position: relative;
-        background-color: lighten($main-color, 65%);
+        background-color: lighten($main-color, 75%);
         height: 36px;
         width: 36px;
         box-sizing: content-box;
@@ -78,16 +78,9 @@
           transform: translateY(2px) scale(0.95);
         }
 
-        &:hover {
-          background-color: lighten($light-blue, 35%);
-        }
-
+        &:hover,
         &.active {
-          background-color: $light-green;
-
-          &:hover {
-            background-color: lighten($light-green, 10%);
-          }
+          background-color: $new-green;
         }
 
         &:not(.active):nth-child(-n+3)::before {

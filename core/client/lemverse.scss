@@ -12,6 +12,15 @@ button:focus {
   outline: none;
 }
 
+hr.separator {
+  border: 0;
+  height: 1px;
+  background: white;
+  opacity: 0.7;
+  width: 100%;
+  margin: 25px 0;
+}
+
 .nipple {
   z-index: 40 !important;
 }

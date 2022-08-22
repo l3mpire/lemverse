@@ -14,47 +14,53 @@
   padding-right: 0;
 
   .renderCharacter {
-    width: 75px;
-    min-width: 75px;
+    width: 105px;
+    min-width: 105px;
     display: flex;
     align-items: center;
-    margin-left: 25px;
+    justify-content: center;
   }
 
   .customize {
     flex-grow: 1;
     display: flex;
+    flex-direction: column;
+    gap: 10px;
 
     .customize-menus {
       display: flex;
-      flex-direction: column;
-      justify-content: space-evenly;
-      width: 50px;
+      flex-direction: row;
+      justify-content: center;
+      width: 100%;
+      gap: 15px;
 
       .customize-menu {
-        background-color: $lem-color-8;
-        border: 2px solid $lem-color-9;
-        border-right: 0;
-        border-radius: 1rem 0 0 1rem;
-        width: 50px;
+        width: 45px;
+        height: 45px;
         cursor: pointer;
+        border-radius: 10px;
+        border: 1px solid rgba($new-green, 0.5);
 
         svg {
           margin: 0.3rem;
-          height: 36px;
-          width: 36px;
-          fill: white;
+          height: 30px;
+          width: 30px;
+          fill: $new-green;
         }
 
+        &:hover,
         &.selected {
-          background-color: $lem-color-6;
+          background-color: $new-green;
+
+          svg {
+            fill: $new-dark-secondary;
+          }
         }
       }
     }
 
     .customize-selection {
       flex-grow: 1;
-      background-color: lighten($main-color, 10%);
       height: 100%;
       display: flex;
       flex-wrap: wrap;
@@ -77,7 +83,7 @@
         }
 
         &.selected {
-          background-color: $light-yellow;
+          background-color: $new-yellow;
         }
 
         .sprite-character {

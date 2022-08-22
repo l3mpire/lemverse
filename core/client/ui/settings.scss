@@ -2,39 +2,71 @@
 
 div.settings {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   height: 100%;
   padding: 0;
 
-  .title {
-    margin-top: 0;
-    margin-bottom: 0;
-    text-align: center;
-    font-size: 14pt;
-  }
-
-  .h2 {
-    font-size: 14pt;
-    margin-bottom: 10px;
-    text-align: left;
-  }
-
-  .options {
+  .menu {
     display: flex;
-    flex-flow: row wrap;
-    padding-bottom: 25px;
-    background-color: lighten($main-color, 5%);
+    flex-direction: column;
+    gap: 15px;
+    width: 255px;
+    min-width: 255px;
+    padding: 25px 16px 10px;
+    background-color: $new-dark-primary;
 
-    >* {
-      &:last-child {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        grid-gap: 10px;
-        margin-top: 15px;
-        width: 100%;
+    .title {
+      font-size: 20px;
+      font-weight: 600;
+      text-align: left;
+      margin: 0;
+    }
 
-        button {
-          margin-top: 0;
+    .menu-entries {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      li {
+        .button {
+          display: flex;
+          flex-direction: row;
+          gap: 10px;
+          align-items: center;
+          padding: 0.5em 0.5rem;
+          background-color: transparent;
+          text-align: left;
+
+          svg {
+            transform: scale(0.9);
+          }
+
+          &:hover {
+            background-color: lighten($main-color, 15%);
+          }
+        }
+
+        &.logout {
+          margin-top: auto;
+          button {
+            color: $new-red;
+          }
+        }
+
+        &.selected {
+          button {
+            background-color: #A5E6BA;
+            color: #211d2c;
+          }
+
+          &:hover {
+            button {
+              background-color: $new-green;
+            }
+          }
         }
       }
     }
@@ -44,6 +76,10 @@ div.settings {
     background-color: $light-red;
   }
 
+  .container {
+    padding: 10px 30px;
+  }
+
   video {
     display: block;
     min-height: 200px;
@@ -51,38 +87,5 @@ div.settings {
     margin: 5px auto 0;
     background-color: #333;
     transform: scaleX(-1);
-  }
-
-  .shortcuts {
-    flex-grow: 1;
-    padding-bottom: 20px;
-
-    ul {
-      display: flex;
-      flex-flow: row wrap;
-      list-style-type: none;
-      padding-left: 0;
-      margin: 0;
-      font-size: 10pt;
-
-      >* {
-        width: calc(50% - 10px);
-        margin: 0 5px;
-        box-sizing: border-box;
-      }
-
-      li {
-        line-height: 20px;
-      }
-    }
-  }
-
-  .actions {
-    text-align: center;
-
-    .link {
-      padding-bottom: 10px;
-      font-size: 1rem;
-    }
   }
 }

@@ -1,13 +1,20 @@
 @import "../../../client/variables";
 
 .notifications {
+  padding: 15px;
+  height: 100%;
+  overflow-y: auto;
+
   ul {
     padding: 0;
     margin: 0;
+    padding-bottom: 15px;
+    overflow-y: auto;
 
     li {
       position: relative;
       width: 100%;
+      list-style-type: none;
 
       &:not(:last-child) {
         border-bottom: 1px dashed #5c5e6b;
