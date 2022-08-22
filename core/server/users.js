@@ -135,9 +135,9 @@ Meteor.methods({
     check(fields, {
       avatar: Match.Optional(String),
       bio: Match.Optional(String),
+      defaultReaction: Match.Optional(String),
       name: Match.Optional(String),
       nameColor: Match.Optional(String),
-      reaction: Match.Optional(String),
       website: Match.Optional(String),
     });
 

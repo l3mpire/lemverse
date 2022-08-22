@@ -52,7 +52,7 @@
       <h3 class="h3">Custom reaction</h3>
       <p>By pressing "l" or using the menu of emojis you can play this personalized reaction for everyone on your level to see.</p>
       <div class="form-element-m">
-        <input type="text" name="reaction" id="reaction" class="js-reaction input" value="{{or currentUser.profile.defaultReaction "❤️"}}">
+        <input type="text" name="defaultReaction" id="defaultReaction" class="js-reaction input" value="{{or currentUser.profile.defaultReaction "❤️"}}">
       </div>
 
       <div class="actions {{#if fieldUpdated}}show{{/if}}">
