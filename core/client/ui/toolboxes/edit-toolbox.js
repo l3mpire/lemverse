@@ -10,7 +10,7 @@ const wake = () => {
 const sleep = () => {
   hotkeys.setScope(scopes.player);
 
-  game?.scene.keys.EditorScene.scene.sleep();
+  game?.scene.getScene('EditorScene')?.scene.sleep();
   levelManager.drawTriggers(false);
   Session.set('editorSelectedMenu', undefined);
 };
