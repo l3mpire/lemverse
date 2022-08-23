@@ -500,8 +500,8 @@ userManager = {
     const positionOffset = { x: 0, y: 0 };
     if (player.direction) {
       const directionVector = textDirectionToVector(player.direction);
-      positionOffset.x = directionVector[0] * characterInteractionDistance.x;
-      positionOffset.y = directionVector[1] * characterInteractionDistance.y;
+      positionOffset.x = directionVector.x * characterInteractionDistance.x;
+      positionOffset.y = directionVector.y * characterInteractionDistance.y;
     }
 
     return this.getTilesRelativeToPlayer(player, positionOffset, layers);
@@ -511,8 +511,8 @@ userManager = {
     const directionVector = textDirectionToVector(player.direction);
 
     return {
-      x: player.x + directionVector[0] * (distance || characterInteractionDistance.x),
-      y: player.y + characterCollider.offset.y + directionVector[1] * (distance || characterInteractionDistance.y),
+      x: player.x + directionVector.x * (distance || characterInteractionDistance.x),
+      y: player.y + characterCollider.offset.y + directionVector.y * (distance || characterInteractionDistance.y),
     };
   },
 
