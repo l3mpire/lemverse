@@ -1,35 +1,22 @@
 <template name="userProfile">
   {{#modal title=title}}
-    <div class="user-profile {{#if editionAllowed}}edition-allowed{{/if}}">
+    <div class="header">
+      <h2 class="h2">{{title}}</h2>
+      <hr class="separator">
+    </div>
+    <div class="user-profile">
       <div class="content container">
-        {{#if guild}}
-          <div>
-            <label for="team" class="label">Team</label>
-            <input type="text" name="team" id="team" class="js-team input" value="{{guild}}" disabled>
-          </div>
-        {{/if}}
         <div>
-          <label for="company" class="label">Company</label>
-          <input type="text" id="company" name="company" class="js-company input" value="{{profile.company.name}}" placeholder="-" />
-        </div>
-        <div>
-          <label for="position" class="label">Position</label>
-          <input type="text" id="position" name="position" class="js-position input" value="{{profile.company.position}}" placeholder="-" />
+          <label for="team" class="label">Team</label>
+          {{or guild "-"}}
         </div>
         <div>
           <label for="website" class="label">Website</label>
-          {{#if website}}<a href="{{website}}" class="website" target="_blank" rel="noopener">{{website}}</a> {{else}}<span class="website">-</span>{{/if}}
-          <input type="text" id="website" name="website" class="js-website input" value="{{website}}" placeholder="-" />
+          {{or website "-"}}
         </div>
-        {{#if editionAllowed}}
-          <div>
-            <label for="avatar" class="label">Avatar preference</label>
-            <input type="text" name="avatar" id="avatar" class="js-avatar input" value="{{#if profile.avatar}}{{profile.avatar}}{{else}}cat{{/if}}">
-          </div>
-        {{/if}}
         <div>
           <label for="bio" class="label">Bio/Hobbies</label>
-          <textarea id="bio" name="bio" placeholder="-" class="js-bio input" >{{#if profile.bio}}{{profile.bio}}{{else}}-{{/if}}</textarea>
+          {{or profile.bio "-"}}
         </div>
       </div>
       <div class="age">{{age}} days old in lemverse</div>

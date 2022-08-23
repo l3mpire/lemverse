@@ -1,0 +1,65 @@
+<template name="characterNameColorSelector">
+    <select name="name-color" class="js-name-color select">
+      {{#each value in nameColors}}
+       {{#if eq currentUser.profile.nameColor value}}
+        <option selected="selected" value="{{value}}">{{value}}</option>
+       {{else}}
+        <option value="{{value}}">{{value}}</option>
+       {{/if}}
+      {{/each}}
+    </select>
+</template>
+
+<template name="settingsBasic">
+  <div class="header">
+    <h2 class="h2">My account</h2>
+    <hr class="separator">
+  </div>
+
+  <div class="options">
+    <form>
+      <div class="form-element-m">
+        <label for="name" class="label">Name</label>
+        <input type="text" name="name" id="name" class="js-name input" value="{{currentUser.profile.name}}">
+      </div>
+
+      <div class="form-element-m">
+        <label for="name-color" class="label">Name color</label>
+        {{> characterNameColorSelector}}
+      </div>
+
+      <div class="form-element-m">
+        <label for="website" class="label">Website</label>
+        <input type="text" id="website" name="website" class="js-website input" value="{{currentUser.profile.website}}" />
+      </div>
+
+      <div>
+        <label for="bio" class="label">Bio/Hobbies</label>
+        <textarea id="bio" name="bio" class="js-bio input" >{{currentUser.profile.bio}}</textarea>
+      </div>
+
+      <hr class="separator">
+
+      <h3 class="h3">Set discussion picture</h3>
+      <p>Indicate a list of keywords that suit you, lemverse will then display a picture related to these words when your webcam is not active.</p>
+
+      <div class="form-element-m">
+        <input type="text" name="avatar" id="avatar" class="js-avatar input" value="{{or currentUser.profile.avatar "cat"}}" placeholder="happy cat">
+      </div>
+
+      <hr class="separator">
+      
+      <h3 class="h3">Custom reaction</h3>
+      <p>By pressing "l" or using the menu of emojis you can play this personalized reaction for everyone on your level to see.</p>
+      <div class="form-element-m">
+        <input type="text" name="defaultReaction" id="defaultReaction" class="js-reaction input" value="{{or currentUser.profile.defaultReaction "❤️"}}">
+      </div>
+
+      <div class="actions {{#if fieldUpdated}}show{{/if}}">
+        <button type="button" class="cancel link" aria-label="Cancel updates">Cancel</button>
+        <button type="submit" class="submit button" aria-label="Update account">Update account</button>
+      </div>
+    </form>
+  </div>
+
+</template>

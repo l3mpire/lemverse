@@ -339,12 +339,25 @@ userManager = {
     return this.getTilesRelativeToPlayer(player, { x: 0, y: 0 }, layers);
   },
 
+  getTilesInFrontOfPlayer(player, layers = []) {
+    if (!player) return undefined;
+
+    const positionOffset = { x: 0, y: 0 };
+    if (player.direction) {
+      const directionVector = textDirectionToVector(player.direction);
+      positionOffset.x = directionVector.x * characterInteractionDistance.x;
+      positionOffset.y = directionVector.y * characterInteractionDistance.y;
+    }
+
+    return this.getTilesRelativeToPlayer(player, positionOffset, layers);
+  },
+
   getPositionInFrontOfPlayer(player, distance = undefined) {
     const directionVector = textDirectionToVector(player.direction);
 
     return {
-      x: player.x + directionVector[0] * (distance || characterInteractionDistance.x),
-      y: player.y + characterCollider.offset.y + directionVector[1] * (distance || characterInteractionDistance.y),
+      x: player.x + directionVector.x * (distance || characterInteractionDistance.x),
+      y: player.y + characterCollider.offset.y + directionVector.y * (distance || characterInteractionDistance.y),
     };
   },
 

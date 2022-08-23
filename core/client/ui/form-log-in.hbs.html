@@ -5,12 +5,12 @@
       <form>
         <div class="group-field">
           <label for="email">Email Address:</label>
-          <input name="email" type="email" value={{email}} class="js-edit js-email" autofocus>
+          <input name="email" type="email" value="{{email}}" class="js-edit js-email" autofocus>
         </div>
         {{#if loginMode}}
           <div class="group-field">
             <label for="password">Password:</label>
-            <input name="password" type="password" value={{password}} class="js-edit js-password">
+            <input name="password" type="password" value="{{password}}" class="js-edit js-password">
           </div>
           <button type="button" class="link js-password-lost" aria-label="recover my password">I lost my password</button>
           <button type="submit" class="submit" aria-label="go to the next step">Log in</button>

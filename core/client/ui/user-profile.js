@@ -28,14 +28,9 @@ Template.userProfile.helpers({
   profile() { return getUser(Template.instance()).profile; },
   title() {
     const template = Template.instance();
-
-    const { name } = getUser(template).profile;
-    if (!Meteor.user().roles?.admin) return name;
-
-    return `${name} (${template.data.userId})`;
+    return getUser(template).profile.name;
   },
   age() { return moment().diff(getUser(Template.instance()).createdAt, 'days'); },
-  editionAllowed() { return Template.instance().data.userId === Meteor.userId(); },
   website() {
     const { website } = getUser(Template.instance()).profile;
     if (!website) return null;
@@ -48,53 +43,7 @@ Template.userProfile.helpers({
 });
 
 Template.userProfile.events({
-  'input .js-company'(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    const { value } = event.target;
-    if (!value) return;
-
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.company.name': value } });
-  },
-  'input .js-position'(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    const { value } = event.target;
-    if (!value) return;
-
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.company.position': value } });
-  },
-  'blur .js-website'(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    const { value } = event.target;
-
-    const url = formatURL(value);
-    if (!url) {
-      if (value) lp.notif.error('invalid website URL');
-      Meteor.users.update(Meteor.userId(), { $unset: { 'profile.website': 1 } });
-      return;
-    }
-
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.website': url.href } });
-  },
-  'input .js-bio'(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    const { value } = event.target;
-    if (!value) return;
-
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.bio': value } });
-  },
-  'input .js-avatar'(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    const avatar = event.target.value;
-    if (!avatar) return;
-
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.avatar': avatar } });
-  },
-  'click #modal-title'(event, templateInstance) {
+  'click .header'(event, templateInstance) {
     navigator.clipboard.writeText(getUser(templateInstance)._id).then(() => lp.notif.success('✂️ Identifier copied to your clipboard'));
   },
 });

@@ -56,8 +56,6 @@ Template.formSignIn.onCreated(function () {
 
 Template.formSignIn.events({
   'click .js-next-step'() { onSubmit(Template.instance()); },
-  'focus input'() { toggleUIInputs(true); },
-  'blur input'() { toggleUIInputs(false); },
   'click .js-previous-step'() { Template.instance().step.set(Template.instance().step.get() - 1); },
   'keyup .js-email'(event, templateInstance) { templateInstance.email = event.target.value; },
   'keyup .js-password'(event, templateInstance) { templateInstance.password = event.target.value; },

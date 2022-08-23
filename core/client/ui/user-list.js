@@ -6,7 +6,7 @@ const tabs = Object.freeze({
 });
 
 const userListTabKey = 'userListTab';
-const userFields = { 'status.online': 1, 'profile.name': 1, 'profile.x': 1, 'profile.y': 1, 'profile.levelId': 1, roles: 1, guildId: 1 };
+const userFields = { 'status.online': 1, 'profile.name': 1, 'profile.x': 1, 'profile.y': 1, 'profile.levelId': 1, roles: 1, guildId: 1, 'profile.body': 1, 'profile.outfit': 1, 'profile.eye': 1, 'profile.hair': 1, 'profile.accessory': 1 };
 
 const users = (mode, guildId) => {
   let filters = { 'profile.guest': { $not: true } };

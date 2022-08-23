@@ -31,6 +31,18 @@
       color: #fff;
     }
   }
+
+  &.outline {
+    background: transparent;
+    border: 1px solid $light-blue;
+    color: $light-blue;
+
+    &:hover {
+      background: $light-blue;
+      border: 1px solid transparent;
+      color: white;
+    }
+  }
 }
 
 .label {
@@ -52,7 +64,7 @@
   padding: 8px 12px;
   width: 100%;
   margin-top: 5px;
-  background: #2b2731;
+  background-color: #2e303f;
   border: 1px solid transparent;
   box-sizing: border-box;
   border-radius: 5px;
@@ -61,12 +73,19 @@
   outline: none;
 
   &:focus {
-    border: 1px solid $light-blue;
+    border: 1px solid $new-green;
   }
 
   &[type="range"] {
     appearance: revert;
   }
+}
+
+.select {
+  background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position-x: 100%;
+  background-position-y: 7px;
 }
 
 .link {
