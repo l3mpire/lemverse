@@ -135,7 +135,7 @@ Template.lemverse.onCreated(function () {
   this.autorun(() => {
     if (!Meteor.userId()) {
       Session.set('sceneWorldReady', false);
-      userManager.unsetMainPlayer();
+      userManager.setAsControlled();
     }
   });
 
@@ -147,7 +147,6 @@ Template.lemverse.onCreated(function () {
     Tracker.nonreactive(() => {
       const interfaceOpen = menuOpen || modalOpen;
       const worldScene = game.scene.getScene('WorldScene');
-      userManager.pauseAnimation(undefined, modalOpen);
       worldScene.enableMouse(!interfaceOpen);
       worldScene.enableKeyboard(!modalOpen, !modalOpen);
     });
@@ -374,7 +373,7 @@ Template.lemverse.onCreated(function () {
           });
 
           log('loading level: all zones loaded');
-          zones.checkDistances(userManager.player);
+          zones.checkDistances(userManager.getControlledCharacter());
         });
       });
 

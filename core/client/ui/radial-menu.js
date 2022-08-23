@@ -173,7 +173,7 @@ Template.radialMenu.onCreated(function () {
           menuOpenUsingKey = true;
           const worldScene = game.scene.getScene('WorldScene');
           const userId = Meteor.userId();
-          const player = userManager.players[userId];
+          const player = userManager.getCharacter(userId);
           if (!player) return;
 
           Session.set('menu', { userId });

@@ -166,15 +166,15 @@ entityManager = {
           if (error) { lp.notif.error(itemAlreadyPickedText); return; }
 
           lp.notif.success(itemAddedToInventoryText);
-          this.handleNearestEntityTooltip(userManager.player);
+          this.handleNearestEntityTooltip(userManager.getControlledCharacter());
         });
       },
     });
   },
 
   postUpdate() {
-    const { player, playerWasMoving } = userManager;
-    if (player && playerWasMoving && !Meteor.user().profile.guest) this.handleNearestEntityTooltip(player);
+    const { controlledCharacter, controlledCharacterWasMoving } = userManager;
+    if (controlledCharacter && controlledCharacterWasMoving) this.handleNearestEntityTooltip(controlledCharacter);
 
     Object.values(this.entities).forEach(entity => {
       const customDepth = entity.getData('customDepth');
@@ -345,7 +345,7 @@ entityManager = {
       levelManager.layers.forEach(layer => this.scene.physics.add.collider(gameObject, layer));
     }
 
-    this.scene.physics.add.collider(userManager.player, gameObject);
+    this.scene.physics.add.collider(userManager.getControlledCharacter(), gameObject);
   },
 
   spawnSpriteFromConfig(config) {
