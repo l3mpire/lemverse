@@ -16,7 +16,7 @@ const teleportUserOutsideZone = zone => {
   userManager.teleportMainUser(+x, +y);
 };
 
-zones = {
+zoneManager = {
   activeZone: undefined,
   previousAvailableZones: [],
   webpageContainer: undefined,

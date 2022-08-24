@@ -121,7 +121,7 @@ Template.zonesToolbox.helpers({
     const user = Meteor.user();
     const { x, y } = user.profile;
 
-    return zones.sortByNearest(Zones.find().fetch(), x, y);
+    return zoneManager.sortByNearest(Zones.find().fetch(), x, y);
   },
   displayZone() { return Zones.findOne(Session.get('displayZoneId')); },
 });

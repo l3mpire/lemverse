@@ -86,7 +86,7 @@ userManager = {
     clearInterval(player.reactionHandler);
     if (meet.api && this.canPlayReactionSound && audioManager.reactionsSounds[reaction]) {
       const otherUser = Meteor.users.findOne(player.userId);
-      if (otherUser && zones.isUserInSameZone(Meteor.user(), otherUser)) audioManager.play(audioManager.reactionsSounds[reaction]);
+      if (otherUser && zoneManager.isUserInSameZone(Meteor.user(), otherUser)) audioManager.play(audioManager.reactionsSounds[reaction]);
 
       // avoid sound spamming
       this.canPlayReactionSound = false;
@@ -268,7 +268,7 @@ userManager = {
 
   update() {
     if (this.checkZones) {
-      zones.checkDistances(this.controlledCharacter);
+      zoneManager.checkDistances(this.controlledCharacter);
       this.checkZones = false;
     }
 
@@ -460,7 +460,7 @@ userManager = {
       if (!emitterPlayer) return;
 
       const { zoneMuted } = Meteor.user();
-      const userEmitterZoneId = zones.currentZone(userEmitter)?._id;
+      const userEmitterZoneId = zoneManager.currentZone(userEmitter)?._id;
       if (!zoneMuted || !zoneMuted[userEmitterZoneId]) audioManager.play('text-sound.wav', 0.5);
 
       const popInIdentifier = `${emitterUserId}-pop-in`;

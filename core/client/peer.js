@@ -226,7 +226,7 @@ peer = {
     if (user?.profile.guest) return; // disable proximity sensor for guest user
 
     nearUsers.forEach(nearUser => {
-      const zone = zones.currentZone(nearUser);
+      const zone = zoneManager.currentZone(nearUser);
       if (zone?.disableCommunications) {
         lp.notif.warning(`${nearUser.profile.name} isn't available at the moment.<br /> Leave him a voice message by pressing "P"`);
         return;

@@ -288,7 +288,7 @@ Template.lemverse.onCreated(function () {
       const uiScene = game.scene.getScene('UIScene');
 
       // ensures scene is fullscreen and without iframe loaded
-      zones.closeIframeElement();
+      zoneManager.closeIframeElement();
       updateViewport(worldScene, viewportModes.fullscreen);
 
       loadingScene.show();
@@ -367,13 +367,13 @@ Template.lemverse.onCreated(function () {
         log(`loading level: loading zones`);
         this.handleZonesSubscribe = this.subscribe('zones', levelId, () => {
           this.handleObserveZones = Zones.find().observe({
-            added(zone) { zones.onDocumentAdded(zone); },
-            changed(newZone, oldZone) { zones.onDocumentUpdated(newZone, oldZone); },
-            removed(zone) { zones.onDocumentRemoved(zone); },
+            added(zone) { zoneManager.onDocumentAdded(zone); },
+            changed(newZone, oldZone) { zoneManager.onDocumentUpdated(newZone, oldZone); },
+            removed(zone) { zoneManager.onDocumentRemoved(zone); },
           });
 
           log('loading level: all zones loaded');
-          zones.checkDistances(userManager.getControlledCharacter());
+          zoneManager.checkDistances(userManager.getControlledCharacter());
         });
       });
 

@@ -12,7 +12,7 @@ const onZoneEntered = e => {
   if (targetedLevelId) levelManager.loadLevel(targetedLevelId);
   else if (inlineURL) characterPopIns.initFromZone(zone);
 
-  if (url) zones.openZoneURL(zone);
+  if (url) zoneManager.openZoneURL(zone);
   if (disableCommunications) userManager.setUserInDoNotDisturbMode(true);
 };
 
@@ -24,7 +24,7 @@ const onZoneLeft = e => {
 
   if (url) {
     updateViewport(game.scene.keys.WorldScene, viewportModes.fullscreen);
-    zones.closeIframeElement();
+    zoneManager.closeIframeElement();
   }
   if (disableCommunications) userManager.setUserInDoNotDisturbMode(false);
 };
@@ -112,7 +112,7 @@ WorldScene = new Phaser.Class({
     entityManager.init(this);
     levelManager.init(this);
     userManager.init(this);
-    zones.init(this);
+    zoneManager.init(this);
   },
 
   initFromLevel(level) {
@@ -188,7 +188,7 @@ WorldScene = new Phaser.Class({
     levelManager.destroy();
     entityManager.destroy();
     userManager.destroy();
-    zones.destroy();
+    zoneManager.destroy();
     userProximitySensor.callProximityEndedForAllNearUsers();
     peer.closeAll();
 

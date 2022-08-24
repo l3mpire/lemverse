@@ -11,7 +11,7 @@ Template.zoneNameToaster.onCreated(function () {
     }
 
     Tracker.nonreactive(() => {
-      const hasNewContent = zones.hasNewContent(zone);
+      const hasNewContent = zoneManager.hasNewContent(zone);
       this.zoneName.set(zone.name);
       this.style.set(`show ${hasNewContent ? 'new-content' : ''}`);
 

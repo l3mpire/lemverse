@@ -57,7 +57,7 @@ const onZoneUpdated = e => {
   if (!linkedZoneId) return;
 
   const { zone } = e.detail;
-  const currentZone = zones.currentZone(Meteor.user());
+  const currentZone = zoneManager.currentZone(Meteor.user());
   if (currentZone._id !== linkedZoneId) return;
 
   meet.fullscreen(zone.fullscreen);
@@ -81,7 +81,7 @@ window.addEventListener('load', () => {
     event.preventDefault();
 
     const zone = Zones.findOne(linkedZoneId);
-    if (zone) zones.setFullscreen(zone, !zone.fullscreen);
+    if (zone) zoneManager.setFullscreen(zone, !zone.fullscreen);
   });
 
   window.addEventListener(eventTypes.onZoneEntered, onZoneEntered);
@@ -97,7 +97,7 @@ meetHighLevel = {
     if (meet.api) return;
 
     const user = Meteor.user();
-    const currentZone = zones.currentZone();
+    const currentZone = zoneManager.currentZone();
 
     const options = {
       width: '100%',

@@ -37,7 +37,7 @@ messagesModule = {
 
   autoSelectChannel() {
     if (userProximitySensor.isNearSomeone()) this.changeMessagesChannel(nearUserIdsToString());
-    else if (zones.activeZone) this.changeMessagesChannel(zones.activeZone._id);
+    else if (zoneManager.activeZone) this.changeMessagesChannel(zoneManager.activeZone._id);
     else this.changeMessagesChannel(Meteor.user().profile.levelId);
   },
 
@@ -55,7 +55,7 @@ messagesModule = {
     if (channel.includes('zon_')) {
       Meteor.call('updateZoneLastSeenDate', channel, () => {
         const zone = Zones.findOne(channel);
-        if (zone) zones.destroyNewContentIndicator(zone);
+        if (zone) zoneManager.destroyNewContentIndicator(zone);
       });
     } else if (channel.includes('qst_')) {
       const notification = Notifications.findOne({ $or: [{ questId: channel }, { channelId: channel }], userId: Meteor.userId() });

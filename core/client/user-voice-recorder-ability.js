@@ -140,7 +140,7 @@ const sendAudioChunksToTargets = (chunks, userIds) => {
 
 sendAudioChunksToUsersInZone = async chunks => {
   const user = Meteor.user();
-  const usersInZone = zones.usersInZone(zones.currentZone(user));
+  const usersInZone = zoneManager.usersInZone(zoneManager.currentZone(user));
   const userInZoneIds = usersInZone.map(u => u._id);
 
   try {

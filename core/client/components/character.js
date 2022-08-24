@@ -130,7 +130,7 @@ class Character extends Phaser.GameObjects.Container {
   }
 
   setTintFromState() {
-    const currentZone = zones.currentZone({ profile: { x: this.x, y: this.y } });
+    const currentZone = zoneManager.currentZone({ profile: { x: this.x, y: this.y } });
     const color = currentZone?.disableCommunications ? configuration.colorStates.unavailable : configuration.colorStates.default;
     this.setTint(color);
   }

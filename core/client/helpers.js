@@ -45,7 +45,7 @@ toggleUserProperty = (propertyName, value) => {
   const toggleCamOn = value || (value === undefined && !user.profile.shareVideo);
 
   if (toggleMicOn || toggleCamOn) {
-    const zone = zones.currentZone();
+    const zone = zoneManager.currentZone();
 
     // disable medias switch in meeting
     if (zone && meet.api) {
@@ -125,7 +125,7 @@ sendDataToUsers = (type, data, emitterId, userIds = []) => {
 
 sendDataToUsersInZone = (type, data, emitterId) => {
   const user = Meteor.user();
-  const usersInZone = zones.usersInZone(zones.currentZone(user));
+  const usersInZone = zoneManager.usersInZone(zoneManager.currentZone(user));
   const userInZoneIds = usersInZone.map(u => u._id);
   if (!userInZoneIds.length) throw new Error('no-targets');
 

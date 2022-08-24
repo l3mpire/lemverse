@@ -123,7 +123,7 @@ module.exports = {
     meetLowLevel: 'writable',
     meetHighLevel: 'writable',
     savePlayer: 'writable',
-    zones: 'writable',
+    zoneManager: 'writable',
     notificationMessage: 'writable',
     nippleManager: 'writable',
     userChatCircle: 'writable',
