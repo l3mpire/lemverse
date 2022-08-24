@@ -1,10 +1,13 @@
 import audioManager from '../../../client/audio-manager';
 
-const punch = users => {
-  if (!users?.length) return;
+const playPunchAnimation = () => {
   userManager.scene.cameras.main.shake(250, 0.015, 0.02);
   audioManager.play('punch.mp3');
-  if (Math.random() > 0.95) audioManager.play('punch2.mp3'); // NOSONAR
+};
+
+const punch = users => {
+  if (!users?.length) return;
+  playPunchAnimation();
 
   users.forEach(user => userManager.getCharacter(user._id)?.onDamage());
   peer.sendData(users.map(user => user._id), { type: 'punch', emitter: Meteor.userId() });
@@ -16,10 +19,7 @@ window.addEventListener('load', () => {
     if (data.type !== 'punch') return;
 
     if (!userProximitySensor.isUserNear(userEmitter)) return;
-
-    audioManager.play('punch.mp3');
-    userManager.scene.cameras.main.shake(250, 0.015, 0.02);
-    if (Math.random() > 0.95) audioManager.play('punch2.mp3'); // NOSONAR
+    playPunchAnimation();
 
     userManager.getCharacter(Meteor.userId())?.onDamage();
   });
