@@ -5,14 +5,12 @@ const onPasswordRecoverSubmit = template => {
   if (!email) { lp.notif.error('Who are you mister anonymous? 🤔'); return; }
 
   Accounts.forgotPassword({ email }, err => {
-    if (err) {
-      if (err.message === 'User not found [403]') lp.notif.error('Who are you mister anonymous? 🤔');
-      else lp.notif.error(err.message);
-
+    if (err && err.message !== 'User not found [403]') {
+      lp.notif.error(err.message);
       return;
     }
 
-    lp.notif.success('An email has just been sent to you!');
+    lp.notif.success('You should receive an email shortly if the address belongs to an existing account 🙂');
     template.loginMode.set(true);
   });
 };
