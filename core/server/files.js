@@ -31,12 +31,9 @@ const filesAfterUploadEditorTileset = (user, fileRef) => {
   } else {
     // Create
     log('filesAfterUploadEditorTileset: create a new tileset', { userId: user._id, fileId: fileRef._id });
-    const maxTileset = Tilesets.findOne({}, { sort: { gid: -1 }, limit: 1 });
-    let maxTilesetGid = 0;
-    if (maxTileset) maxTilesetGid = maxTileset.gid + 10000;
 
     const newId = Tilesets.id();
-    Tilesets.insert({ _id: newId, createdAt: new Date(), createdBy: user._id, name: fileRef.name, gid: maxTilesetGid, height, width, fileId: fileRef._id, fileName: fileRef.name });
+    Tilesets.insert({ _id: newId, createdAt: new Date(), createdBy: user._id, name: fileRef.name, gid: fileRef.meta.gid, height, width, fileId: fileRef._id, fileName: fileRef.name });
 
     log('filesAfterUploadEditorTileset: created tileset', { userId: user._id, tilesetId: newId });
   }

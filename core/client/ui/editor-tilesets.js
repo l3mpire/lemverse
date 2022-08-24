@@ -137,7 +137,12 @@ Template.editorTilesets.events({
   },
   'drop .js-drop-tileset'({ originalEvent }) {
     const uploadedFiles = originalEvent.dataTransfer.files;
-    Array.from(uploadedFiles).forEach(file => {
+   
+    const maxTileset = Tilesets.findOne({}, { sort: { gid: -1 }, limit: 1 });
+    let maxTilesetGid = 0;
+    if (maxTileset) maxTilesetGid = maxTileset.gid + 10000;
+
+    Array.from(uploadedFiles).forEach((file, index) => {
       if (!file) return;
 
       const uploadInstance = Files.insert({
@@ -145,6 +150,7 @@ Template.editorTilesets.events({
         chunkSize: 'dynamic',
         meta: {
           source: 'editor-tilesets',
+          gid: maxTilesetGid,
         },
       }, false);
 
@@ -153,6 +159,7 @@ Template.editorTilesets.events({
       });
 
       uploadInstance.start();
+      maxTilesetGid += 10000;
     });
   },
   'mousemove img'(event) {
