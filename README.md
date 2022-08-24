@@ -134,6 +134,7 @@ To edit those information, simply click on the name of the room (bold text).
   "disableCommunications": false|true, // Disabling all communications for the user inside the zone
   "yt": false|true, // If the "url" attribute is a YouTube video it allows its integration without blocking
   "requiredItems": ["itm_x", "itm_y"], // Items required to enter the zone
+  "spawn": false|true, // Mark this zone as the starting zone, users will be able to enter the level from here
   "popInConfiguration": {
     "position": "top", // Optional: Pop-in position on the zone (center, left, right, bottom or top), set "relative" for custom position using "x" & "y" (default center)
     "x": 0, // Optional: Relative position from the zone's center on X (you need to set "position" to "relative")

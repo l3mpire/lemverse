@@ -14,6 +14,8 @@ charactersParts = Object.freeze({
 
 const defaultSpawnPosition = { x: 100, y: 100 };
 
+const randomInRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
 const subscribedUsersToEntity = entityId => {
   check(entityId, Match.Id);
 
@@ -195,12 +197,22 @@ const completeUserProfile = (user, email, name) => {
 
 const levelSpawnPosition = level => {
   check(level._id, Match.Id);
-  if (!level?.spawn) return defaultSpawnPosition;
+
+  const zones = Zones.find({ levelId: level._id, spawn: true }).fetch();
+  if (zones.length) {
+    const zone = zones[randomInRange(0, zones.length - 1)];
+    return { x: randomInRange(zone.x1, zone.x2), y: randomInRange(zone.y1, zone.y2) };
+  }
+
+  if (!level.spawn) return defaultSpawnPosition;
 
   const x = +level.spawn.x;
   const y = +level.spawn.y;
 
-  return { x: Number.isNaN(x) ? defaultSpawnPosition.x : x, y: Number.isNaN(y) ? defaultSpawnPosition.y : y };
+  return {
+    x: Number.isNaN(x) ? defaultSpawnPosition.x : x,
+    y: Number.isNaN(y) ? defaultSpawnPosition.y : y,
+  };
 };
 
 const teleportUserInLevel = (user, level, source = 'teleporter') => {
@@ -214,7 +226,7 @@ const teleportUserInLevel = (user, level, source = 'teleporter') => {
 
   analytics.track(user._id, '🧳 Level Teleport', { user_id: user._id, level_id: level._id, source, level_name: level.name });
 
-  log('teleportUserInLevel: done', { levelId: level._id, userId: user._id });
+  log('teleportUserInLevel: done', { levelId: level._id, userId: user._id, x, y });
 
   return level.name;
 };
