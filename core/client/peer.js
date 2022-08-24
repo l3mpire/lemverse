@@ -23,6 +23,7 @@ peer = {
     autoReconnectOnClose: true,
     delayBetweenAttempt: 250,
   },
+  securityCheckInterval: 2000,
 
   init() {
     window.addEventListener(eventTypes.onUsersComeCloser, e => {
@@ -35,6 +36,17 @@ peer = {
       peer.onProximityEnded(users);
     });
     this.enable();
+
+    // For security reasons we periodically check that the users in discussion are still close to the calling users
+    window.setInterval(() => {
+      const callEntries = Object.entries(this.remoteCalls);
+      if (!callEntries.length) return;
+
+      callEntries.forEach(entry => {
+        if (userProximitySensor.isUserNear({ _id: entry[1].metadata.userId })) return;
+        this.closeCall(entry[1].metadata.userId, 0, 'security-user-far');
+      });
+    }, this.securityCheckInterval);
   },
 
   enable() {
