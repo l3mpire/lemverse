@@ -31,6 +31,7 @@ zoneManager = {
 
   destroy() {
     this.newContentSprites = {};
+    this.zones = [];
   },
 
   onDocumentAdded(zone) {
@@ -283,8 +284,9 @@ zoneManager = {
 
   findZonesForPosition(position) {
     const zones = [];
-    this.zones.forEach(zone => {
-      if (this.isInsideZone(zone, position)) zones.push(zone);
+    this.getZones().forEach(zone => {
+      if (!this.isInsideZone(zone, position)) return;
+      zones.push(zone);
     });
 
     return zones;
