@@ -6,7 +6,9 @@ const allChannels = () => {
   const user = Meteor.user({ fields: { 'profile.x': 1, 'profile.y': 1, 'profile.levelId': 1 } });
   if (!user) return [];
 
-  const sortedZones = zoneManager.currentZones(user).map(zone => ({ channel: zone._id, name: `📍 ${zone.name}`, priority: 1 }));
+  const sortedZones = zoneManager
+    .findZonesForPosition({ x: user.profile.x, y: user.profile.y })
+    .map(zone => ({ channel: zone._id, name: `📍 ${zone.name}`, priority: 1 }));
 
   const nearUsersIds = nearUserIdsToString();
   let nearUsersChannel;

@@ -23,6 +23,7 @@ zoneManager = {
   webpageIframeContainer: undefined,
   newContentSprites: {},
   scene: undefined,
+  zones: [],
 
   init(scene) {
     this.scene = scene;
@@ -33,6 +34,7 @@ zoneManager = {
   },
 
   onDocumentAdded(zone) {
+    this.zones = Zones.find().fetch();
     this.checkZoneForNewContent(zone);
     if (zone.popInConfiguration?.autoOpen) characterPopIns.initFromZone(zone);
     window.dispatchEvent(new CustomEvent(eventTypes.onZoneAdded, { detail: { zone } }));
@@ -44,6 +46,7 @@ zoneManager = {
   },
 
   onDocumentUpdated(zone) {
+    this.zones = Zones.find().fetch();
     this.checkZoneForNewContent(zone);
     window.dispatchEvent(new CustomEvent(eventTypes.onZoneUpdated, { detail: { zone } }));
   },
@@ -51,23 +54,11 @@ zoneManager = {
   currentZone(user) {
     if (!user || user._id === Meteor.userId()) return this.activeZone;
 
-    const zones = this.currentZones(user);
+    const zones = this.findZonesForPosition({ x: user.profile.x, y: user.profile.y });
     if (!zones.length) return undefined;
 
-    return zones[0];
-  },
-
-  currentZones(user) {
-    const zones = Zones.find({
-      x1: { $lte: user.profile.x },
-      x2: { $gte: user.profile.x },
-      y1: { $lte: user.profile.y },
-      y2: { $gte: user.profile.y },
-    }).fetch();
-
-    if (!zones.length) return [];
-
-    return this.sortByNearest(zones, user.profile.x, user.profile.y);
+    const sortedZones = this.sortByNearest(zones, user.profile.x, user.profile.y);
+    return sortedZones[0];
   },
 
   setFullscreen(zone, value) {
@@ -161,12 +152,7 @@ zoneManager = {
   checkDistances(player) {
     if (!player) return;
 
-    const availableZones = Zones.find({
-      x1: { $lte: player.x },
-      x2: { $gte: player.x },
-      y1: { $lte: player.y },
-      y2: { $gte: player.y },
-    }).fetch();
+    const availableZones = this.findZonesForPosition({ x: player.x, y: player.y });
 
     if (availableZones.length === this.previousAvailableZones.length && availableZones.every((zone, i) => zone._id === this.previousAvailableZones[i]._id)) return;
 
@@ -188,8 +174,8 @@ zoneManager = {
 
     // compute zone toaster
     if (activeZone && !activeZone.hideName) {
-      activeZone.name = availableZones.map(z => z.name).filter(Boolean).join(' | ');
-      Session.set('showZoneName', activeZone);
+      const name = availableZones.map(z => z.name).filter(Boolean).join(' | ');
+      Session.set('zoneToaster', { name, hasNewContent: this.hasNewContent(activeZone) });
     }
 
     // notify external modules
@@ -287,6 +273,23 @@ zoneManager = {
     return zoneLastSeenDates[zone._id] < zone.lastMessageAt;
   },
 
+  isInsideZone(zone, position) {
+    if (position.x < zone.x1) return false;
+    if (position.x > zone.x2) return false;
+    if (position.y < zone.y1) return false;
+
+    return position.y <= zone.y2;
+  },
+
+  findZonesForPosition(position) {
+    const zones = [];
+    this.zones.forEach(zone => {
+      if (this.isInsideZone(zone, position)) zones.push(zone);
+    });
+
+    return zones;
+  },
+
   getIframeElement() {
     if (!this.webpageIframeContainer) this.webpageIframeContainer = document.querySelector('#webpageIframe');
     return this.webpageIframeContainer;
@@ -295,5 +298,9 @@ zoneManager = {
   getWebpageElement() {
     if (!this.webpageContainer) this.webpageContainer = document.querySelector('#webpage');
     return this.webpageContainer;
+  },
+
+  getZones() {
+    return this.zones;
   },
 };
