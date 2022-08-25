@@ -351,29 +351,29 @@ Template.lemverse.onCreated(function () {
 
         log('loading level: all users loaded');
         peer.init();
-      });
 
-      // Load entities
-      log(`loading level: loading entities`);
-      this.handleEntitiesSubscribe = this.subscribe('entities', levelId, () => {
-        this.handleObserveEntities = Entities.find({ levelId, prefab: { $exists: false } }).observe({
-          added(entity) { entityManager.onDocumentAdded(entity); },
-          changed(newEntity, oldEntity) { entityManager.onDocumentUpdated(newEntity, oldEntity); },
-          removed(entity) { entityManager.onDocumentRemoved(entity); },
-        });
-        log('loading level: all entities loaded');
-
-        // Load zones (after entities because a zone can be linked to an entity and update his appearance)
-        log(`loading level: loading zones`);
-        this.handleZonesSubscribe = this.subscribe('zones', levelId, () => {
-          this.handleObserveZones = Zones.find().observe({
-            added(zone) { zoneManager.onDocumentAdded(zone); },
-            changed(newZone, oldZone) { zoneManager.onDocumentUpdated(newZone, oldZone); },
-            removed(zone) { zoneManager.onDocumentRemoved(zone); },
+        // Load entities
+        log(`loading level: loading entities`);
+        this.handleEntitiesSubscribe = this.subscribe('entities', levelId, () => {
+          this.handleObserveEntities = Entities.find({ levelId, prefab: { $exists: false } }).observe({
+            added(entity) { entityManager.onDocumentAdded(entity); },
+            changed(newEntity, oldEntity) { entityManager.onDocumentUpdated(newEntity, oldEntity); },
+            removed(entity) { entityManager.onDocumentRemoved(entity); },
           });
+          log('loading level: all entities loaded');
 
-          log('loading level: all zones loaded');
-          zoneManager.checkDistances(userManager.getControlledCharacter());
+          // Load zones (after entities because a zone can be linked to an entity and update his appearance)
+          log(`loading level: loading zones`);
+          this.handleZonesSubscribe = this.subscribe('zones', levelId, () => {
+            this.handleObserveZones = Zones.find().observe({
+              added(zone) { zoneManager.onDocumentAdded(zone); },
+              changed(newZone, oldZone) { zoneManager.onDocumentUpdated(newZone, oldZone); },
+              removed(zone) { zoneManager.onDocumentRemoved(zone); },
+            });
+
+            log('loading level: all zones loaded');
+            zoneManager.checkDistances(userManager.getControlledCharacter());
+          });
         });
       });
 
