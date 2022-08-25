@@ -182,13 +182,6 @@ sendEvent = (command, data = {}) => {
   window.parent.postMessage(JSON.parse(JSON.stringify({ command, ...data })), Meteor.settings.public.lp.website);
 };
 
-meteorCall = (method, ...args) => new Promise((resolve, reject) => {
-  Meteor.call(method, ...args, (err, result) => {
-    if (err) reject(err);
-    else resolve(result);
-  });
-});
-
 destroyVideoSource = video => {
   if (!video) return;
   video.pause();
@@ -215,15 +208,6 @@ registerRadialMenuModules = modules => {
 };
 
 const allowPhaserMouseInputs = () => !Session.get('editor') && !Session.get('console');
-
-const nearestDuration = duration => {
-  const message = [];
-  message.push(lp.s.lpad(moment.duration(duration).asHours() | 0, 2, '0'));
-  message.push(lp.s.lpad(moment.duration(duration).minutes(), 2, '0'));
-  message.push(lp.s.lpad(moment.duration(duration).seconds(), 2, '0'));
-
-  return message.join(':');
-};
 
 const toggleUIInputs = value => {
   hotkeys.setScope(value ? scopes.form : scopes.player);
@@ -252,6 +236,22 @@ const guestSkin = () => {
   if (_.isObject(Meteor.settings.public.skins.guest)) return Meteor.settings.public.skins.guest;
 
   return Levels.findOne().skins?.guest || {};
+};
+
+const meteorCallWithPromise = (method, ...args) => new Promise((resolve, reject) => {
+  Meteor.call(method, ...args, (err, result) => {
+    if (err) reject(err);
+    else resolve(result);
+  });
+});
+
+const nearestDuration = duration => {
+  const message = [];
+  message.push(lp.s.lpad(moment.duration(duration).asHours() | 0, 2, '0'));
+  message.push(lp.s.lpad(moment.duration(duration).minutes(), 2, '0'));
+  message.push(lp.s.lpad(moment.duration(duration).seconds(), 2, '0'));
+
+  return message.join(':');
 };
 
 const textDirectionToVector = direction => {
@@ -291,6 +291,7 @@ export {
   formatURLs,
   formatURL,
   generateEntityThumbnail,
+  meteorCallWithPromise,
   nearestDuration,
   replaceTextVars,
   toggleUIInputs,

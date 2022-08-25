@@ -1,6 +1,6 @@
 import Peer from 'peerjs';
 import audioManager from './audio-manager';
-import { canAnswerCall } from './helpers';
+import { canAnswerCall, meteorCallWithPromise } from './helpers';
 
 const debug = (text, meta) => {
   if (!Meteor.user().options?.debug) return;
@@ -429,7 +429,7 @@ peer = {
     if (Meteor.user().profile.guest) throw new Error(`peer is forbidden for guest account`);
 
     this.peerLoading = true;
-    const result = await meteorCall('getPeerConfig');
+    const result = await meteorCallWithPromise('getPeerConfig');
 
     const { port, url: host, path, config } = result;
 

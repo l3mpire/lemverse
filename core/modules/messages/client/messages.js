@@ -1,3 +1,5 @@
+import { meteorCallWithPromise } from '../../../client/helpers';
+
 const messageMaxLength = 4096;
 
 const ignoreChannelAutoSwitch = () => !Session.get('console') || (Session.get('messagesChannel') || '').includes('qst_');
@@ -89,7 +91,7 @@ messagesModule = {
 
     let messageId;
     try {
-      messageId = await meteorCall('sendMessage', channel, content, file?._id);
+      messageId = await meteorCallWithPromise('sendMessage', channel, content, file?._id);
     } catch (err) {
       lp.notif.error('You are not authorized to speak here');
     }

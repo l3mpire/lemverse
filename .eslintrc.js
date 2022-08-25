@@ -97,7 +97,6 @@ module.exports = {
     kebabCase: 'writable',
     entityActionType: 'writable',
     notify: 'writable',
-    meteorCall: 'writable',
     openConsole: 'writable',
     closeConsole: 'writable',
     createQuestDraft: 'writable',
