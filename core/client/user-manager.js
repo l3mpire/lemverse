@@ -234,7 +234,7 @@ userManager = {
     }
   },
 
-  interpolatePlayerPositions() {
+  interpolateCharacterPositions() {
     const now = Date.now();
     Object.values(this.characters).forEach(player => {
       if (player === this.controlledCharacter) return;
@@ -267,7 +267,7 @@ userManager = {
       this.checkZones = false;
     }
 
-    this.interpolatePlayerPositions();
+    this.interpolateCharacterPositions();
   },
 
   handleUserInputs() {
