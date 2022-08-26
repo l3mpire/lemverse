@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 
 import { allowPhaserMouseInputs } from '../helpers';
-import { createConfettiEffect } from '../effects/particles';
+import { createConfettiEffect, createSmokeEffect } from '../effects/particles';
 
 const configuration = {
   colliderConfiguration: {
@@ -90,8 +90,8 @@ class Character extends Phaser.GameObjects.Container {
   onDamage() {
     this.flashColor(configuration.colorStates.takeDamage);
 
-    const confettiEffect = createConfettiEffect(this.scene, this.x, this.y);
-    confettiEffect.emitters.list.forEach(emitter => emitter.explode());
+    const effect = createConfettiEffect(this.scene, this.x, this.y);
+    effect.emitters.list.forEach(emitter => emitter.explode());
   }
 
   playAnimation(animationName, direction, forceUpdate = false) {
@@ -152,6 +152,10 @@ class Character extends Phaser.GameObjects.Container {
     else this.skinPartsContainer.disableInteractive();
   }
 
+  updateStep() {
+    if (this.walkSmokeEffectEmitter) this.walkSmokeEffectEmitter.emitter.on = this.wasMoving;
+  }
+
   physicsStep() {
     if (!this.body) return Phaser.Math.Vector2.ZERO;
 
@@ -199,6 +203,16 @@ class Character extends Phaser.GameObjects.Container {
     const existingParts = this.skinPartsContainer.list.map(skinPart => skinPart.name);
     const skinPartsToRemove = existingParts.filter(x => !skinElementKeys.includes(x) || !skinElements[x]);
     skinPartsToRemove.forEach(skinPart => this.skinPartsContainer.getByName(skinPart).destroy());
+  }
+
+  enableEffects(value) {
+    if (value) {
+      this.walkSmokeEffectEmitter = createSmokeEffect(this.scene, 0, 0);
+      this.walkSmokeEffectEmitter.emitter.startFollow(this);
+    } else {
+      this.walkSmokeEffectEmitter?.particles?.destroy();
+      this.walkSmokeEffectEmitter = undefined;
+    }
   }
 
   _initMouseEvents() {

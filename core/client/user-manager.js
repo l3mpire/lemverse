@@ -208,6 +208,7 @@ userManager = {
   setAsControlled(userId) {
     // reset
     this.controlledCharacter?.enablePhysics(false);
+    this.controlledCharacter?.enableEffects(false);
     this.scene.cameras.main.stopFollow();
     hotkeys.setScope('guest');
     this.controlledCharacter = undefined;
@@ -231,6 +232,7 @@ userManager = {
       else hotkeys.setScope(scopes.player);
 
       this.controlledCharacter = character;
+      this.controlledCharacter?.enableEffects(true);
     }
   },
 
@@ -268,6 +270,7 @@ userManager = {
     }
 
     this.interpolateCharacterPositions();
+    this.controlledCharacter?.updateStep();
   },
 
   handleUserInputs() {
