@@ -6,11 +6,6 @@ import { guestSkin, textDirectionToVector, vectorToTextDirection } from './helpe
 const userInterpolationInterval = 200;
 const defaultUserMediaColorError = '0xd21404';
 const characterPopInOffset = { x: 0, y: -90 };
-const characterInteractionDistance = { x: 32, y: 32 };
-const characterCollider = {
-  radius: 15,
-  offset: { x: -12, y: -30 },
-};
 const characterAnimations = Object.freeze({
   idle: 'idle',
   run: 'run',
@@ -335,26 +330,9 @@ userManager = {
     entityManager.interactWithNearestEntity();
   },
 
-  getTilesInFrontOfPlayer(player, layers = []) {
-    if (!player) return undefined;
-
-    const positionOffset = { x: 0, y: 0 };
-    if (player.direction) {
-      const directionVector = textDirectionToVector(player.direction);
-      positionOffset.x = directionVector.x * characterInteractionDistance.x;
-      positionOffset.y = directionVector.y * characterInteractionDistance.y;
-    }
-
-    return levelManager.getTilesRelativeToPosition(player, positionOffset, layers);
-  },
-
-  getPositionInFrontOfPlayer(player, distance = undefined) {
-    const directionVector = textDirectionToVector(player.direction);
-
-    return {
-      x: player.x + directionVector.x * (distance || characterInteractionDistance.x),
-      y: player.y + characterCollider.offset.y + directionVector.y * (distance || characterInteractionDistance.y),
-    };
+  getPositionInFrontOfCharacter(character, distance = 0) {
+    const directionVector = textDirectionToVector(character.direction);
+    return { x: character.x + directionVector.x * distance, y: character.y + directionVector.y * distance };
   },
 
   follow(user) {

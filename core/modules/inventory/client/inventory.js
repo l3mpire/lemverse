@@ -36,7 +36,7 @@ Template.inventoryItemPanel.events({
     event.stopPropagation();
 
     const itemId = Session.get('selectedInventoryItem')._id;
-    const positionInFrontOfPlayer = userManager.getPositionInFrontOfPlayer(userManager.getControlledCharacter(), dropItemDistance);
+    const positionInFrontOfPlayer = userManager.getPositionInFrontOfCharacter(userManager.getControlledCharacter(), dropItemDistance);
     Meteor.call('dropInventoryItem', itemId, positionInFrontOfPlayer, (error, editedItems) => {
       if (error) { lp.notif.error('An error occured during the drop'); return; }
       if (!editedItems[itemId]) Session.set('selectedInventoryItem', undefined);
