@@ -55,9 +55,9 @@
         <input type="text" name="defaultReaction" id="defaultReaction" class="js-reaction input" value="{{or currentUser.profile.defaultReaction "❤️"}}">
       </div>
 
-      <div class="actions {{#if fieldUpdated}}show{{/if}}">
+      <div class="actions show">
         <button type="button" class="cancel link" aria-label="Cancel updates">Cancel</button>
-        <button type="submit" class="submit button" aria-label="Update account">Update account</button>
+        <button type="submit" class="submit button" aria-label="Save changes" disabled="{{#if not fieldUpdated}}disabled{{/if}}">Save changes</button>
       </div>
     </form>
   </div>

@@ -43,6 +43,11 @@
       color: white;
     }
   }
+
+  &[disabled] {
+    pointer-events: none;
+    filter: saturate(30%);
+  }
 }
 
 .label {
