@@ -59,7 +59,7 @@ userManager = {
     throttledSavePlayer.cancel();
   },
 
-  createUser(user) {
+  onDocumentAdded(user) {
     if (this.characters[user._id]) return null;
 
     const { x, y, guest, direction, name, nameColor } = user.profile;
@@ -72,7 +72,7 @@ userManager = {
     if (guest) character.updateSkin(guestSkin()); // init with custom skin
     else character.setName(name, nameColor);
 
-    window.setTimeout(() => this.updateUser(user), 0);
+    window.setTimeout(() => this.onDocumentUpdated(user), 0);
 
     return character;
   },
@@ -124,7 +124,7 @@ userManager = {
     }
   },
 
-  updateUser(user, oldUser) {
+  onDocumentUpdated(user, oldUser) {
     const character = this.characters[user._id];
     if (!character) return;
 
@@ -192,7 +192,7 @@ userManager = {
     }
   },
 
-  removeUser(user) {
+  onDocumentRemoved(user) {
     const character = this.characters[user._id];
     if (!character) return;
 
