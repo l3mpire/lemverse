@@ -12,7 +12,7 @@ const submit = template => {
     }
 
     const { profile } = user();
-    userManager.rename(fields.name || profile.name, fields.nameColor || profile.nameColor);
+    userManager.getControlledCharacter()?.setName(fields.name || profile.name, fields.nameColor || profile.nameColor);
     lp.notif.success('Account updated');
     template.hasUpdates.set(false);
     template.fieldsUpdated = {};
