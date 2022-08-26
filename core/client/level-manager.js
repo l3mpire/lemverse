@@ -163,6 +163,26 @@ levelManager = {
     });
   },
 
+  getTilesRelativeToPosition(position, offset, layers = []) {
+    const tileX = this.map.worldToTileX(position.x + offset.x);
+    const tileY = this.map.worldToTileY(position.y + offset.y);
+
+    const tiles = [];
+    if (layers.length === 0) {
+      for (let l = this.map.layers.length; l >= 0; l--) {
+        const tile = this.map.getTileAt(tileX, tileY, false, l);
+        if (tile) tiles.push(tile);
+      }
+    } else {
+      layers.forEach(l => {
+        const tile = this.map.getTileAt(tileX, tileY, false, l);
+        if (tile) tiles.push(tile);
+      });
+    }
+
+    return tiles;
+  },
+
   tileGlobalIndex(mapTileset, tileIndex) { return (mapTileset.firstgid || 0) + tileIndex; },
 
   tileLayer(mapTileset, tileIndex) { return mapTileset.tileProperties[tileIndex]?.layer ?? defaultTileset.layer; },

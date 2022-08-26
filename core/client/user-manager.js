@@ -335,10 +335,6 @@ userManager = {
     entityManager.interactWithNearestEntity();
   },
 
-  getTilesUnderPlayer(player, layers = []) {
-    return this.getTilesRelativeToPlayer(player, { x: 0, y: 0 }, layers);
-  },
-
   getTilesInFrontOfPlayer(player, layers = []) {
     if (!player) return undefined;
 
@@ -349,7 +345,7 @@ userManager = {
       positionOffset.y = directionVector.y * characterInteractionDistance.y;
     }
 
-    return this.getTilesRelativeToPlayer(player, positionOffset, layers);
+    return levelManager.getTilesRelativeToPosition(player, positionOffset, layers);
   },
 
   getPositionInFrontOfPlayer(player, distance = undefined) {
@@ -359,29 +355,6 @@ userManager = {
       x: player.x + directionVector.x * (distance || characterInteractionDistance.x),
       y: player.y + characterCollider.offset.y + directionVector.y * (distance || characterInteractionDistance.y),
     };
-  },
-
-  getTilesRelativeToPlayer(player, offset, layers = []) {
-    if (!player) return undefined;
-
-    const { map } = levelManager;
-    const tileX = map.worldToTileX(player.x + offset.x);
-    const tileY = map.worldToTileY(player.y + offset.y);
-
-    const tiles = [];
-    if (layers.length === 0) {
-      for (let l = map.layers.length; l >= 0; l--) {
-        const tile = map.getTileAt(tileX, tileY, false, l);
-        if (tile) tiles.push(tile);
-      }
-    } else {
-      layers.forEach(l => {
-        const tile = map.getTileAt(tileX, tileY, false, l);
-        if (tile) tiles.push(tile);
-      });
-    }
-
-    return tiles;
   },
 
   follow(user) {
