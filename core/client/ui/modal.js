@@ -26,14 +26,16 @@ Template.modalContainer.onCreated(function () {
 
   this.autorun(() => {
     const modal = Session.get('modal');
+    if (modal?.ignoreState) return;
 
     // allow multiple modals opened at the same time
     if (modal) modals.push(modal);
     else {
       const modalClosed = modals.pop();
+
       if (modalClosed && modalClosed.append) {
         const previousModal = modals[modals.length - 1];
-        if (previousModal) Session.set('modal', previousModal);
+        if (previousModal) Session.set('modal', { ...previousModal, ignoreState: true });
       } else modals = [];
     }
   });
