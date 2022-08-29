@@ -35,20 +35,21 @@ zoneManager = {
   },
 
   onDocumentAdded(zone) {
-    this.zones = Zones.find().fetch();
     this.checkZoneForNewContent(zone);
+    this.refreshZoneList();
     if (zone.popInConfiguration?.autoOpen) characterPopIns.initFromZone(zone);
     window.dispatchEvent(new CustomEvent(eventTypes.onZoneAdded, { detail: { zone } }));
   },
 
   onDocumentRemoved(zone) {
     this.destroyNewContentIndicator(zone);
+    this.refreshZoneList();
     window.dispatchEvent(new CustomEvent(eventTypes.onZoneRemoved, { detail: { zone } }));
   },
 
   onDocumentUpdated(zone) {
-    this.zones = Zones.find().fetch();
     this.checkZoneForNewContent(zone);
+    this.refreshZoneList();
     window.dispatchEvent(new CustomEvent(eventTypes.onZoneUpdated, { detail: { zone } }));
   },
 
@@ -300,6 +301,10 @@ zoneManager = {
   getWebpageElement() {
     if (!this.webpageContainer) this.webpageContainer = document.querySelector('#webpage');
     return this.webpageContainer;
+  },
+
+  refreshZoneList() {
+    this.zones = Zones.find().fetch();
   },
 
   getZones() {
