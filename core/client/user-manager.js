@@ -208,13 +208,15 @@ userManager = {
     // reset
     this.controlledCharacter?.enablePhysics(false);
     this.controlledCharacter?.enableEffects(false);
-    this.scene.cameras.main.stopFollow();
-    hotkeys.setScope('guest');
     this.controlledCharacter = undefined;
+    hotkeys.setScope('guest');
 
-    levelManager.layers.forEach(layer => {
-      if (layer.playerCollider) this.scene.physics.world.removeCollider(layer.playerCollider);
-    });
+    if (this.scene) {
+      this.scene.cameras.main.stopFollow();
+      levelManager.layers.forEach(layer => {
+        if (layer.playerCollider) this.scene.physics.world.removeCollider(layer.playerCollider);
+      });
+    }
 
     if (userId) {
       const character = this.characters[userId];
