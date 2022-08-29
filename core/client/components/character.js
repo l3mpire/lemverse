@@ -154,6 +154,7 @@ class Character extends Phaser.GameObjects.Container {
 
   updateStep() {
     if (this.walkSmokeEffectEmitter) this.walkSmokeEffectEmitter.emitter.on = this.wasMoving;
+    this.setDepthFromPosition();
   }
 
   physicsStep() {
