@@ -7,10 +7,14 @@ const debug = (text, meta) => {
   log(text, meta);
 };
 
+const callAction = Object.freeze({
+  open: 0,
+  close: 1,
+});
+
 peer = {
   calls: {},
-  callsToClose: {},
-  callsOpening: {},
+  waitingCallActions: {},
   callStartDates: {},
   remoteCalls: {},
   peerInstance: undefined,
@@ -67,7 +71,7 @@ peer = {
     debug(`closeCall: start (${origin})`, { userId });
 
     let activeCallsCount = 0;
-    const close = (remote, user, type) => {
+    const _close = (remote, user, type) => {
       const callsSource = remote ? this.remoteCalls : this.calls;
       const call = callsSource[`${user}-${type}`];
       if (call) {
@@ -79,12 +83,11 @@ peer = {
     };
 
     this.unlockCall(userId, true);
-    close(false, userId, streamTypes.main);
-    close(false, userId, streamTypes.screen);
-    close(true, userId, streamTypes.main);
-    close(true, userId, streamTypes.screen);
-    this.cancelCallClose(userId);
-    this.cancelCallOpening(userId);
+    _close(false, userId, streamTypes.main);
+    _close(false, userId, streamTypes.screen);
+    _close(true, userId, streamTypes.main);
+    _close(true, userId, streamTypes.screen);
+    this.cancelWaitingCallAction(userId);
 
     const debutText = activeCallsCount ? 'closeCall: call was active' : 'closeCall: call was inactive';
     debug(debutText, { sourceAmount: activeCallsCount });
@@ -124,9 +127,16 @@ peer = {
 
   close(userId, timeout = 0, origin = null) {
     debug(`close: start (${origin})`, { userId });
-    this.cancelCallOpening(userId);
-    if (this.callsToClose[userId] && timeout !== 0) return;
-    this.callsToClose[userId] = setTimeout(() => this.closeCall(userId, origin), timeout);
+    if (this.isCallInState(userId, callAction.close)) {
+      debug(`close: call already closing (action ignored)`, { userId });
+      return;
+    }
+
+    this.cancelWaitingCallAction(userId);
+    this.waitingCallActions[userId] = {
+      timer: setTimeout(() => this.closeCall(userId, origin), timeout),
+      action: callAction.close,
+    };
   },
 
   createPeerCall(peer, user, stream, streamType) {
@@ -238,15 +248,19 @@ peer = {
     if (user?.profile.guest) return; // disable proximity sensor for guest user
 
     nearUsers.forEach(nearUser => {
+      if (this.isCallInState(nearUser._id, callAction.open)) return;
+      this.cancelWaitingCallAction(nearUser._id);
+
       const zone = zoneManager.currentZone(nearUser);
       if (zone?.disableCommunications) {
         lp.notif.warning(`${nearUser.profile.name} isn't available at the moment.<br /> Leave him a voice message by pressing "P"`);
         return;
       }
 
-      this.cancelCallClose(nearUser._id);
-      this.cancelCallOpening(nearUser._id);
-      this.callsOpening[nearUser._id] = setTimeout(() => this.createPeerCalls(nearUser), Meteor.settings.public.peer.callDelay);
+      this.waitingCallActions[nearUser._id] = {
+        timer: setTimeout(() => this.createPeerCalls(nearUser), Meteor.settings.public.peer.callDelay),
+        action: callAction.open,
+      };
     });
   },
 
@@ -257,18 +271,14 @@ peer = {
     });
   },
 
-  cancelCallClose(userId) {
-    if (!this.callsToClose[userId]) return;
-
-    clearTimeout(this.callsToClose[userId]);
-    delete this.callsToClose[userId];
+  isCallInState(userId, state) {
+    return this.waitingCallActions[userId]?.action === state;
   },
 
-  cancelCallOpening(userId) {
-    if (!this.callsOpening[userId]) return;
-
-    clearTimeout(this.callsOpening[userId]);
-    delete this.callsOpening[userId];
+  cancelWaitingCallAction(userId) {
+    if (!this.waitingCallActions[userId]) return;
+    clearTimeout(this.waitingCallActions[userId].timer);
+    delete this.waitingCallActions[userId];
   },
 
   async sendData(userIds, data) {
