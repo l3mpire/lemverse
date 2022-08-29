@@ -160,10 +160,8 @@ userManager = {
     }
 
     // update name
-    if (!guest && (name !== oldUser?.profile.name || nameColor !== oldUser?.profile.nameColor)) {
-      character.setName(name, nameColor);
-      if (meet.api) meet.userName(name);
-    }
+    const nameUpdated = !guest && (name !== oldUser?.profile.name || nameColor !== oldUser?.profile.nameColor);
+    if (nameUpdated) character.setName(name, nameColor);
 
     const userHasMoved = x !== oldUser?.profile.x || y !== oldUser?.profile.y;
     const loggedUser = Meteor.user();
@@ -181,6 +179,7 @@ userManager = {
       if (character.getData('userId') !== loggedUser._id || !character.body) this.setAsControlled(loggedUser._id);
 
       if (userHasMoved) this.checkZones = true;
+      if (nameUpdated && meet.api) meet.userName(name);
 
       if (shouldCheckDistance) {
         const otherUsers = Meteor.users.find({ _id: { $ne: loggedUser._id }, 'status.online': true, 'profile.levelId': loggedUser.profile.levelId }).fetch();
