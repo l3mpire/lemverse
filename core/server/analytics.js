@@ -122,22 +122,34 @@ Meteor.methods({
     if (!userId) return;
 
     check(traits, {
-      users_attending_count: Number,
+      peerUserId: String,
+      usersAttendingCount: Number,
     });
 
     const user = Meteor.user();
-    analytics.track(userId, '💬 Discussion Attend', { level_id: user.profile.levelId });
+    analytics.track(userId, '💬 Discussion Attend', {
+      level_id: user.profile.levelId,
+      peer_user_id: traits.peerUserId,
+      users_attending_count: traits.usersAttendingCount,
+    });
   },
   analyticsDiscussionEnd(traits) {
     const { userId } = this;
     if (!userId) return;
 
     check(traits, {
+      usersAttendingCount: Number,
       duration: Number,
+      peerUserId: String,
     });
 
     const user = Meteor.user();
-    analytics.track(userId, '💬 Discussion End', { level_id: user.profile.levelId, duration: traits.duration });
+    analytics.track(userId, '💬 Discussion End', {
+      level_id: user.profile.levelId,
+      duration: traits.duration,
+      users_attending_count: traits.usersAttendingCount,
+      peer_user_id: traits.peerUserId,
+    });
   },
   analyticsConferenceAttend(traits) {
     const { userId } = this;

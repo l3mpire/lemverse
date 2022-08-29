@@ -11,7 +11,7 @@ peer = {
   calls: {},
   callsToClose: {},
   callsOpening: {},
-  discussionStartDate: undefined,
+  callStartDates: {},
   remoteCalls: {},
   peerInstance: undefined,
   peerLoading: false,
@@ -106,12 +106,12 @@ peer = {
 
     if (!this.hasActiveStreams()) {
       userStreams.destroyStream(streamTypes.main);
+    }
 
-      if (this.discussionStartDate) {
-        const duration = (Date.now() - this.discussionStartDate) / 1000;
-        Meteor.call('analyticsDiscussionEnd', { duration });
-        this.discussionStartDate = undefined;
-      }
+    if (this.callStartDates[userId]) {
+      const duration = (Date.now() - this.callStartDates[userId]) / 1000;
+      Meteor.call('analyticsDiscussionEnd', { peerUserId: userId, duration, usersAttendingCount: this.getCallCount() });
+      delete this.callStartDates[userId];
     }
 
     $(`.js-video-${userId}-user`).remove();
@@ -168,9 +168,9 @@ peer = {
       audioManager.play('webrtc-in.mp3', 0.2);
       notify(user, `Wants to talk to you`);
 
-      if (!this.hasActiveStreams() && !this.discussionStartDate) {
-        this.discussionStartDate = new Date();
-        Meteor.call('analyticsDiscussionAttend', { users_attending_count: userProximitySensor.nearUsersCount() });
+      if (!this.callStartDates[user._id]) {
+        this.callStartDates[user._id] = Date.now();
+        Meteor.call('analyticsDiscussionAttend', { peerUserId: user._id, usersAttendingCount: this.getCallCount() });
       }
     }
 
@@ -488,6 +488,10 @@ peer = {
   unlockCall(userId, notify = false) {
     if (notify && this.lockedCalls[userId]) this.sendData([userId], { type: 'unfollowed', emitter: Meteor.userId() });
     delete this.lockedCalls[userId];
+  },
+
+  getCallCount() {
+    return Object.keys(this.callStartDates).length;
   },
 
   hasActiveStreams() {
