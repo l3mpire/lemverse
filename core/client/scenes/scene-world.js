@@ -70,7 +70,6 @@ WorldScene = new Phaser.Class({
       const clampedDelta = clamp(deltaY, -zoomConfig.maxDelta, zoomConfig.maxDelta);
       const zoom = clamp(this.cameras.main.zoom - (clampedDelta * linearFactor), zoomConfig.min, zoomConfig.max);
       this.setClampedZoom(this.cameras.main, zoom);
-      levelManager.markCullingAsDirty();
     });
 
     if (window.matchMedia('(pointer: coarse)').matches) {
@@ -152,13 +151,11 @@ WorldScene = new Phaser.Class({
 
   resetZoom() {
     this.setClampedZoom(this.cameras.main, zoomConfig.default);
-    levelManager.markCullingAsDirty();
   },
 
   resize(mode) {
     this.setClampedZoom(this.cameras.main, this.cameras.main.zoom);
     updateViewport(this, mode);
-    levelManager.markCullingAsDirty();
   },
 
   setClampedZoom(camera, zoom) {
