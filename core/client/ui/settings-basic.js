@@ -39,16 +39,11 @@ Template.settingsBasic.helpers({
 });
 
 Template.settingsBasic.events({
-  'blur .input'(event, templateInstance) {
+  'input .input, input .js-name-color'(event, templateInstance) {
     event.preventDefault();
     event.stopPropagation();
     templateInstance.fieldsUpdated[event.target.name] = event.target.value;
     templateInstance.hasUpdates.set(true);
-  },
-  'input .js-name-color'(event, templateInstance) {
-    event.preventDefault();
-    event.stopPropagation();
-    templateInstance.fieldsUpdated.nameColor = event.target.value;
   },
   'submit form'(event, templateInstance) {
     event.preventDefault();

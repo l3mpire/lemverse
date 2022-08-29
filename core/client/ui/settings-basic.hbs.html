@@ -1,5 +1,5 @@
 <template name="characterNameColorSelector">
-    <select name="name-color" class="js-name-color select">
+    <select name="nameColor" class="js-name-color select">
       {{#each value in nameColors}}
        {{#if eq currentUser.profile.nameColor value}}
         <option selected="selected" value="{{value}}">{{value}}</option>
