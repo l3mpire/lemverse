@@ -175,6 +175,10 @@ Meteor.users.find({ 'status.online': true }).observeChanges({
     Meteor.users.update(user._id, { $set: { 'profile.x': spawnPosition.x, 'profile.y': spawnPosition.y } });
   },
   removed(id) {
+    const user = Meteor.users.findOne(id);
+    if (!user?.profile?.guest) {
+      analytics.track(id, '🚪 Log Out');
+    }
     Meteor.users.update(id, { $set: { 'status.lastLogoutAt': new Date() } });
   },
 });
