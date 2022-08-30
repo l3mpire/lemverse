@@ -9,14 +9,16 @@ const cloneLevelContent = (originalLevelId, targetedLevelId) => {
   const now = new Date();
 
   const { metadata, spawn, width, height, createdBy } = Levels.findOne(originalLevelId);
-  Levels.update(targetedLevelId, { $set: {
-    template: false,
-    metadata,
-    spawn: spawn || defaultSpawnPosition,
-    width,
-    height,
-    templateId: originalLevelId,
-  } });
+  Levels.update(targetedLevelId, {
+    $set: {
+      template: false,
+      metadata,
+      spawn: spawn || defaultSpawnPosition,
+      width,
+      height,
+      templateId: originalLevelId,
+    },
+  });
 
   const tiles = Tiles.find({ levelId: originalLevelId }).fetch();
   tiles.forEach(tile => {
@@ -42,14 +44,33 @@ const cloneLevelContent = (originalLevelId, targetedLevelId) => {
   });
 
   const entities = Entities.find({ levelId: originalLevelId }).fetch();
+  const idMap = {};
   entities.forEach(entity => {
-    Entities.insert({
-      ...entity,
-      _id: Entities.id(),
-      createdAt: now,
-      createdBy,
-      levelId: targetedLevelId,
-    });
+    // Don't care about pickable entities
+    if (entity.actionType !== entityActionType.pickable) {
+      const _id = Entities.id();
+      idMap[entity._id] = _id;
+
+      Entities.insert({
+        ...entity,
+        _id,
+        createdAt: now,
+        createdBy,
+        levelId: targetedLevelId,
+      });
+    }
+  });
+  // Get the new entity list to update links
+  const newEntityList = Entities.find({
+    levelId: targetedLevelId,
+    entityId: { $exists: true },
+  }).fetch();
+  newEntityList.forEach(elem => {
+    if (typeof idMap[elem.entityId] === 'string') {
+      Entities.update(elem._id, { $set: { entityId: idMap[elem.entityId] } });
+    } else {
+      log('cloneLevelContent: Found entity with entityId without any match: ', elem);
+    }
   });
 
   log('cloneLevelContent: done');
