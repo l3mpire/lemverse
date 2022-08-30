@@ -4,33 +4,28 @@ const { enable, writeKey } = Meteor.settings?.public?.segmentAnalyticsSettings |
 const isEnabled = enable === true && !!writeKey;
 const analyticsInstance = !isEnabled ? undefined : new Analytics(writeKey, { flushAt: 1 });
 
-const newUserDefaultData = {
-  mic_permission_state: true,
-  camera_permission_state: true,
-  screen_permission_state: false,
-  login_email_address_verified: false,
-  guild: 'unset',
-};
-
 const newGuildDefaultData = {
   users_count: 1,
 };
 
 analytics = {
-  createUser(user) {
+  identify(user) {
     if (!isEnabled) return;
 
-    log('analytics: createUser', { user });
-
     const userData = {
-      user_id: user._id,
-      name: user._id,
-      $name: user._id,
-      $email: '-',
-      login_email_address: user.emails[0].address,
+      // Reserved traits
+      id: user._id,
+      name: user.profile.name,
       email: user.emails[0].address,
-      sign_up_date: user.createdAt,
+      created_at: user.createdAt,
+
+      // Custom traits
+      login_email_address: user.emails[0].address,
       guild: user.guildId || 'unset',
+      mic_permission_state: user.profile.shareAudio,
+      camera_permission_state: user.profile.shareVideo,
+      screen_permission_state: user.profile.shareScreen,
+      login_email_address_verified: user.emails[0].verified,
     };
 
     const context = {};
@@ -39,10 +34,9 @@ analytics = {
     if (ddp?.connection?.httpHeaders?.['user-agent']) context.userAgent = ddp.connection.httpHeaders['user-agent'];
 
     try {
-      analyticsInstance.identify({ userId: user._id, traits: { ...userData, ...newUserDefaultData }, context });
-      log(`analytics.createUser: new user added`, { _id: user._id });
+      analyticsInstance.identify({ userId: user._id, traits: userData, context });
     } catch (err) {
-      log(`analytics.createUser: failed to add new user`, { _id: user._id, err });
+      log(`analytics.identify: failed to identify user`, { _id: user._id, err });
     }
   },
   createGuild(userId, guild) {
