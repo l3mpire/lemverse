@@ -2,6 +2,59 @@ import { canEditLevel, canEditActiveLevel, currentLevel } from '../lib/misc';
 
 const defaultSpawnPosition = { x: 200, y: 200 };
 
+const cloneLevelContent = (originalLevelId, targetedLevelId) => {
+  log('cloneLevelContent: start', { originalLevelId, targetedLevelId });
+  check([originalLevelId, targetedLevelId], [Match.Id]);
+
+  const now = new Date();
+
+  const { metadata, spawn, width, height, createdBy } = Levels.findOne(originalLevelId);
+  Levels.update(targetedLevelId, { $set: {
+    template: false,
+    metadata,
+    spawn: spawn || defaultSpawnPosition,
+    width,
+    height,
+    templateId: originalLevelId,
+  } });
+
+  const tiles = Tiles.find({ levelId: originalLevelId }).fetch();
+  tiles.forEach(tile => {
+    Tiles.insert({
+      ...tile,
+      _id: Tiles.id(),
+      createdAt: now,
+      createdBy,
+      levelId: targetedLevelId,
+    });
+  });
+
+  const zones = Zones.find({ levelId: originalLevelId }).fetch();
+  zones.forEach(zone => {
+    Zones.insert({
+      ...zone,
+      _id: Zones.id(),
+      createdAt: now,
+      createdBy,
+      levelId: targetedLevelId,
+      uuid: undefined,
+    });
+  });
+
+  const entities = Entities.find({ levelId: originalLevelId }).fetch();
+  entities.forEach(entity => {
+    Entities.insert({
+      ...entity,
+      _id: Entities.id(),
+      createdAt: now,
+      createdBy,
+      levelId: targetedLevelId,
+    });
+  });
+
+  log('cloneLevelContent: done');
+};
+
 createLevel = options => {
   log('createLevel: start', { options });
 
@@ -25,45 +78,8 @@ createLevel = options => {
     createdBy: user._id,
   });
 
-  if (templateId) {
-    log('createLevel: copy template', { templateId });
-    const { metadata, spawn, width, height } = Levels.findOne(templateId);
-    Levels.update(newLevelId, { $set: { template: false, metadata, spawn: spawn || defaultSpawnPosition, width, height, templateId } });
-
-    const tiles = Tiles.find({ levelId: templateId }).fetch();
-    tiles.forEach(tile => {
-      Tiles.insert({
-        ...tile,
-        _id: Tiles.id(),
-        createdAt: now,
-        createdBy: user._id,
-        levelId: newLevelId,
-      });
-    });
-
-    const zones = Zones.find({ levelId: templateId }).fetch();
-    zones.forEach(zone => {
-      Zones.insert({
-        ...zone,
-        _id: Zones.id(),
-        createdAt: now,
-        createdBy: user._id,
-        levelId: newLevelId,
-        uuid: undefined,
-      });
-    });
-
-    const entities = Entities.find({ levelId: templateId }).fetch();
-    entities.forEach(entity => {
-      Entities.insert({
-        ...entity,
-        _id: Entities.id(),
-        createdAt: now,
-        createdBy: user._id,
-        levelId: newLevelId,
-      });
-    });
-  } else {
+  if (templateId) cloneLevelContent(options.templateId, newLevelId);
+  else {
     log('createLevel: create empty level');
     const { levelId } = user.profile;
 
