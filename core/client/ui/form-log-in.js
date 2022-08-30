@@ -69,4 +69,5 @@ Template.formLogIn.helpers({
   email() { return Template.instance().email; },
   password() { return Template.instance().password; },
   loginMode() { return Template.instance().loginMode.get(); },
-});
+  contactURL() { return Meteor.settings.public.permissions?.contactURL; }},  
+);
