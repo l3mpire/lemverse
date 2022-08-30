@@ -134,7 +134,10 @@ peer = {
 
     this.cancelWaitingCallAction(userId);
     this.waitingCallActions[userId] = {
-      timer: setTimeout(() => this.closeCall(userId, origin), timeout),
+      timer: setTimeout(() => {
+        this.cancelWaitingCallAction(userId);
+        this.closeCall(userId, origin);
+      }, timeout),
       action: callAction.close,
     };
   },
@@ -258,7 +261,10 @@ peer = {
       }
 
       this.waitingCallActions[nearUser._id] = {
-        timer: setTimeout(() => this.createPeerCalls(nearUser), Meteor.settings.public.peer.callDelay),
+        timer: setTimeout(() => {
+          this.cancelWaitingCallAction(nearUser._id);
+          this.createPeerCalls(nearUser);
+        }, Meteor.settings.public.peer.callDelay),
         action: callAction.open,
       };
     });
