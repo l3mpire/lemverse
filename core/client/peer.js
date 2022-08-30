@@ -12,6 +12,11 @@ const callAction = Object.freeze({
   close: 1,
 });
 
+const callCloseMode = Object.freeze({
+  emitter: 0,
+  receiver: 1,
+});
+
 peer = {
   calls: {},
   waitingCallActions: {},
@@ -48,7 +53,7 @@ peer = {
 
       callEntries.forEach(entry => {
         if (userProximitySensor.isUserNear({ _id: entry[1].metadata.userId })) return;
-        this.closeCall(entry[1].metadata.userId, 0, 'security-user-far');
+        this.closeCalls(entry[1].metadata.userId, 0, 'security-user-far');
       });
     }, this.securityCheckInterval);
   },
@@ -67,30 +72,40 @@ peer = {
     _.each(this.calls, call => this.close(call.peer, Meteor.settings.public.peer.delayBeforeClosingCall, 'close-all'));
   },
 
-  closeCall(userId, origin) {
+  _closeCalls(typeList, modeList) {
+    Object.keys(peer.calls).forEach(userId => {
+      this._closeCallForUser(userId, typeList, modeList);
+    });
+  },
+
+  _closeCallForUser(userId, typeList, modeList) {
+    let callCloseCount = 0;
+
+    modeList.forEach(mode => {
+      const calls = mode === callCloseMode.emitter ? this.calls : this.remoteCalls;
+      typeList.forEach(type => {
+        const call = calls[`${userId}-${type}`];
+        if (call) {
+          callCloseCount++;
+          call.close();
+        }
+
+        delete calls[`${userId}-${type}`];
+      });
+    });
+
+    const debutText = callCloseCount ? 'closeCall: call was active' : 'closeCall: call was inactive';
+    debug(debutText, { sourceAmount: callCloseCount });
+
+    return callCloseCount;
+  },
+
+  closeCalls(userId, origin) {
     debug(`closeCall: start (${origin})`, { userId });
 
-    let activeCallsCount = 0;
-    const _close = (remote, user, type) => {
-      const callsSource = remote ? this.remoteCalls : this.calls;
-      const call = callsSource[`${user}-${type}`];
-      if (call) {
-        activeCallsCount++;
-        call.close();
-      }
-
-      delete callsSource[`${user}-${type}`];
-    };
-
     this.unlockCall(userId, true);
-    _close(false, userId, streamTypes.main);
-    _close(false, userId, streamTypes.screen);
-    _close(true, userId, streamTypes.main);
-    _close(true, userId, streamTypes.screen);
+    this._closeCallForUser(userId, [streamTypes.main, streamTypes.screen], [callCloseMode.emitter, callCloseMode.receiver]);
     this.cancelWaitingCallAction(userId);
-
-    const debutText = activeCallsCount ? 'closeCall: call was active' : 'closeCall: call was inactive';
-    debug(debutText, { sourceAmount: activeCallsCount });
 
     let streamsByUsers = this.remoteStreamsByUsers.get();
     streamsByUsers.map(usr => {
@@ -136,7 +151,7 @@ peer = {
     this.waitingCallActions[userId] = {
       timer: setTimeout(() => {
         this.cancelWaitingCallAction(userId);
-        this.closeCall(userId, origin);
+        this.closeCalls(userId, origin);
       }, timeout),
       action: callAction.close,
     };

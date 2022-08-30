@@ -201,9 +201,18 @@ Template.lemverse.onCreated(function () {
         if (user.profile.shareScreen) meet.shareScreen();
         else meet.unshareScreen();
       } else if (user.profile.shareScreen) {
-        userStreams.createScreenStream().then(() => userStreams.screen(true));
+        userStreams.createScreenStream().then(() => {
+          userStreams.screen(true);
+          userProximitySensor.callProximityStartedForAllNearUsers();
+        });
       } else {
         userStreams.screen(false);
+        // peer._close( callCloseMode, [mode.screen]);
+        // _.each(peer.calls, (call, key) => {
+        //   if (key.indexOf('-screen') === -1) return;
+        //   if (Meteor.user().options?.debug) log('me -> you screen ****** I stop sharing screen, call closing', key);
+        //   call.close();
+        //   delete peer.calls[key];
       }
     });
   });

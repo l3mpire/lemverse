@@ -39,13 +39,7 @@ userStreams = {
     if (screenStream && !enabled) {
       this.stopTracks(screenStream);
       this.streams.screen.instance = undefined;
-      _.each(peer.calls, (call, key) => {
-        if (key.indexOf('-screen') === -1) return;
-        if (Meteor.user().options?.debug) log('me -> you screen ****** I stop sharing screen, call closing', key);
-        call.close();
-        delete peer.calls[key];
-      });
-    } else if (enabled) userProximitySensor.callProximityStartedForAllNearUsers();
+    }
   },
 
   destroyStream(type) {
