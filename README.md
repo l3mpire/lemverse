@@ -387,6 +387,8 @@ Please note, that as stated in section `Deploy in production`, there is an addit
       "contactURL": ""
     },
 
+    "passwordless": false, // Activate to use magic link emails instead of password for log-in
+
     "assets": {
       // Assets configuration
       "character": {

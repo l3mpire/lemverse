@@ -17,6 +17,24 @@ const checkPassword = value => {
   return true;
 };
 
+const nextStep = template => {
+  const step = template.step.get();
+  if (Meteor.settings.public.passwordless && step === 2) {
+    template.step.set(4);
+  } else {
+    template.step.set(step + 1);
+  }
+};
+
+const previousStep = template => {
+  const step = template.step.get();
+  if (Meteor.settings.public.passwordless && step === 4) {
+    template.step.set(2);
+  } else {
+    template.step.set(step - 1);
+  }
+};
+
 const onSubmit = template => {
   const step = template.step.get();
 
@@ -28,7 +46,7 @@ const onSubmit = template => {
   if (checkedResult !== true) { lp.notif.error(checkedResult); return; }
 
   if (step < 4) {
-    template.step.set(step + 1);
+    nextStep(template);
 
     // auto-focus first input on each step
     Tracker.afterFlush(() => document.querySelector('.form-account form input')?.focus());
@@ -50,13 +68,13 @@ const onSubmit = template => {
 Template.formSignIn.onCreated(function () {
   this.step = new ReactiveVar(1);
   this.email = undefined;
-  this.password = undefined;
+  this.password = Meteor.settings.public.passwordless ? '' : undefined;
   this.nickname = undefined;
 });
 
 Template.formSignIn.events({
   'click .js-next-step'() { onSubmit(Template.instance()); },
-  'click .js-previous-step'() { Template.instance().step.set(Template.instance().step.get() - 1); },
+  'click .js-previous-step'() { previousStep(Template.instance()); },
   'keyup .js-email'(event, templateInstance) { templateInstance.email = event.target.value; },
   'keyup .js-password'(event, templateInstance) { templateInstance.password = event.target.value; },
   'keyup .js-nickname'(event, templateInstance) { templateInstance.nickname = event.target.value; },

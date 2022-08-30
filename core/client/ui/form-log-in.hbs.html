@@ -1,42 +1,62 @@
 <template name="formLogIn">
   <div class="form-account {{#unless visible}}visible{{/unless}}">
-    {{#if restrictedRegistration}}
-      <h1 class="title">Welcome to lemverse</h1>
-      <h2 class="title">Log to my account</h2>
-    {{else}}
-      <h1 class="title">Log to my account or create a new one</h1>
-    {{/if}}
-    <div class="step">
-      <form>
-        <div class="group-field">
-          <label for="email">Email Address:</label>
-          <input name="email" type="email" value="{{email}}" class="js-edit js-email" autofocus>
-        </div>
-        {{#if loginMode}}
-          <div class="group-field">
-            <label for="password">Password:</label>
-            <input name="password" type="password" value="{{password}}" class="js-edit js-password">
-          </div>
-          <button type="button" class="link js-password-lost" aria-label="recover my password">I lost my password</button>
-          <button type="submit" class="submit" aria-label="go to the next step">Log in</button>
-        {{else}}
-          <button type="submit" class="button submit" aria-label="send email to recover my password">Recover my password</button>
-        {{/if}}
-      </form>
-    </div>
+    {{#if emailSent}}
+      <div class="step">
+        <h1 class="title">Check your email 📥</h1>
+        <p class="title">We've sent your magic link to <b>{{email}}</b>.</p>
+        <p>Click on the link in your email to log-in.</p>
+      </div>
 
-    {{#if not restrictedRegistration}}
       <div class="bottom">
-        {{#if loginMode}}
-          <a href="?mode=create" class="link">Missing an account, join there!</a>
-        {{else}}
-          <button type="button" class="link js-cancel-login-mode" aria-label="cancel">Cancel</button>
-        {{/if}}
+        <form>
+          <button type="submit" class="link {{#unless canRetry}}disabled{{/unless}}" aria-label="re-send email" disabled={{canRetry}} >
+            Didn't receive the email? Click here {{#if counter }} in {{counter}} s {{/if}} to try again.
+          </button>
+        </form>
       </div>
-    {{else if (and restrictedRegistration contactURL)}}
-      <div class="bottom">
-        <p><a href="{{contactURL}}" target="_blank" rel="noopener">Contact us</a> to create your own customized virtual office on lemverse</p>
+    {{else}}
+      {{#if restrictedRegistration}}
+        <h1 class="title">Welcome to lemverse</h1>
+        <h2 class="title">Log to my account</h2>
+      {{else}}
+        <h1 class="title">Log to my account or create a new one</h1>
+      {{/if}}
+      <div class="step">
+        <form>
+          <div class="group-field">
+            <label for="email">Email Address:</label>
+            <input name="email" type="email" value="{{email}}" class="js-edit js-email" autofocus>
+          </div>
+          {{#if loginMode}}
+            {{#if passwordless}}
+              <button type="submit" class="button submit" aria-label="send magic link email">Send</button>
+            {{else}}
+              <div class="group-field">
+                <label for="password">Password:</label>
+                <input name="password" type="password" value="{{password}}" class="js-edit js-password">
+              </div>
+              <button type="button" class="link js-password-lost" aria-label="recover my password">I lost my password</button>
+              <button type="submit" class="submit" aria-label="go to the next step">Log in</button>
+            {{/if}}
+          {{else}}
+            <button type="submit" class="button submit" aria-label="send email to recover my password">Recover my password</button>
+          {{/if}}
+        </form>
       </div>
+
+      {{#if not restrictedRegistration}}
+        <div class="bottom">
+          {{#if loginMode}}
+            <a href="?mode=create" class="link">Missing an account, join there!</a>
+          {{else}}
+            <button type="button" class="link js-cancel-login-mode" aria-label="cancel">Cancel</button>
+          {{/if}}
+        </div>
+      {{else if (and restrictedRegistration contactURL)}}
+        <div class="bottom">
+          <p><a href="{{contactURL}}" target="_blank" rel="noopener">Contact us</a> to create your own customized virtual office on lemverse</p>
+        </div>
+      {{/if}}
     {{/if}}
   </div>
 </template>

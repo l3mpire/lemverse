@@ -49,6 +49,8 @@
       "contactURL": ""
     },
 
+    "passwordless": false,
+
     "assets": {
       "character": {
         "frameWidth": 16,

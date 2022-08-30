@@ -1,5 +1,7 @@
 import { toggleUIInputs } from '../helpers';
 
+const RETRY_DELAY = 10; // seconds
+
 const onPasswordRecoverSubmit = template => {
   const { email } = template;
   if (!email) { lp.notif.error('Who are you mister anonymous? 🤔'); return; }
@@ -15,10 +17,39 @@ const onPasswordRecoverSubmit = template => {
   });
 };
 
+const startRetryCountdown = template => {
+  if (template.countdown) {
+    clearInterval(template.countdown);
+  }
+  template.counter.set(RETRY_DELAY);
+  template.countdown = setInterval(() => {
+    template.counter.set(template.counter.get() - 1);
+    if (template.counter.get() === 0) {
+      clearInterval(template.countdown);
+    }
+  }, 1000);
+};
+
+const passwordlessLogin = template => {
+  const options = {
+    selector: template.email,
+    options: { userCreationDisabled: true },
+  };
+  Accounts.requestLoginTokenForUser(options, err => {
+    if (err && err.message !== 'User not found [403]') {
+      lp.notif.error(err.message);
+      return;
+    }
+    template.emailSent.set(true);
+    startRetryCountdown(template);
+  });
+};
+
 const onSubmit = template => {
   const { email, password } = template;
   if (!email) { lp.notif.error('Who are you mister anonymous? 🤔'); return; }
   if (!template.loginMode.get()) { onPasswordRecoverSubmit(template); return; }
+  if (Meteor.settings.public.passwordless) { passwordlessLogin(template); return; }
   if (!password) { lp.notif.error(`Hey! I need your password... Promise, I won't share it with anyone 🤐`); return; }
 
   const {
@@ -47,6 +78,9 @@ Template.formLogIn.onCreated(function () {
   this.email = undefined;
   this.password = undefined;
   this.loginMode = new ReactiveVar(true);
+  this.emailSent = new ReactiveVar(false);
+  this.counter = new ReactiveVar(RETRY_DELAY);
+  this.countdown = undefined;
 });
 
 Template.formLogIn.events({
@@ -69,5 +103,9 @@ Template.formLogIn.helpers({
   email() { return Template.instance().email; },
   password() { return Template.instance().password; },
   loginMode() { return Template.instance().loginMode.get(); },
-  contactURL() { return Meteor.settings.public.permissions?.contactURL; }},  
-);
+  contactURL() { return Meteor.settings.public.permissions?.contactURL; },
+  passwordless() { return Meteor.settings.public.passwordless; },
+  emailSent() { return Template.instance().emailSent.get(); },
+  counter() { return Template.instance().counter.get(); },
+  canRetry() { return !!Template.instance().counter.get(); },
+});

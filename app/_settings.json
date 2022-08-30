@@ -136,6 +136,8 @@
       "contactURL": ""
     },
 
+    "passwordless": false,
+
     "skins": {
       "guest": {},
       "default": {}

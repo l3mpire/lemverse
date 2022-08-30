@@ -105,4 +105,8 @@
     color: lighten($light-blue, 10%);
     cursor: pointer;
   }
+
+  &[disabled] {
+    pointer-events: none;
+  }
 }
