@@ -1,6 +1,6 @@
 <template name="characterNameColorSelector">
     <select name="nameColor" class="js-name-color select">
-      {{#each value in nameColors}}
+      {{#each value in colors}}
        {{#if eq currentUser.profile.nameColor value}}
         <option selected="selected" value="{{value}}">{{value}}</option>
        {{else}}
@@ -23,10 +23,12 @@
         <input type="text" name="name" id="name" class="js-name input" value="{{currentUser.profile.name}}">
       </div>
 
-      <div class="form-element-m">
-        <label for="name-color" class="label">Name color</label>
-        {{> characterNameColorSelector}}
-      </div>
+      {{#if length nameColors}}
+        <div class="form-element-m">
+          <label for="name-color" class="label">Name color</label>
+          {{> characterNameColorSelector colors=nameColors}}
+        </div>
+      {{/if}}
 
       <div class="form-element-m">
         <label for="website" class="label">Website</label>

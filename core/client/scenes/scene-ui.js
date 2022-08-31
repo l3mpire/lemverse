@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import CharacterNameText from '../components/character-name-text';
 
 const characterUIElementsOffset = -85;
 
@@ -51,7 +52,7 @@ UIScene = new Phaser.Class({
     const worldMainCamera = game.scene.getScene('WorldScene').cameras.main;
     this.UIElementsOffset = characterUIElementsOffset * worldMainCamera.zoom;
 
-    _.each(this.characterNamesObjects, text => {
+    Object.values(this.characterNamesObjects).forEach(text => {
       const { x, y } = relativePositionToCamera(text.player, worldMainCamera);
       text.setPosition(x, y + this.UIElementsOffset);
     });
@@ -116,9 +117,10 @@ UIScene = new Phaser.Class({
       const player = userManager.getCharacter(userId);
       if (!player) return;
 
-      textInstance = new CharacterNameText(this, player, name, colorName);
+      textInstance = new CharacterNameText(this, name, colorName);
+      textInstance.player = player;
       this.characterNamesObjects[userId] = textInstance;
-    } else if (textInstance) textInstance.setColorFromName(colorName).setText(name);
+    } else if (textInstance) textInstance.setTintFromName(colorName).setText(name);
   },
 
   destroyUserName(userId) {
