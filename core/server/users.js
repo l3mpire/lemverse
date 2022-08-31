@@ -79,7 +79,7 @@ Meteor.methods({
     completeUserProfile(Meteor.user(), email, name);
     Accounts.setPassword(this.userId, password, { logout: false });
 
-    analytics.createUser(Meteor.user());
+    analytics.identify(Meteor.user());
     analytics.track(this.userId, '🐣 Sign Up', { source });
   },
   teleportUserInLevel(levelId) {
