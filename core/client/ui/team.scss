@@ -1,20 +1,33 @@
 @import "../_variables";
 
 .team {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 
   .container {
     padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
 
   .user-block {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
     .actions {
       display: flex;
       flex-direction: row;
       justify-content: center;
+      width: 100%;
 
       .js-add-team-user {
-        float: right;
-        max-width: 150px;
+        width: 100%;
+        margin: 10px auto;
       }
     }
 
@@ -23,8 +36,8 @@
       padding: 0;
       list-style-type: none;
       font-size: 0.9rem;
-      max-height: 400px;
-      overflow: scroll;
+      overflow: auto;
+      height: 100%;
 
       .team-user {
         margin: 2px 0;
