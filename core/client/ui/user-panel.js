@@ -50,32 +50,32 @@ Template.userPanel.helpers({
 });
 
 Template.userPanel.events({
-  'mouseup .button.audio'(event) {
+  'click .button.audio'(event) {
     event.preventDefault();
     event.stopPropagation();
     toggleUserProperty('shareAudio');
   },
-  'mouseup .button.video'(event) {
+  'click .button.video'(event) {
     event.preventDefault();
     event.stopPropagation();
     toggleUserProperty('shareVideo');
   },
-  'mouseup .button.screen'(event) {
+  'click .button.screen'(event) {
     event.preventDefault();
     event.stopPropagation();
     toggleUserProperty('shareScreen');
   },
-  'mouseup .button.settings'(event) {
+  'click .button.settings'(event) {
     event.preventDefault();
     event.stopPropagation();
     toggleModal('settingsMain');
   },
-  'mouseup .button.js-show-messaging-interface'(event) {
+  'click .button.js-show-messaging-interface'(event) {
     event.preventDefault();
     event.stopPropagation();
     openConsole(true);
   },
-  'mouseup .button.js-show-users'(event) {
+  'click .button.js-show-users'(event) {
     event.preventDefault();
     event.stopPropagation();
     toggleModal('userList');

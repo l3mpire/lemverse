@@ -75,6 +75,7 @@ WorldScene = new Phaser.Class({
     if (window.matchMedia('(pointer: coarse)').matches) {
       this.nippleManager = nipplejs.create({
         mode: 'dynamic',
+        zone: document.querySelector('#game'),
         catchDistance: 150,
         dynamicPage: true,
       });

@@ -78,9 +78,14 @@
           transform: translateY(2px) scale(0.95);
         }
 
-        &:hover,
         &.active {
           background-color: $new-green;
+        }
+
+        @media (hover: hover) {
+          &:hover {
+            background-color: lighten($new-green, 20%);
+          }
         }
 
         &:not(.active):nth-child(-n+3)::before {
