@@ -17,11 +17,7 @@ Template.entityEditor.events({
   },
   'click .switch_anim'() {
     const entity = selectedEntity();
-    if (typeof entity.entityId === 'string') {
-      Meteor.call('useEntity', entity.entityId);
-    } else {
-      Meteor.call('useEntity', entity._id);
-    }
+    Meteor.call('useEntity', entity.entityId ? entity.entityId : entity._id);
   },
   'click .js-entity-delete'() {
     lp.notif.confirm('Entity deletion', `Are you sure to delete this entity?`, () => {
