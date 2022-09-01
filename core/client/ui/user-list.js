@@ -118,20 +118,5 @@ Template.userList.events({
   },
   'click .js-team-manage'() {
     Session.set('modal', { template: 'team', scope: 'level', append: true });
-
-    Tracker.autorun(computation => {
-      if (Session.get('modal')?.template === 'userListSelection') return;
-      computation.stop();
-
-      Tracker.nonreactive(() => {
-        const usersSelected = Session.get('usersSelected') || [];
-        if (!usersSelected.length) return;
-
-        const { guildId } = Meteor.user();
-        Meteor.call('addGuildUsers', guildId, usersSelected, error => {
-          if (error) lp.notif.error(error);
-        });
-      });
-    });
   },
 });
