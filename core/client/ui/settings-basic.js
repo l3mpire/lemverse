@@ -20,7 +20,6 @@ const submit = template => {
 };
 
 Template.characterNameColorSelector.helpers({
-  nameColors() { return Object.keys(characterNameColors); },
   website() {
     const { website } = user().profile;
     if (!website) return null;
@@ -36,6 +35,7 @@ Template.settingsBasic.onCreated(function () {
 
 Template.settingsBasic.helpers({
   fieldUpdated() { return Template.instance().hasUpdates.get(); },
+  nameColors() { return Object.keys(Meteor.settings.public.character.nameColors || []); },
 });
 
 Template.settingsBasic.events({
