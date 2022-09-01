@@ -355,7 +355,8 @@ Please note, that as stated in section `Deploy in production`, there is an addit
       "min": 0.6, // Minimum zoom level
       "max": 1.6, // Maximum zoom level
       "factor": 0.001, // Zoom factor (increase to zoom faster, decrease to zoom slower)
-      "maxDelta": 100 // Maximum zooming delta
+      "maxDelta": 100, // Maximum zooming delta
+      "pinchDelta": 4 // Delta zoom on mobile pinch
     },
 
     "peer": {
