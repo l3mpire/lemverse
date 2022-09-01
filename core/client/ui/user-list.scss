@@ -1,7 +1,9 @@
 @import "../_variables";
 
 .user-list {
-  overflow-y: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   height: 100%;
 
   .empty {
@@ -13,20 +15,18 @@
 
   .tabs {
     display: flex;
-    max-width: 300px;
+    width: 300px;
     margin: 10px auto;
-    border-radius: $radius;
-    overflow: hidden;
 
     .button {
       cursor: default;
       pointer-events: none;
       margin: 0;
-      background-color: $light-blue;
       border-radius: 0;
       padding: 5px;
       transition: all 0.25s;
       height: 35px;
+      width: 50%;
 
       &.show {
         cursor: pointer;
@@ -36,6 +36,16 @@
         &:hover {
           filter: saturate(100%);
         }
+      }
+
+      &:first-child {
+        border-top-left-radius: 0.5em;
+        border-bottom-left-radius: 0.5em;
+      }
+
+      &:last-child {
+        border-top-right-radius: 0.5em;
+        border-bottom-right-radius: 0.5em;
       }
     }
   }
@@ -58,6 +68,7 @@
     padding: 0;
     list-style-type: none;
     font-size: 0.9rem;
+    overflow: auto;
 
     .user {
       margin: 2px 10px;

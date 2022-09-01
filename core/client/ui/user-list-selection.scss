@@ -3,12 +3,18 @@
 .user-list-selection {
   display: flex;
   flex-direction: column;
-  height: 100%;
   user-select: none;
+  overflow: hidden;
+  height: 100%;
 
-  button.js-submit {
-    margin: 10px auto;
-    width: 97%;
+  >div {
+    width: 100%;
+    display: flex;
+
+    button.js-submit {
+      margin: 10px auto;
+      width: 97%;
+    }
   }
 
   ul {
@@ -16,8 +22,10 @@
     padding: 0;
     list-style-type: none;
     font-size: 0.9rem;
-    flex-grow: 1;
-    overflow: scroll;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    height: 100%;
 
     li.empty {
       text-align: center;
