@@ -154,6 +154,8 @@ Meteor.methods({
       $set: { ...fieldsToSet },
       $unset: { ...fieldsToUnset },
     });
+
+    analytics.identify(Meteor.user());
   },
 });
 
@@ -177,7 +179,7 @@ Meteor.users.find({ 'status.online': true }).observeChanges({
   removed(id) {
     const user = Meteor.users.findOne(id);
     if (!user?.profile?.guest) {
-      analytics.track(id, '🚪 Log Out');
+      analytics.track(id, '🚪 Log Out', { guild_id: user.guildId });
     }
     Meteor.users.update(id, { $set: { 'status.lastLogoutAt': new Date() } });
   },

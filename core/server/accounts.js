@@ -35,7 +35,7 @@ Accounts.onLogin(param => {
     generateRandomCharacterSkin(user._id, Meteor.settings.defaultLevelId);
   }
 
-  analytics.track(user._id, '👋 Sign In', { type: param.type });
+  analytics.track(user._id, '👋 Sign In', { type: param.type, guild_id: user.guildId });
   analytics.identify(user);
 });
 
