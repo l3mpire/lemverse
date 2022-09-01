@@ -4,10 +4,6 @@ const { enable, writeKey } = Meteor.settings?.public?.segmentAnalyticsSettings |
 const isEnabled = enable === true && !!writeKey;
 const analyticsInstance = !isEnabled ? undefined : new Analytics(writeKey, { flushAt: 1 });
 
-const newGuildDefaultData = {
-  users_count: 1,
-};
-
 analytics = {
   identify(user) {
     if (!isEnabled) return;
@@ -21,7 +17,7 @@ analytics = {
 
       // Custom traits
       login_email_address: user.emails[0].address,
-      guild: user.guildId || 'unset',
+      guild_id: user.guildId,
       mic_permission_state: user.profile.shareAudio,
       camera_permission_state: user.profile.shareVideo,
       screen_permission_state: user.profile.shareScreen,
@@ -39,37 +35,29 @@ analytics = {
       log(`analytics.identify: failed to identify user`, { _id: user._id, err });
     }
   },
-  createGuild(userId, guild) {
+
+  updateGuild(guild, traits, userId) {
     if (!isEnabled) return;
 
-    log('analytics: createGuild', { guildId: guild._id, userId });
-    const guildData = {
-      guild_id: guild._id,
-      name: guild.name,
+    const groupParams = {
+      groupId: guild._id,
+      traits: {
+        $name: guild.name, // Mixpanel refuses to use the default name property
+
+        // Reserved traits
+        id: guild._id,
+        avatar: guild.logo,
+        description: guild.description,
+        employees: Meteor.users.find({ guildId: guild._id }).count() || 1,
+        name: guild.name,
+        website: guild.website,
+        createdAt: guild.createdAt,
+
+        // Custom traits
+        guild_id: guild._id,
+        ...traits,
+      },
     };
-
-    try {
-      analyticsInstance.group({ groupId: guild._id, userId, traits: { ...guildData, ...newGuildDefaultData } });
-      log(`analytics.createGuild: new guild created`, { guildId: guild._id });
-    } catch (err) {
-      log(`analytics.createGuild: failed to create new guild`, { guildId: guild._id, err });
-    }
-  },
-
-  updateUser(userId, traits) {
-    if (!isEnabled) return;
-
-    try {
-      analyticsInstance.identify({ userId, traits });
-    } catch (err) {
-      log(`analytics.updateUser: failed to update user attributes`, { userId, traits, err });
-    }
-  },
-
-  updateGuild(guildId, traits, userId) {
-    if (!isEnabled) return;
-
-    const groupParams = { type: 'group', groupId: guildId, traits: { guild_id: guildId, ...traits } };
 
     if (userId) groupParams.userId = userId;
     else groupParams.anonymousId = 'anonymous';
@@ -77,7 +65,7 @@ analytics = {
     try {
       analyticsInstance.group(groupParams);
     } catch (err) {
-      log(`analytics.updateGuild: failed to update guild attributes`, { guildId, traits, err });
+      log(`analytics.updateGuild: failed to update guild attributes`, { guildId: guild._id, traits, err });
     }
   },
 
@@ -90,11 +78,12 @@ analytics = {
       log(`analytics.track: failed to track event`, { userId, event, properties, err });
     }
   },
+
   page(userId, name, properties) {
     if (!isEnabled) return;
 
     try {
-      analyticsInstance.page({ type: 'page', userId, name, properties: { ...properties } });
+      analyticsInstance.page({ userId, name, properties: { ...properties } });
     } catch (err) {
       log(`analytics.page: page failed`, { name, properties, err });
     }
@@ -102,15 +91,6 @@ analytics = {
 };
 
 Meteor.methods({
-  analyticsUpdateUser(traits, editedUserId) {
-    const { userId } = this;
-    editedUserId ??= userId;
-
-    check(traits, Object);
-    check(editedUserId, Match.Id);
-
-    analytics.updateUser(editedUserId, traits);
-  },
   analyticsDiscussionAttend(traits) {
     const { userId } = this;
     if (!userId) return;
@@ -122,6 +102,7 @@ Meteor.methods({
 
     const user = Meteor.user();
     analytics.track(userId, '💬 Discussion Attend', {
+      guild_id: user.guildId,
       level_id: user.profile.levelId,
       peer_user_id: traits.peerUserId,
       users_attending_count: traits.usersAttendingCount,
@@ -139,10 +120,11 @@ Meteor.methods({
 
     const user = Meteor.user();
     analytics.track(userId, '💬 Discussion End', {
-      level_id: user.profile.levelId,
       duration: traits.duration,
-      users_attending_count: traits.usersAttendingCount,
+      guild_id: user.guildId,
+      level_id: user.profile.levelId,
       peer_user_id: traits.peerUserId,
+      users_attending_count: traits.usersAttendingCount,
     });
   },
   analyticsConferenceAttend(traits) {
@@ -155,7 +137,12 @@ Meteor.methods({
     });
 
     const user = Meteor.user();
-    analytics.track(userId, '🎤 Conference Attend', { level_id: user.profile.levelId, zone_id: traits.zoneId, zone_name: traits.zoneName });
+    analytics.track(userId, '🎤 Conference Attend', {
+      guild_id: user.guildId,
+      level_id: user.profile.levelId,
+      zone_id: traits.zoneId,
+      zone_name: traits.zoneName,
+    });
   },
   analyticsConferenceEnd(traits) {
     const { userId } = this;
@@ -167,6 +154,11 @@ Meteor.methods({
     });
 
     const user = Meteor.user();
-    analytics.track(userId, '🎤 Conference End', { level_id: user.profile.levelId, zone_id: traits.zoneId, zone_name: traits.zoneName });
+    analytics.track(userId, '🎤 Conference End', {
+      guild_id: user.guildId,
+      level_id: user.profile.levelId,
+      zone_id: traits.zoneId,
+      zone_name: traits.zoneName,
+    });
   },
 });
