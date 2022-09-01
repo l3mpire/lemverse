@@ -44,30 +44,55 @@ const cloneLevelContent = (originalLevelId, targetedLevelId) => {
   });
 
   const entities = Entities.find({ levelId: originalLevelId }).fetch();
+
+  // Mapping between origin entityId and destination entityId
   const idMap = {};
+
+  // Keep a waiting entity list in case of a trigger like element can be link to another trigger like element
+  const waitingEntity = [];
+
+  // Sort entities to put all entities without entityId key at the beginning
+  // to avoid multiple loop
+  entities.sort((a, b) => {
+    if (a.entityId) {
+      return 1;
+    }
+    if (b.entityId) {
+      return -1;
+    }
+    return 0;
+  });
+
   entities.forEach(entity => {
     // Don't care about pickable entities
     if (entity.actionType !== entityActionType.pickable) {
       const _id = Entities.id();
       idMap[entity._id] = _id;
 
-      Entities.insert({
+      const newEntity = {
         ...entity,
         _id,
         createdAt: now,
         createdBy,
         levelId: targetedLevelId,
-      });
+      };
+
+      if (typeof newEntity.entityId === 'string' && typeof idMap[newEntity.entityId] !== 'string') {
+        waitingEntity.push(newEntity);
+      } else {
+        if (typeof newEntity.entityId === 'string') {
+          newEntity.entityId = idMap[newEntity.entityId];
+        }
+        Entities.insert(newEntity);
+      }
     }
   });
-  // Get the new entity list to update links
-  const newEntityList = Entities.find({
-    levelId: targetedLevelId,
-    entityId: { $exists: true },
-  }).fetch();
-  newEntityList.forEach(elem => {
-    if (typeof idMap[elem.entityId] === 'string') {
-      Entities.update(elem._id, { $set: { entityId: idMap[elem.entityId] } });
+
+  // In the most use case this list should be empty
+  waitingEntity.forEach(entity => {
+    if (typeof idMap[entity.entityId] === 'string') {
+      entity.entityId = idMap[entity.entityId];
+      Entities.insert(entity);
     } else {
       log('cloneLevelContent: Found entity with entityId without any match: ', elem);
     }
