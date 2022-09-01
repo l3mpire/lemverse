@@ -5,12 +5,20 @@ const entityDepthRange = { min: -1, max: 1000 };
 
 const closeInterface = () => Session.set('selectedEntityId', undefined);
 const selectedEntity = () => Entities.findOne(Session.get('selectedEntityId'));
+const linkedEntity = () => Entities.findOne({ _id: selectedEntity()?.entityId });
 const targets = () => {
   const activeEntityId = Session.get('selectedEntityId');
   return Entities.find({ _id: { $ne: activeEntityId }, actionType: entityActionType.none }).fetch();
 };
 
 Template.entityEditor.events({
+  'click .back_btn'() {
+    closeInterface();
+  },
+  'click .switch_anim'() {
+    const entity = selectedEntity();
+    Meteor.call('useEntity', entity.entityId ? entity.entityId : entity._id);
+  },
   'click .js-entity-delete'() {
     lp.notif.confirm('Entity deletion', `Are you sure to delete this entity?`, () => {
       Entities.remove(Session.get('selectedEntityId'));
@@ -31,13 +39,15 @@ Template.entityEditor.events({
     const { valueAsNumber: value } = event.target;
     if (value !== 0) Entities.update(entity._id, { $set: { 'gameObject.scale': clamp(value, -entityMaxScale, entityMaxScale) } });
   },
-  'click .js-reset-depth'() {
+  'click .js-reset-attribute'(event) {
     const entity = selectedEntity();
     if (!entity) return;
 
-    Entities.update(entity._id, { $unset: { 'gameObject.depth': 1 } });
+    const param = {};
+    param[`gameObject.${event.target.dataset.type}`] = 1;
+
+    Entities.update(entity._id, { $unset: param });
   },
-  'click .js-close-entity-editor'() { closeInterface(); },
   'change #js-entity-target'(event) {
     Meteor.call('updateEntityTarget', Session.get('selectedEntityId'), event.target.value);
   },
@@ -59,7 +69,7 @@ Template.entityEditor.events({
 Template.entityEditor.helpers({
   entity() { return selectedEntity(); },
   flipped() { return selectedEntity()?.gameObject.scale < 0; },
-  state() { return selectedEntity()?.state; },
+  state() { return linkedEntity()?.state || selectedEntity()?.state; },
   targets() { return targets(); },
   hasSprite() { return !!selectedEntity()?.gameObject?.sprite; },
   isActionable() { return selectedEntity()?.actionType === entityActionType.actionable; },

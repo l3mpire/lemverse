@@ -1,27 +1,77 @@
 @import "../../_variables";
 
 .entity-editor {
+  .back_btn {
+    border: 1px solid white;
+    border-radius: 10px;
+    width: fit-content;
+    padding: 10px 15px;
+    cursor: pointer;
+  }
+
+  .switch_ctnr {
+    width: 50px;
+    height: 20px;
+    background-color: grey;
+    border-radius: 10px;
+    overflow: hidden;
+
+    .switch_anim {
+      transition: margin-left .5s ease;
+      width: calc(200% - 20px);
+      height: 20px;
+      background: linear-gradient(0deg, darken($light-green, 15%) 0%, darken($light-green, 15%) 50%, darken($light-red, 15%) 50%, darken($light-red, 15%) 100%);
+      background: -webkit-linear-gradient(0deg, darken($light-green, 15%) 0%, darken($light-green, 15%) 50%, darken($light-red, 15%) 50%, darken($light-red, 15%) 100%);
+      background: -moz-linear-gradient(0deg, darken($light-green, 15%) 0%, darken($light-green, 15%) 50%, darken($light-red, 15%) 50%, #ff000 100%);
+      border-radius: 10px;
+
+      &.off {
+        margin-left: calc(-50% - 5px);
+      }
+
+      .switch_bullet {
+        height: 20px;
+        width: 20px;
+        border-radius: 10px;
+        background-color: white;
+        margin-left: calc(50% - 10px);
+      }
+    }
+  }
+
   .js-edit-entity-name {
     font-size: 1.2rem;
-    background: transparent;
-    padding: 0;
+    padding: 0px 5px;
     color: white;
     font-weight: bold;
-    margin: 0 0 10px;
+    margin: 10px 0px;
   }
 
   .entity-form-element {
     display: flex;
+    flex-flow: wrap;
     align-items: center;
-    height: 35px;
+    min-height: 35px;
+
 
     label {
       width: 80px;
+
+      &.entity-depth,
+      &.entity-scale {
+        width: 100%;
+      }
     }
 
     select {
       width: 70%;
     }
+  }
+
+  #entity-depth,
+  #entity-scale {
+    width: 75%;
+    background: transparent;
   }
 
   button.secondary {
@@ -33,11 +83,18 @@
     background-color: $light-red;
   }
 
-  button.reset-attribute {
-    width: 30px;
+  button.js-reset-attribute {
+    width: 20%;
     padding: 5px;
     font-size: 1.2rem;
     margin: 0;
     transform: scale(0.8);
+  }
+
+  button.js-entity-delete {
+    color: darken($light-red, 15%);
+    border: 1px solid darken($light-red, 15%);
+    background-color: rgba(lighten($light-red, 15%), .2);
+    font-weight: bold;
   }
 }

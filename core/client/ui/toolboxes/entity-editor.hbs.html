@@ -1,10 +1,20 @@
+<template name="entityBack">
+  <div class="back_btn">
+    ← Back
+  </div>
+</template>
 <template name="entityEditor">
   <div class="entity-editor">
+    {{> entityBack}}
     <input type="text" value="{{entity.name}}" class="input js-edit-entity-name" placeholder="[No Name]">
 
     <div class="entity-form-element">
       <label for="entity-state">State</label>
-      <input type="text" value="{{state}}" disabled="disabled" placeholder="off">
+      <div class="switch_ctnr">
+        <div class="switch_anim {{state}}">
+          <div class="switch_bullet"></div>
+        </div>
+      </div>
     </div>
 
     {{#if isActionable}}
@@ -21,18 +31,18 @@
 
     {{#if hasSprite}}
       <div class="entity-form-element">
-        <label for="entity-depth">Depth</label>
+        <label class="entity-depth" for="entity-depth">Depth</label>
         <input type="range" id="entity-depth" name="depth" min="-1" max="1000" step="1" value="{{entity.gameObject.depth}}">
-        <button type="button" class="button js-reset-depth reset-attribute">↺</button>
+        <button type="button" data-type="depth" class="button secondary js-reset-attribute">Reset</button>
       </div>
 
       <div class="entity-form-element">
-        <label for="entity-scale">Scale</label>
+        <label class="entity-scale" for="entity-scale">Scale</label>
         <input type="range" id="entity-scale" name="scale" min="-3" max="3" step="0.1" value="{{or entity.gameObject.scale 1}}">
+        <button type="button" data-type="scale" class="button secondary js-reset-attribute">Reset</button>
       </div>
     {{/if}}
 
-    <button type="button" class="button red js-entity-delete">Delete</button>
-    <button type="button" class="button secondary js-close-entity-editor">Cancel</button>
+    <button type="button" class="button secondary js-entity-delete">Delete</button>
   </div>
 </template>
