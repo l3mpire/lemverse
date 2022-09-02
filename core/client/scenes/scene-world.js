@@ -119,6 +119,13 @@ WorldScene = new Phaser.Class({
 
   create() {
     const pinchPlugin = this.plugins.get('rexpinchplugin').add(this);
+
+    // Disable joystick to avoid user moving while zooming
+    pinchPlugin.on('pinchstart', function() {
+      const nipple = this.nippleManager.get(this.nippleManager.ids[0])
+      nipple.destroy()
+    }, this);
+
     pinchPlugin.on('pinch', function (pinch) {
       this.zoomDelta(-(pinch.scaleFactor - 1) * 100 * zoomConfig.pinchDelta);
     }, this);
