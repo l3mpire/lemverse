@@ -231,7 +231,7 @@ userManager = {
       else hotkeys.setScope(scopes.player);
 
       this.controlledCharacter = character;
-      this.controlledCharacter?.enableEffects(true);
+      this.controlledCharacter.enableEffects(true);
     }
   },
 
@@ -304,6 +304,7 @@ userManager = {
     this.handleUserInputs();
     this.controlledCharacter.running = this.scene.keys.shift.isDown;
     this.controlledCharacter.moveDirection = this.inputVector;
+    this.controlledCharacter.enableChatCircle(peer.isEnabled() && !Session.get('menu') && userProximitySensor.nearUsersCount() > 0);
 
     const newVelocity = this.controlledCharacter.physicsStep();
     const moving = Math.abs(newVelocity.x) > 0.1 || Math.abs(newVelocity.y) > 0.1;
@@ -320,6 +321,7 @@ userManager = {
 
     if (!peer.hasActiveStreams()) peer.enableSensor(!(this.controlledCharacter.running && moving));
     this.controlledCharacter.wasMoving = moving;
+    this.controlledCharacter?.postUpdateStep();
   },
 
   teleportMainUser(x, y) {

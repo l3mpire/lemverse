@@ -28,7 +28,6 @@ UIScene = new Phaser.Class({
 
     // plugins
     characterPopIns.init(this);
-    userChatCircle.init(this);
     userVoiceRecorderAbility.init(this);
 
     // events
@@ -62,8 +61,6 @@ UIScene = new Phaser.Class({
 
     const relativePlayerPosition = relativePositionToCamera(controlledCharacter, worldMainCamera);
     characterPopIns.update(worldMainCamera);
-    userChatCircle.visible(peer.isEnabled() && !Session.get('menu') && userProximitySensor.nearUsersCount() > 0);
-    userChatCircle.update(relativePlayerPosition.x, relativePlayerPosition.y, worldMainCamera);
     userVoiceRecorderAbility.setPosition(relativePlayerPosition.x, relativePlayerPosition.y, worldMainCamera);
   },
 
@@ -89,7 +86,6 @@ UIScene = new Phaser.Class({
     this.events.off('prerender', this.preRenderMethod, this);
     this.scale.off('resize', this.updateViewportMethod);
 
-    userChatCircle.destroy();
     userVoiceRecorderAbility.destroy();
     this.onLevelUnloaded();
   },

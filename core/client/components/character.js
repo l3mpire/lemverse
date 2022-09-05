@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 
 import { allowPhaserMouseInputs } from '../helpers';
 import { createConfettiEffect, createSmokeEffect } from '../effects/particles';
+import CharacterChatCircle from './character-chat-circle';
 
 const configuration = {
   colliderConfiguration: {
@@ -38,6 +39,7 @@ class Character extends Phaser.GameObjects.Container {
     this.followedGameObject = undefined;
     this.moveDirection = { x: 0, y: 0 };
     this.running = false;
+    this.chatCircle = undefined;
 
     this.skinPartsContainer = this.scene.add.container(0, 0);
     this.skinPartsContainer.setScale(3);
@@ -61,6 +63,15 @@ class Character extends Phaser.GameObjects.Container {
 
   clearTint() {
     this.setTint(configuration.colorStates.default);
+  }
+
+  enableChatCircle(value = true) {
+    if (value && !this.chatCircle) {
+      this.chatCircle = new CharacterChatCircle(this.scene, this.x, this.y, userProximitySensor.nearDistance);
+    } else if (!value && this.chatCircle) {
+      this.chatCircle?.destroy();
+      this.chatCircle = undefined;
+    }
   }
 
   enablePhysics(value = true) {
@@ -155,6 +166,10 @@ class Character extends Phaser.GameObjects.Container {
   updateStep() {
     if (this.walkSmokeEffectEmitter) this.walkSmokeEffectEmitter.emitter.on = this.wasMoving;
     this.setDepthFromPosition();
+  }
+
+  postUpdateStep() {
+    this.chatCircle?.updatePosition(this.x, this.y);
   }
 
   physicsStep() {
