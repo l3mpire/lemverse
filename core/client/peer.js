@@ -51,6 +51,16 @@ peer = {
         this.closeCall(entry[1].metadata.userId, 0, 'security-user-far');
       });
     }, this.securityCheckInterval);
+
+    // Listen device connection/disconnection to update peers
+    navigator.mediaDevices.addEventListener('devicechange', async () => {
+      const constraints = userStreams.getStreamConstraints(streamTypes.main);
+
+      const stream = await userStreams.requestUserMedia(constraints);
+      if (!stream) { lp.notif.error(`unable to get a valid stream`); return; }
+
+      peer.updatePeersStream(stream, streamTypes.main);
+    });
   },
 
   enable() {
