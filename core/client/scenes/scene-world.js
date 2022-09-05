@@ -36,11 +36,6 @@ WorldScene = new Phaser.Class({
     Phaser.Scene.call(this, { key: 'WorldScene' });
   },
 
-  preload() {
-    const url = 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexpinchplugin.min.js';
-    this.load.plugin('rexpinchplugin', url, true);
-  },
-
   init() {
     this.nippleData = undefined;
     this.nippleMoving = false;
