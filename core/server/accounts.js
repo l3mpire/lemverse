@@ -47,6 +47,23 @@ Accounts.validateLoginAttempt(param => {
     error('validateLoginAttempt: watched ip detected!', { ip: lp.ip(param).ip, userId: user?._id });
     return false;
   }
+  if (user?.disabled) {
+    log('validateLoginAttempt: user account is disabled', { userId: user._id });
+    return false;
+  }
 
   return true;
 });
+
+const defaultRequestLoginTokenForUser = Meteor.server.method_handlers.requestLoginTokenForUser;
+Meteor.server.method_handlers.requestLoginTokenForUser = options => {
+  const { email } = options.selector;
+  check(email, String);
+  const user = Accounts.findUserByEmail(email);
+  if (user?.disabled) {
+    log('RequestLoginTokenForUser: account is disabled', { userId: user._id });
+    Accounts._handleError('User not found');
+  }
+
+  return defaultRequestLoginTokenForUser(options);
+};
