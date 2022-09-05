@@ -161,4 +161,30 @@ Meteor.methods({
       zone_name: traits.zoneName,
     });
   },
+  analyticsReaction(traits) {
+    const { userId } = this;
+    if (!userId) return;
+
+    check(traits, {
+      reaction: String,
+    });
+
+    const user = Meteor.user();
+    analytics.track(userId, '😂 Reaction', {
+      guild_id: user.guildId,
+      level_id: user.profile.levelId,
+      coordinates: [user.profile.x, user.profile.y],
+      reaction: traits.reaction,
+    });
+  },
+  analyticsKick() {
+    const { userId } = this;
+    if (!userId) return;
+
+    const user = Meteor.user();
+    analytics.track(userId, '🦵🏻 Kick', {
+      guild_id: user.guildId,
+      level_id: user.profile.levelId,
+    });
+  },
 });

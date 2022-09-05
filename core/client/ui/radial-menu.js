@@ -1,5 +1,7 @@
 /* eslint-disable no-use-before-define */
 
+import { setReaction } from '../helpers';
+
 let menuOpenUsingKey = false;
 const metaKeyCode = 91;
 const keyToOpen = 'shift';
@@ -102,11 +104,6 @@ const computeMenuPosition = () => {
   return { x: (position?.x || 0) + menuOffset.x, y: (position.y || 0) + menuOffset.y };
 };
 
-const setReaction = reaction => {
-  if (reaction) Meteor.users.update(Meteor.userId(), { $set: { 'profile.reaction': reaction } });
-  else Meteor.users.update(Meteor.userId(), { $unset: { 'profile.reaction': 1 } });
-};
-
 const buildMenuFromOptions = options => {
   const newOptions = [];
   const allOptions = options.sort((a, b) => b.order - a.order);
@@ -156,12 +153,16 @@ Template.radialMenu.onCreated(function () {
 
   // allow users to react without opening the menu
   hotkeys('1,2,3,4,5,6,7,8,9', { keyup: true, scope: scopes.player }, e => {
+    if (e.repeat) return;
+
     const option = reactionMenuItems.find(menuItem => menuItem.shortcut === e.keyCode);
     if (e.type === 'keyup') window.dispatchEvent(new CustomEvent(eventTypes.onMenuOptionUnselected, { detail: { option } }));
     else if (e.type === 'keydown') window.dispatchEvent(new CustomEvent(eventTypes.onMenuOptionSelected, { detail: { option } }));
   });
 
   hotkeys('*', { keyup: true, scope: scopes.player }, e => {
+    if (e.repeat) return;
+
     // show/hide shortcuts
     if (e.key.toLowerCase() === keyToOpen && !hotkeys.isPressed(metaKeyCode)) {
       this.showShortcuts.set(e.type === 'keydown');
