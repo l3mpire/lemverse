@@ -66,10 +66,7 @@ WorldScene = new Phaser.Class({
 
     // Notes: tilesets with extrusion are required to avoid potential black lines between tiles (see https://github.com/sporadic-labs/tile-extruder)
     this.input.on('wheel', (_pointer, _gameObjects, _deltaX, deltaY) => {
-      const linearFactor = this.cameras.main.zoom * zoomConfig.factor;
-      const clampedDelta = clamp(deltaY, -zoomConfig.maxDelta, zoomConfig.maxDelta);
-      const zoom = clamp(this.cameras.main.zoom - (clampedDelta * linearFactor), zoomConfig.min, zoomConfig.max);
-      this.setClampedZoom(this.cameras.main, zoom);
+      this.zoomDelta(deltaY);
     });
 
     if (window.matchMedia('(pointer: coarse)').matches) {
@@ -113,6 +110,27 @@ WorldScene = new Phaser.Class({
     levelManager.init(this);
     userManager.init(this);
     zoneManager.init(this);
+  },
+
+  create() {
+    const pinchPlugin = this.plugins.get('rexpinchplugin').add(this);
+
+    // Disable joystick to avoid user moving while zooming
+    pinchPlugin.on('pinchstart', function() {
+      const nipple = this.nippleManager.get(this.nippleManager.ids[0])
+      nipple.destroy()
+    }, this);
+
+    pinchPlugin.on('pinch', function (pinch) {
+      this.zoomDelta(-(pinch.scaleFactor - 1) * 100 * zoomConfig.pinchDelta);
+    }, this);
+  },
+
+  zoomDelta(delta) {
+    const linearFactor = this.cameras.main.zoom * zoomConfig.factor;
+    const clampedDelta = clamp(delta, -zoomConfig.maxDelta, zoomConfig.maxDelta);
+    const zoom = clamp(this.cameras.main.zoom - (clampedDelta * linearFactor), zoomConfig.min, zoomConfig.max);
+    this.setClampedZoom(this.cameras.main, zoom);
   },
 
   initFromLevel(level) {

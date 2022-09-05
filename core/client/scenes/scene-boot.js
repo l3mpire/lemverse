@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import RexPinchPlugin from '../plugins/rexpinchplugin.min.js';
 
 const assetsRoute = 'assets/images';
 const filesRoute = Meteor.settings.public.files.route;
@@ -12,6 +13,7 @@ BootScene = new Phaser.Class({
 
   preload() {
     this.load.image('circle', `${assetsRoute}/circle_white.png`);
+    this.load.plugin('rexpinchplugin', RexPinchPlugin, true);
 
     // load pixel as base64 to avoid potential loading issue
     const pixelImage = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=';
