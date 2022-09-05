@@ -55,6 +55,7 @@ peer = {
     // Listen device connection/disconnection to update peers
     navigator.mediaDevices.addEventListener('devicechange', async () => {
       const constraints = userStreams.getStreamConstraints(streamTypes.main);
+      constraints.forceNew = true;
 
       const stream = await userStreams.requestUserMedia(constraints);
       if (!stream) { lp.notif.error(`unable to get a valid stream`); return; }
