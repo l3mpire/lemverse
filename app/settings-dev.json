@@ -42,7 +42,7 @@
       "sensorNearDistance": 75,
       "sensorFarDistance": 85,
       "nameColors": {
-        "white": "0xffffff",
+        "white": ["0xffffff", "0xffffff", "0xffffff", "0xffffff"],
         "orange": ["0xfc9729", "0xfc9729", "0xf69831", "0xf69831"],
         "red": ["0xf15739", "0xf15739", "0xee5c3b", "0xee5c3b"],
         "yellow": ["0xf4c918", "0xf4c918", "0xdbb92a", "0xdbb92a"],
