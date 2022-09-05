@@ -22,7 +22,7 @@
       height: 20px;
       background: linear-gradient(0deg, darken($light-green, 15%) 0%, darken($light-green, 15%) 50%, darken($light-red, 15%) 50%, darken($light-red, 15%) 100%);
       background: -webkit-linear-gradient(0deg, darken($light-green, 15%) 0%, darken($light-green, 15%) 50%, darken($light-red, 15%) 50%, darken($light-red, 15%) 100%);
-      background: -moz-linear-gradient(0deg, darken($light-green, 15%) 0%, darken($light-green, 15%) 50%, darken($light-red, 15%) 50%, #ff000 100%);
+      background: -moz-linear-gradient(0deg, darken($light-green, 15%) 0%, darken($light-green, 15%) 50%, darken($light-red, 15%) 50%, #f00 100%);
       border-radius: 10px;
 
       &.off {
