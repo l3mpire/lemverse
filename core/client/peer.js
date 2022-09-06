@@ -83,27 +83,13 @@ peer = {
   closeCall(userId, origin) {
     debug(`closeCall: start (${origin})`, { userId });
 
-    let activeCallsCount = 0;
-    const _close = (remote, user, type) => {
-      const callsSource = remote ? this.remoteCalls : this.calls;
-      const call = callsSource[`${user}-${type}`];
-      if (call) {
-        activeCallsCount++;
-        call.close();
-      }
-
-      delete callsSource[`${user}-${type}`];
-    };
-
     this.unlockCall(userId, true);
-    _close(false, userId, streamTypes.main);
-    _close(false, userId, streamTypes.screen);
-    _close(true, userId, streamTypes.main);
-    _close(true, userId, streamTypes.screen);
     this.cancelWaitingCallAction(userId);
 
-    const debutText = activeCallsCount ? 'closeCall: call was active' : 'closeCall: call was inactive';
-    debug(debutText, { sourceAmount: activeCallsCount });
+    let closedPeerCallsCount = 0;
+    closedPeerCallsCount += this._closeUserPeerCalls(true, userId);
+    closedPeerCallsCount += this._closeUserPeerCalls(false, userId);
+    if (closedPeerCallsCount) audioManager.play('webrtc-out.mp3', 0.2);
 
     let streamsByUsers = this.remoteStreamsByUsers.get();
     streamsByUsers.map(usr => {
@@ -132,10 +118,6 @@ peer = {
 
     $(`.js-video-${userId}-user`).remove();
     debug('closeCall: call closed successfully', { userId });
-
-    if (!activeCallsCount) return;
-
-    audioManager.play('webrtc-out.mp3', 0.2);
   },
 
   close(userId, timeout = 0, origin = null) {
@@ -153,6 +135,35 @@ peer = {
       }, timeout),
       action: callAction.close,
     };
+  },
+
+  closePeerCalls(remote, type) {
+    const callsSource = remote ? this.remoteCalls : this.calls;
+    const callEntries = Object.entries(callsSource);
+    const typeKey = `-${type}`;
+
+    callEntries.forEach(([key, call]) => {
+      if (key.indexOf(typeKey) === -1) return;
+
+      call.close();
+      delete callsSource[key];
+    });
+  },
+
+  _closeUserPeerCalls(remote, userId) {
+    const callsSource = remote ? this.remoteCalls : this.calls;
+    const callEntries = Object.entries(callsSource);
+    let closedCount = 0;
+
+    callEntries.forEach(([key, call]) => {
+      if (key.indexOf(userId) === -1) return;
+
+      call.close();
+      delete callsSource[key];
+      closedCount++;
+    });
+
+    return closedCount;
   },
 
   createPeerCall(peer, user, stream, streamType) {
@@ -213,63 +224,42 @@ peer = {
     delete this.peerInstance;
   },
 
+  /**
+   * To add a track it is necessary to renegotiate the connection with the remote user.
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/addTrack)
+   */
   updatePeersStream(stream, type) {
     debug('updatePeersStream: start', { stream, type });
 
-    const callEntries = Object.entries(this.calls);
+    const typeKey = `-${streamTypes.screen}`;
+    const audioTrack = stream.getAudioTracks()[0];
+    const videoTrack = stream.getVideoTracks()[0];
 
-    if (type === streamTypes.main) {
-      debug(`updatePeersStream: main stream ${stream.id}`, { stream });
-      const audioTrack = stream.getAudioTracks()[0];
-      const videoTrack = stream.getVideoTracks()[0];
+    Object.entries(this.calls).forEach(([key, call]) => {
+      if (key.indexOf(typeKey) === -1) return;
+      const senders = call.peerConnection.getSenders();
 
-      // note: to add a track it is necessary to renegotiate the connection with the remote user (https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/addTrack)
-      callEntries.forEach(([key, call]) => {
-        if (key.indexOf('-screen') !== -1) return;
-        const senders = call.peerConnection.getSenders();
+      const existingSenderAudioTrack = senders.find(sender => sender.track.kind === 'audio');
+      if (existingSenderAudioTrack) {
+        if (audioTrack) existingSenderAudioTrack.replaceTrack(audioTrack);
+        else call.peerConnection.removeTrack(existingSenderAudioTrack);
+      } else if (audioTrack) call.peerConnection.addTrack(audioTrack);
 
-        const existingSenderAudioTrack = senders.find(sender => sender.track.kind === 'audio');
-        if (existingSenderAudioTrack) {
-          if (audioTrack) existingSenderAudioTrack.replaceTrack(audioTrack);
-          else call.peerConnection.removeTrack(existingSenderAudioTrack);
-        } else if (audioTrack) call.peerConnection.addTrack(audioTrack);
-
-        const existingSenderVideoTrack = senders.find(sender => sender.track.kind === 'video');
-        if (existingSenderVideoTrack) {
-          if (videoTrack) existingSenderVideoTrack.replaceTrack(videoTrack);
-          else call.peerConnection.removeTrack(existingSenderVideoTrack);
-        } else if (videoTrack) call.peerConnection.addTrack(videoTrack);
-
-        if (!existingSenderAudioTrack || !existingSenderVideoTrack) debug(`updatePeersStream: stream main track added for user`, { key });
-        else debug(`updatePeersStream: stream main track updated for user`, { key });
-      });
-    } else if (type === streamTypes.screen) {
-      debug(`updatePeersStream: screen share stream ${stream.id}`, { stream });
-      const screenTrack = stream.getVideoTracks()[0];
-
-      callEntries.forEach(([key, call]) => {
-        if (key.indexOf('-screen') === -1) return;
-        const senders = call.peerConnection.getSenders();
-        let trackUpdated = false;
-
-        senders.forEach(sender => {
-          if (sender.track.id === screenTrack.id || sender.track.kind !== 'video') return;
-          sender.replaceTrack(screenTrack);
-          trackUpdated = true;
-        });
-
-        if (trackUpdated) debug(`updatePeersStream: stream main track updated for user ${key}`);
-      });
-    }
+      const existingSenderVideoTrack = senders.find(sender => sender.track.kind === 'video');
+      if (existingSenderVideoTrack) {
+        if (videoTrack) existingSenderVideoTrack.replaceTrack(videoTrack);
+        else call.peerConnection.removeTrack(existingSenderVideoTrack);
+      } else if (videoTrack) call.peerConnection.addTrack(videoTrack);
+    });
   },
 
-  onProximityStarted(nearUsers) {
+  call(users) {
     if (!this.isEnabled()) return;
 
     const user = Meteor.user();
     if (user?.profile.guest) return; // disable proximity sensor for guest user
 
-    nearUsers.forEach(nearUser => {
+    users.forEach(nearUser => {
       if (this.isCallInState(nearUser._id, callAction.open)) return;
       this.cancelWaitingCallAction(nearUser._id);
 
@@ -289,11 +279,19 @@ peer = {
     });
   },
 
-  onProximityEnded(users) {
+  hangUp(users, origin = 'hang-up') {
     users.forEach(user => {
       if (this.lockedCalls[user._id]) return;
-      this.close(user._id, Meteor.settings.public.peer.delayBeforeClosingCall, 'proximity-ended');
+      this.close(user._id, Meteor.settings.public.peer.delayBeforeClosingCall, origin);
     });
+  },
+
+  onProximityStarted(nearUsers) {
+    this.call(nearUsers);
+  },
+
+  onProximityEnded(users) {
+    this.hangUp(users, 'proximity-ended');
   },
 
   isCallInState(userId, state) {
