@@ -60,7 +60,7 @@ userManager = {
   onDocumentAdded(user) {
     if (this.characters[user._id]) return null;
 
-    const { x, y, guest, direction, name, nameColor } = user.profile;
+    const { x, y, guest, direction, name, baseline, nameColor } = user.profile;
 
     const character = new Character(this.scene, x, y);
     character.setData('userId', user._id);
@@ -68,7 +68,7 @@ userManager = {
     this.characters[user._id] = character;
 
     if (guest) character.updateSkin(guestSkin()); // init with custom skin
-    else character.setName(name, nameColor);
+    else character.setName(name, baseline, nameColor);
 
     window.setTimeout(() => this.onDocumentUpdated(user), 0);
 
@@ -126,7 +126,7 @@ userManager = {
     const character = this.characters[user._id];
     if (!character) return;
 
-    const { x, y, direction, reaction, shareAudio, guest, userMediaError, name, nameColor } = user.profile;
+    const { x, y, direction, reaction, shareAudio, guest, userMediaError, name, baseline, nameColor } = user.profile;
 
     // update character instance
     character.direction = direction;
@@ -141,7 +141,7 @@ userManager = {
     // is account transformed from guest to user?
     if (!user.profile.guest && oldUser?.profile.guest) {
       character.toggleMouseInteraction(true);
-      character.setName(name, nameColor);
+      character.setName(name, baseline, nameColor);
     }
 
     // show reactions
@@ -158,8 +158,8 @@ userManager = {
     }
 
     // update name
-    const nameUpdated = !guest && (name !== oldUser?.profile.name || nameColor !== oldUser?.profile.nameColor);
-    if (nameUpdated) character.setName(name, nameColor);
+    const nameUpdated = !guest && (name !== oldUser?.profile.name || baseline !== oldUser?.profile.baseline || nameColor !== oldUser?.profile.nameColor);
+    if (nameUpdated) character.setName(name, baseline, nameColor);
 
     const userHasMoved = x !== oldUser?.profile.x || y !== oldUser?.profile.y;
     const loggedUser = Meteor.user();

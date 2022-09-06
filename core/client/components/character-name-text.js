@@ -1,26 +1,54 @@
 import Phaser from 'phaser';
 
-const style = {
-  font: 'Verdana, "Times New Roman", Tahoma, serif',
+const nameStyle = {
+  fontFamily: 'Verdana, "Times New Roman", Tahoma, serif',
   fontSize: 18,
-  strokeColor: '#000',
-  strokeSize: 3,
+  stroke: '#000',
+  strokeThickness: 3,
+};
+
+const baselineStyle = {
+  ...nameStyle,
+  fontSize: 12,
 };
 
 const defaultTint = 0xFFFFFF;
+const baselineOffset = 20;
 
-class CharacterNameText extends Phaser.GameObjects.Text {
-  constructor(scene, text, tintName) {
-    super(scene, 0, 0, text);
+class CharacterNameText extends Phaser.GameObjects.Container {
+  constructor(scene, name, baseline, tintName) {
+    super(scene);
+    this.name = this.createText(name, nameStyle);
+    this.setBaseline(baseline)
+      .setTintFromName(tintName)
+      .setDepth(99999);
+    scene.add.existing(this);
+  }
 
-    this.setFontFamily(style.font)
-      .setFontSize(style.fontSize)
-      .setStroke(style.strokeColor, style.strokeSize)
-      .setDepth(99999)
-      .setOrigin(0.5)
-      .setTintFromName(tintName);
+  createText(message, style) {
+    const text = new Phaser.GameObjects.Text(this.scene, 0, 0, message, style);
+    text.setOrigin(0.5);
+    this.add(text);
+    return text;
+  }
 
-    this.scene.add.existing(this);
+  setBaseline(text) {
+    if (!text) return this.destroyBaseline();
+    if (!this.baseline) {
+      this.baseline = this.createText(text, baselineStyle);
+      this.name.setPosition(0, -baselineOffset);
+    }
+    this.baseline.setText(text);
+    return this;
+  }
+
+  destroyBaseline() {
+    if (this.baseline) {
+      this.name.setPosition(0, 0);
+      this.baseline.destroy();
+      this.baseline = undefined;
+    }
+    return this;
   }
 
   setTintFromName(tintName) {
@@ -28,7 +56,15 @@ class CharacterNameText extends Phaser.GameObjects.Text {
     if (!colors) return this;
 
     const color = colors[tintName] || [defaultTint];
-    return this.setTint(...color);
+    this.name.setTint(...color);
+    if (this.baseline) this.baseline.setTint(...color);
+    return this;
+  }
+
+  setText(name, baseline) {
+    this.name.setText(name);
+    this.setBaseline(baseline);
+    return this;
   }
 }
 

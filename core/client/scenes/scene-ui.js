@@ -106,17 +106,17 @@ UIScene = new Phaser.Class({
     });
   },
 
-  updateUserName(userId, name, colorName) {
+  updateUserName(userId, name, baseline, colorName) {
     let textInstance = this.characterNamesObjects[userId];
 
     if (!textInstance) {
       const player = userManager.getCharacter(userId);
       if (!player) return;
 
-      textInstance = new CharacterNameText(this, name, colorName);
+      textInstance = new CharacterNameText(this, name, baseline, colorName);
       textInstance.player = player;
       this.characterNamesObjects[userId] = textInstance;
-    } else if (textInstance) textInstance.setTintFromName(colorName).setText(name);
+    } else if (textInstance) textInstance.setTintFromName(colorName).setText(name, baseline);
   },
 
   destroyUserName(userId) {

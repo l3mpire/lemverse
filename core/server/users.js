@@ -137,6 +137,7 @@ Meteor.methods({
       bio: Match.Optional(String),
       defaultReaction: Match.Optional(String),
       name: Match.Optional(String),
+      baseline: Match.Optional(String),
       nameColor: Match.Optional(String),
       website: Match.Optional(String),
     });
