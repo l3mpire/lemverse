@@ -216,13 +216,15 @@ peer = {
   updatePeersStream(stream, type) {
     debug('updatePeersStream: start', { stream, type });
 
+    const callEntries = Object.entries(this.calls);
+
     if (type === streamTypes.main) {
       debug(`updatePeersStream: main stream ${stream.id}`, { stream });
       const audioTrack = stream.getAudioTracks()[0];
       const videoTrack = stream.getVideoTracks()[0];
 
       // note: to add a track it is necessary to renegotiate the connection with the remote user (https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/addTrack)
-      _.each(this.calls, (call, key) => {
+      callEntries.forEach(([key, call]) => {
         if (key.indexOf('-screen') !== -1) return;
         const senders = call.peerConnection.getSenders();
 
@@ -245,7 +247,7 @@ peer = {
       debug(`updatePeersStream: screen share stream ${stream.id}`, { stream });
       const screenTrack = stream.getVideoTracks()[0];
 
-      _.each(this.calls, (call, key) => {
+      callEntries.forEach(([key, call]) => {
         if (key.indexOf('-screen') === -1) return;
         const senders = call.peerConnection.getSenders();
         let trackUpdated = false;
