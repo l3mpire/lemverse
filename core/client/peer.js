@@ -227,12 +227,16 @@ peer = {
         const senders = call.peerConnection.getSenders();
 
         const existingSenderAudioTrack = senders.find(sender => sender.track.kind === 'audio');
-        if (existingSenderAudioTrack) existingSenderAudioTrack.replaceTrack(audioTrack);
-        else call.peerConnection.addTrack(audioTrack);
+        if (existingSenderAudioTrack) {
+          if (audioTrack) existingSenderAudioTrack.replaceTrack(audioTrack);
+          else call.peerConnection.removeTrack(existingSenderAudioTrack);
+        } else if (audioTrack) call.peerConnection.addTrack(audioTrack);
 
         const existingSenderVideoTrack = senders.find(sender => sender.track.kind === 'video');
-        if (existingSenderVideoTrack) existingSenderVideoTrack.replaceTrack(videoTrack);
-        else call.peerConnection.addTrack(videoTrack);
+        if (existingSenderVideoTrack) {
+          if (videoTrack) existingSenderVideoTrack.replaceTrack(videoTrack);
+          else call.peerConnection.removeTrack(existingSenderVideoTrack);
+        } else if (videoTrack) call.peerConnection.addTrack(videoTrack);
 
         if (!existingSenderAudioTrack || !existingSenderVideoTrack) debug(`updatePeersStream: stream main track added for user`, { key });
         else debug(`updatePeersStream: stream main track updated for user`, { key });
