@@ -147,6 +147,7 @@
     "permissions": {
       "allowAccountCreation": "all",
       "allowLevelCreation": true,
+      "allowProfileEdition": true,
       "contactURL": ""
     },
 

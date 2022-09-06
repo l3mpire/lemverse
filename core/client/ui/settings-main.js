@@ -1,9 +1,12 @@
+const getDefaultActivePage = () => (Meteor.settings.public.permissions.allowProfileEdition ? 'settingsBasic' : 'settingsCharacter');
+
 Template.settingsMain.onCreated(() => {
-  Session.set('activeSettingsPage', 'settingsBasic');
+  Session.set('activeSettingsPage', getDefaultActivePage());
 });
 
 Template.settingsMain.helpers({
-  activePage() { return Session.get('activeSettingsPage') || 'settingsBasic'; },
+  activePage() { return Session.get('activeSettingsPage') || getDefaultActivePage(); },
+  allowProfileEdition() { return Meteor.settings.public.permissions.allowProfileEdition; },
 });
 
 Template.settingsMain.events({
