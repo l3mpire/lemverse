@@ -164,7 +164,7 @@ waitFor = (condition, attempt, delay = 250) => new Promise((resolve, reject) => 
   waitFunc();
 });
 
-const replaceTextVars = text => text.replaceAll(/\{{[^)]*\}}/g, element => {
+const replaceTextVars = text => text.replaceAll(/{{\s?[\w\s]*\s?}}/g, element => {
   const value = element.replace('{{', '').replace('}}', '');
   const [type] = value.split('_');
 
