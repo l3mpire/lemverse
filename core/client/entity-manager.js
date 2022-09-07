@@ -28,6 +28,7 @@ const entityTooltipConfig = {
   style: 'tooltip with-arrow fade-in',
 };
 
+const fixedUpdateInterval = 200;
 const entityCreatedThreshold = 1000; // In ms
 const floatingDistance = 20;
 const itemAddedToInventoryText = 'Item added to your inventory';
@@ -36,15 +37,19 @@ const itemAlreadyPickedText = 'Someone just picked up this item 😢';
 entityManager = {
   scene: undefined,
   previousNearestEntity: undefined,
+  shouldCheckNearestEntity: false,
   entities: {},
 
   init(scene) {
     this.scene = scene;
+    this.fixedUpdateMethod = this._fixedUpdate.bind(this);
+    this.fixedUpdateInterval = setInterval(this.fixedUpdateMethod, fixedUpdateInterval);
   },
 
   destroy() {
     this.entities = {};
     this.previousNearestEntity = undefined;
+    clearInterval(this.fixedUpdateInterval);
   },
 
   onDocumentAdded(entity) {
@@ -173,8 +178,17 @@ entityManager = {
   },
 
   postUpdate() {
+    if (userManager.controlledCharacter?.wasMoving) this.shouldCheckNearestEntity = true;
+  },
+
+  _fixedUpdate() {
     const { controlledCharacter } = userManager;
-    if (controlledCharacter?.wasMoving) this.handleNearestEntityTooltip(controlledCharacter);
+    if (!controlledCharacter) return;
+
+    if (this.shouldCheckNearestEntity) {
+      this.handleNearestEntityTooltip(controlledCharacter);
+      this.shouldCheckNearestEntity = false;
+    }
 
     Object.values(this.entities).forEach(entity => {
       const customDepth = entity.getData('customDepth');
