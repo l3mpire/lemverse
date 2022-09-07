@@ -174,7 +174,7 @@ entityManager = {
 
   postUpdate() {
     const { controlledCharacter } = userManager;
-    if (controlledCharacter?.wasMoving && !Meteor.user({ 'profile.guest': 1 }).profile.guest) this.handleNearestEntityTooltip(controlledCharacter);
+    if (controlledCharacter?.wasMoving) this.handleNearestEntityTooltip(controlledCharacter);
 
     Object.values(this.entities).forEach(entity => {
       const customDepth = entity.getData('customDepth');
