@@ -2,7 +2,7 @@ import { toggleUIInputs } from '../helpers';
 
 const checkEmail = value => {
   if (!value) return 'Who are you mister anonymous? 🤔';
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Invalid email';
+  if (!/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(value)) return 'Invalid email';
 
   return true;
 };
