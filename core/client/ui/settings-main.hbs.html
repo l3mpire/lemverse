@@ -4,14 +4,16 @@
       <div class="menu">
         <h1 class="title">Settings</h1>
         <ul class="menu-entries">
-          <li class="{{#if eq activePage "settingsBasic"}}selected{{/if}}">
-            <button class="js-menu-entry button" data-page="settingsBasic">
-              <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-                  <path fill="currentColor" d="M12 20C7.6 20 4 16.4 4 12S7.6 4 12 4 20 7.6 20 12 16.4 20 12 20M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M11 14H13V17H16V12H18L12 7L6 12H8V17H11V14" />
-              </svg>
-              <span>My account</span>
-            </button>
-          </li>
+          {{#if allowProfileEdition}}
+            <li class="{{#if eq activePage "settingsBasic"}}selected{{/if}}">
+              <button class="js-menu-entry button" data-page="settingsBasic">
+                <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M12 20C7.6 20 4 16.4 4 12S7.6 4 12 4 20 7.6 20 12 16.4 20 12 20M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M11 14H13V17H16V12H18L12 7L6 12H8V17H11V14" />
+                </svg>
+                <span>My account</span>
+              </button>
+            </li>
+          {{/if}}
           <li class="{{#if eq activePage "settingsCharacter"}}selected{{/if}}">
             <button class="js-menu-entry button" data-page="settingsCharacter">
               <svg style="width:24px;height:24px" viewBox="0 0 24 24">
