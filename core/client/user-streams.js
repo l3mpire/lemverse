@@ -43,16 +43,13 @@ userStreams = {
   },
 
   destroyStream(type) {
-    const debug = Meteor.user()?.options?.debug;
     const { instance: stream } = type === streamTypes.main ? this.streams.main : this.streams.screen;
+    if (!stream) return;
+
+    const debug = Meteor.user({ fields: { 'options.debug': 1 } })?.options?.debug;
     if (debug) log('destroyStream: start', { stream, type });
-    if (!stream) {
-      if (debug) log('destroyStream: cancelled (stream was not alive)');
-      return;
-    }
 
     this.stopTracks(stream);
-
     if (stream === this.streams.main.instance) this.streams.main.instance = undefined;
     else if (stream === this.streams.screen.instance) this.streams.screen.instance = undefined;
   },
