@@ -2,6 +2,9 @@ import hotkeys from 'hotkeys-js';
 import Phaser from 'phaser';
 import audioManager from './audio-manager';
 import { setReaction } from './helpers';
+import initSentryClient from './sentry';
+
+initSentryClient();
 
 scopes = {
   player: 'player',
