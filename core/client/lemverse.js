@@ -158,7 +158,7 @@ Template.lemverse.onCreated(function () {
     Tracker.nonreactive(() => {
       if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
       else if (!user.profile.shareAudio) userStreams.audio(false);
-      else if (user.profile.shareAudio) {
+      else {
         userStreams.createStream().then(() => {
           userStreams.audio(true);
           userProximitySensor.callProximityStartedForAllNearUsers();
@@ -179,7 +179,7 @@ Template.lemverse.onCreated(function () {
       if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
       else if (!user.profile.shareVideo) {
         userStreams.video(false);
-      } else if (user.profile.shareVideo) {
+      } else {
         const forceNewStream = userStreams.shouldCreateNewStream(streamTypes.main, true, true);
         userStreams.createStream(forceNewStream).then(() => {
           userStreams.video(true);
