@@ -36,29 +36,20 @@ userStreams = {
 
   screen(enabled) {
     const { instance: screenStream } = this.streams.screen;
-    if (screenStream && !enabled) {
-      this.stopTracks(screenStream);
-      this.streams.screen.instance = undefined;
-      _.each(peer.calls, (call, key) => {
-        if (key.indexOf('-screen') === -1) return;
-        if (Meteor.user().options?.debug) log('me -> you screen ****** I stop sharing screen, call closing', key);
-        call.close();
-        delete peer.calls[key];
-      });
-    } else if (enabled) userProximitySensor.callProximityStartedForAllNearUsers();
+    if (!screenStream || enabled) return;
+
+    this.stopTracks(screenStream);
+    this.streams.screen.instance = undefined;
   },
 
   destroyStream(type) {
-    const debug = Meteor.user()?.options?.debug;
     const { instance: stream } = type === streamTypes.main ? this.streams.main : this.streams.screen;
+    if (!stream) return;
+
+    const debug = Meteor.user({ fields: { 'options.debug': 1 } })?.options?.debug;
     if (debug) log('destroyStream: start', { stream, type });
-    if (!stream) {
-      if (debug) log('destroyStream: cancelled (stream was not alive)');
-      return;
-    }
 
     this.stopTracks(stream);
-
     if (stream === this.streams.main.instance) this.streams.main.instance = undefined;
     else if (stream === this.streams.screen.instance) this.streams.screen.instance = undefined;
   },

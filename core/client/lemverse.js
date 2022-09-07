@@ -159,7 +159,7 @@ Template.lemverse.onCreated(function () {
     Tracker.nonreactive(() => {
       if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
       else if (!user.profile.shareAudio) userStreams.audio(false);
-      else if (user.profile.shareAudio) {
+      else {
         userStreams.createStream().then(() => {
           userStreams.audio(true);
           userProximitySensor.callProximityStartedForAllNearUsers();
@@ -178,12 +178,13 @@ Template.lemverse.onCreated(function () {
     if (!user) return;
     Tracker.nonreactive(() => {
       if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
-      else if (!user.profile.shareVideo) userStreams.video(false);
-      else if (user.profile.shareVideo) {
+      else if (!user.profile.shareVideo) {
+        userStreams.video(false);
+      } else {
         const forceNewStream = userStreams.shouldCreateNewStream(streamTypes.main, true, true);
         userStreams.createStream(forceNewStream).then(() => {
           userStreams.video(true);
-          userProximitySensor.callProximityStartedForAllNearUsers();
+          peer.call(Object.values(userProximitySensor.nearUsers));
         });
       }
 
@@ -202,9 +203,13 @@ Template.lemverse.onCreated(function () {
         if (user.profile.shareScreen) meet.shareScreen();
         else meet.unshareScreen();
       } else if (user.profile.shareScreen) {
-        userStreams.createScreenStream().then(() => userStreams.screen(true));
+        userStreams.createScreenStream().then(() => {
+          userStreams.screen(true);
+          peer.call(Object.values(userProximitySensor.nearUsers));
+        });
       } else {
         userStreams.screen(false);
+        peer.closePeerCalls(false, streamTypes.screen);
       }
     });
   });
