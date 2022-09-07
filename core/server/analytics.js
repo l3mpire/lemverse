@@ -91,11 +91,11 @@ analytics = {
 };
 
 Meteor.methods({
-  analyticsDiscussionAttend(traits) {
+  analyticsDiscussionAttend(properties) {
     const { userId } = this;
     if (!userId) return;
 
-    check(traits, {
+    check(properties, {
       peerUserId: String,
       usersAttendingCount: Number,
     });
@@ -104,15 +104,15 @@ Meteor.methods({
     analytics.track(userId, '💬 Discussion Attend', {
       guild_id: user.guildId,
       level_id: user.profile.levelId,
-      peer_user_id: traits.peerUserId,
-      users_attending_count: traits.usersAttendingCount,
+      peer_user_id: properties.peerUserId,
+      users_attending_count: properties.usersAttendingCount,
     });
   },
-  analyticsDiscussionEnd(traits) {
+  analyticsDiscussionEnd(properties) {
     const { userId } = this;
     if (!userId) return;
 
-    check(traits, {
+    check(properties, {
       usersAttendingCount: Number,
       duration: Number,
       peerUserId: String,
@@ -120,18 +120,18 @@ Meteor.methods({
 
     const user = Meteor.user();
     analytics.track(userId, '💬 Discussion End', {
-      duration: traits.duration,
+      duration: properties.duration,
       guild_id: user.guildId,
       level_id: user.profile.levelId,
-      peer_user_id: traits.peerUserId,
-      users_attending_count: traits.usersAttendingCount,
+      peer_user_id: properties.peerUserId,
+      users_attending_count: properties.usersAttendingCount,
     });
   },
-  analyticsConferenceAttend(traits) {
+  analyticsConferenceAttend(properties) {
     const { userId } = this;
     if (!userId) return;
 
-    check(traits, {
+    check(properties, {
       zoneId: String,
       zoneName: String,
     });
@@ -140,15 +140,15 @@ Meteor.methods({
     analytics.track(userId, '🎤 Conference Attend', {
       guild_id: user.guildId,
       level_id: user.profile.levelId,
-      zone_id: traits.zoneId,
-      zone_name: traits.zoneName,
+      zone_id: properties.zoneId,
+      zone_name: properties.zoneName,
     });
   },
-  analyticsConferenceEnd(traits) {
+  analyticsConferenceEnd(properties) {
     const { userId } = this;
     if (!userId) return;
 
-    check(traits, {
+    check(properties, {
       zoneId: String,
       zoneName: String,
     });
@@ -157,15 +157,15 @@ Meteor.methods({
     analytics.track(userId, '🎤 Conference End', {
       guild_id: user.guildId,
       level_id: user.profile.levelId,
-      zone_id: traits.zoneId,
-      zone_name: traits.zoneName,
+      zone_id: properties.zoneId,
+      zone_name: properties.zoneName,
     });
   },
-  analyticsReaction(traits) {
+  analyticsReaction(properties) {
     const { userId } = this;
     if (!userId) return;
 
-    check(traits, {
+    check(properties, {
       reaction: String,
     });
 
@@ -174,7 +174,7 @@ Meteor.methods({
       guild_id: user.guildId,
       level_id: user.profile.levelId,
       coordinates: [user.profile.x, user.profile.y],
-      reaction: traits.reaction,
+      reaction: properties.reaction,
     });
   },
   analyticsKick() {

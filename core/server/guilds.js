@@ -30,9 +30,10 @@ Meteor.methods({
     Meteor.users.update({ _id: { $in: userIds } }, { $set: { guildId } }, { multi: true });
 
     // analytics
-    userIds.forEach(userId => {
-      analytics.identify(Meteor.users.findOne(userId));
-      analytics.track(this.userId, '👨‍👨‍👦 Guild Add User', { user_id: userId, guild_id: guildId });
+    const users = Meteor.users.find({ _id: { $in: userIds } }).fetch();
+    users.forEach(user => {
+      analytics.identify(user);
+      analytics.track(this.userId, '👨‍👨‍👦 Guild Add User', { user_id: user._id, guild_id: guildId });
     });
     analytics.updateGuild(Guilds.findOne(guildId), {}, Meteor.userId());
 
