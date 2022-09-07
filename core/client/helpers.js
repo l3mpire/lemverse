@@ -209,6 +209,14 @@ registerRadialMenuModules = modules => {
 
 const allowPhaserMouseInputs = () => !Session.get('editor') && !Session.get('console');
 
+// To avoid bugs related to network latency we accept a distance greater than that which launches a call to limit false negatives behaviors
+const canAnswerCall = user => {
+  if (userProximitySensor.isUserNear(user)) return true;
+
+  const callDistanceThreshold = Meteor.settings.public.character.callDistanceThreshold || 300;
+  return userProximitySensor.distance(Meteor.user(), user) <= callDistanceThreshold;
+};
+
 const toggleUIInputs = value => {
   hotkeys.setScope(value ? scopes.form : scopes.player);
   game.scene.keys.WorldScene.enableKeyboard(!value, false);
@@ -254,6 +262,13 @@ const nearestDuration = duration => {
   return message.join(':');
 };
 
+const setReaction = reaction => {
+  if (reaction) {
+    Meteor.call('analyticsReaction', { reaction });
+    Meteor.users.update(Meteor.userId(), { $set: { 'profile.reaction': reaction } });
+  } else Meteor.users.update(Meteor.userId(), { $unset: { 'profile.reaction': 1 } });
+};
+
 const textDirectionToVector = direction => {
   if (direction === 'left') return Phaser.Math.Vector2.LEFT;
   if (direction === 'right') return Phaser.Math.Vector2.RIGHT;
@@ -275,14 +290,6 @@ const vectorToTextDirection = vector => {
   return undefined;
 };
 
-// To avoid bugs related to network latency we accept a distance greater than that which launches a call to limit false negatives behaviors
-const canAnswerCall = user => {
-  if (userProximitySensor.isUserNear(user)) return true;
-
-  const callDistanceThreshold = Meteor.settings.public.character.callDistanceThreshold || 300;
-  return userProximitySensor.distance(Meteor.user(), user) <= callDistanceThreshold;
-};
-
 export {
   allowPhaserMouseInputs,
   canAnswerCall,
@@ -294,6 +301,7 @@ export {
   meteorCallWithPromise,
   nearestDuration,
   replaceTextVars,
+  setReaction,
   toggleUIInputs,
   textDirectionToVector,
   vectorToTextDirection,

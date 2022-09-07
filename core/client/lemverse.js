@@ -1,6 +1,7 @@
 import hotkeys from 'hotkeys-js';
 import Phaser from 'phaser';
 import audioManager from './audio-manager';
+import { setReaction } from './helpers';
 
 scopes = {
   player: 'player',
@@ -393,7 +394,8 @@ Template.lemverse.onCreated(function () {
     const user = Meteor.user();
     if (!user) return;
 
-    Meteor.users.update(Meteor.userId(), { [event.type === 'keydown' ? '$set' : '$unset']: { 'profile.reaction': user.profile.defaultReaction || Meteor.settings.public.defaultReaction } });
+    const userReaction = user.profile.defaultReaction || Meteor.settings.public.defaultReaction;
+    setReaction(event.type === 'keydown' ? userReaction : undefined);
   });
 
   hotkeys('f', { scope: scopes.player }, event => {

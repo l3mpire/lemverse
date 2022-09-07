@@ -11,6 +11,7 @@ const punch = users => {
 
   users.forEach(user => userManager.getCharacter(user._id)?.onDamage());
   peer.sendData(users.map(user => user._id), { type: 'punch', emitter: Meteor.userId() });
+  Meteor.call('analyticsKick');
 };
 
 window.addEventListener('load', () => {
