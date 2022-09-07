@@ -216,23 +216,29 @@ peer = {
   updatePeersStream(stream, type) {
     debug('updatePeersStream: start', { stream, type });
 
+    const callEntries = Object.entries(this.calls);
+
     if (type === streamTypes.main) {
       debug(`updatePeersStream: main stream ${stream.id}`, { stream });
       const audioTrack = stream.getAudioTracks()[0];
       const videoTrack = stream.getVideoTracks()[0];
 
       // note: to add a track it is necessary to renegotiate the connection with the remote user (https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/addTrack)
-      _.each(this.calls, (call, key) => {
+      callEntries.forEach(([key, call]) => {
         if (key.indexOf('-screen') !== -1) return;
         const senders = call.peerConnection.getSenders();
 
         const existingSenderAudioTrack = senders.find(sender => sender.track.kind === 'audio');
-        if (existingSenderAudioTrack) existingSenderAudioTrack.replaceTrack(audioTrack);
-        else call.peerConnection.addTrack(audioTrack);
+        if (existingSenderAudioTrack) {
+          if (audioTrack) existingSenderAudioTrack.replaceTrack(audioTrack);
+          else call.peerConnection.removeTrack(existingSenderAudioTrack);
+        } else if (audioTrack) call.peerConnection.addTrack(audioTrack);
 
         const existingSenderVideoTrack = senders.find(sender => sender.track.kind === 'video');
-        if (existingSenderVideoTrack) existingSenderVideoTrack.replaceTrack(videoTrack);
-        else call.peerConnection.addTrack(videoTrack);
+        if (existingSenderVideoTrack) {
+          if (videoTrack) existingSenderVideoTrack.replaceTrack(videoTrack);
+          else call.peerConnection.removeTrack(existingSenderVideoTrack);
+        } else if (videoTrack) call.peerConnection.addTrack(videoTrack);
 
         if (!existingSenderAudioTrack || !existingSenderVideoTrack) debug(`updatePeersStream: stream main track added for user`, { key });
         else debug(`updatePeersStream: stream main track updated for user`, { key });
@@ -241,7 +247,7 @@ peer = {
       debug(`updatePeersStream: screen share stream ${stream.id}`, { stream });
       const screenTrack = stream.getVideoTracks()[0];
 
-      _.each(this.calls, (call, key) => {
+      callEntries.forEach(([key, call]) => {
         if (key.indexOf('-screen') === -1) return;
         const senders = call.peerConnection.getSenders();
         let trackUpdated = false;
