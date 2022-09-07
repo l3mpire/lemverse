@@ -80,17 +80,7 @@ peer = {
     _.each(this.calls, call => this.close(call.peer, Meteor.settings.public.peer.delayBeforeClosingCall, 'close-all'));
   },
 
-  closeCall(userId, origin) {
-    debug(`closeCall: start (${origin})`, { userId });
-
-    this.unlockCall(userId, true);
-    this.cancelWaitingCallAction(userId);
-
-    let closedPeerCallsCount = 0;
-    closedPeerCallsCount += this._closeUserPeerCalls(true, userId);
-    closedPeerCallsCount += this._closeUserPeerCalls(false, userId);
-    if (closedPeerCallsCount) audioManager.play('webrtc-out.mp3', 0.2);
-
+  _removeUserFromRemoteStreamsList(userId) {
     let streamsByUsers = this.remoteStreamsByUsers.get();
     streamsByUsers.map(usr => {
       if (usr._id === userId) {
@@ -105,6 +95,20 @@ peer = {
     // We clean up remoteStreamsByUsers table by deleting all the users who have neither webcam or screen sharing active
     streamsByUsers = streamsByUsers.filter(usr => usr.main.srcObject !== undefined || usr.screen.srcObject !== undefined || usr.waitingCallAnswer);
     this.remoteStreamsByUsers.set(streamsByUsers);
+  },
+
+  closeCall(userId, origin) {
+    debug(`closeCall: start (${origin})`, { userId });
+
+    this.unlockCall(userId, true);
+    this.cancelWaitingCallAction(userId);
+
+    let closedPeerCallsCount = 0;
+    closedPeerCallsCount += this._closeUserPeerCalls(true, userId);
+    closedPeerCallsCount += this._closeUserPeerCalls(false, userId);
+    if (closedPeerCallsCount) audioManager.play('webrtc-out.mp3', 0.2);
+
+    this._removeUserFromRemoteStreamsList(userId);
 
     if (!this.hasActiveStreams()) {
       userStreams.destroyStream(streamTypes.main);
@@ -116,7 +120,6 @@ peer = {
       delete this.callStartDates[userId];
     }
 
-    $(`.js-video-${userId}-user`).remove();
     debug('closeCall: call closed successfully', { userId });
   },
 
