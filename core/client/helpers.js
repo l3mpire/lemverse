@@ -81,6 +81,9 @@ updateViewport = (scene, mode) => {
 
   if (meet.lowLevel) return;
 
+  const lemverseTag = document.querySelector('.lemverse');
+  lemverseTag.classList.toggle('screen-splitted', mode === viewportModes.splitScreen)
+
   if (mode === viewportModes.small) scene.cameras.main.setViewport(0, 0, window.innerWidth / 3, window.innerHeight);
   else if (mode === viewportModes.splitScreen) scene.cameras.main.setViewport(0, 0, window.innerWidth / 2, window.innerHeight);
   else scene.cameras.main.setViewport(0, 0, window.innerWidth, window.innerHeight);
