@@ -28,7 +28,17 @@
       "answerDelayBetweenAttempt": 750,
       "avatarAPI": "https://source.unsplash.com/320x240/?[user_avatar]&sig=[user_id]",
       "callDelay": 250,
-      "delayBeforeClosingCall": 1000
+      "delayBeforeClosingCall": 1000,
+      "sounds": {
+        "hangUp": {
+          "file": "webrtc-out.mp3",
+          "volume": 0.2
+        },
+        "incomingCall": {
+          "file": "webrtc-in.mp3",
+          "volume": 0.2
+        }
+      }
     },
 
     "meet": {

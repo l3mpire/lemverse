@@ -135,7 +135,8 @@ peer = {
 
     if (!activeCallsCount) return;
 
-    audioManager.play('webrtc-out.mp3', 0.2);
+    const { file, volume } = Meteor.settings.public.peer.sounds.hangUp;
+    audioManager.play(file, volume);
   },
 
   close(userId, timeout = 0, origin = null) {
@@ -191,7 +192,8 @@ peer = {
     const { shareAudio, shareScreen, shareVideo } = Meteor.user().profile;
 
     if (!this.calls[`${user._id}-${streamTypes.main}`] && !this.calls[`${user._id}-${streamTypes.screen}`]) {
-      audioManager.play('webrtc-in.mp3', 0.2);
+      const { file, volume } = Meteor.settings.public.peer.sounds.incomingCall;
+      audioManager.play(file, volume);
       notify(user, `Wants to talk to you`);
 
       if (!this.callStartDates[user._id]) {
