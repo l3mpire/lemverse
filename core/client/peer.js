@@ -3,7 +3,7 @@ import audioManager from './audio-manager';
 import { canAnswerCall, meteorCallWithPromise } from './helpers';
 
 const debug = (text, meta) => {
-  if (!Meteor.user().options?.debug) return;
+  if (!Meteor.user()?.options?.debug) return;
   log(text, meta);
 };
 
