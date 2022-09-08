@@ -185,6 +185,13 @@
       "enable": false,
       "workspace": "",
       "writeKey": ""
+    },
+
+    "sentrySettings": {
+      "dsn": "",
+      "tracesSampleRate": 1.0,
+      "clientConfig": {},
+      "serverConfig": {}
     }
   },
 
