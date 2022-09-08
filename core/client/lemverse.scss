@@ -138,6 +138,14 @@ hr.separator {
   }
 }
 
+.screen-splitted {
+  .js-streams,
+  .user-panel {
+    right: initial;
+    left: 0;
+  }
+}
+
 button.js-notifications {
   position: absolute;
   bottom: 90px;
