@@ -178,9 +178,10 @@ Meteor.users.find({ 'status.online': true }).observeChanges({
   },
   removed(id) {
     const user = Meteor.users.findOne(id);
-    if (!user?.profile?.guest) {
-      analytics.track(id, '🚪 Log Out', { guild_id: user.guildId });
-    }
+    if (!user) return; // guest users are removed on log-in or sign-in, the findOne can be undefined
+
+    if (!user.profile?.guest) analytics.track(id, '🚪 Log Out', { guild_id: user.guildId });
+
     Meteor.users.update(id, { $set: { 'status.lastLogoutAt': new Date() } });
   },
 });
