@@ -18,7 +18,11 @@ Meteor.publish('users', function (levelId) {
     };
   }
 
-  return Meteor.users.find(filters, { fields: mainFields });
+  const users = Meteor.users.find(filters, { fields: mainFields });
+  const guildIds = users.map(u => u.guildId).filter(Boolean);
+  const guilds = Guilds.find({ _id: { $in: [...new Set(guildIds)] } });
+
+  return [users, guilds];
 });
 
 Meteor.publish('selfUser', function () {
