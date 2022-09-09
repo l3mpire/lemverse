@@ -1,4 +1,4 @@
-import { generateRandomCharacterSkin, levelSpawnPosition } from '../lib/misc';
+import { generateRandomCharacterSkin, levelSpawnPosition, completeUserProfile } from '../lib/misc';
 
 Accounts.onCreateUser((options, user) => {
   log('onCreateUser', { options, user });
@@ -66,4 +66,16 @@ Meteor.server.method_handlers.requestLoginTokenForUser = options => {
   }
 
   return defaultRequestLoginTokenForUser(options);
+};
+
+const { updateOrCreateUserFromExternalService } = Accounts;
+Accounts.updateOrCreateUserFromExternalService = function (serviceName, serviceData, options) {
+  const result = updateOrCreateUserFromExternalService.apply(this, [serviceName, serviceData, options]);
+  const user = Meteor.users.findOne(result.userId);
+  if (!user.emails) {
+    // first login through the sso provider, we proceed to the initialization of the profile
+    completeUserProfile(user, serviceData.email, options.profile.name);
+  }
+
+  return result;
 };
