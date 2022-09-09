@@ -47,8 +47,10 @@ peer = {
       if (!callEntries.length) return;
 
       callEntries.forEach(entry => {
-        if (userProximitySensor.isUserNear({ _id: entry[1].metadata.userId })) return;
-        this.closeCall(entry[1].metadata.userId, 0, 'security-user-far');
+        // Keep the call is user is near or if is in follow mode
+        const _id = entry[1].metadata.userId;
+        if (userProximitySensor.isUserNear({ _id }) || this.lockedCalls[_id]) return;
+        this.closeCall(_id, 0, 'security-user-far');
       });
     }, this.securityCheckInterval);
 
