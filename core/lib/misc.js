@@ -190,7 +190,7 @@ const completeUserProfile = (user, email, name) => {
     }));
   } catch (err) { throw new Meteor.Error('email-duplicate', 'Email already exists'); }
 
-  Meteor.users.update(user._id, { $unset: { 'profile.guest': true, username: true } });
+  Meteor.users.update(user._id, { $unset: { username: true } });
 
   return generateRandomCharacterSkin(Meteor.userId(), user.profile.levelId);
 };

@@ -8,11 +8,11 @@
       </div>
     </div>
 
-    {{#if guest}}
+    {{#if and guest (not onboarding)}}
     {{> formAccount visible=loading}}
-    {{/if}}
-
-    {{#unless guest}}
+    {{else if onboarding}}
+    {{> userOnboarding}}
+    {{else if and (not guest not onboarding)}}
     {{> editToolbox}}
 
     <div class="js-streams">
@@ -23,7 +23,7 @@
 
     {{> userPanel loading=loading}}
     {{> radialMenu }}
-    {{/unless}}
+    {{/if}}
 
     {{> notificationButton}}
     {{> zoneNameToaster}}

@@ -93,11 +93,9 @@ userManager = {
   },
 
   _checkForSkinUpdate(character, user, oldUser) {
-    const { guest } = user.profile;
-
     // check for skin updates
-    let hasSkinUpdate = !oldUser && !guest;
-    if (!hasSkinUpdate && !guest) {
+    let hasSkinUpdate = !oldUser && !user.username;
+    if (!hasSkinUpdate && !user.username) {
       const charactersPartsKeys = Object.keys(charactersParts);
       charactersPartsKeys.forEach(characterPart => {
         if (user.profile[characterPart] === oldUser.profile[characterPart]) return;
