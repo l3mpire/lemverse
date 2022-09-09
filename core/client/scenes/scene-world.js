@@ -45,7 +45,7 @@ WorldScene = new Phaser.Class({
     this.resizeMethod = this.resize.bind(this);
     this.postUpdateMethod = this.postUpdate.bind(this);
     this.shutdownMethod = this.shutdown.bind(this);
-    this.fixedUpdateInterval = setInterval(() => this.fixedUpdate(), fixedUpdateInterval);
+    this.fixedUpdateInterval = setInterval(() => this._fixedUpdate(), fixedUpdateInterval);
 
     // controls
     this.enableKeyboard(true, true);
