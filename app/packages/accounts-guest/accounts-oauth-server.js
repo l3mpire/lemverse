@@ -1,3 +1,5 @@
+import { completeUserProfile } from '../../core/lib/misc';
+
 // eslint-disable-next-line
 let userAgent = 'Meteor';
 if (Meteor.release) {
