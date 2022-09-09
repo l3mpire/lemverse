@@ -133,7 +133,9 @@
         max-width: 150px;
         font-size: 0.8rem;
         color: darken($main-text-color, 10%);
-        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -141,6 +143,10 @@
 
       .guild {
         max-width: 180px;
+
+        .icon {
+          margin: 0 5px;
+        }
       }
 
       .actions,

@@ -2,7 +2,10 @@
     {{> avatarViewer user=user showStatus=true}}
     <span class="js-profile">{{user.profile.name}}</span>
     <div class="guild">
-      <span class="js-guild">{{or guildName "-"}}</span>
+      {{#if guildIcon}}
+        <img class="icon" width="{{guildIcon.width}}" height="{{guildIcon.height}}" src="{{concat '/api/files/' guildIcon.fileId}}" alt="guild-icon" />
+      {{/if}}
+        <span class="js-guild">{{or guildName "-"}}</span>
     </div>
     <div class="zone">
       <span>{{zone}}</span>
