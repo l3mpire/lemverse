@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 
 import { clamp } from '../helpers';
 
+const fixedUpdateInterval = 200;
 const zoomConfig = Meteor.settings.public.zoom;
 
 const onZoneEntered = e => {
@@ -44,6 +45,7 @@ WorldScene = new Phaser.Class({
     this.resizeMethod = this.resize.bind(this);
     this.postUpdateMethod = this.postUpdate.bind(this);
     this.shutdownMethod = this.shutdown.bind(this);
+    this.fixedUpdateInterval = setInterval(() => this._fixedUpdate(), fixedUpdateInterval);
 
     // controls
     this.enableKeyboard(true, true);
@@ -116,9 +118,9 @@ WorldScene = new Phaser.Class({
     const pinchPlugin = this.plugins.get('rexpinchplugin').add(this);
 
     // Disable joystick to avoid user moving while zooming
-    pinchPlugin.on('pinchstart', function() {
-      const nipple = this.nippleManager.get(this.nippleManager.ids[0])
-      nipple.destroy()
+    pinchPlugin.on('pinchstart', function () {
+      const nipple = this.nippleManager.get(this.nippleManager.ids[0]);
+      nipple.destroy();
     }, this);
 
     pinchPlugin.on('pinch', function (pinch) {
@@ -141,6 +143,10 @@ WorldScene = new Phaser.Class({
     this.cameras.main.setRoundPixels(true);
     this.resetZoom();
     this.scene.setVisible(true);
+  },
+
+  _fixedUpdate() {
+    entityManager.fixedUpdate();
   },
 
   update() {
@@ -194,6 +200,7 @@ WorldScene = new Phaser.Class({
   shutdown() {
     this.nippleManager?.destroy();
 
+    clearInterval(this.fixedUpdateInterval);
     this.events.removeListener('postupdate');
     this.events.off('postupdate', this.postUpdateMethod, this);
     this.events.off('sleep', this.sleepMethod, this);

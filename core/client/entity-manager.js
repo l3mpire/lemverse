@@ -36,6 +36,7 @@ const itemAlreadyPickedText = 'Someone just picked up this item 😢';
 entityManager = {
   scene: undefined,
   previousNearestEntity: undefined,
+  shouldCheckNearestEntity: false,
   entities: {},
 
   init(scene) {
@@ -173,8 +174,17 @@ entityManager = {
   },
 
   postUpdate() {
+    if (userManager.controlledCharacter?.wasMoving) this.shouldCheckNearestEntity = true;
+  },
+
+  fixedUpdate() {
     const { controlledCharacter } = userManager;
-    if (controlledCharacter?.wasMoving && !Meteor.user({ 'profile.guest': 1 }).profile.guest) this.handleNearestEntityTooltip(controlledCharacter);
+    if (!controlledCharacter) return;
+
+    if (this.shouldCheckNearestEntity) {
+      this.handleNearestEntityTooltip(controlledCharacter);
+      this.shouldCheckNearestEntity = false;
+    }
 
     Object.values(this.entities).forEach(entity => {
       const customDepth = entity.getData('customDepth');
