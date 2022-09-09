@@ -18,15 +18,17 @@
       </div>
     </div>
 
-    {{#if guest}}
+    {{#if and guest (not onboarding)}}
       {{> formAccount visible=loading}}
-    {{else}}
+    {{else if onboarding}}
+      {{> userOnboarding}}
+    {{else if and (not guest not onboarding)}}
       {{> editToolbox}}
     {{/if}}
 
     <div class="js-streams">
       {{#each remoteUser in allRemoteStreamsByUsers}}
-        {{> remoteStream remoteUser=remoteUser }}
+      {{> remoteStream remoteUser=remoteUser }}
       {{/each}}
     </div>
 
@@ -43,7 +45,7 @@
 
     <div class="modules">
       {{#each module in modules}}
-        {{> Template.dynamic template=module}}
+      {{> Template.dynamic template=module}}
       {{/each}}
     </div>
   </div>

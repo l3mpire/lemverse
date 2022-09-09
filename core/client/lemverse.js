@@ -473,6 +473,7 @@ Template.lemverse.onDestroyed(function () {
 Template.lemverse.helpers({
   allRemoteStreamsByUsers: () => peer.remoteStreamsByUsers.get(),
   guest: () => Meteor.user({ fields: { 'profile.guest': 1 } })?.profile.guest,
+  onboarding: () => Meteor.user({ fields: { 'profile.guest': 1 } })?.profile.guest && !Meteor.user({ fields: { username: 1 } })?.username,
   loading: () => Session.get('loading'),
   screenMode: () => Template.instance().screenMode.get(),
   settingsOpen: () => (!Session.get('modal') ? false : (Session.get('modal').template.indexOf('settings') !== -1)),

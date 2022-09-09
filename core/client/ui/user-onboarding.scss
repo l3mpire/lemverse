@@ -1,0 +1,121 @@
+@import "../_variables";
+
+.onboarding {
+    background: #222;
+    background-size: contain;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+    width: 100%;
+    padding: 32px 64px;
+    position: absolute;
+    z-index: 10;
+    animation: fadeInOnboarding 1s;
+    
+    .logo {
+        width: fit-content;
+        height: 70px;
+    }
+    
+    .container {
+       height: auto;
+       width: auto;
+       display: flex;
+       align-items: center;
+       flex-direction: column;
+    }
+    
+    .container-title {
+        padding: 8px 16px;
+        max-width: 412px;
+        background: $lem-color-6;
+        border-radius: 8px;
+        color: #FFFFFF;
+        font-size: 1rem;
+        line-height: 32px;
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 32px;
+    
+        @media (min-width: 480px) {
+            font-size: 1.5rem;
+        }
+    }
+    
+    .explanation-container {
+        display: flex;
+        align-self: center;
+        align-items: center;
+        justify-content: space-between;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        max-width: 648px;
+        max-height: 306px;
+        background: #FFFFFF;
+        border-radius: 16px;
+        padding: 40px 20px;
+    }
+    
+    .permission-img {
+        width: 100%;
+        height: 100%;
+        max-width: 320px;
+        max-height: 160px;
+        object-fit: contain;
+        border-radius: 8px;
+        margin-bottom: 40px;
+    }
+    
+    .continue-button {
+        all: unset;
+        cursor: pointer;
+        padding: 12px 16px;
+        background: $lem-color-6;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: bold;
+        max-width: fit-content;
+        color: white;
+    
+        &__disabled {
+            background: $gray200;
+        }
+    
+        @media (min-width: 480px) {
+            font-size: 1.5rem;
+        }
+    }
+}
+
+.onboarding:after {
+    content: ' ';
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('assets/images/scene-loader-background.png');
+    background-repeat: repeat;
+    opacity: 0.1;
+    z-index: -1;
+    animation: anim 10s linear infinite, fadeInBackground 2s;
+}
+
+@keyframes fadeInOnboarding {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes anim {
+    100% {
+        background-position: -416px -416px;
+    }
+}
+
+@keyframes fadeInBackground {
+    0% { opacity: 0; }
+    100% { opacity: 0.1; }
+}
