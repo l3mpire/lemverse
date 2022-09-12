@@ -36,6 +36,13 @@
       opacity: 0;
       transition: opacity 0.15s linear;
 
+      @include media-max("phone-down") {
+        max-width: initial;
+        max-height: initial;
+        height: 100vh;
+        border-radius: initial;
+      }
+
       &.height-auto {
         height: auto;
       }
@@ -46,6 +53,7 @@
         height: 100%;
         overflow: hidden;
       }
+
 
       .js-modal-close {
         position: absolute;

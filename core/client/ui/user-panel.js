@@ -80,4 +80,17 @@ Template.userPanel.events({
     event.stopPropagation();
     toggleModal('userList');
   },
+  'click .js-openpanel'(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    document.querySelector('.user-panel').focus();
+  },
+  'focus .user-panel'(event) {
+    event.currentTarget.classList.toggle('visible', true);
+    document.querySelector('.js-openpanel').classList.toggle('displaynone', true);
+  },
+  'blur .user-panel'(event) {
+    event.currentTarget.classList.toggle('visible', false);
+    document.querySelector('.js-openpanel').classList.toggle('displaynone', false);
+  },
 });

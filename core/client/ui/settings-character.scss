@@ -7,99 +7,104 @@
 
 .settingsCharacter {
   position: relative;
-  display: flex;
+  display: grid;
+  grid-template-areas: "preview preview"
+                       "menu    selection";
+  grid-template-columns: 75px auto;
+  grid-template-rows: 100px auto;
+  grid-gap: 5px;
   height: 100%;
   width: 100%;
   margin: 0;
-  padding-right: 0;
+  overflow: hidden;
 
   .renderCharacter {
-    width: 105px;
-    min-width: 105px;
     display: flex;
     align-items: center;
     justify-content: center;
+    grid-area: preview;
+    border-radius: 1em;
+    background: #fff1;
   }
 
-  .customize {
-    flex-grow: 1;
+  .customize-menus {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    justify-content: start;
+    align-items: center;
+    width: 100%;
+    gap: 15px;
+    grid-area: menu;
+    padding-top: 10px;
+    
+    .customize-menu {
+      width: 45px;
+      height: 45px;
+      cursor: pointer;
+      border-radius: 10px;
+      border: 1px solid rgba($new-green, 0.5);
 
-    .customize-menus {
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      width: 100%;
-      gap: 15px;
+      svg {
+        margin: 0.3rem;
+        height: 30px;
+        width: 30px;
+        fill: $new-green;
+      }
 
-      .customize-menu {
-        width: 45px;
-        height: 45px;
-        cursor: pointer;
-        border-radius: 10px;
-        border: 1px solid rgba($new-green, 0.5);
+      &:hover,
+      &.selected {
+        background-color: $new-green;
 
         svg {
-          margin: 0.3rem;
-          height: 30px;
-          width: 30px;
-          fill: $new-green;
-        }
-
-        &:hover,
-        &.selected {
-          background-color: $new-green;
-
-          svg {
-            fill: $new-dark-secondary;
-          }
+          fill: $new-dark-secondary;
         }
       }
     }
+  }
 
-    .customize-selection {
-      flex-grow: 1;
-      height: 100%;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      overflow: scroll;
-      padding: 10px;
+  .customize-selection {
+    height: 100%;
+    display: grid;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 10px;
+    grid-area: selection;
+    grid-template-columns: repeat(auto-fill, 48px);
+    grid-gap: 10px;
+    grid-auto-rows: max-content;
+    justify-content: center;;
 
-      .characters-choices {
-        border-radius: $radius;
-        background-color: $main-color;
-        cursor: pointer;
+    .characters-choices {
+      border-radius: $radius;
+      background-color: $main-color;
+      cursor: pointer;
+      margin: 0;
+      position: relative;
+      width: 48px;
+      height: 120px;
+      overflow: hidden;
+
+      &:hover {
+        background-color: lighten($main-color, 5%);
+      }
+
+      &.selected {
+        background-color: $new-yellow;
+      }
+
+      .sprite-character {
+        image-rendering: pixelated;
         margin: 0;
-        position: relative;
-        width: 48px;
-        height: 120px;
-        overflow: hidden;
+        position: absolute;
+        top: -200px;
+        left: -866px;
+        display: block;
 
-        &:hover {
-          background-color: lighten($main-color, 5%);
-        }
-
-        &.selected {
-          background-color: $new-yellow;
-        }
-
-        .sprite-character {
-          image-rendering: pixelated;
-          margin: 0;
-          position: absolute;
-          top: -200px;
-          left: -866px;
-          display: block;
-
-          &.empty-choices {
-            width: 48px;
-            height: 120px;
-            top: 0;
-            left: 0;
-          }
+        &.empty-choices {
+          width: 48px;
+          height: 120px;
+          top: 0;
+          left: 0;
         }
       }
     }
