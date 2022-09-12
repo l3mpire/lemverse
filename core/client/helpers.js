@@ -41,6 +41,8 @@ eventTypes = Object.freeze({
 
 toggleUserProperty = (propertyName, value) => {
   const user = Meteor.user();
+  if (!user) return;
+
   const toggleMicOn = value || (value === undefined && !user.profile.shareAudio);
   const toggleCamOn = value || (value === undefined && !user.profile.shareVideo);
 
@@ -82,7 +84,7 @@ updateViewport = (scene, mode) => {
   if (meet.lowLevel) return;
 
   const lemverseTag = document.querySelector('.lemverse');
-  lemverseTag.classList.toggle('screen-splitted', mode === viewportModes.splitScreen)
+  lemverseTag.classList.toggle('screen-splitted', mode === viewportModes.splitScreen);
 
   if (mode === viewportModes.small) scene.cameras.main.setViewport(0, 0, window.innerWidth / 3, window.innerHeight);
   else if (mode === viewportModes.splitScreen) scene.cameras.main.setViewport(0, 0, window.innerWidth / 2, window.innerHeight);

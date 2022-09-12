@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import RexPinchPlugin from '../plugins/rexpinchplugin.min.js';
+import RexPinchPlugin from '../plugins/rexpinchplugin.min';
 
 const assetsRoute = 'assets/images';
 const filesRoute = Meteor.settings.public.files.route;

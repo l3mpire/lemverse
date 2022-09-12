@@ -413,6 +413,7 @@ userManager = {
     } else if (type === 'text') {
       const emitterPlayer = this.getCharacter(emitterUserId);
       if (!emitterPlayer) return;
+      if (!data.content) return;
 
       const { zoneMuted } = Meteor.user();
       const userEmitterZoneId = zoneManager.currentZone(userEmitter)?._id;

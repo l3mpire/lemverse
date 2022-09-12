@@ -15,6 +15,7 @@ Template.registerHelper('tile2domX', index => {
   const tileX = index % (selectedTileset().width / 16);
   return zoom * tileX * 16;
 });
+
 Template.registerHelper('tile2domY', index => {
   if (!index) return 0;
   const tileY = (index / (selectedTileset().width / 16) | 0);
@@ -137,12 +138,12 @@ Template.editorTilesets.events({
   },
   'drop .js-drop-tileset'({ originalEvent }) {
     const uploadedFiles = originalEvent.dataTransfer.files;
-   
+
     const maxTileset = Tilesets.findOne({}, { sort: { gid: -1 }, limit: 1 });
     let maxTilesetGid = 0;
     if (maxTileset) maxTilesetGid = maxTileset.gid + 10000;
 
-    Array.from(uploadedFiles).forEach((file, index) => {
+    Array.from(uploadedFiles).forEach(file => {
       if (!file) return;
 
       const uploadInstance = Files.insert({
