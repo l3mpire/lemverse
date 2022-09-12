@@ -28,12 +28,14 @@
         <input type="text" name="baseline" id="baseline" class="js-name input" data-oldvalue="{{currentUser.profile.baseline}}" value="{{currentUser.profile.baseline}}">
       </div>
 
-      {{#if length nameColors}}
       <div class="form-element-m">
         <label for="name-color" class="label">Name color</label>
+        {{#if length nameColors}}
         {{> characterNameColorSelector colors=nameColors}}
+        {{else}}
+        <input type="color" name="nameColor" id="nameColor" class="js-name-color input" value="{{currentUser.profile.nameColor}}">
+        {{/if}}
       </div>
-      {{/if}}
 
       <div class="form-element-m">
         <label for="website" class="label">Website</label>
