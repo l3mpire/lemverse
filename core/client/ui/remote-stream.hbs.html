@@ -25,9 +25,17 @@
   </div>
 </template>
 
+<template name="closefullscreen">
+  <button type="button" class="js-fullscreen-close">
+    <span>✖</span>
+  </button>
+</template>
+
 <template name="webcam">
   <video id="webcam-{{_id}}" type="video/mp4" width="320" height="240" autoplay></video>
+  {{> closefullscreen}}
 </template>
 <template name="screenshare">
   <video id="screen-{{_id}}" type="video/mp4" autoplay muted></video>
+  {{> closefullscreen}}
 </template>

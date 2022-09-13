@@ -12,6 +12,9 @@
     &.displaynone {
       display: none;
     }
+    &.videoactive {
+      display: none !important;
+    }
   }
 
   .js-stream-me {
@@ -68,6 +71,14 @@
 
     &.visible {
       transform: translate(0px);
+    }
+
+    &.videoActive {
+      transform: translate(240px);
+
+      &.visible {
+        transform: translate(0px);
+      }
     }
   }
 

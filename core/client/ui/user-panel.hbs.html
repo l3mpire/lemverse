@@ -1,5 +1,5 @@
 <template name="userPanel">
-  <div class="user-panel" tabindex="-1">
+  <div class="user-panel {{#if videoActive}}videoActive{{/if}}" tabindex="-1">
     <div class="js-stream-screen-me {{#if screenSharing}}active{{/if}}">
       <video type="video/mp4" width="340" height="240" autoplay muted></video>
     </div>
@@ -27,8 +27,8 @@
       </div>
     </div>
   </div>
-  <div class="js-openpanel {{#if loading}}displaynone{{/if}}">
-    <div class="js-stream-me" style="background-image: url('{{avatarURL}}')">
+  <div class="js-openpanel {{#if loading}}displaynone{{/if}} {{#if or videoActive screenSharing}}videoactive{{/if}}">
+    <div class="js-stream-me">
       <div class="buttons">
         <button class="button" type="button">
           <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24">

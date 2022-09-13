@@ -85,6 +85,11 @@ Template.userPanel.events({
     event.stopPropagation();
     document.querySelector('.user-panel').focus();
   },
+  'click .js-stream-me'(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    document.querySelector('.user-panel').focus();
+  },
   'focus .user-panel'(event) {
     event.currentTarget.classList.toggle('visible', true);
     document.querySelector('.js-openpanel').classList.toggle('displaynone', true);
