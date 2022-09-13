@@ -38,6 +38,12 @@ $button-text-color: white;
         height: 50px;
         max-height: 200px;
         min-height: 50px;
+
+        &.disabled {
+          background-color: $new-dark-secondary;
+          padding-left: 20px;
+          font-style: italic;
+        }
       }
     }
 

@@ -10,6 +10,32 @@
         <label for="level-toolbox-hidden">Hide from the list of levels</label>
       </div>
       <div>
+        <div class="feature-dropdown">
+          <label for="voice-amplifier">Shout :</label>
+          <select name="voice-amplifier" id="voice-amplifier" class="js-voice-amplifier-select select" value="{{ shout }}">
+            {{#each dropdownValues}}
+              <option value="{{value}}" selected="{{#if eq shout value}}selected{{/if}}">{{label}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="feature-dropdown">
+          <label for="global-chat">Global chat :</label>
+          <select name="global-chat" id="global-chat" class="js-global-chat-select select">
+            {{#each dropdownValues}}
+              <option value="{{value}}" selected="{{#if eq globalChat value}}selected{{/if}}">{{label}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="feature-dropdown">
+          <label for="punch">Punch :</label>
+          <select name="punch" id="punch" class="js-punch-select select" value="adminOnly">
+            {{#each dropdownValues}}
+              <option value="{{value}}" selected="{{#if eq punch value}}selected{{/if}}">{{label}}</option>
+            {{/each}}
+          </select>
+        </div>
+        </div>
+      <div>
         <button id="level-toolbox-position" type="button" class="js-spawn-position button">Set spawn position (current {{ spawnPosition }})</button>
       </div>
     </div>
