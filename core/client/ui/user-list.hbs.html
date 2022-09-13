@@ -1,8 +1,6 @@
 <template name="userListEntry">
-    <div class="main">
       {{> avatarViewer user=user showStatus=true}}
       <span class="js-profile">{{user.profile.name}}</span>
-    </div>
     <div class="guild">
       <span class="js-guild">{{or guildName "-"}}</span>
     </div>

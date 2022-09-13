@@ -15,8 +15,9 @@ Template.settingsMain.events({
     event.preventDefault();
     event.stopPropagation();
     lp.notif.confirm('Logout', `You will be disconnected from lemverse, are you sure ?`, () => {
-      closeModal();
-      Meteor.logout();
+      Meteor.logout(() => {
+        closeModal();
+      });
     });
   },
   'click .js-menu-entry'(event) { Session.set('activeSettingsPage', event.currentTarget.dataset.page); },

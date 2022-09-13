@@ -28,6 +28,14 @@
     width: 145px;
     margin-top: 5px;
 
+    @include media-max("phone-down") {
+      width: 45px;
+
+      .text {
+        display: none;
+      }
+    }
+
     svg {
       width: 18px;
       height: 18px;
