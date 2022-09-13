@@ -1,3 +1,5 @@
+const hideToaster = () => Session.set('zoneToaster', undefined);
+
 Template.zoneNameToaster.onCreated(function () {
   this.toastTimerInstance = undefined;
   this.zoneName = new ReactiveVar('');
@@ -16,7 +18,7 @@ Template.zoneNameToaster.onCreated(function () {
       this.style.set(`show ${hasNewContent ? 'new-content' : ''}`);
 
       clearTimeout(this.toastTimerInstance);
-      this.toastTimerInstance = setTimeout(() => Session.set('zoneToaster', undefined), hasNewContent ? 5000 : 1500);
+      this.toastTimerInstance = setTimeout(hideToaster, hasNewContent ? 5000 : 1500);
     });
   });
 });
