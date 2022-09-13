@@ -127,6 +127,12 @@
       gap: 7px;
       justify-content: center;
 
+      @include media-max("phone-down") {
+        .js-show-messaging-interface {
+          display: none;
+        }
+      }
+
       .separator {
         color: #d2d5e0;
         transform: translateY(5px);
