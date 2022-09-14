@@ -3,6 +3,7 @@
     "lp": {
       "product": "lemverse",
       "website": "http://localhost:3000",
+      "helpURL": "https://lempire.notion.site/lempire/lemverse-Fire-Escape-920063782c4243f69d85ed0a4f65cac3",
       "process": "main",
       "gods": [],
       "production": false,
