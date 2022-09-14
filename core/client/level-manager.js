@@ -167,6 +167,9 @@ levelManager = {
   onLevelLoaded() {
     this.scene.scene.wake();
 
+    // listen room messages
+    networkManager.joinRoom(Meteor.user().profile.levelId);
+
     // simulate a first frame update to avoid weirds visual effects with characters animation and direction
     this.scene.update(0, 0);
     setTimeout(() => game.scene.keys.LoadingScene.hide(() => this.scene.enableKeyboard(true)), 0);

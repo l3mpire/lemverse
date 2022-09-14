@@ -109,10 +109,9 @@ userManager = {
     const character = this.characters[user._id];
     if (!character) return;
 
-    const { x, y, direction, reaction, shareAudio, guest, userMediaError, name, baseline, nameColor } = user.profile;
+    const { x, y, reaction, shareAudio, guest, userMediaError, name, baseline, nameColor } = user.profile;
 
     // update character instance
-    networkManager.onCharacterStateReceived({ userId: user._id, x, y, direction });
     character.showMutedStateIndicator(!guest && !shareAudio);
 
     // is account transformed from guest to user?
@@ -263,9 +262,12 @@ userManager = {
       if (direction) this.controlledCharacter.playAnimation(characterAnimations.run, direction);
     } else this.controlledCharacter.setAnimationPaused(true);
 
-    if (moving || this.controlledCharacter.wasMoving) {
+    // saves the position in base only when the user stops moving
+    if (!moving && this.controlledCharacter.wasMoving) {
+      networkManager.saveCharacterState(this.controlledCharacter);
+    } else if (moving || this.controlledCharacter.wasMoving) {
       this.scene.physics.world.update(time, delta);
-      networkManager.sendPlayerNewState(this.controlledCharacter);
+      networkManager.sendCharacterNewState(this.controlledCharacter);
     }
 
     if (!peer.hasActiveStreams()) peer.enableSensor(!(this.controlledCharacter.running && moving));
@@ -276,7 +278,7 @@ userManager = {
   teleportMainUser(x, y) {
     this.controlledCharacter.x = x;
     this.controlledCharacter.y = y;
-    savePlayer(this.controlledCharacter);
+    networkManager.saveCharacterState(this.controlledCharacter);
   },
 
   interact() {

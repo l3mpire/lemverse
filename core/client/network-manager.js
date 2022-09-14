@@ -1,18 +1,34 @@
-const userInterpolationInterval = 200;
+const characterInterpolationInterval = 200;
+
+const networkEvents = Object.freeze({
+  characterState: 'character:state',
+});
 
 const networkManager = {
-  throttledSendPlayerState: undefined,
+  currentRoom: undefined,
+  userStreamyId: undefined,
+  throttledSendCharacterState: undefined,
 
   init() {
-    this.throttledSendPlayerState = throttle(this._sendPlayerNewState.bind(this), userInterpolationInterval, { leading: false });
+    this.userStreamyId = Streamy.id();
+    this.throttledSendCharacterState = throttle(this._sendCharacterNewState.bind(this), characterInterpolationInterval, { leading: false });
+    Streamy.on(networkEvents.characterState, this._onCharacterStateReceived.bind(this));
   },
 
   onSleep() {
-    this.throttledSendPlayerState?.cancel();
+    this.throttledSendCharacterState?.cancel();
   },
 
   update() {
     this.interpolateCharacterPositions();
+  },
+
+  joinRoom(roomId) {
+    if (this.currentRoom) Streamy.leave(this.currentRoom.identifier);
+
+    Streamy.join(roomId);
+    this.currentRoom = Streamy.rooms(roomId);
+    this.currentRoom.identifier = roomId;
   },
 
   /**
@@ -52,7 +68,9 @@ const networkManager = {
     });
   },
 
-  onCharacterStateReceived(state) {
+  _onCharacterStateReceived(state) {
+    if (state.__from === this.userStreamyId) return;
+
     const character = userManager.getCharacter(state.userId);
     if (!character) return;
 
@@ -62,14 +80,25 @@ const networkManager = {
     character.lwOriginDate = Date.now();
     character.lwTargetX = state.x;
     character.lwTargetY = state.y;
-    character.lwTargetDate = character.lwOriginDate + userInterpolationInterval;
+    character.lwTargetDate = character.lwOriginDate + characterInterpolationInterval;
   },
 
-  sendPlayerNewState(state) {
-    this.throttledSendPlayerState(state);
+  sendCharacterNewState(state) {
+    this.throttledSendCharacterState(state);
   },
 
-  _sendPlayerNewState(state) {
+  _sendCharacterNewState(state) {
+    if (!state) return;
+
+    this.currentRoom.emit(networkEvents.characterState, {
+      x: state.x,
+      y: state.y,
+      direction: state.direction,
+      userId: state.getData('userId'),
+    });
+  },
+
+  saveCharacterState(state) {
     if (!state) return;
 
     // No need to check that the userId really belongs to the user, Meteor does the check during the update
