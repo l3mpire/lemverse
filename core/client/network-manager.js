@@ -4,7 +4,7 @@ const networkManager = {
   throttledSendPlayerState: undefined,
 
   init() {
-    this.throttledSendPlayerState = throttle(this.sendPlayerNewState.bind(this), userInterpolationInterval, { leading: false });
+    this.throttledSendPlayerState = throttle(this._sendPlayerNewState.bind(this), userInterpolationInterval, { leading: false });
   },
 
   onSleep() {
@@ -66,6 +66,10 @@ const networkManager = {
   },
 
   sendPlayerNewState(state) {
+    this.throttledSendPlayerState(state);
+  },
+
+  _sendPlayerNewState(state) {
     if (!state) return;
 
     // No need to check that the userId really belongs to the user, Meteor does the check during the update
