@@ -1,233 +1,233 @@
 version: "3.8"
 services:
-    mongodb:
-        image: mongo:5.0.3
-        container_name: mongodb
-        environment:
-            - PUID=1000
-            - PGID=1000
-        volumes:
-            - db:/data/db
-        restart: unless-stopped
-        networks:
-            - net_lemverse
-    lemverse:
-        image: lempire/lemverse:latest
-        container_name: lemverse
-        restart: unless-stopped
-        networks:
-            - net_lemverse
-        depends_on:
-            - mongodb
-            - peer
-        volumes:
-            - lemverse:/var/tmp/lemverse
-        environment:
-            ROOT_URL: ${APP_ROOT_URL:-http://localhost}
-            MONGO_URL: mongodb://mongodb:27017/meteor
-            PORT: 3000
-            METEOR_SETTINGS: | # App settings
-                {
-                    "public": {
-                        "lp": {
-                            "website": "https://app.lemverse.com",
-                            "product": "lemverse",
-                            "process": "main",
-                            "gods": [""],
-                            "production": true,
-                            "staging": false,
-                            "enableLogClient": false
+  mongodb:
+    image: mongo:5.0.3
+    container_name: mongodb
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - db:/data/db
+    restart: unless-stopped
+    networks:
+      - net_lemverse
+  lemverse:
+    image: lempire/lemverse:latest
+    container_name: lemverse
+    restart: unless-stopped
+    networks:
+      - net_lemverse
+    depends_on:
+      - mongodb
+      - peer
+    volumes:
+      - lemverse:/var/tmp/lemverse
+    environment:
+      ROOT_URL: ${APP_ROOT_URL:-http://localhost}
+      MONGO_URL: mongodb://mongodb:27017/meteor
+      PORT: 3000
+      METEOR_SETTINGS: | # App settings
+        {
+          "public": {
+            "lp": {
+              "website": "https://app.lemverse.com",
+              "product": "lemverse",
+              "process": "main",
+              "gods": [""],
+              "production": true,
+              "staging": false,
+              "enableLogClient": false
+            },
+            "debug": false,
+            "defaultReaction": "❤️",
+            "zoom": 1,
+            "peer": {
+              "answerMaxAttempt": 5,
+              "answerDelayBetweenAttempt": 750,
+              "avatarAPI": "https://robohash.org/[user_id]?set=set4&bgset=bg2&size=320x240",
+              "callDelay": 250,
+              "delayBeforeClosingCall": 1000
+            },
+            "meet": {
+              "serverURL": "jitsi.YOURDOMAIN.COM",
+              "roomDefaultName": "lemverse-test"
+            },
+            "character": {
+              "walkSpeed": 180,
+              "runSpeed": 720,
+              "sensorNearDistance": 75,
+              "sensorFarDistance": 85
+            },
+            "assets": {
+              "character": {
+                "frameWidth": 16,
+                "frameHeight": 32,
+                "formats": {
+                  "w-384": {
+                    "animations": {
+                      "run": {
+                        "up": {
+                          "frames": [54, 55, 56, 57, 58, 59],
+                          "frameRate": 10,
+                          "repeat": -1
                         },
-                        "debug": false,
-                        "defaultReaction": "❤️",
-                        "zoom": 1,
-                        "peer": {
-                            "answerMaxAttempt": 5,
-                            "answerDelayBetweenAttempt": 750,
-                            "avatarAPI": "https://robohash.org/[user_id]?set=set4&bgset=bg2&size=320x240",
-                            "callDelay": 250,
-                            "delayBeforeClosingCall": 1000
+                        "down": {
+                          "frames": [66, 67, 68, 69, 70, 71],
+                          "frameRate": 10,
+                          "repeat": -1
                         },
-                        "meet": {
-                            "serverURL": "jitsi.YOURDOMAIN.COM",
-                            "roomDefaultName": "lemverse-test"
+                        "left": {
+                          "frames": [60, 61, 62, 63, 64, 65],
+                          "frameRate": 10,
+                          "repeat": -1
                         },
-                        "character": {
-                            "walkSpeed": 180,
-                            "runSpeed": 720,
-                            "sensorNearDistance": 75,
-                            "sensorFarDistance": 85
-                        },
-                        "assets": {
-                            "character": {
-                                "frameWidth": 16,
-                                "frameHeight": 32,
-                                "formats": {
-                                    "w-384": {
-                                        "animations": {
-                                            "run": {
-                                                "up": {
-                                                    "frames": [54, 55, 56, 57, 58, 59],
-                                                    "frameRate": 10,
-                                                    "repeat": -1
-                                                },
-                                                "down": {
-                                                    "frames": [66, 67, 68, 69, 70, 71],
-                                                    "frameRate": 10,
-                                                    "repeat": -1
-                                                },
-                                                "left": {
-                                                    "frames": [60, 61, 62, 63, 64, 65],
-                                                    "frameRate": 10,
-                                                    "repeat": -1
-                                                },
-                                                "right": {
-                                                    "frames": [48, 49, 50, 51, 52, 53],
-                                                    "frameRate": 10,
-                                                    "repeat": -1
-                                                }
-                                            }
-                                        }
-                                    },
-                                    "w-927": {
-                                        "animations": {
-                                            "run": {
-                                                "up": {
-                                                    "frames": [120, 121, 122, 123, 124, 125],
-                                                    "frameRate": 10,
-                                                    "repeat": -1
-                                                },
-                                                "down": {
-                                                    "frames": [132, 133, 134, 135, 136, 137],
-                                                    "frameRate": 10,
-                                                    "repeat": -1
-                                                },
-                                                "left": {
-                                                    "frames": [126, 127, 128, 129, 130, 131],
-                                                    "frameRate": 10,
-                                                    "repeat": -1
-                                                },
-                                                "right": {
-                                                    "frames": [114, 115, 116, 117, 118, 119],
-                                                    "frameRate": 10,
-                                                    "repeat": -1
-                                                }
-                                            }
-                                        }
-                                    },
-                                    "w-896": {
-                                        "animations": {
-                                            "run": {
-                                                "up": {
-                                                    "frames": [118, 119, 120, 121, 122, 123],
-                                                    "frameRate": 10,
-                                                    "repeat": -1
-                                                },
-                                                "down": {
-                                                    "frames": [130, 131, 132, 133, 134, 135],
-                                                    "frameRate": 10,
-                                                    "repeat": -1
-                                                },
-                                                "left": {
-                                                    "frames": [124, 125, 126, 127, 128, 129],
-                                                    "frameRate": 10,
-                                                    "repeat": -1
-                                                },
-                                                "right": {
-                                                    "frames": [112, 113, 114, 115, 116, 117],
-                                                    "frameRate": 10,
-                                                    "repeat": -1
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "skins": {
-                            "guest": {},
-                            "default": {}
-                        },
-                        "templateLevelId": "lvl_iLOVEaLOTlemverse",
-                        "tos": {
-                            "terms": "",
-                            "cookies": "",
-                            "privacy": ""
-                        },
-                        "files": {
-                            "storagePath": "/var/tmp/lemverse",
-                            "route": "/api/files"
+                        "right": {
+                          "frames": [48, 49, 50, 51, 52, 53],
+                          "frameRate": 10,
+                          "repeat": -1
                         }
-                    },
-                    "defaultLevelId": "lvl_iLOVEaLOTlemverse",
-                    "email": {
-                        "from": "The lembot <contact@m.lemverse.com>"
-                    },
-                    "meet": {
-                        "enableAuth": false
-                    },
-                    "peer": {
-                        "path": "/peer",
-                        "client": {
-                            "url": "peer.YOURDOMAIN.COM",
-                            "port": 443,
-                            "credentialDuration": 86400,
-                            "secret": "",
-                            "config": { 
-                                "iceServers": [{ 
-                                "urls": "stun:stun.l.google.com:19302"
-                                }],
-                                "iceTransportPolicy" : "all",
-                                "sdpSemantics": "unified-plan"
-                            }
-                        },
-                        "server": {
-                            "start": false,
-                            "port": 443,
-                            "key": "peerjs",
-                            "alive_timeout": 60000,
-                            "expire_timeout": 5000,
-                            "allow_discovery": false
-                        }
+                      }
                     }
+                  },
+                  "w-927": {
+                    "animations": {
+                      "run": {
+                        "up": {
+                          "frames": [120, 121, 122, 123, 124, 125],
+                          "frameRate": 10,
+                          "repeat": -1
+                        },
+                        "down": {
+                          "frames": [132, 133, 134, 135, 136, 137],
+                          "frameRate": 10,
+                          "repeat": -1
+                        },
+                        "left": {
+                          "frames": [126, 127, 128, 129, 130, 131],
+                          "frameRate": 10,
+                          "repeat": -1
+                        },
+                        "right": {
+                          "frames": [114, 115, 116, 117, 118, 119],
+                          "frameRate": 10,
+                          "repeat": -1
+                        }
+                      }
+                    }
+                  },
+                  "w-896": {
+                    "animations": {
+                      "run": {
+                        "up": {
+                          "frames": [118, 119, 120, 121, 122, 123],
+                          "frameRate": 10,
+                          "repeat": -1
+                        },
+                        "down": {
+                          "frames": [130, 131, 132, 133, 134, 135],
+                          "frameRate": 10,
+                          "repeat": -1
+                        },
+                        "left": {
+                          "frames": [124, 125, 126, 127, 128, 129],
+                          "frameRate": 10,
+                          "repeat": -1
+                        },
+                        "right": {
+                          "frames": [112, 113, 114, 115, 116, 117],
+                          "frameRate": 10,
+                          "repeat": -1
+                        }
+                      }
+                    }
+                  }
                 }
-    peer:
-        image: peerjs/peerjs-server:0.6.1
-        container_name: peer
-        restart: unless-stopped
-        networks:
-            - net_lemverse
-        command: [ "--port", "9000", "--path", "/peer" ]
-    caddy:
-        image: caddy/caddy:alpine
-        restart: unless-stopped
-        container_name: caddy
-        environment:
-            FRONTEND_HOST: app.YOURDOMAIN.COM
-            JITSI_HOST: jitsi.YOURDOMAIN.COM
-            PEER_HOST: peer.YOURDOMAIN.COM
-            JITSI_SERVICE: jitsi
-            FRONTEND_SERVICE: lemverse
-            PEER_SERVICE: peer
-        ports:
-            - "80:80"
-            - "443:443"
-        networks:
-            - net_lemverse
-        volumes:
-            - ./Caddyfile:/etc/caddy/Caddyfile:ro
-            - caddy:/data/caddy:z
+              }
+            },
+            "skins": {
+              "guest": {},
+              "default": {}
+            },
+            "templateLevelId": "lvl_iLOVEaLOTlemverse",
+            "tos": {
+              "terms": "",
+              "cookies": "",
+              "privacy": ""
+            },
+            "files": {
+              "storagePath": "/var/tmp/lemverse",
+              "route": "/api/files"
+            }
+          },
+          "defaultLevelId": "lvl_iLOVEaLOTlemverse",
+          "email": {
+            "from": "The lembot <contact@m.lemverse.com>"
+          },
+          "meet": {
+            "enableAuth": false
+          },
+          "peer": {
+            "path": "/peer",
+            "client": {
+              "url": "peer.YOURDOMAIN.COM",
+              "port": 443,
+              "credentialDuration": 86400,
+              "secret": "",
+              "config": { 
+                "iceServers": [{ 
+                "urls": "stun:stun.l.google.com:19302"
+                }],
+                "iceTransportPolicy" : "all",
+                "sdpSemantics": "unified-plan"
+              }
+            },
+            "server": {
+              "start": false,
+              "port": 443,
+              "key": "peerjs",
+              "alive_timeout": 60000,
+              "expire_timeout": 5000,
+              "allow_discovery": false
+            }
+          }
+        }
+  peer:
+    image: peerjs/peerjs-server:0.6.1
+    container_name: peer
+    restart: unless-stopped
+    networks:
+      - net_lemverse
+    command: [ "--port", "9000", "--path", "/peer" ]
+  caddy:
+    image: caddy/caddy:alpine
+    restart: unless-stopped
+    container_name: caddy
+    environment:
+      FRONTEND_HOST: app.YOURDOMAIN.COM
+      JITSI_HOST: jitsi.YOURDOMAIN.COM
+      PEER_HOST: peer.YOURDOMAIN.COM
+      JITSI_SERVICE: jitsi
+      FRONTEND_SERVICE: lemverse
+      PEER_SERVICE: peer
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - net_lemverse
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy:/data/caddy:z
 
 volumes:
-    lemverse:
-        driver: local 
-    caddy:
-        driver: local
-    db:
-        driver: local
-    
+  lemverse:
+    driver: local 
+  caddy:
+    driver: local
+  db:
+    driver: local
+  
 # Custom network so all services can communicate using a FQDN
 networks:
-    net_lemverse:
-        driver: bridge
-        name: net_lemverse
+  net_lemverse:
+    driver: bridge
+    name: net_lemverse
