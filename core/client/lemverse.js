@@ -4,6 +4,13 @@ import audioManager from './audio-manager';
 import { setReaction } from './helpers';
 import initSentryClient from './sentry';
 
+// Override Meteor._debug to filter custom messages
+Meteor._debug = (function (superMeteorDebug) {
+  return function (error, info) {
+    if (!info?.msg) superMeteorDebug(error, info);
+  };
+}(Meteor._debug));
+
 initSentryClient();
 
 scopes = {
