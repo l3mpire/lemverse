@@ -90,6 +90,7 @@ module.exports = {
     Guilds: 'writable',
     Items: 'writable',
     Quests: 'writable',
+    Streamy: 'readable',
     canAccessQuest: 'writable',
     remote: 'writable',
     _: 'readable',
