@@ -6,6 +6,12 @@ div.settings {
   height: 100%;
   padding: 0;
 
+  @include media-max("phone-down") {
+    --menu-width: 40px;
+    display: grid;
+    grid-template-columns: var(--menu-width) calc(100vw - var(--menu-width));
+  }
+
   .menu {
     display: flex;
     flex-direction: column;
@@ -15,11 +21,24 @@ div.settings {
     padding: 25px 16px 10px;
     background-color: $new-dark-primary;
 
+    @include media-max("phone-down") {
+      min-width: initial;
+      width: 100%;
+      height: 100vh;
+      padding-right: 0px;
+      padding-left: 0px;
+    }
+
     .title {
       font-size: 20px;
       font-weight: 600;
       text-align: left;
       margin: 0;
+      
+      @include media-max("phone-down") {
+        width: 100%;
+        text-align: center;;
+      }
     }
 
     .menu-entries {
@@ -27,6 +46,7 @@ div.settings {
       flex-direction: column;
       height: 100%;
       list-style: none;
+
       margin: 0;
       padding: 0;
 
@@ -39,6 +59,16 @@ div.settings {
           padding: 0.5em 0.5rem;
           background-color: transparent;
           text-align: left;
+
+          @include media-max("phone-down") {
+            padding-right: 0px;
+            padding-left: 0px;
+            justify-content: center;
+            background-color: lighten($main-color, 15%);
+            border-top-right-radius: 0px;
+            border-bottom-right-radius: 0px;
+          }
+
 
           svg {
             transform: scale(0.9);
@@ -77,13 +107,13 @@ div.settings {
   }
 
   .container {
-    padding: 10px 30px;
+    padding: 10px 20px;
   }
 
   video {
     display: block;
     min-height: 200px;
-    width: 430px;
+    width: 100%;
     margin: 5px auto 0;
     background-color: #333;
     transform: scaleX(-1);

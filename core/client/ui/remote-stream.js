@@ -12,6 +12,9 @@ const removeAllFullScreenElement = ignoredElement => {
   document.querySelectorAll('.stream .fullscreen').forEach(stream => {
     if (stream.parentElement !== ignoredElement) stream.classList.remove('fullscreen');
   });
+  document.querySelectorAll('.js-fullscreen-close').forEach(elem => {
+    elem.classList.remove('visible');
+  });
 };
 
 const updatePhaserMouseInputState = () => {
@@ -96,6 +99,8 @@ Template.remoteStream.events({
     const { target } = event;
     removeAllFullScreenElement(target);
     target.classList.toggle('fullscreen');
+    const closeBtn = target.parentElement.querySelector('.js-fullscreen-close')
+    closeBtn?.classList.toggle('visible', target.classList.contains('fullscreen'));
 
     updatePhaserMouseInputState();
   },
@@ -107,6 +112,8 @@ Template.remoteStream.events({
 
     const child = target.querySelector('video, img');
     child?.classList.toggle('fullscreen');
+    const closeBtn = target.querySelector('.js-fullscreen-close');
+    closeBtn?.classList.toggle('visible', child?.classList.contains('fullscreen'));
 
     updatePhaserMouseInputState();
   },

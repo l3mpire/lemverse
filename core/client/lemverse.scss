@@ -214,3 +214,50 @@ button.js-notifications {
     box-shadow: 0 0 0 0 rgba($light-orange, 0);
   }
 }
+
+// Override confirm dialog styles
+.swal-modal {
+  background-color: $main-color;
+  color: white;
+}
+
+.swal-title {
+  color: white;
+}
+
+.swal-icon--warning__body,
+.swal-icon--warning__dot {
+  animation: backgroundPulse .75s infinite alternate;
+}
+
+.swal-icon--warning {
+  animation: borderPulse .75s infinite alternate;
+}
+
+.swal-overlay {
+  background-color: rgba(0, 0, 0, .75);
+}
+
+.swal-button--cancel{
+  background-color: darken($light-blue, 15%);;
+  filter: saturate(30%);
+  color: white;
+}
+
+@keyframes borderPulse {
+  from {
+    border-color: $light-orange;
+  }
+  to {
+    border-color: darken($light-orange, 10%);
+  }
+}
+
+@keyframes backgroundPulse {
+  from {
+    background-color: $light-orange;
+  }
+  to {
+    background-color: darken($light-orange, 10%);
+  }
+}

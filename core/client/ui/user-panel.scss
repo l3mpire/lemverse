@@ -1,15 +1,85 @@
 @import "../_variables";
 
-.user-panel {
+.js-openpanel {
   position: absolute;
+  z-index: 40;
+  bottom: 10px;
+  right: 10px;
+  display: none;
+
+  @include media-max("phone-down") {
+    display: block;
+    &.displaynone {
+      display: none;
+    }
+    &.videoactive {
+      display: none !important;
+    }
+  }
+
+  .js-stream-me {
+    position: relative;
+    width: 53px;
+    height: 53px;
+    background-color: rgba($main-color, 0.9);
+    border-radius: 15px;
+    z-index: 30;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    transition: all 0.15s linear;
+    overflow: hidden;
+
+    .buttons {
+      position: absolute;
+      bottom: 8px;
+      left: 0;
+      right: 0;
+      display: flex;
+      gap: 7px;
+      justify-content: center;
+
+      .button {
+        position: relative;
+        background-color: lighten($main-color, 75%);
+        height: 36px;
+        width: 36px;
+        box-sizing: content-box;
+        padding: 0;
+        margin: 0;
+        border-radius: $radius;
+        color: $main-color;
+
+        svg {
+          fill: $main-color;
+          transform: translateY(2px) scale(0.95);
+        }
+      }
+    }
+  }
+}
+
+.user-panel {
+  position: fixed;
   z-index: 50;
   bottom: 10px;
   right: 10px;
-  opacity: 0;
-  transition: opacity 0.15s;
 
-  &.visible {
-    opacity: 1;
+  @include media-max("phone-down") {
+    transform: translate(300px);
+    transition: transform .5s;
+
+    &.visible {
+      transform: translate(0px);
+    }
+
+    &.videoActive {
+      transform: translate(240px);
+
+      &.visible {
+        transform: translate(0px);
+      }
+    }
   }
 
   .js-stream-me {
@@ -56,6 +126,12 @@
       display: flex;
       gap: 7px;
       justify-content: center;
+
+      @include media-max("phone-down") {
+        .js-show-messaging-interface {
+          display: none;
+        }
+      }
 
       .separator {
         color: #d2d5e0;

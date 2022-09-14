@@ -1,11 +1,37 @@
 @import "../_variables";
 
 div.settings {
+  .menu .title { 
+    .icon {
+      display: none;
+      fill: white;
+
+      @include media-max("phone-down") {
+        display: block;
+      }
+    }
+
+  }
+  
+  .menu {
+    .text {
+      display: block;
+
+      @include media-max("phone-down") {
+        display: none;
+      }
+    }
+  }
+
   .settings-content {
     display: flex;
     flex-direction: column;
     background-color: #262837;
     width: 100%;
+
+    @include media-max("phone-down") {
+      overflow: hidden;
+    }
 
     .options {
       padding-bottom: 25px;
@@ -14,7 +40,7 @@ div.settings {
       form {
         padding: 0 20px;
 
-        > div {
+        >div {
           width: 100%;
         }
 
@@ -35,6 +61,10 @@ div.settings {
 
         .form-element-m {
           width: 50%;
+
+          @include media-max("phone-down") {
+            width: 100%;
+          }
         }
 
         .form-element-s {
@@ -54,6 +84,10 @@ div.settings {
           pointer-events: none;
           opacity: 0;
           transition: opacity 0.25s linear;
+
+          @include media-max("phone-down") {
+            position: initial;
+          }
 
           &.show {
             opacity: 1;
@@ -93,4 +127,5 @@ div.settings {
   .js-logout {
     background-color: $light-red;
   }
+
 }
