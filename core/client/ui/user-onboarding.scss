@@ -3,27 +3,28 @@
 .onboarding {
     background: #222;
     background-size: contain;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 100vh;
     width: 100%;
     padding: 32px 64px;
     position: absolute;
     z-index: 10;
     animation: fadeInOnboarding 1s;
+    overflow-y: auto;
     
     .logo {
         width: fit-content;
         height: 70px;
+        margin-bottom: 10px;
     }
     
-    .container {
-       height: auto;
-       width: auto;
-       display: flex;
-       align-items: center;
-       flex-direction: column;
+    // First step
+    .container-first {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
     }
     
     .container-title {
@@ -87,6 +88,26 @@
             font-size: 1.5rem;
         }
     }
+
+    // Second step
+    .container-second {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        background-color: $new-dark-secondary;
+        padding: 20px;
+        border-radius: 0.5rem;
+    }
+
+    .header {
+        display: none;
+    }
+
+    .settingsCharacter {
+        max-width: 650px;
+        margin-bottom: 18px;
+    }
+    
 }
 
 .onboarding:after {

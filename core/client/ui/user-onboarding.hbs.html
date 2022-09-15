@@ -1,15 +1,25 @@
 <template name="userOnboarding">
     <div class="onboarding">
         <img class="logo" src='lemverse.png' alt="logo" />
-        <div class="container">
+        {{#if eq step 1}}
+        <div class="container-first">
             <div class="container-title">
                 Activate your camera and microphone to continue
             </div>
             <div class="explanation-container">
                 <img class="permission-img" src='screenshot-user-media.png' alt="User permission popup" />
-                <button disabled="{{#if not streamAccepted}}disabled{{/if}}" class="continue-button {{#if not streamAccepted}}continue-button__disabled{{/if}}">Continue</button>
+                <button disabled="{{#if not streamAccepted}}disabled{{/if}}" class="first-button continue-button {{#if not streamAccepted}}continue-button__disabled{{/if}}">Continue</button>
             </div>
         </div>
+        {{else if eq step 2}}
+        <div class="container-second">
+            <div class="container-title">
+                Personnalise ton personnage 
+            </div>
+            {{> settingsCharacter}}
+            <button class="second-button continue-button">Continue</button>
+        </div>
+        {{/if}}
         <div></div>
     </div>
 </template>

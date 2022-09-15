@@ -15,16 +15,24 @@ Template.userOnboarding.onCreated(async () => {
   userStreams.destroyStream(streamTypes.main);
 });
 
-Template.userOnboarding.events({
-  'click .continue-button'() {
-    Meteor.users.update(Meteor.userId(), { $unset: { 'profile.guest': true } });
+const finishOnboarding = () => {
+  Meteor.users.update(Meteor.userId(), { $unset: { 'profile.guest': true } });
 
-    const worldScene = game.scene.getScene('WorldScene');
-    worldScene.enableKeyboard(true);
-    lp.notif.success('Enjoy 🚀');
+  const worldScene = game.scene.getScene('WorldScene');
+  worldScene.enableKeyboard(true);
+  lp.notif.success('Enjoy 🚀');
+};
+
+Template.userOnboarding.events({
+  'click .first-button'() {
+    Session.set('onboardingStep', 2);
+  },
+  'click .second-button'() {
+    finishOnboarding();
   },
 });
 
 Template.userOnboarding.helpers({
   streamAccepted: () => Session.get('streamAccepted') || false,
+  step: () => Session.get('onboardingStep') || 1,
 });
