@@ -1,7 +1,7 @@
 @import "../_variables";
 
 div.settings {
-  .menu .title { 
+  .menu .title {
     .icon {
       display: none;
       fill: white;
@@ -12,8 +12,16 @@ div.settings {
     }
 
   }
-  
+
   .menu {
+    @include media-max("phone-down") {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      right: 40px;
+      left: 0px;
+      width: 40px !important;
+    }
     .text {
       display: block;
 
@@ -31,13 +39,25 @@ div.settings {
 
     @include media-max("phone-down") {
       overflow: hidden;
+      width: initial;
+
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      left: 40px;
     }
 
     .options {
-      padding-bottom: 25px;
-      overflow-y: scroll;
+        display: grid;
+        grid-template-rows: auto min-content;
+        width: 100%;
+        overflow: hidden;
+        height: 100%;
 
       form {
+          overflow: auto;
+
         padding: 0 20px;
 
         >div {
@@ -71,37 +91,36 @@ div.settings {
           width: 33%;
         }
 
-        .actions {
-          display: flex;
-          justify-content: end;
-          background-color: rgba(#211d2c, 0.95);
-          padding: 10px;
-          border-radius: 10px;
-          position: sticky;
-          bottom: -10px;
-          margin-top: 25px;
-          gap: 10px;
-          pointer-events: none;
-          opacity: 0;
-          transition: opacity 0.25s linear;
+      }
 
-          @include media-max("phone-down") {
-            position: initial;
-          }
+      .actions {
+        display: flex;
+        justify-content: end;
+        background-color: rgba(#211d2c, 0.95);
+        padding: 10px;
+        bottom: -10px;
+        margin-top: 25px;
+        gap: 10px;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.25s linear;
 
-          &.show {
-            opacity: 1;
-            pointer-events: all;
-          }
+        @include media-max("phone-down") {
+          position: initial;
+        }
 
-          button {
-            margin: 0;
-            width: 200px;
+        &.show {
+          opacity: 1;
+          pointer-events: all;
+        }
 
-            &.link {
-              width: auto;
-              min-width: 100px;
-            }
+        button {
+          margin: 0;
+          width: 200px;
+
+          &.link {
+            width: auto;
+            min-width: 100px;
           }
         }
       }
@@ -126,6 +145,16 @@ div.settings {
 
   .js-logout {
     background-color: $light-red;
+  }
+
+  @include media-max("phone-down") {
+    .logout {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 40px;
+      padding-bottom: 5px;
+    }
   }
 
 }

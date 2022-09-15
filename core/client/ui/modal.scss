@@ -39,7 +39,7 @@
       @include media-max("phone-down") {
         max-width: initial;
         max-height: initial;
-        height: 100vh;
+        height: 100%;
         border-radius: initial;
       }
 
@@ -69,6 +69,7 @@
         opacity: 0.8;
         color: white;
         padding: 8px;
+        z-index: 60;
 
         &:hover {
           opacity: 1;
