@@ -340,6 +340,7 @@ Please note, that as stated in section `Deploy in production`, there is an addit
     "lp": {
       "product": "lemverse",
       "process": "main",
+      "helpURL": "https://lempire.notion.site/lempire/lemverse-Fire-Escape-920063782c4243f69d85ed0a4f65cac3",
       "gods": [], // List of gods (can use remote command) like "usr_11111111111111111"
       "production": true,
       "staging": false,

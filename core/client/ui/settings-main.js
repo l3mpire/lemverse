@@ -7,6 +7,7 @@ Template.settingsMain.onCreated(() => {
 Template.settingsMain.helpers({
   activePage() { return Session.get('activeSettingsPage') || getDefaultActivePage(); },
   allowProfileEdition() { return Meteor.settings.public.permissions.allowProfileEdition; },
+  helpURL() { return Meteor.settings.public.lp.helpURL; },
   passwordless() { return Meteor.settings.public.passwordless; },
 });
 
