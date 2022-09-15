@@ -1,3 +1,5 @@
+const ONBOARDING_LAST_STEP = 2;
+
 Template.userOnboarding.onCreated(async () => {
   const constraints = userStreams.getStreamConstraints(streamTypes.main);
   const stream = await userStreams.requestUserMedia(constraints);
@@ -15,16 +17,27 @@ Template.userOnboarding.onCreated(async () => {
   userStreams.destroyStream(streamTypes.main);
 });
 
+const finishOnboarding = () => {
+  Meteor.users.update(Meteor.userId(), { $unset: { 'profile.guest': true } });
+
+  const worldScene = game.scene.getScene('WorldScene');
+  worldScene.enableKeyboard(true);
+  lp.notif.success('Enjoy 🚀');
+};
+
 Template.userOnboarding.events({
   'click .continue-button'() {
-    Meteor.users.update(Meteor.userId(), { $unset: { 'profile.guest': true } });
+    const onboardingStep = Session.get('onboardingStep') || 1;
 
-    const worldScene = game.scene.getScene('WorldScene');
-    worldScene.enableKeyboard(true);
-    lp.notif.success('Enjoy 🚀');
+    if (onboardingStep === ONBOARDING_LAST_STEP) {
+      finishOnboarding();
+    } else {
+      Session.set('onboardingStep', onboardingStep + 1);
+    }
   },
 });
 
 Template.userOnboarding.helpers({
   streamAccepted: () => Session.get('streamAccepted') || false,
+  step: () => Session.get('onboardingStep') || 1,
 });
