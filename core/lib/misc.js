@@ -153,17 +153,21 @@ const generateRandomCharacterSkin = (userId, levelId = undefined) => {
       ...newProfile,
       ...level.skins.default,
     };
-  } else if (Characters.find().count() === 0) {
-    newProfile = {
-      ...newProfile,
-      ...Meteor.settings.public.skins.default,
-    };
   } else {
-    characterPartsKeys.forEach(part => {
+    const characters = Characters.find({ category: { $exists: true }, $or: [{ hide: { $exists: false } }, { hide: false }] }, { fields: { _id: true, category: true } }).fetch();
+
+    if (characters.length === 0) {
+      newProfile = {
+        ...newProfile,
+        ...Meteor.settings.public.skins.default,
+      };
+    } else {
       log('generateRandomCharacterSkin: Randomize character parts...');
-      const parts = Characters.find({ category: part, $or: [{ hide: { $exists: false } }, { hide: false }] }).fetch();
-      if (parts.length) newProfile[part] = parts[_.random(0, parts.length - 1)]._id;
-    });
+      characterPartsKeys.forEach(part => {
+        const parts = characters.filter(character => character.category === part);
+        if (parts.length) newProfile[part] = parts[_.random(0, parts.length - 1)]._id;
+      });
+    }
   }
 
   // Updates only the attributes related to the user skin elements
