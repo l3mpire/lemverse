@@ -24,11 +24,10 @@ Template.settingsPassword.events({
   'keyup .js-currentPassword'(event, templateInstance) { templateInstance.currentPassword = event.target.value; },
   'keyup .js-newPassword'(event, templateInstance) { templateInstance.newPassword = event.target.value; },
   'keyup .js-newPasswordRepeated'(event, templateInstance) { templateInstance.newPasswordRepeated = event.target.value; },
-  'submit form'(event, templateInstance) {
+  'click .submit.button'(event, templateInstance) {
     event.preventDefault();
     event.stopPropagation();
     onSubmit(templateInstance);
-    return false;
   },
 });
 

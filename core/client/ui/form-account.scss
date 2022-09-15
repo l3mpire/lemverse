@@ -144,11 +144,13 @@ $background-color: #38383a;
     &.buttons-group {
       display: flex;
       gap: 10px;
-      justify-content: center;
-      padding: 15px 50px;
+      justify-content: space-around;
+      padding: 15px 15px;
+      flex-wrap: wrap;
 
       button {
         margin: 0;
+        width: fit-content;
 
         &:hover {
           filter: brightness(120%);

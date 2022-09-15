@@ -128,6 +128,8 @@
       justify-content: center;
 
       @include media-max("phone-down") {
+        justify-content: space-evenly;
+        .button.screen,
         .js-show-messaging-interface {
           display: none;
         }

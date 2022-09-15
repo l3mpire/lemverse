@@ -46,16 +46,20 @@ Template.settingsBasic.events({
     templateInstance.fieldsUpdated[event.target.name] = event.target.value;
     templateInstance.hasUpdates.set(true);
   },
-  'submit form'(event, templateInstance) {
+  'click .submit.button'(event, templateInstance) {
     event.preventDefault();
     event.stopPropagation();
     submit(templateInstance);
-
-    return false;
   },
   'click .cancel'(event, templateInstance) {
     event.preventDefault();
     event.stopPropagation();
+
+    Object.keys(templateInstance.fieldsUpdated).forEach(id => {
+      const elem = document.querySelector(`[name=${id}]`);
+      elem.value = elem.dataset.oldvalue;
+    });
+
     templateInstance.hasUpdates.set(false);
     templateInstance.fieldsUpdated = {};
   },
