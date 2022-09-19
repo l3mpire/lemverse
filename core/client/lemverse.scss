@@ -227,24 +227,24 @@ button.js-notifications {
 
 .swal-icon--warning__body,
 .swal-icon--warning__dot {
-  animation: backgroundPulse .75s infinite alternate;
+  animation: background-pulse .75s infinite alternate;
 }
 
 .swal-icon--warning {
-  animation: borderPulse .75s infinite alternate;
+  animation: border-pulse .75s infinite alternate;
 }
 
 .swal-overlay {
   background-color: rgba(0, 0, 0, .75);
 }
 
-.swal-button--cancel{
-  background-color: darken($light-blue, 15%);;
+.swal-button--cancel {
+  background-color: darken($light-blue, 15%);
   filter: saturate(30%);
   color: white;
 }
 
-@keyframes borderPulse {
+@keyframes border-pulse {
   from {
     border-color: $light-orange;
   }
@@ -253,7 +253,7 @@ button.js-notifications {
   }
 }
 
-@keyframes backgroundPulse {
+@keyframes background-pulse {
   from {
     background-color: $light-orange;
   }

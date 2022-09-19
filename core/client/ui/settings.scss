@@ -34,10 +34,10 @@ div.settings {
       font-weight: 600;
       text-align: left;
       margin: 0;
-      
+
       @include media-max("phone-down") {
         width: 100%;
-        text-align: center;;
+        text-align: center;
       }
     }
 
