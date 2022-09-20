@@ -65,4 +65,32 @@ Meteor.methods({
 
     return guilds(guildIds).fetch();
   },
+  updateTeam(fields) {
+    if (!this.userId) return;
+
+    check(fields, {
+      description: Match.Optional(String),
+      name: Match.Optional(String),
+      website: Match.Optional(String),
+    });
+
+    const fieldsToUnsetKeys = Object.entries(fields).filter(field => !field[1]).map(field => field[0]);
+    const fieldsToSet = fields;
+
+    const fieldsToUnset = {};
+    fieldsToUnsetKeys.forEach(key => { fieldsToUnset[key] = 1; });
+
+    const user = Meteor.users.findOne(this.userId);
+    const { guildId } = user;
+
+    const guild = Guilds.findOne(guildId);
+    if (!canEditGuild(Meteor.user(), guild)) throw new Meteor.Error('not-authorized', `Missing permissions to edit the team`);
+
+    Guilds.update(guildId, {
+      $set: { ...fieldsToSet },
+      $unset: { ...fieldsToUnset },
+    });
+
+    analytics.updateGuild(Guilds.findOne(guildId), {}, this.userId);
+  },
 });

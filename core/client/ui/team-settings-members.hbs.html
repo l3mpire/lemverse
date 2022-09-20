@@ -1,0 +1,34 @@
+<template name="teamMemberEntry">
+  <div class="team-user">
+    <div class="main">
+      {{> avatarViewer user=user showStatus=true}}
+      <span class="js-profile">{{user.profile.name}}</span>
+    </div>
+    <div class="actions">
+      <button type="button" class="js-remove-team-user">
+        <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+          <path fill="red" d="M20 6.91L17.09 4L12 9.09L6.91 4L4 6.91L9.09 12L4 17.09L6.91 20L12 14.91L17.09 20L20 17.09L14.91 12L20 6.91Z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</template>
+
+<template name="teamSettingsMembers">
+  <div class="header">
+    <h2 class="h2">Team members</h2>
+    <hr class="separator">
+  </div>
+
+  <div class="team-settings-members">
+    <ul class="team-users">
+      {{#each user in teamMembers}}
+        <li>{{> teamMemberEntry user=user}}</li>
+      {{/each}}
+    </ul>
+    <div class="actions">
+      <button type="button" class="button green js-add-team-user">Add user</button>
+    </div>
+  </div>
+
+</template>

@@ -1,23 +1,17 @@
 const users = guildId => Meteor.users.find({ guildId }, { sort: { 'profile.name': 1 } });
 
-Template.team.onCreated(function () {
+Template.teamSettingsMembers.onCreated(function () {
   this.guildId = Meteor.user().guildId;
-  this.subscribe('guilds', [this.guildId]);
 });
 
-Template.team.helpers({
-  team() { return Guilds.findOne(Template.instance().guildId); },
-  teamUsers() {
+Template.teamSettingsMembers.helpers({
+  teamMembers() {
     return users(Template.instance().guildId).fetch()
       .sort((a, b) => a.profile.name.toLowerCase().localeCompare(b.profile.name.toLowerCase()));
   },
 });
 
-Template.team.events({
-  'click .js-toggle-tab'(event, templateInstance) {
-    const { tab } = event.currentTarget.dataset;
-    templateInstance.activeTab.set(tab);
-  },
+Template.teamSettingsMembers.events({
   'click .js-add-team-user'() {
     Session.set('modal', { template: 'userListSelection', scope: 'level', append: true });
 
@@ -38,11 +32,12 @@ Template.team.events({
   },
 });
 
-Template.teamUserEntry.helpers({
+
+Template.teamMemberEntry.helpers({
   user() { return this.user; },
 });
 
-Template.teamUserEntry.events({
+Template.teamMemberEntry.events({
   'click .js-remove-team-user'() {
     lp.notif.confirm('Team member deletion', `Are you sure to remove this user from the team?`, () => {
       Meteor.call('removeTeamUser', Meteor.user().guildId, this.user._id, error => {
