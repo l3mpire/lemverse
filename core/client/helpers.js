@@ -225,7 +225,7 @@ const canAnswerCall = user => {
 
 const toggleUIInputs = value => {
   hotkeys.setScope(value ? scopes.form : scopes.player);
-  game.scene.keys.WorldScene.enableKeyboard(!value, false);
+  game?.scene.keys.WorldScene?.enableKeyboard(!value, false);
 };
 
 const generateEntityThumbnail = (entity, thumbnailMaxSize = 35) => {

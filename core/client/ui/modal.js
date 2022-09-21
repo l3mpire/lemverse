@@ -1,3 +1,5 @@
+import { toggleUIInputs } from '../helpers';
+
 isModalOpen = template => {
   if (!template) return Session.get('modal');
   return Session.get('modal')?.template === template;
@@ -8,13 +10,15 @@ toggleModal = (modalName, classes = '') => {
   else Session.set('modal', { template: modalName, classes });
 };
 
-closeModal = () => Session.set('modal', undefined);
+closeModal = () => {
+  Session.set('modal', undefined);
+  toggleUIInputs(false);
+};
 
 const keydownListener = e => {
   if (e.code !== 'Escape' || !Session.get('modal')) return;
 
   closeModal();
-  game.scene.keys.WorldScene.enableKeyboard(true, true);
   document.activeElement.blur();
 };
 
