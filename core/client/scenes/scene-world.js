@@ -1,6 +1,8 @@
 import nipplejs from 'nipplejs';
 import Phaser from 'phaser';
 
+import networkManager from '../network-manager';
+
 import { clamp } from '../helpers';
 
 const fixedUpdateInterval = 200;
@@ -110,6 +112,7 @@ WorldScene = new Phaser.Class({
 
     entityManager.init(this);
     levelManager.init(this);
+    networkManager.init(this);
     userManager.init(this);
     zoneManager.init(this);
   },
@@ -152,6 +155,7 @@ WorldScene = new Phaser.Class({
   update() {
     levelManager.update();
     userManager.update();
+    networkManager.update();
   },
 
   postUpdate(time, delta) {
@@ -194,7 +198,7 @@ WorldScene = new Phaser.Class({
   },
 
   sleep() {
-    userManager.onSleep();
+    networkManager.onSleep();
   },
 
   shutdown() {

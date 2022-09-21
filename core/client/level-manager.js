@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 
+import networkManager from './network-manager';
+
 const defaultMapConfig = { width: 100, height: 100, tileWidth: 48, tileHeight: 48 };
 const defaultLayerCount = 9;
 const defaultLayerDepth = { 6: 10000, 7: 10001, 8: 10002 };
@@ -114,7 +116,7 @@ levelManager = {
     loadingScene.setText('');
     loadingScene.show(() => {
       // Phaser sends the sleep event on the next frame which causes the client to overwrite the spawn position set by the server
-      userManager.onSleep();
+      networkManager.onSleep();
 
       this.scene.scene.sleep();
       Meteor.call('teleportUserInLevel', levelId, (error, levelName) => {

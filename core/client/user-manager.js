@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
 import Character from './components/character';
 import audioManager from './audio-manager';
+import networkManager from './network-manager';
 import { guestSkin, textDirectionToVector, vectorToTextDirection } from './helpers';
 
-const userInterpolationInterval = 200;
 const defaultUserMediaColorError = '0xd21404';
 const characterPopInOffset = { x: 0, y: -90 };
 const characterAnimations = Object.freeze({
@@ -17,18 +17,6 @@ const messageReceived = {
   duration: 15000,
   style: 'tooltip with-arrow fade-in',
 };
-
-savePlayer = player => {
-  Meteor.users.update(Meteor.userId(), {
-    $set: {
-      'profile.x': player.x,
-      'profile.y': player.y,
-      'profile.direction': player.direction,
-    },
-  });
-};
-
-const throttledSavePlayer = throttle(savePlayer, userInterpolationInterval, { leading: false });
 
 userManager = {
   inputVector: undefined,
@@ -48,13 +36,8 @@ userManager = {
   },
 
   destroy() {
-    this.onSleep();
     this.characters = {};
     this.controlledCharacter = undefined;
-  },
-
-  onSleep() {
-    throttledSavePlayer.cancel();
   },
 
   onDocumentAdded(user) {
@@ -129,13 +112,7 @@ userManager = {
     const { x, y, direction, reaction, shareAudio, guest, userMediaError, name, baseline, nameColor } = user.profile;
 
     // update character instance
-    character.direction = direction;
-    character.lwOriginX = character.x;
-    character.lwOriginY = character.y;
-    character.lwOriginDate = Date.now();
-    character.lwTargetX = user.profile.x;
-    character.lwTargetY = user.profile.y;
-    character.lwTargetDate = character.lwOriginDate + userInterpolationInterval;
+    networkManager.onCharacterStateReceived({ userId: user._id, x, y, direction });
     character.showMutedStateIndicator(!guest && !shareAudio);
 
     // is account transformed from guest to user?
@@ -235,40 +212,12 @@ userManager = {
     }
   },
 
-  interpolateCharacterPositions() {
-    const now = Date.now();
-    Object.values(this.characters).forEach(player => {
-      if (player === this.controlledCharacter) return;
-
-      if (!player.lwTargetDate) {
-        player.setAnimationPaused(true);
-        return;
-      }
-
-      player.playAnimation(characterAnimations.run, player.direction);
-
-      if (player.lwTargetDate <= now) {
-        player.x = player.lwTargetX;
-        player.y = player.lwTargetY;
-        player.setDepthFromPosition();
-        delete player.lwTargetDate;
-        return;
-      }
-
-      const elapsedTime = ((now - player.lwOriginDate) / (player.lwTargetDate - player.lwOriginDate));
-      player.x = player.lwOriginX + (player.lwTargetX - player.lwOriginX) * elapsedTime;
-      player.y = player.lwOriginY + (player.lwTargetY - player.lwOriginY) * elapsedTime;
-      player.setDepthFromPosition();
-    });
-  },
-
   update() {
     if (this.checkZones) {
       zoneManager.checkDistances(this.controlledCharacter);
       this.checkZones = false;
     }
 
-    this.interpolateCharacterPositions();
     this.controlledCharacter?.updateStep();
   },
 
@@ -316,7 +265,7 @@ userManager = {
 
     if (moving || this.controlledCharacter.wasMoving) {
       this.scene.physics.world.update(time, delta);
-      throttledSavePlayer(this.controlledCharacter);
+      networkManager.sendPlayerNewState(this.controlledCharacter);
     }
 
     if (!peer.hasActiveStreams()) peer.enableSensor(!(this.controlledCharacter.running && moving));
