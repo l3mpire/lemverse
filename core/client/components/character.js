@@ -236,8 +236,12 @@ class Character extends Phaser.GameObjects.Container {
     this.skinPartsContainer.on('pointerover', () => {
       if (!allowPhaserMouseInputs()) return;
 
+      const userId = this.getData('userId');
+      const user = Meteor.users.findOne(userId, { fields: { 'profile.guest': 1 } });
+      if (user.profile.guest) return;
+
       this.setTint(configuration.colorStates.pointerOver);
-      Session.set('menu', { userId: this.getData('userId') });
+      Session.set('menu', { userId });
       Session.set('menu-position', relativePositionToCamera({ x: this.x, y: this.y }, this.scene.cameras.main));
     });
 
