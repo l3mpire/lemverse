@@ -117,6 +117,6 @@ Template.userList.events({
     templateInstance.activeTab.set(tab);
   },
   'click .js-team-manage'() {
-    Session.set('modal', { template: 'team', scope: 'level', append: true });
+    Session.set('modal', { template: 'teamSettingsMain', scope: 'level', append: true });
   },
 });

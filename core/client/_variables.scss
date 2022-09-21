@@ -36,16 +36,16 @@ $new-dark-primary: #201d2c;
 $new-dark-secondary: #262837;
 
 $breakpoints: (
-    "phone-down": 600px,
-    "tablet-up": 768px,
-    "tablet-down": 900px,
-    "desktop-up": 1024px,
-    "desktop-down": 1280px,
-    "widescreen-up": 1440px
+  "phone-down": 600px,
+  "tablet-up": 768px,
+  "tablet-down": 900px,
+  "desktop-up": 1024px,
+  "desktop-down": 1280px,
+  "widescreen-up": 1440px
 );
 
 @mixin media-max($_key) {
-    @media screen and (max-width: map-get($breakpoints, $_key)) {
-        &{ @content; }
-    }
+  @media screen and (max-width: map-get($breakpoints, $_key)) {
+    & { @content; }
+  }
 }

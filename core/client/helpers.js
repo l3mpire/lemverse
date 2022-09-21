@@ -200,6 +200,7 @@ const addToSession = (key, values) => {
 };
 
 registerModules = modules => addToSession('modules', modules);
+registerTeamModules = modules => addToSession('teamModules', modules);
 registerUserListModules = modules => addToSession('userListModules', modules);
 registerRadialMenuModules = modules => {
   const loadedModules = Session.get('radialMenuModules') || [];
