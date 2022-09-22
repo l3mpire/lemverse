@@ -16,7 +16,7 @@
       </div>
     {{else}}
       {{#if restrictedRegistration}}
-        <h1 class="title">Welcome to lemverse</h1>
+        <h1 class="title">Welcome to {{settings.public.lp.product}}</h1>
         <h2 class="title">Log to my account</h2>
       {{else}}
         <h1 class="title">Log to my account or create a new one</h1>
@@ -54,7 +54,7 @@
         </div>
       {{else if (and restrictedRegistration contactURL)}}
         <div class="bottom">
-          <p><a href="{{contactURL}}" target="_blank" rel="noopener">Contact us</a> to create your own customized virtual office on lemverse</p>
+          <p><a href="{{contactURL}}" target="_blank" rel="noopener">Contact us</a> to create your own customized virtual office on {{settings.public.lp.product}}</p>
         </div>
       {{/if}}
     {{/if}}

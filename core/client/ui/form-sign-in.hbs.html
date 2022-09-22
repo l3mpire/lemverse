@@ -2,7 +2,7 @@
   <div class="form-account {{#unless visible}}visible{{/unless}}">
     {{#if eq getStep 1}}
       <div class="step">
-        <h1 class="title">Welcome to lemverse</h1>
+        <h1 class="title">Welcome to {{settings.public.lp.product}}</h1>
         <p>You're a ghost, others can see you but you can't interact with them 👻.<br />If you want to join discussion create an account!</p>
         <button type="button" class="js-next-step submit" aria-label="create an account">Join the living world</button><br />
         <a href="?mode=login" class="link">Already have an account, go here!</a>
@@ -12,7 +12,7 @@
       <div class="step">
         <button type="button" class="js-previous-step" aria-label="go to the previous step">&laquo;</button>
         <h1 class="title">✉️ Your email address</h1>
-        <p>Get all updates about lemverse! We don't spam.</p>
+        <p>Get all updates about {{settings.public.lp.product}}! We don't spam.</p>
         <form>
           <div class="group-field">
             <input name="email" type="email" value="{{email}}" class="js-edit js-email">

@@ -15,7 +15,7 @@ Template.settingsMain.events({
   'click .js-logout'(event) {
     event.preventDefault();
     event.stopPropagation();
-    lp.notif.confirm('Logout', `You will be disconnected from lemverse, are you sure ?`, () => {
+    lp.notif.confirm('Logout', `You will be disconnected from ${Meteor.settings.public.lp.product}, are you sure ?`, () => {
       Meteor.logout(() => {
         closeModal();
       });

@@ -28,7 +28,7 @@ LoadingScene = new Phaser.Class({
     this.background_characters.setAlpha(0.1);
 
     this.logo = this.add.sprite(0, -60, 'logo');
-    this.text = this.add.text(0, 45, 'Loading lemverse…', { font: '20px Verdana' }).setDepth(99997).setOrigin(0.5, 1);
+    this.text = this.add.text(0, 45, `Loading ${Meteor.settings.public.lp.product}…`, { font: '20px Verdana' }).setDepth(99997).setOrigin(0.5, 1);
     this.container = this.add.container(0, 0);
     this.container.add([this.background, this.background_characters, this.logo, this.text]);
     this.container.visible = visible;

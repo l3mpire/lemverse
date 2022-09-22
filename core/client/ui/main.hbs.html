@@ -1,5 +1,4 @@
 <head>
-  <title>lemverse</title>
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,7 +35,7 @@
 <template name="reloadStatus">
   {{#if Session 'needReload'}}
     <div class="status success reload">
-      A new lemverse update has arrived 😎.
+      A new {{settings.public.lp.product}} update has arrived 😎.
       Simply <a href="#" class="js-reload"><b>reload</b></a> and let the magic happen 🎉.
     </div>
   {{/if}}
