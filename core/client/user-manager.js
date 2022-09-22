@@ -276,7 +276,7 @@ userManager = {
   teleportMainUser(x, y) {
     this.controlledCharacter.x = x;
     this.controlledCharacter.y = y;
-    savePlayer(this.controlledCharacter);
+    networkManager.sendPlayerNewState(this.controlledCharacter);
   },
 
   interact() {
