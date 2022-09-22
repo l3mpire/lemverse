@@ -39,6 +39,12 @@ eventTypes = Object.freeze({
   consoleClosed: 'consoleClosed',
 });
 
+// reset previously loaded modules
+Session.set('modules', []);
+Session.set('teamModules', []);
+Session.set('userListModules', []);
+Session.set('radialMenuModules', []);
+
 toggleUserProperty = (propertyName, value) => {
   const user = Meteor.user();
   if (!user) return;
