@@ -71,21 +71,21 @@ const initOAuthService = (name, config) => {
 
 Meteor.startup(() => {
     Deps.autorun(() => {
-       const idpHint =  FlowRouter.current().queryParams.idpHint
-        ServiceConfiguration.configurations
-            .find()
-            .observe({
-                added(record) {
-                    if (record.type === 'oauth') {
-                        if(record.custom) initOAuthService(record.service, record);
-                        // auto login when idpHint query param is provided
-                        if(idpHint && idpHint === record.service && !OAuth.getDataAfterRedirect()){
-                            const loginExternal = `loginWith${capitalize(record.service)}`;
-                            Meteor[loginExternal](record)
-                        }
-                    }
-                },
-            });
+      const idpHint = FlowRouter.current().queryParams.idpHint;
+      ServiceConfiguration.configurations
+        .find()
+        .observe({
+          added(record) {
+            if (record.type === 'oauth') {
+              if(record.custom) initOAuthService(record.service, record);
+              // auto login when idpHint query param is provided
+              if(idpHint && idpHint === record.service && !OAuth.getDataAfterRedirect()){
+                const loginExternal = `loginWith${capitalize(record.service)}`;
+                Meteor[loginExternal](record)
+              }
+            }
+          },
+        });
     });
 });
 

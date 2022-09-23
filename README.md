@@ -54,15 +54,15 @@ Here are the description of all parts:
 
 1. As stated, you drag and drop your image file(s) to upload them.
 2. This part is just a reminder about the index of the layers for all tiles.
-   - Player are between layer `5` and `6`.
-   - Default index is `2` and not displayed.
+  - Player are between layer `5` and `6`.
+  - Default index is `2` and not displayed.
 3. This is the list of all tilesets.
-   - You can either remove the tileset with hitting the cross
-   - Rename it, by double clicking on it
+  - You can either remove the tileset with hitting the cross
+  - Rename it, by double clicking on it
 4. The view of the tileset
-   - When you are over a tile, simply hit a number from `0` to `8` to change the layer
-   - Layer `2` is the default and thus is not displayed
-   - Hit `c` to change the tile to be a collision tile (will be displayed in red)
+  - When you are over a tile, simply hit a number from `0` to `8` to change the layer
+  - Layer `2` is the default and thus is not displayed
+  - Hit `c` to change the tile to be a collision tile (will be displayed in red)
 
 Once you have imported the tileset and do some tweak about collision and layering, you can begin to create your universe!
 
@@ -94,15 +94,15 @@ Once you hit `e` you will see something like this:
 Here are the description of all parts:
 
 1. All tiles that you can select. Move your mouse over them and click to select.
-   - Once it's done, you can click on the map to paste it.
-   - You can also select multiple tiles at the same time!
+  - Once it's done, you can click on the map to paste it.
+  - You can also select multiple tiles at the same time!
 2. You did mess up and want to clean up things?
-   - You can hit `cmd+z` to undo what you just did.
-   - Or use the `eraser` tool to remove one layer (shortcut from `0` to `8`) or hit `c` to remove all layers upon selection.
+  - You can hit `cmd+z` to undo what you just did.
+  - Or use the `eraser` tool to remove one layer (shortcut from `0` to `8`) or hit `c` to remove all layers upon selection.
 3. It's the dropdown of all your tilesets. You can select another one to be able to copy/paste others tiles.
 4. Information about your current pointer on map.
-   - You have the position
-   - Information about the different tiles on each layers (useful to use the right `eraser` layer)
+  - You have the position
+  - Information about the different tiles on each layers (useful to use the right `eraser` layer)
 
 ### Zone edit
 

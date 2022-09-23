@@ -1,13 +1,13 @@
 <template name="characterNameColorSelector">
-    <select data-oldvalue="{{currentUser.profile.nameColor}}" name="nameColor" class="js-name-color select">
-      {{#each value in colors}}
-       {{#if eq currentUser.profile.nameColor value}}
-        <option selected="selected" value="{{value}}">{{value}}</option>
-       {{else}}
-        <option value="{{value}}">{{value}}</option>
-       {{/if}}
-      {{/each}}
-    </select>
+  <select name="nameColor" class="js-name-color select">
+    {{#each value in colors}}
+    {{#if eq currentUser.profile.nameColor value}}
+    <option selected="selected" value="{{value}}">{{value}}</option>
+    {{else}}
+    <option value="{{value}}">{{value}}</option>
+    {{/if}}
+    {{/each}}
+  </select>
 </template>
 
 <template name="settingsBasic">
@@ -29,10 +29,10 @@
       </div>
 
       {{#if length nameColors}}
-        <div class="form-element-m">
-          <label for="name-color" class="label">Name color</label>
-          {{> characterNameColorSelector colors=nameColors}}
-        </div>
+      <div class="form-element-m">
+        <label for="name-color" class="label">Name color</label>
+        {{> characterNameColorSelector colors=nameColors}}
+      </div>
       {{/if}}
 
       <div class="form-element-m">
