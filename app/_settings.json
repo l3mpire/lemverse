@@ -242,6 +242,11 @@
       "allow_discovery": false
     },
 
+    "monti": {
+      "appId": "",
+      "appSecret": ""
+    },
+
     "packages": {
       "service-configuration": {
         "custom": {

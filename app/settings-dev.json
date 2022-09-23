@@ -243,6 +243,11 @@
     }
   },
 
+  "monti": {
+    "appId": "",
+    "appSecret": ""
+  },
+
   "packages": {
     "service-configuration": {
       "custom": {
