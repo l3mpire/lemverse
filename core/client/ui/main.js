@@ -1,5 +1,6 @@
 import { nearestDuration } from '../helpers';
 
+document.title = Meteor.settings.public.lp.product;
 Session.setDefault('retryTimeDuration', 0);
 const updateRetryTimeDuration = () => Session.set('retryTimeDuration', moment(Meteor.status().retryTime).diff());
 
