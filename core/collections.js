@@ -1,4 +1,5 @@
-import { canEditActiveLevel, fileOnBeforeUpload } from './lib/misc';
+import { canEditActiveLevel } from './lib/misc';
+import fileSystemAdapter from './lib/file-storage';
 
 const canEditLevelContent = userId => canEditActiveLevel(Meteor.users.findOne(userId));
 
@@ -51,11 +52,4 @@ Guilds = lp.collectionRegister('guilds', 'gui', [], {
   remove(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
 });
 
-Files = new FilesCollection({
-  collectionName: 'Files',
-  storagePath: Meteor.settings.public.files.storagePath,
-  downloadRoute: Meteor.settings.public.files.route,
-  public: true,
-  allowClientCode: false,
-  onBeforeUpload(file) { return fileOnBeforeUpload(file, file.mime); },
-});
+Files = fileSystemAdapter();

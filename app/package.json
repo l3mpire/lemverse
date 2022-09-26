@@ -15,6 +15,7 @@
     "@sentry/node": "7.16.0",
     "@sentry/tracing": "7.16.0",
     "analytics-node": "^6.2.0",
+    "aws-sdk": "^2.1229.0",
     "body-parser": "^1.20.1",
     "escape-string-regexp": "^5.0.0",
     "fast-json-stable-stringify": "^2.1.0",
