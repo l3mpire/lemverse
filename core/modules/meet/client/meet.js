@@ -98,7 +98,8 @@ meetHighLevel = {
 
     const user = Meteor.user();
     const currentZone = zoneManager.currentZone();
-    const configOverwrite = Meteor.settings.public.meet.configOverwrite || {};
+    const { meet: meetConfig } = Meteor.settings.public;
+    const configOverwrite = meetConfig.configOverwrite || {};
 
     const options = {
       width: '100%',
@@ -118,8 +119,8 @@ meetHighLevel = {
       jwt: config.token,
     };
 
-    meet.api = new window.JitsiMeetExternalAPI(Meteor.settings.public.meet.serverURL, options);
-    meet.api.addEventListener('videoConferenceJoined', () => {
+    this.api = new window.JitsiMeetExternalAPI(meetConfig.serverURL, options);
+    this.api.addEventListener('videoConferenceJoined', () => {
       const { shareAudio, shareVideo } = Meteor.user().profile;
       if (shareAudio) this.unmute();
       else this.mute();
@@ -128,7 +129,7 @@ meetHighLevel = {
       else this.hide();
     });
 
-    meet.api.addEventListener('incomingMessage', event => {
+    this.api.addEventListener('incomingMessage', event => {
       const { nick, message } = event;
 
       // We don't have a link between Jitsi and lemverse to identify the user at the moment. Waiting for the activation of the prosody plugin
@@ -138,8 +139,8 @@ meetHighLevel = {
       userManager.onPeerDataReceived({ emitter: userEmitter._id, data: this.convertActionToEmojis(message), type: 'text' });
     });
 
-    meet.api.addEventListener('participantLeft', () => {
-      if (meet.api.getNumberOfParticipants() <= 1) Meteor.call('clearConferenceMessages', config.roomName);
+    this.api.addEventListener('participantLeft', () => {
+      if (this.api.getNumberOfParticipants() <= 1) Meteor.call('clearConferenceMessages', config.roomName);
     });
 
     this.show(true);
@@ -148,7 +149,7 @@ meetHighLevel = {
 
     if (window.electron) {
       const { setupScreenSharingRender } = window.electron.jitsiMeetElectronUtils;
-      setupScreenSharingRender(meet.api);
+      setupScreenSharingRender(this.api);
     }
   },
 
@@ -196,8 +197,8 @@ meetHighLevel = {
   },
 
   close() {
-    meet.api?.dispose();
-    meet.api = undefined;
+    this.api?.dispose();
+    this.api = undefined;
     this.show(false);
     peer.enable();
   },
@@ -211,30 +212,30 @@ meetHighLevel = {
   },
 
   mute() {
-    meet.api.isAudioMuted().then(muted => {
+    this.api.isAudioMuted().then(muted => {
       if (muted) return;
-      meet.api.executeCommand('toggleAudio');
+      this.api.executeCommand('toggleAudio');
     });
   },
 
   unmute() {
-    meet.api.isAudioMuted().then(muted => {
+    this.api.isAudioMuted().then(muted => {
       if (!muted) return;
-      meet.api.executeCommand('toggleAudio');
+      this.api.executeCommand('toggleAudio');
     });
   },
 
   hide() {
-    meet.api.isVideoMuted().then(muted => {
+    this.api.isVideoMuted().then(muted => {
       if (muted) return;
-      meet.api.executeCommand('toggleVideo');
+      this.api.executeCommand('toggleVideo');
     });
   },
 
   unhide() {
-    meet.api.isVideoMuted().then(muted => {
+    this.api.isVideoMuted().then(muted => {
       if (!muted) return;
-      meet.api.executeCommand('toggleVideo');
+      this.api.executeCommand('toggleVideo');
     });
   },
 
@@ -252,7 +253,7 @@ meetHighLevel = {
   },
 
   userName(name) {
-    meet.api.executeCommand('displayName', name);
+    this.api.executeCommand('displayName', name);
   },
 };
 
