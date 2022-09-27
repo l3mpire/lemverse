@@ -25,7 +25,7 @@ characterPopIns = {
   },
 
   initFromZone(zone) {
-    const config = zone.popInConfiguration || {};
+    const config = { ...zone.popInConfiguration } || {};
     if (config.position) {
       const position = zoneManager.computePositionFromString(zone, config.position);
       if (config.position === 'relative') {
