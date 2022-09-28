@@ -270,9 +270,9 @@ peer = {
 
   onProximityStarted(nearUsers) {
     if (!this.isEnabled()) return;
-    if (!guestAllowed(permissionTypes.talkToUsers)) return;
 
     nearUsers.forEach(nearUser => {
+      if (nearUser.profile.guest && !guestAllowed(permissionTypes.talkToUsers)) return;
       if (this.isCallInState(nearUser._id, callAction.open)) return;
       this.cancelWaitingCallAction(nearUser._id);
 
@@ -466,7 +466,7 @@ peer = {
 
     const user = Meteor.user();
     if (!user) throw new Error(`an user is required to create a peer`);
-    if (user.profile.guest && !guestAllowed(permissionTypes.talkToUsers)) throw new Error(`peer is forbidden for guest account`);
+    if (user.profile.guest && !guestAllowed(permissionTypes.talkToUsers)) throw new Error(`You need an account to talk to other users`);
 
     this.peerLoading = true;
     const result = await meteorCallWithPromise('getPeerConfig');

@@ -60,6 +60,10 @@ userProximitySensor = {
     return this.nearUsersCount() > 0;
   },
 
+  nearNonGuestUsers() {
+    return Object.values(this.nearUsers).filter(user => !user.profile.guest);
+  },
+
   filterNearUsers(userIds) {
     return Object.keys(this.nearUsers).filter(userId => userIds.includes(userId));
   },

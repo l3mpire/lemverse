@@ -139,7 +139,7 @@ userManager = {
 
     const userHasMoved = x !== oldUser?.profile.x || y !== oldUser?.profile.y;
     const loggedUser = Meteor.user();
-    const shouldCheckDistance = userHasMoved && guestAllowed(permissionTypes.talkToUsers);
+    const shouldCheckDistance = userHasMoved;
 
     if (user._id === loggedUser._id) {
       // network rubber banding
@@ -252,7 +252,11 @@ userManager = {
     this.handleUserInputs();
     this.controlledCharacter.running = this.scene.keys.shift.isDown;
     this.controlledCharacter.moveDirection = this.inputVector;
-    this.controlledCharacter.enableChatCircle(peer.isEnabled() && !Session.get('menu') && userProximitySensor.nearUsersCount() > 0);
+
+    if (peer.isEnabled() && !Session.get('menu')) {
+      const nearUsersCount = guestAllowed(permissionTypes.talkToUsers) ? userProximitySensor.nearUsersCount() : userProximitySensor.nearNonGuestUsers().length;
+      this.controlledCharacter.enableChatCircle(nearUsersCount > 0);
+    } else this.controlledCharacter.enableChatCircle(false);
 
     const newVelocity = this.controlledCharacter.physicsStep();
     const moving = Math.abs(newVelocity.x) > 0.1 || Math.abs(newVelocity.y) > 0.1;

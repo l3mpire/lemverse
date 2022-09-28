@@ -122,8 +122,11 @@ Template.lemverse.onCreated(function () {
     game.scene.add('BootScene', BootScene, true);
 
     Tracker.nonreactive(() => {
-      const userId = Meteor.userId();
-      if (userId && guestAllowed(permissionTypes.talkToUsers)) peer.createMyPeer();
+      const user = Meteor.user();
+      if (!user) return;
+      if (user.profile.guest && !guestAllowed(permissionTypes.talkToUsers)) return;
+
+      peer.createMyPeer();
     });
   });
 
@@ -131,7 +134,8 @@ Template.lemverse.onCreated(function () {
     const { status } = Meteor.status();
     Tracker.nonreactive(() => {
       const user = Meteor.user();
-      if (!user || (user.profile.guest && !guestAllowed(permissionTypes.talkToUsers))) return;
+      if (!user) return;
+      if (user.profile.guest && !guestAllowed(permissionTypes.talkToUsers)) return;
 
       if (status === 'connected') peer.createMyPeer();
       else peer.peerInstance?.disconnect();
