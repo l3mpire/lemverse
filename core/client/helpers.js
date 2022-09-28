@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import meetingRoom from './meeting-room';
 
 viewportModes = Object.freeze({
   fullscreen: 'fullscreen',
@@ -56,7 +57,7 @@ toggleUserProperty = (propertyName, value) => {
     const zone = zoneManager.currentZone();
 
     // disable medias switch in meeting
-    if (zone && meet.api) {
+    if (zone && meetingRoom.isOpen()) {
       if (propertyName === 'shareAudio' && !zone.unmute) {
         lp.notif.warning(`Your microphone is only accessible on stage `);
         return;

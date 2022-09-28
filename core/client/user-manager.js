@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import Character from './components/character';
 import audioManager from './audio-manager';
 import networkManager from './network-manager';
+import meetingRoom from './meeting-room';
 import { guestSkin, textDirectionToVector, vectorToTextDirection } from './helpers';
 import { guestAllowed, permissionTypes } from '../lib/misc';
 
@@ -61,7 +62,8 @@ userManager = {
 
   playReaction(player, reaction) {
     clearInterval(player.reactionHandler);
-    if (meet.api && this.canPlayReactionSound && audioManager.reactionsSounds[reaction]) {
+
+    if (this.canPlayReactionSound && meetingRoom.getMeetingRoomService()?.isOpen() && audioManager.reactionsSounds[reaction]) {
       const otherUser = Meteor.users.findOne(player.userId);
       if (otherUser && zoneManager.isUserInSameZone(Meteor.user(), otherUser)) audioManager.play(audioManager.reactionsSounds[reaction]);
 
@@ -153,7 +155,9 @@ userManager = {
       if (character.getData('userId') !== loggedUser._id || !character.body) this.setAsControlled(loggedUser._id);
 
       if (userHasMoved) this.checkZones = true;
-      if (nameUpdated && meet.api) meet.userName(name);
+
+      const meetingRoomService = meetingRoom.getMeetingRoomService();
+      if (nameUpdated && meetingRoomService?.isOpen()) meetingRoomService.userName(name);
 
       if (shouldCheckDistance) {
         const otherUsers = Meteor.users.find({ _id: { $ne: loggedUser._id }, 'status.online': true, 'profile.levelId': loggedUser.profile.levelId }).fetch();

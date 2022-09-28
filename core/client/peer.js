@@ -1,5 +1,6 @@
 import Peer from 'peerjs';
 import audioManager from './audio-manager';
+import meetingRoom from './meeting-room';
 import { canAnswerCall, meteorCallWithPromise } from './helpers';
 import { guestAllowed, permissionTypes } from '../lib/misc';
 
@@ -509,7 +510,7 @@ peer = {
 
     this.peerInstance.on('call', remoteCall => {
       debug(`Incoming call`, { userId: remoteCall.metadata.userId });
-      if (meet.api) {
+      if (meetingRoom.isOpen()) {
         debug(`Call ignored (meet is open)`, { userId: remoteCall.metadata.userId, type: remoteCall.metadata.type });
         return;
       }
@@ -549,6 +550,6 @@ peer = {
   },
 
   isEnabled() {
-    return this.sensorEnabled && !meet.api;
+    return this.sensorEnabled && !meetingRoom.isOpen();
   },
 };

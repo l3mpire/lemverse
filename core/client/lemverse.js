@@ -1,6 +1,7 @@
 import hotkeys from 'hotkeys-js';
 import Phaser from 'phaser';
 import audioManager from './audio-manager';
+import meetingRoom from './meeting-room';
 import { setReaction } from './helpers';
 import { guestAllowed, permissionTypes } from '../lib/misc';
 import initSentryClient from './sentry';
@@ -175,9 +176,10 @@ Template.lemverse.onCreated(function () {
         });
       }
 
-      if (meet.api) {
-        if (user.profile.shareAudio) meet.unmute();
-        else meet.mute();
+      if (meetingRoom.isOpen()) {
+        const meetingRoomService = meetingRoom.getMeetingRoomService();
+        if (user.profile.shareAudio) meetingRoomService.unmute();
+        else meetingRoomService.mute();
       }
     });
   });
@@ -196,9 +198,10 @@ Template.lemverse.onCreated(function () {
         });
       }
 
-      if (meet.api) {
-        if (user.profile.shareVideo) meet.unhide();
-        else meet.hide();
+      if (meetingRoom.isOpen()) {
+        const meetingRoomService = meetingRoom.getMeetingRoomService();
+        if (user.profile.shareVideo) meetingRoomService.unhide();
+        else meetingRoomService.hide();
       }
     });
   });
@@ -207,9 +210,10 @@ Template.lemverse.onCreated(function () {
     const user = Meteor.user({ fields: { 'profile.shareScreen': 1 } });
     if (!user) return;
     Tracker.nonreactive(() => {
-      if (meet.api) {
-        if (user.profile.shareScreen) meet.shareScreen();
-        else meet.unshareScreen();
+      if (meetingRoom.isOpen()) {
+        const meetingRoomService = meetingRoom.getMeetingRoomService();
+        if (user.profile.shareScreen) meetingRoomService.shareScreen();
+        else meetingRoomService.unshareScreen();
       } else if (user.profile.shareScreen) {
         userStreams.createScreenStream().then(() => userStreams.screen(true));
       } else {
