@@ -1,6 +1,7 @@
 import Peer from 'peerjs';
 import audioManager from './audio-manager';
 import { canAnswerCall, meteorCallWithPromise } from './helpers';
+import { guestAllowed, permissionTypes } from '../lib/misc';
 
 const debug = (text, meta) => {
   if (!Meteor.user()?.options?.debug) return;
@@ -269,9 +270,7 @@ peer = {
 
   onProximityStarted(nearUsers) {
     if (!this.isEnabled()) return;
-
-    const user = Meteor.user();
-    if (user?.profile.guest) return; // disable proximity sensor for guest user
+    if (!guestAllowed(permissionTypes.talkToUsers)) return;
 
     nearUsers.forEach(nearUser => {
       if (this.isCallInState(nearUser._id, callAction.open)) return;
@@ -464,8 +463,10 @@ peer = {
 
   async createMyPeer(skipConfig = false) {
     if (this.isPeerValid(this.peerInstance)) return this.peerInstance;
-    if (!Meteor.user()) throw new Error(`an user is required to create a peer`);
-    if (Meteor.user().profile.guest) throw new Error(`peer is forbidden for guest account`);
+
+    const user = Meteor.user();
+    if (!user) throw new Error(`an user is required to create a peer`);
+    if (user.profile.guest && !guestAllowed(permissionTypes.talkToUsers)) throw new Error(`peer is forbidden for guest account`);
 
     this.peerLoading = true;
     const result = await meteorCallWithPromise('getPeerConfig');

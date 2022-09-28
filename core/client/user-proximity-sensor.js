@@ -9,7 +9,6 @@ userProximitySensor = {
 
   checkDistance(user, otherUser) {
     if (user._id === otherUser._id) return;
-    if (otherUser.profile.guest) return;
 
     const distance = this.distance(user, otherUser);
     if (distance < this.nearDistance) this.addNearUser(otherUser);

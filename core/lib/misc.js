@@ -12,6 +12,12 @@ charactersParts = Object.freeze({
   accessory: 4,
 });
 
+const permissionTypes = Object.freeze({
+  talkToUsers: 'talkToUsers',
+  useEntity: 'useEntity',
+  changeSkin: 'changeSkin',
+});
+
 const defaultSpawnPosition = { x: 100, y: 100 };
 
 const randomInRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
@@ -235,6 +241,11 @@ const teleportUserInLevel = (user, level, source = 'teleporter') => {
   return level.name;
 };
 
+const guestAllowed = permissionType => {
+  const guestPermissions = Meteor.settings.public.permissions?.guest || {};
+  return !!guestPermissions[permissionType];
+};
+
 export {
   canAccessZone,
   canEditGuild,
@@ -247,8 +258,10 @@ export {
   currentLevel,
   fileOnBeforeUpload,
   generateRandomCharacterSkin,
+  guestAllowed,
   isLevelOwner,
   levelSpawnPosition,
+  permissionTypes,
   subscribedUsersToEntity,
   teleportUserInLevel,
 };

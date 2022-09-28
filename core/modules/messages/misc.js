@@ -1,5 +1,7 @@
 import { canAccessZone, canModerateUser, currentLevel } from '../../lib/misc';
 
+const permissionType = 'useMessaging';
+
 const zoneMessagingAllowed = (zone, user) => {
   if (!canAccessZone(zone, user)) return false;
   if (!zone.messagingRestrictedToGuild) return true;
@@ -39,4 +41,5 @@ const messageModerationAllowed = (user, message) => {
 export {
   messagingAllowed,
   messageModerationAllowed,
+  permissionType,
 };

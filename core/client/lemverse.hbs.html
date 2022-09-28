@@ -9,29 +9,27 @@
     </div>
 
     {{#if guest}}
-    {{> formAccount visible=loading}}
+      {{> formAccount visible=loading}}
+    {{else}}
+      {{> editToolbox}}
+      {{> radialMenu }}
     {{/if}}
-
-    {{#unless guest}}
-    {{> editToolbox}}
 
     <div class="js-streams">
       {{#each remoteUser in allRemoteStreamsByUsers}}
-      {{> remoteStream remoteUser=remoteUser }}
+        {{> remoteStream remoteUser=remoteUser }}
       {{/each}}
     </div>
 
     {{> userPanel loading=loading}}
-    {{> radialMenu }}
-    {{/unless}}
-
-    {{> notificationButton}}
     {{> zoneNameToaster}}
+    {{> notificationButton}}
+
     {{> modalContainer }}
 
     <div class="modules">
       {{#each module in modules}}
-      {{> Template.dynamic template=module}}
+        {{> Template.dynamic template=module}}
       {{/each}}
     </div>
   </div>

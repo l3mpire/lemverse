@@ -189,6 +189,19 @@ button.js-notifications {
   }
 }
 
+.alert {
+  padding: 5px 10px;
+  margin: 20px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+
+  &.warning {
+    color: #8a6d3b;
+    background-color: #fcf8e3;
+    border-color: #faebcc;
+  }
+}
+
 #noty_layout__topLeft {
   z-index: 100;
   pointer-events: none;

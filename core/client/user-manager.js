@@ -3,6 +3,7 @@ import Character from './components/character';
 import audioManager from './audio-manager';
 import networkManager from './network-manager';
 import { guestSkin, textDirectionToVector, vectorToTextDirection } from './helpers';
+import { guestAllowed, permissionTypes } from '../lib/misc';
 
 const defaultUserMediaColorError = '0xd21404';
 const characterPopInOffset = { x: 0, y: -90 };
@@ -76,11 +77,9 @@ userManager = {
   },
 
   _checkForSkinUpdate(character, user, oldUser) {
-    const { guest } = user.profile;
-
     // check for skin updates
-    let hasSkinUpdate = !oldUser && !guest;
-    if (!hasSkinUpdate && !guest) {
+    let hasSkinUpdate = !oldUser;
+    if (!hasSkinUpdate) {
       const charactersPartsKeys = Object.keys(charactersParts);
       charactersPartsKeys.forEach(characterPart => {
         if (user.profile[characterPart] === oldUser.profile[characterPart]) return;
@@ -109,11 +108,11 @@ userManager = {
     const character = this.characters[user._id];
     if (!character) return;
 
-    const { x, y, direction, reaction, shareAudio, guest, userMediaError, name, baseline, nameColor } = user.profile;
+    const { x, y, direction, reaction, shareAudio, userMediaError, name, baseline, nameColor } = user.profile;
 
     // update character instance
     networkManager.onCharacterStateReceived({ userId: user._id, x, y, direction });
-    character.showMutedStateIndicator(!guest && !shareAudio);
+    character.showMutedStateIndicator(!shareAudio);
 
     // is account transformed from guest to user?
     if (!user.profile.guest && oldUser?.profile.guest) {
@@ -135,12 +134,12 @@ userManager = {
     }
 
     // update name
-    const nameUpdated = !guest && (name !== oldUser?.profile.name || baseline !== oldUser?.profile.baseline || nameColor !== oldUser?.profile.nameColor);
+    const nameUpdated = (name !== oldUser?.profile.name || baseline !== oldUser?.profile.baseline || nameColor !== oldUser?.profile.nameColor);
     if (nameUpdated) character.setName(name, baseline, nameColor);
 
     const userHasMoved = x !== oldUser?.profile.x || y !== oldUser?.profile.y;
     const loggedUser = Meteor.user();
-    const shouldCheckDistance = userHasMoved && !guest;
+    const shouldCheckDistance = userHasMoved && guestAllowed(permissionTypes.talkToUsers);
 
     if (user._id === loggedUser._id) {
       // network rubber banding
@@ -162,7 +161,7 @@ userManager = {
       }
     } else {
       if (shouldCheckDistance) userProximitySensor.checkDistance(loggedUser, user);
-      if (!guest && user.profile.shareScreen !== oldUser?.profile.shareScreen) peer.onStreamSettingsChanged(user);
+      if (user.profile.shareScreen !== oldUser?.profile.shareScreen) peer.onStreamSettingsChanged(user);
     }
   },
 
@@ -204,7 +203,7 @@ userManager = {
 
       this.scene.cameras.main.startFollow(character, true, 0.1, 0.1);
 
-      if (Meteor.user().guest) hotkeys.setScope('guest');
+      if (Meteor.user().profile.guest) hotkeys.setScope('guest');
       else hotkeys.setScope(scopes.player);
 
       this.controlledCharacter = character;
