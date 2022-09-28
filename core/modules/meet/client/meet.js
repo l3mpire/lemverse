@@ -1,6 +1,8 @@
 // https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe
 import escapeStringRegexp from 'escape-string-regexp';
 
+import meetingRoom from '../../../client/meeting-room';
+
 let linkedZoneId;
 
 const updateMeetStates = zone => {
@@ -12,45 +14,50 @@ const updateMeetStates = zone => {
 };
 
 const onZoneEntered = e => {
+  if (!meetingRoom.isEnabled()) return;
+
   const user = Meteor.user();
   if (user.profile.guest) return;
 
   const { zone } = e.detail;
   const { _id, roomName, fullscreen, jitsiLowLevel } = zone;
-  meet = jitsiLowLevel ? meetLowLevel : meetHighLevel;
+  const meetingRoomService = jitsiLowLevel ? meetLowLevel : meetHighLevel;
+  meetingRoom.setMeetingRoomService(meetingRoomService);
 
-  if (!meet.api && roomName) {
+  if (!meetingRoomService.api && roomName) {
     userManager.saveMediaStates();
     Meteor.call('computeMeetRoomAccess', _id, (err, data) => {
       if (err) { lp.notif.error('You cannot access this zone'); return; }
       if (!data) { lp.notif.error('Unable to load a room, please try later'); return; }
 
-      meet.open(data);
+      meetingRoomService.open(data);
       linkedZoneId = _id;
       updateViewport(game.scene.keys.WorldScene, fullscreen ? viewportModes.small : viewportModes.splitScreen);
       updateMeetStates(zone);
-      meet.fullscreen(fullscreen);
+      meetingRoomService.fullscreen(fullscreen);
       Meteor.call('analyticsConferenceAttend', { zoneId: _id, zoneName: roomName });
     });
-  } else if (meet.api) updateMeetStates(zone);
+  } else if (meetingRoomService.api) updateMeetStates(zone);
 };
 
 const onZoneLeft = e => {
   const { zone, newZone } = e.detail;
-  const { _id, jitsiLowLevel, roomName } = zone;
+  const { _id, roomName } = zone;
+
+  const meetingRoomService = meetingRoom.getMeetingRoomService();
+  if (!meetingRoomService) return;
 
   if (linkedZoneId === _id) {
-    meet = jitsiLowLevel ? meetLowLevel : meetHighLevel;
-    meet.close();
+    meetingRoomService.close();
     Meteor.call('analyticsConferenceEnd', { zoneId: _id, zoneName: roomName });
     linkedZoneId = undefined;
 
     userManager.clearMediaStates();
     updateViewport(game.scene.keys.WorldScene, viewportModes.fullscreen);
-    meet.fullscreen(false);
+    meetingRoomService.fullscreen(false);
   }
 
-  if (meet.api && newZone) updateMeetStates(newZone);
+  if (meetingRoomService.api && newZone) updateMeetStates(newZone);
 };
 
 const onZoneUpdated = e => {
@@ -60,12 +67,15 @@ const onZoneUpdated = e => {
   const currentZone = zoneManager.currentZone(Meteor.user());
   if (currentZone._id !== linkedZoneId) return;
 
-  meet.fullscreen(zone.fullscreen);
+  const meetingRoomService = meetingRoom.getMeetingRoomService();
+  meetingRoomService?.fullscreen(zone.fullscreen);
   const screenMode = zone.fullscreen ? viewportModes.small : viewportModes.splitScreen;
   updateViewport(game.scene.keys.WorldScene, screenMode);
 };
 
 window.addEventListener('load', () => {
+  if (!Meteor.settings.public.meet) return;
+
   const head = document.querySelector('head');
 
   const script = document.createElement('script');
@@ -94,7 +104,7 @@ meetHighLevel = {
   node: undefined,
 
   open(config) {
-    if (meet.api) return;
+    if (this.api) return;
 
     const user = Meteor.user();
     const currentZone = zoneManager.currentZone();
@@ -254,6 +264,10 @@ meetHighLevel = {
 
   userName(name) {
     this.api.executeCommand('displayName', name);
+  },
+
+  isOpen() {
+    return !!this.api;
   },
 };
 
