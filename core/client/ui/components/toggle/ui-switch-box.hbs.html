@@ -1,0 +1,14 @@
+<template name="uiSwitchBox">
+  <div class="ui-switch-box {{class}}">
+    <label
+      for="{{name}}"
+      data-checked={{state_checked}}
+      data-unchecked={{state_unchecked}}
+    >
+      <input id="{{name}}" type="checkbox" checked="{{checked}}" disabled="{{disabled}}" />
+      <div class="toggle"></div>
+      <div class="state state-unchecked"><span>{{state_unchecked}}</span></div>
+      <div class="state state-checked"><span>{{state_checked}}</span></div>
+    </label>
+  </div>
+</template>

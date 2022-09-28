@@ -1,0 +1,92 @@
+@import "../../../_variables";
+
+$toggle-margin: 2px;
+$toggle-radius: 10px;
+$switch-background-color: #fff;
+$switch-background-color-checked: #fff;
+$toggle-color: #262837;
+$toggle-color-checked: #262837;
+$state-color: #262837;
+$state-checked-color: #fff;
+
+.ui-switch-box {
+  position: relative;
+  width: 450px;
+  height: 70px;
+  user-select: none;
+
+  &.rounded {
+    border-radius: $toggle-radius;
+    overflow: hidden;
+
+    .toggle::before {
+      border-radius: $toggle-radius;
+    }
+  }
+
+  label {
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    height: 100%;
+
+    .toggle {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      top: 0;
+      background-color: $switch-background-color;
+      transition: .4s;
+
+      &::before {
+        position: absolute;
+        bottom: $toggle-margin;
+        top: $toggle-margin;
+        left: $toggle-margin;
+        transition: .4s;
+        width: 50%;
+        background-color: $toggle-color;
+        content: "";
+      }
+    }
+
+    .state {
+      position: absolute;
+      display: flex;
+      width: 50%;
+      height: 100%;
+      color: $state-color;
+      z-index: 10;
+      content: attr(data-unchecked);
+      transition: .2s;
+      align-items: center;
+      justify-content: center;
+
+      &.state-checked {
+        transform: translateX(100%);
+      }
+    }
+
+    input {
+      display: none;
+    }
+
+    input:not(:checked) ~ .state-unchecked {
+      color: $state-checked-color;
+    }
+
+    input:checked ~ .state-checked {
+      color: $state-checked-color;
+    }
+
+    input:checked + .toggle {
+      background-color: $switch-background-color-checked;
+
+      &::before {
+        transform: translateX(calc(100% - #{$toggle-margin * 2}));
+        background-color: $toggle-color-checked;
+      }
+    }
+  }
+}
