@@ -98,7 +98,6 @@ WorldScene = new Phaser.Class({
     this.events.on('postupdate', this.postUpdateMethod, this);
     this.events.once('shutdown', this.shutdownMethod, this);
     this.scale.on('resize', this.resizeMethod, this);
-    hotkeys.setScope('guest');
 
     // custom events
     window.addEventListener(eventTypes.onZoneEntered, onZoneEntered);

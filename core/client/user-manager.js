@@ -45,15 +45,17 @@ userManager = {
   onDocumentAdded(user) {
     if (this.characters[user._id]) return null;
 
-    const { x, y, guest, direction, name, baseline, nameColor } = user.profile;
+    const { x, y, guest, direction } = user.profile;
 
     const character = new Character(this.scene, x, y);
     character.setData('userId', user._id);
     character.direction = direction;
     this.characters[user._id] = character;
 
-    if (guest) character.updateSkin(guestSkin()); // init with custom skin
-    else character.setName(name, baseline, nameColor);
+    if (guest) {
+      character.updateSkin(guestSkin()); // init with custom skin
+      character.setName('Guest');
+    }
 
     window.setTimeout(() => this.onDocumentUpdated(user), 0);
 
@@ -137,7 +139,7 @@ userManager = {
 
     // update name
     const nameUpdated = (name !== oldUser?.profile.name || baseline !== oldUser?.profile.baseline || nameColor !== oldUser?.profile.nameColor);
-    if (nameUpdated) character.setName(name, baseline, nameColor);
+    if (nameUpdated) character.setName(name || 'Guest', baseline, nameColor);
 
     const userHasMoved = x !== oldUser?.profile.x || y !== oldUser?.profile.y;
     const loggedUser = Meteor.user();
@@ -187,7 +189,6 @@ userManager = {
     this.controlledCharacter?.enablePhysics(false);
     this.controlledCharacter?.enableEffects(false);
     this.controlledCharacter = undefined;
-    hotkeys.setScope('guest');
 
     if (this.scene) {
       this.scene.cameras.main.stopFollow();
@@ -207,9 +208,7 @@ userManager = {
 
       this.scene.cameras.main.startFollow(character, true, 0.1, 0.1);
 
-      if (Meteor.user().profile.guest) hotkeys.setScope('guest');
-      else hotkeys.setScope(scopes.player);
-
+      hotkeys.setScope(scopes.player);
       this.controlledCharacter = character;
       this.controlledCharacter.enableEffects(true);
     }
