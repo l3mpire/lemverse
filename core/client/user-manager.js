@@ -81,9 +81,11 @@ userManager = {
   },
 
   _checkForSkinUpdate(character, user, oldUser) {
+    const { guest } = user.profile;
+
     // check for skin updates
-    let hasSkinUpdate = !oldUser;
-    if (!hasSkinUpdate) {
+    let hasSkinUpdate = !oldUser && !guest;
+    if (!hasSkinUpdate && !guest) {
       const charactersPartsKeys = Object.keys(charactersParts);
       charactersPartsKeys.forEach(characterPart => {
         if (user.profile[characterPart] === oldUser.profile[characterPart]) return;
@@ -112,7 +114,7 @@ userManager = {
     const character = this.characters[user._id];
     if (!character) return;
 
-    const { x, y, direction, reaction, shareAudio, userMediaError, name, baseline, nameColor } = user.profile;
+    const { x, y, direction, reaction, shareAudio, userMediaError, name, baseline, nameColor, guest } = user.profile;
 
     // update character instance
     networkManager.onCharacterStateReceived({ userId: user._id, x, y, direction });
