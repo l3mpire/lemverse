@@ -1,8 +1,49 @@
+import { EventEmitter } from 'node:events';
 import { canEditGuild } from '../lib/misc';
+
+class _MyEmitter extends EventEmitter {}
+
+/**
+ * Guild event emitter
+ * @type {EventEmitter}
+ */
+const guildEvents = new _MyEmitter();
 
 const guilds = guildIds => {
   check(guildIds, [Match.Id]);
   return Guilds.find({ _id: { $in: guildIds } });
+};
+
+/**
+ * Create a new guild and emit event new_guild
+ * @fires new_guild
+ * @param {tNewGuildParams} _params - External guild parameters
+ *
+ * @returns {string} The guild ID
+ */
+const createGuild = _params => {
+  const id = Guilds.insert({
+    _id: Guilds.id(),
+    createAt: new Date(),
+    name: _params.name,
+    owners: _params.owners,
+    createdBy: _params.createdBy,
+  });
+
+  /**
+   * New guild event.
+   * @event new_guild
+   * @type {object}
+   * @property {string} id - The new guild ID
+   * @property {string} name - The new guild name
+   */
+  guildEvents.emit('new_guild', {
+    id,
+    name: _params.name,
+    email: _params.email,
+  });
+
+  return _params._id;
 };
 
 Meteor.publish('guilds', function (guildIds) {
@@ -94,3 +135,18 @@ Meteor.methods({
     analytics.updateGuild(Guilds.findOne(guildId), {}, this.userId);
   },
 });
+
+
+export {
+  createGuild,
+
+  guildEvents,
+};
+
+/**
+ * @typedef {object} tNewGuildParams
+ * @property {string} name - The guild name
+ * @property {string[]} owners - Array of owners ID
+ * @property {string} createdBy - The creator
+ * @property {string} email - The creator email
+ */
