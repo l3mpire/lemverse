@@ -11,6 +11,8 @@ toggleModal = (modalName, classes = '') => {
 };
 
 closeModal = () => {
+  if (!Session.get('modal')) return;
+
   Session.set('modal', undefined);
   toggleUIInputs(false);
 };
