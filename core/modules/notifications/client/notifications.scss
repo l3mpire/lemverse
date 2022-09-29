@@ -7,11 +7,51 @@ button.mark-as-read {
   padding: 0;
   cursor: pointer;
   outline: inherit;
+
   margin-top: 0;
+  margin-left: 20px;
+  vertical-align: text-bottom;
+  align-items: center;
+  justify-content: center;
+
+  height: 30px;
+  width: 30px;
+  font-size: 12px;
+
+  background-color: darken($light-blue, 20%);
+  border-radius: 50%;
 }
 
 .mark-as-read:hover {
-  filter: invert(20%);
+  background-color: darken($light-blue, 15%);
+  border-radius: 35%;
+  transition: all 0.2s ease-in-out;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  font-size: 0.5em !important;
+  opacity: 70%;
+  width: 120px;
+  height: 30px;
+  margin-left: 20px;
+  padding: 5px;
+  line-height: 22px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
 }
 
 .h4 {
