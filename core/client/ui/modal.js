@@ -7,11 +7,11 @@ isModalOpen = template => {
 
 toggleModal = (modalName, classes = '') => {
   if (Session.get('modal')?.template === modalName) Session.set('modal', null);
-  else Session.set('modal', { template: modalName, classes });
+  else if (!Session.get('modal')) Session.set('modal', { template: modalName, classes });
 };
 
 closeModal = () => {
-  if (!Session.get('modal')) return;
+  if (!isModalOpen()) return;
 
   Session.set('modal', undefined);
   toggleUIInputs(false);
