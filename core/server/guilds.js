@@ -15,19 +15,19 @@ const guilds = guildIds => {
 /**
  * Create a new guild and emit event new_guild
  * @fires new_guild
- * @param {tNewGuildParams} _params - External guild parameters
+ * @param {tNewGuildParams} params - External guild parameters
  *
  * @returns {string} The guild ID
  */
-const createGuild = _params => {
+const createGuild = params => {
   /** @type {string} */
   const guildId = Guilds.id();
   Guilds.insert({
     _id: guildId,
     createAt: new Date(),
-    name: _params.name,
-    owners: _params.owners,
-    createdBy: _params.createdBy,
+    name: params.name,
+    owners: params.owners,
+    createdBy: params.createdBy,
   });
 
   /**
@@ -40,8 +40,8 @@ const createGuild = _params => {
    */
   guildEvents.emit('new_guild', {
     id: guildId,
-    name: _params.name,
-    email: _params.email,
+    name: params.name,
+    email: params.email,
   });
 
   return guildId;
