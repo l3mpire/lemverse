@@ -1,13 +1,11 @@
 import { EventEmitter } from 'node:events';
 import { canEditGuild } from '../lib/misc';
 
-class _MyEmitter extends EventEmitter {}
-
 /**
  * Guild event emitter
  * @type {EventEmitter}
  */
-const guildEvents = new _MyEmitter();
+const guildEvents = new EventEmitter();
 
 const guilds = guildIds => {
   check(guildIds, [Match.Id]);
@@ -22,8 +20,10 @@ const guilds = guildIds => {
  * @returns {string} The guild ID
  */
 const createGuild = _params => {
-  const id = Guilds.insert({
-    _id: Guilds.id(),
+  /** @type {string} */
+  const guildId = Guilds.id();
+  Guilds.insert({
+    _id: guildId,
     createAt: new Date(),
     name: _params.name,
     owners: _params.owners,
@@ -34,16 +34,17 @@ const createGuild = _params => {
    * New guild event.
    * @event new_guild
    * @type {object}
-   * @property {string} id - The new guild ID
+   * @property {string} guildId - The new guild ID
    * @property {string} name - The new guild name
+   * @property {string} email - The new guild owner email
    */
   guildEvents.emit('new_guild', {
-    id,
+    id: guildId,
     name: _params.name,
     email: _params.email,
   });
 
-  return _params._id;
+  return guildId;
 };
 
 Meteor.publish('guilds', function (guildIds) {
