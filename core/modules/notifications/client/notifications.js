@@ -87,7 +87,6 @@ Template.notifications.events({
   'click .js-notification-mark-all-as-read'(event) {
     event.preventDefault();
     markAllNotificationsAsRead();
-    closeModal('notifications');
   },
 });
 
