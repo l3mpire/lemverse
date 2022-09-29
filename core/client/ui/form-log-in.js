@@ -62,11 +62,14 @@ const onSubmit = template => {
   Meteor.loginWithPassword(email, password, err => {
     if (err) { lp.notif.error('Incorrect login or password'); return; }
 
-    if (Meteor.user().profile.levelId === ghostLevelId) {
-      savePlayer({
-        x: ghostX,
-        y: ghostY,
-        direction: ghostDirection,
+    const user = Meteor.user();
+    if (user.profile.levelId === ghostLevelId) {
+      Meteor.users.update(user._id, {
+        $set: {
+          'profile.x': ghostX,
+          'profile.y': ghostY,
+          'profile.direction': ghostDirection,
+        },
       });
     }
 

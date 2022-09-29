@@ -121,7 +121,6 @@ module.exports = {
     meet: 'writable',
     meetLowLevel: 'writable',
     meetHighLevel: 'writable',
-    savePlayer: 'writable',
     zoneManager: 'writable',
     notificationMessage: 'writable',
     nippleManager: 'writable',
