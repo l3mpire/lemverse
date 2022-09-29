@@ -1,5 +1,5 @@
 const meetingRoom = {
-  enabled: false,
+  enabled: true,
 
   setMeetingRoomService(service) {
     this.service = service;
