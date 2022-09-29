@@ -207,6 +207,11 @@ peer = {
     }
 
     const peer = await this.getPeer();
+    if (!peer) {
+      debug(`createPeerCalls: peer not created`);
+      return;
+    }
+
     if (shareAudio || shareVideo) userStreams.createStream().then(stream => this.createPeerCall(peer, user, stream, streamTypes.main));
     if (shareScreen) userStreams.createScreenStream().then(stream => this.createPeerCall(peer, user, stream, streamTypes.screen));
   },
@@ -501,8 +506,8 @@ peer = {
       else if (peerErr.type === 'unavailable-id') lp.notif.error(`It seems that ${Meteor.settings.public.lp.product} is already open in another tab (unavailable-id)`);
       else if (peerErr.type === 'peer-unavailable') {
         const userId = peerErr.message.split(' ').pop();
-        const user = Meteor.users.findOne(userId);
-        lp.notif.warning(`User ${user?.profile.name || userId} was unavailable`);
+        const userUnavailable = Meteor.users.findOne(userId);
+        lp.notif.warning(`User ${userUnavailable?.profile.name || userId} was unavailable`);
       } else lp.notif.error(`Peer ${peerErr} (${peerErr.type})`);
 
       debug(`peer error ${peerErr.type}`, peerErr);
