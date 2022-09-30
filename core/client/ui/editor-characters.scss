@@ -71,7 +71,7 @@
           cursor: pointer;
 
           &.selected {
-            background-color: $light-green;
+            background-color: var(--secondary-color);
           }
         }
       }

@@ -78,7 +78,7 @@ $button-text-color: white;
       }
 
       &.has-content {
-        background-color: darken($light-green, 10%);
+        background-color: var(--secondary-color-darken-10);
       }
     }
 

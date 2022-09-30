@@ -51,10 +51,10 @@
       font-weight: bold;
 
       &.js-channel-subscribe {
-        background-color: $light-green;
+        background-color: var(--secondary-color);
 
         &:hover {
-          background-color: darken($light-green, 10%);
+          background-color: var(--secondary-color-darken-10);
         }
       }
 
@@ -67,10 +67,10 @@
       }
 
       &.js-channel-mute {
-        background-color: $light-green;
+        background-color: var(--secondary-color);
 
         &:hover {
-          background-color: darken($light-green, 10%);
+          background-color: var(--secondary-color-darken-10)
         }
       }
 

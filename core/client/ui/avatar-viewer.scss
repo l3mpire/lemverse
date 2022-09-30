@@ -62,7 +62,7 @@ $frame-height: 85px;
     }
 
     &.online::before {
-      background-color: $light-green;
+      background-color: var(--secondary-color);
     }
 
     .character-body-part-container {

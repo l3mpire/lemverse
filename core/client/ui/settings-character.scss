@@ -43,18 +43,18 @@
       height: 45px;
       cursor: pointer;
       border-radius: 10px;
-      border: 1px solid rgba($new-green, 0.5);
+      border: 1px solid rgba(var(--primary-color), 0.5);
 
       svg {
         margin: 0.3rem;
         height: 30px;
         width: 30px;
-        fill: $new-green;
+        fill: var(--primary-color);
       }
 
       &:hover,
       &.selected {
-        background-color: $new-green;
+        background-color: var(--primary-color);
 
         svg {
           fill: $new-dark-secondary;

@@ -24,10 +24,10 @@
   }
 
   &.green {
-    background-color: darken($light-green, 15%);
+    background-color: var(--secondary-color-darken-15);
 
     &:hover {
-      background-color: darken($light-green, 5%);
+      background-color: var(--secondary-color-darken-5);
       color: #fff;
     }
   }
@@ -85,7 +85,7 @@
   outline: none;
 
   &:focus {
-    border: 1px solid $new-green;
+    border: 1px solid var(--primary-color);
   }
 
   &[type="range"] {

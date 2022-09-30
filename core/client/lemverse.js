@@ -2,7 +2,7 @@ import hotkeys from 'hotkeys-js';
 import Phaser from 'phaser';
 import audioManager from './audio-manager';
 import meetingRoom from './meeting-room';
-import { setReaction } from './helpers';
+import { setReaction, getHslFromHex } from './helpers';
 import { guestAllowed, permissionTypes } from '../lib/misc';
 import initSentryClient from './sentry';
 
@@ -71,6 +71,23 @@ const updateWindowTitle = levelDocument => {
   window.history.replaceState({}, title, Meteor.settings.public.lp.website);
 };
 
+const initAppColor = () => {
+  const { primaryColor } = Meteor.settings.public.lp;
+  const { secondaryColor } = Meteor.settings.public.lp;
+  const rootStyle = document.querySelector(':root').style;
+
+  rootStyle.setProperty('--primary-color', primaryColor);
+  rootStyle.setProperty('--secondary-color', secondaryColor);
+
+  const primaryHSL = getHslFromHex(primaryColor);
+  const secondaryHSL = getHslFromHex(secondaryColor);
+
+  rootStyle.setProperty('--primary-color-hs', `${primaryHSL.h}, ${primaryHSL.s}%`);
+  rootStyle.setProperty('--primary-color-l', `${primaryHSL.l}%`);
+  rootStyle.setProperty('--secondary-color-hs', `${secondaryHSL.h}, ${secondaryHSL.s}%`);
+  rootStyle.setProperty('--secondary-color-l', `${secondaryHSL.l}%`);
+};
+
 Template.lemverse.onCreated(function () {
   Session.set('editor', 0);
   Session.set('sceneWorldReady', false);
@@ -85,6 +102,8 @@ Template.lemverse.onCreated(function () {
     toggleUserProperty('shareScreen', false);
     peer.destroy();
   });
+
+  initAppColor();
 
   const extractedLevelId = extractLevelIdFromURL();
   if (extractedLevelId) Meteor.call('teleportUserInLevel', extractedLevelId);

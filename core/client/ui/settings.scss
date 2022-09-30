@@ -88,13 +88,13 @@ div.settings {
 
         &.selected {
           button {
-            background-color: #A5E6BA;
+            background-color: var(--primary-color);
             color: #211d2c;
           }
 
           &:hover {
             button {
-              background-color: $new-green;
+              background-color: var(--primary-color);
             }
           }
         }

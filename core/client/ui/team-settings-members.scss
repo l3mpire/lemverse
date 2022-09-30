@@ -29,10 +29,10 @@
 
     .js-selectable {
       &.selected {
-        background-color: rgba($light-green, 0.35);
+        background-color: rgba(var(--secondary-color), 0.35);
 
         &:hover {
-          background-color: rgba($light-green, 0.5);
+          background-color: rgba(var(--secondary-color), 0.5);
         }
       }
     }

@@ -20,9 +20,9 @@
       transition: margin-left .5s ease;
       width: calc(200% - 20px);
       height: 20px;
-      background: linear-gradient(0deg, darken($light-green, 15%) 0%, darken($light-green, 15%) 50%, darken($light-red, 15%) 50%, darken($light-red, 15%) 100%);
-      background: -webkit-linear-gradient(0deg, darken($light-green, 15%) 0%, darken($light-green, 15%) 50%, darken($light-red, 15%) 50%, darken($light-red, 15%) 100%);
-      background: -moz-linear-gradient(0deg, darken($light-green, 15%) 0%, darken($light-green, 15%) 50%, darken($light-red, 15%) 50%, #f00 100%);
+      background: linear-gradient(0deg, var(--secondary-color-darken-15) 0%, var(--secondary-color-darken-15) 50%, darken($light-red, 15%) 50%, darken($light-red, 15%) 100%);
+      background: -webkit-linear-gradient(0deg, var(--secondary-color-darken-15) 0%, var(--secondary-color-darken-15) 50%, darken($light-red, 15%) 50%, darken($light-red, 15%) 100%);
+      background: -moz-linear-gradient(0deg, var(--secondary-color-darken-15) 0%, var(--secondary-color-darken-15) 50%, darken($light-red, 15%) 50%, #f00 100%);
       border-radius: 10px;
 
       &.off {

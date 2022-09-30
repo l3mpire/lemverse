@@ -76,12 +76,12 @@
       }
 
       &.js-quest-join {
-        background-color: $light-green;
+        background-color: var(--secondary-color);
         color: white;
         font-weight: bold;
 
         &:hover {
-          background-color: darken($light-green, 10%);
+          background-color: var(--secondary-color-darken-10);
         }
       }
 
