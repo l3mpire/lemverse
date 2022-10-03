@@ -242,6 +242,14 @@
       "allow_discovery": false
     },
 
+    "monti": {
+      "appId": "",
+      "appSecret": "",
+      "options": {
+        "uploadSourceMaps": false
+      }
+    },
+
     "packages": {
       "service-configuration": {
         "custom": {
