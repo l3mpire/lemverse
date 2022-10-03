@@ -2,17 +2,17 @@
 
 .entity-template-list {
   padding: 0 15px;
-  width: 100%;
+  width: 93%;
   height: 100%;
+  overflow-y: scroll;
+  overflow-x: auto;
 
   .list {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    overflow-x: scroll;
     max-width: 100%;
     list-style-type: none;
-    overflow: scroll;
     margin: 10px 0;
     padding: 0;
 
