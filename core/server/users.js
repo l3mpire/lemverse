@@ -76,7 +76,10 @@ Meteor.methods({
     check([email, name, password], [String]);
     check(source, Match.OneOf('self', 'invite'));
 
-    completeUserProfile(Meteor.user(), email, name);
+    const user = Meteor.user();
+    if (!user.profile.guest) throw new Meteor.Error('invalid-user', 'Guest account already converted to a normal account');
+
+    completeUserProfile(user, email, name);
     Accounts.setPassword(this.userId, password, { logout: false });
 
     analytics.identify(Meteor.user());
