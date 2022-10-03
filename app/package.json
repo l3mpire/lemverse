@@ -1,6 +1,7 @@
 {
   "name": "lemverse",
   "private": true,
+  "version": "1.0.0",
   "scripts": {
     "start": "meteor run",
     "test": "meteor test --once --driver-package meteortesting:mocha",
