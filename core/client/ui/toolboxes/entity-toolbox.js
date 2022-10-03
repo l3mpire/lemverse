@@ -2,6 +2,13 @@ import Phaser from 'phaser';
 
 const customEntityUploadAllowed = () => lp.isLemverseBeta('custom-sprite');
 const fetchEntities = () => Entities.find({ actionType: { $ne: entityActionType.pickable }, prefab: { $exists: false } }).fetch();
+const createNewPrefab = () => {
+  Entities.insert({
+    _id: Entities.id(),
+    name: 'New Prefab',
+    prefab: true,
+  });
+};
 
 const entityInteractionConfiguration = {
   hitArea: new Phaser.Geom.Circle(15, 15, 50),
@@ -86,5 +93,9 @@ Template.entityToolbox.events({
   },
   'click .js-open-entity-template-list'() { Session.set('modal', { template: 'entityTemplateList' }); },
   'click .js-open-entity-editor'() { Session.set('selectedEntityId', this._id); },
+  'click .js-create-new-prefab'() {
+    createNewPrefab();
+    lp.notif.success('New prefab created');
+  },
 });
 
