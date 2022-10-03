@@ -1,5 +1,12 @@
 import { generateEntityThumbnail } from '../../helpers';
 
+const prefabHideProperties = [
+  '_id',
+  'levelId',
+  'createdAt',
+  'createdBy',
+];
+
 const prefabEntities = () => Entities.find({ prefab: true }).fetch();
 
 Template.entityTemplateList.onRendered(function () {
@@ -15,11 +22,53 @@ Template.entityTemplateEntry.helpers({
   thumbnail() { return generateEntityThumbnail(this); },
 });
 
+Template.entityEditPrefab.helpers({
+  properties() {
+    const props = _.clone(this.entity);
+    prefabHideProperties.forEach(property => { delete props[property]; });
+
+    return JSON.stringify(props, ' ', 2);
+  },
+  name() { return this.entity.name || this.entity._id; },
+});
+
 Template.entityTemplateList.events({
   'click .js-entity-entry'() {
     Meteor.call('spawnEntityFromPrefab', this._id, error => {
-      if (error) { lp.notif.error('Unable to spawn the entity for now, please try later'); return; }
+      if (error) {
+        lp.notif.error('Unable to spawn the entity for now, please try later');
+        lp.notif.error(error);
+        return;
+      }
       closeModal();
     });
+  },
+  'click .js-entity-edit'() {
+    Session.set('modal', { template: 'entityEditPrefab', entity: this });
+  },
+});
+
+Template.entityEditPrefab.events({
+  'click .js-prefab-delete'() {
+    lp.notif.confirm('Entity prefab deletion', `Are you sure to delete the prefab "<b>${this.entity.name || this.entity._id}</b>"?`, () => {
+      Entities.remove(this.entity._id);
+      closeModal();
+    });
+  },
+  'click .js-prefab-cancel'() { closeModal(); },
+  'click .js-prefab-save'() {
+    const currentFields = this.entity;
+    let newValues;
+    try {
+      newValues = JSON.parse($('.entity-toolbox-properties textarea').val());
+    } catch (err) { lp.notif.error(`invalid JSON format`, err); }
+
+    const $unset = _.reduce(currentFields, (root, k, i) => {
+      const newObject = { ...root };
+      if (!prefabHideProperties.includes(i) && !Object.keys(newValues).includes(i)) newObject[i] = 1;
+      return newObject;
+    }, {});
+    if (_.isEmpty($unset)) Entities.update(this.entity._id, { $set: newValues });
+    else Entities.update(this.entity._id, { $set: newValues, $unset });
   },
 });
