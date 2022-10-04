@@ -8,6 +8,7 @@ const prefabHideProperties = [
 ];
 
 const prefabEntities = () => Entities.find({ prefab: true }).fetch();
+const getAllInstances = (key) => Entities.find({ 'gameObject.sprite.key': key }).fetch();
 
 Template.entityTemplateList.onRendered(function () {
   this.subscribe('entityPrefabs', Meteor.user().profile.levelId);
@@ -35,11 +36,7 @@ Template.entityEditPrefab.helpers({
 Template.entityTemplateList.events({
   'click .js-entity-entry'() {
     Meteor.call('spawnEntityFromPrefab', this._id, error => {
-      if (error) {
-        lp.notif.error('Unable to spawn the entity for now, please try later');
-        lp.notif.error(error);
-        return;
-      }
+      if (error) { lp.notif.error('Unable to spawn the entity for now, please try later'); return; }
       closeModal();
     });
   },
@@ -52,6 +49,15 @@ Template.entityEditPrefab.events({
   'click .js-prefab-delete'() {
     lp.notif.confirm('Entity prefab deletion', `Are you sure to delete the prefab "<b>${this.entity.name || this.entity._id}</b>"?`, () => {
       Entities.remove(this.entity._id);
+      closeModal();
+    });
+  },
+  'click .js-prefab-delete-all'() {
+    if (!this.entity.gameObject?.sprite?.key) return;
+
+    const instances = getAllInstances(this.entity.gameObject.sprite.key);
+    lp.notif.confirm('Entity instances deletion', `Are you sure to delete ${instances.length} instance(s) of "<b>${this.entity.name || this.entity._id}</b>"?`, () => {
+      instances.forEach(instance => Entities.remove(instance._id));
       closeModal();
     });
   },
@@ -70,5 +76,9 @@ Template.entityEditPrefab.events({
     }, {});
     if (_.isEmpty($unset)) Entities.update(this.entity._id, { $set: newValues });
     else Entities.update(this.entity._id, { $set: newValues, $unset });
+
+    lp.notif.success('Entity prefab updated');
+
+    Session.set('modal', { template: 'entityTemplateList' });
   },
 });
