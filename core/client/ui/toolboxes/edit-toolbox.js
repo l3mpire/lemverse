@@ -1,5 +1,7 @@
 const toggleMinimize = templateInstance => templateInstance.minimized.set(!templateInstance.minimized.get());
 
+const switchDirection = templateInstance => templateInstance.right.set(!templateInstance.right.get());
+
 const wake = () => {
   hotkeys.setScope(scopes.editor);
 
@@ -17,6 +19,8 @@ const sleep = () => {
 
 Template.editToolbox.onCreated(function () {
   this.minimized = new ReactiveVar(false);
+  this.right = new ReactiveVar(true);
+
   Session.set('editorSelectedMenu', undefined);
 
   this.autorun(() => {
@@ -54,8 +58,13 @@ Template.editToolbox.onDestroyed(() => {
 Template.editToolbox.events({
   'click .js-menus-select'(event) { Session.set('editorSelectedMenu', event.currentTarget.dataset.menu); },
   'click .js-menus-shrink'(event, templateInstance) { toggleMinimize(templateInstance); },
+  'click .js-menus-dock'(event, templateInstance) { switchDirection(templateInstance); },
+  'click .js-menus-undo'() { game.scene.keys.EditorScene.undo(); },
+  'click .js-menus-redo'() { game.scene.keys.EditorScene.redo(); },
 });
 
 Template.editToolbox.helpers({
   minimized() { return Template.instance().minimized.get(); },
+  right() { return Template.instance().right.get(); },
+  direction() { return Template.instance().minimized.get() !== Template.instance().right.get(); },
 });
