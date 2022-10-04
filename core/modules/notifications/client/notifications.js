@@ -13,6 +13,8 @@ const resetPlayButtonState = template => template._playing.set(false);
 
 const markNotificationAsRead = notificationId => Meteor.call('markNotificationAsRead', notificationId);
 
+const markAllNotificationsAsRead = () => Meteor.call('markAllNotificationsAsRead');
+
 const isQuestNotification = notification => notification.questId || notification.channelId?.includes('qst_');
 
 Template.notificationsAudioPlayer.onCreated(function () {
@@ -78,6 +80,13 @@ Template.notification.events({
     event.preventDefault();
     markNotificationAsRead(this._id);
     window.dispatchEvent(new CustomEvent(eventTypes.onNotificationClicked, { detail: { notification: this } }));
+  },
+});
+
+Template.notifications.events({
+  'click .js-notification-mark-all-as-read'(event) {
+    event.preventDefault();
+    markAllNotificationsAsRead();
   },
 });
 
