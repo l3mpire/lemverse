@@ -32,6 +32,13 @@
     }
   }
 
+  &.link {
+    background: transparent;
+    border: 0;
+    color: $light-blue;
+    text-decoration: none;
+  }
+
   &.outline {
     background: transparent;
     border: 1px solid $light-blue;
