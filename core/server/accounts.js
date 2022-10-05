@@ -27,7 +27,7 @@ Accounts.onLogin(param => {
     Meteor.users.update(user._id, { $set: { 'profile.x': spawnPosition.x, 'profile.y': spawnPosition.y } });
   }
 
-  if (user.profile.guest) return;
+  if (user.profile.guest && user.username) return;
 
   const isBodyValid = user.profile.body?.includes('chr_');
   if (!isBodyValid) {

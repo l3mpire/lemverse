@@ -1,6 +1,7 @@
+import { isMobile } from '../helpers';
+
 const ONBOARDING_LAST_STEP = 3;
 const keyboards = ['q', 'z', 's', 'd', 'up', 'down', 'right', 'left'];
-const isMobile = window.innerWidth < 480;
 
 const getDirectionFromKey = key => {
   switch (key) {
@@ -70,7 +71,7 @@ Template.userOnboarding.events({
   'click .button'() {
     const onboardingStep = Session.get('onboardingStep') || 1;
 
-    if (onboardingStep === (!isMobile ? ONBOARDING_LAST_STEP : ONBOARDING_LAST_STEP - 1)) {
+    if (onboardingStep === (!isMobile() ? ONBOARDING_LAST_STEP : ONBOARDING_LAST_STEP - 1)) {
       finishOnboarding();
     } else {
       Session.set('onboardingStep', onboardingStep + 1);
@@ -97,5 +98,5 @@ Template.userOnboarding.helpers({
 
     return `/api/files/${Object.keys(charactersParts).filter(part => user.profile[part]).map(part => Characters.findOne(user.profile[part]))[0].fileId}`;
   },
-  isMobile: () => isMobile,
+  isMobile: () => isMobile(),
 });

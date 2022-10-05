@@ -325,21 +325,24 @@ const vectorToTextDirection = vector => {
   return undefined;
 };
 
+const isMobile = () => window.matchMedia('(pointer: coarse)').matches;
+
 export {
   allowPhaserMouseInputs,
   canAnswerCall,
   clamp,
   getSimulationSize,
-  guestSkin,
-  formatURLs,
   formatURL,
+  formatURLs,
   generateEntityThumbnail,
+  guestSkin,
+  isMobile,
   meteorCallWithPromise,
   nearestDuration,
   replaceTextVars,
   setReaction,
-  toggleUIInputs,
   textDirectionToVector,
+  toggleUIInputs,
   vectorToTextDirection,
 
   moduleType,

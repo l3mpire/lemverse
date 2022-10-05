@@ -3,7 +3,7 @@ import Phaser from 'phaser';
 
 import networkManager from '../network-manager';
 
-import { clamp } from '../helpers';
+import { clamp, isMobile } from '../helpers';
 
 const fixedUpdateInterval = 200;
 const zoomConfig = Meteor.settings.public.zoom;
@@ -73,7 +73,7 @@ WorldScene = new Phaser.Class({
       this.zoomDelta(deltaY);
     });
 
-    if (window.matchMedia('(pointer: coarse)').matches) {
+    if (isMobile()) {
       this.nippleManager = nipplejs.create({
         mode: 'dynamic',
         zone: document.querySelector('#game'),
