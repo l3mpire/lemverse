@@ -3,35 +3,36 @@ import Phaser from 'phaser';
 import { canEditActiveLevel } from '../../lib/misc';
 
 const editorGraphicsDepth = 10002;
-const previewLayer = 9;
 
 const previewInfo = {
   previewTiles: {},
   lastSelectedTiles: {},
   lastMousePosition: {},
+  previousTiles: null,
 };
 
-function compareLastAndCurrentPreviewTiles(lastPreviewTiles, currentPreviewTiles) {
-  const keysToCompare = ['x', 'y', 'tilesetId', 'index', 'w', 'h'];
-
-  for (let i = 0; i < keysToCompare.length; i++) {
-    const key = keysToCompare[i];
-    if (lastPreviewTiles[key] !== currentPreviewTiles[key]) {
-      return false;
-    }
-  }
-  return true;
-}
 
 function compareMouseMovements(currentPosition, lastMousePosition) {
   return currentPosition.x === lastMousePosition.x && currentPosition.y === lastMousePosition.y;
 }
 
 function clearLastPreviewTiles() {
+  const { previousTiles } = previewInfo;
   const { map } = levelManager;
+  if (previousTiles === null) return;
+
   for (let x = 0; x < previewInfo.previewTiles.w; x++) {
     for (let y = 0; y < previewInfo.previewTiles.h; y++) {
-      map.removeTileAt(previewInfo.previewTiles.x + x, previewInfo.previewTiles.y + y, true, false, previewLayer);
+      const tile = previousTiles[x * previewInfo.previewTiles.h + y];
+      tile.x = previewInfo.previewTiles.x + x;
+      tile.y = previewInfo.previewTiles.y + y;
+      if (tile.index) {
+        // console.log('put tile at', tile.x, tile.y, tile.layer, tile.index);
+        map.putTileAt(tile.index, tile.x, tile.y, false, tile.layer).setAlpha(1);
+      } else {
+        // console.log('remove tile at', tile.x, tile.y, tile.layer);
+        map.removeTileAt(tile.x, tile.y, true, false, tile.layer);
+      }
     }
   }
   previewInfo.previewTiles = {};
@@ -150,7 +151,7 @@ EditorScene = new Phaser.Class({
               y1: startPosition.y | 0,
               x2: endPosition.x | 0,
               y2: endPosition.y | 0,
-            }
+            },
           });
 
           if (!zone?.x2) {
@@ -195,19 +196,30 @@ EditorScene = new Phaser.Class({
         // This has a complexity of 2n^2 every mouse movements instead of n^2 every frame.
         clearLastPreviewTiles();
 
+        const previousTiles = [];
+
         for (let x = 0; x < selectedTiles.w; x++) {
           for (let y = 0; y < selectedTiles.h; y++) {
-            const selectedTileIndex = levelManager.tileGlobalIndex(mapSelectedTileset,
-              ((selectedTiles.y + y) * selectedTileset.width) / 16 + (selectedTiles.x + x),
-            );
+            const selectedTileIndex = ((selectedTiles.y + y) * selectedTileset.width) / 16 + (selectedTiles.x + x);
+            const globalSelectedTileIndex = levelManager.tileGlobalIndex(mapSelectedTileset, selectedTileIndex);
 
             const tile = {
               x: pointerTileX + x,
               y: pointerTileY + y,
-              index: selectedTileIndex,
+              index: globalSelectedTileIndex,
             };
 
-            map.putTileAt(tile.index, tile.x, tile.y, false, previewLayer);
+            const layer = levelManager.tileLayer(mapSelectedTileset, selectedTileIndex);
+            const previousTile = map.getTileAt(tile.x, tile.y, false, layer);
+
+            previousTiles.push({
+              index: previousTile?.index,
+              layer,
+            });
+
+            if ((previousTile && previousTile.index !== tile.index) || !previousTile) {
+              map.putTileAt(tile.index, tile.x, tile.y, false, layer).setAlpha(0.15);
+            }
           }
         }
         previewInfo.lastSelectedTiles = selectedTiles;
@@ -217,6 +229,7 @@ EditorScene = new Phaser.Class({
           w: selectedTiles.w,
           h: selectedTiles.h,
         };
+        previewInfo.previousTiles = previousTiles;
       }
 
       previewInfo.lastMousePosition = currentMousePosition;
@@ -244,6 +257,7 @@ EditorScene = new Phaser.Class({
           Session.set('selectedTiles', selectedTiles);
         }
       } else if (this.input.manager.activePointer.isDown && canvasClicked) {
+        previewInfo.previousTiles = null;
         if (selectedTiles?.index === -99) {
           Tiles.find({ x: pointerTileX, y: pointerTileY }).forEach(tile => {
             this.undoTiles.push(tile);

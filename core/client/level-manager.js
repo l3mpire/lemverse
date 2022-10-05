@@ -3,8 +3,8 @@ import Phaser from 'phaser';
 import networkManager from './network-manager';
 
 const defaultMapConfig = { width: 100, height: 100, tileWidth: 48, tileHeight: 48 };
-const defaultLayerCount = 10;
-const defaultLayerDepth = { 6: 10000, 7: 10001, 8: 10002, 9: 10003 };
+const defaultLayerCount = 9;
+const defaultLayerDepth = { 6: 10000, 7: 10001, 8: 10002 };
 const defaultTileset = { layer: 2, firstgid: 0, tileProperties: {} };
 
 levelManager = {
@@ -51,7 +51,7 @@ levelManager = {
     const tileset = this.map.getTileset(newTile.tilesetId) || defaultTileset;
     const layer = this.tileLayer(tileset, newTile.index);
 
-    this.map.putTileAt(this.tileGlobalIndex(tileset, newTile.index), newTile.x, newTile.y, false, layer);
+    this.map.putTileAt(this.tileGlobalIndex(tileset, newTile.index), newTile.x, newTile.y, false, layer).setAlpha(1);
     window.dispatchEvent(new CustomEvent(eventTypes.onTileChanged, { detail: { tile: newTile, layer } }));
   },
 
@@ -88,9 +88,6 @@ levelManager = {
       layer.setCullPadding(4, 4);
       if (defaultLayerDepth[i]) layer.setDepth(defaultLayerDepth[i]);
 
-      if (i === 9) {
-        layer.setAlpha(0.7);
-      }
       this.layers.push(layer);
 
       return i;
