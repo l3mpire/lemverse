@@ -47,6 +47,29 @@ const createGuild = params => {
   return guildId;
 };
 
+
+/**
+ * Create a new guild and emit event new_guild
+ * @fires member_changed
+ * @param {string} _guildId - The modified guild ID
+ *
+ * @returns {void}
+ */
+const emitMemberEvent = _guildId => {
+  const guildMembers = Meteor.users.find({ guildId: _guildId }).fetch();
+  /**
+   * Number of guild member change event.
+   * @event member_changed
+   * @type {object}
+   * @property {string} guildId - The new guild ID
+   * @property {number} count - Number of guild member
+   */
+  guildEvents.emit('member_changed', {
+    id: _guildId,
+    count: guildMembers.length,
+  });
+};
+
 Meteor.publish('guilds', function (guildIds) {
   if (!this.userId) return undefined;
   check(guildIds, [Match.Id]);
@@ -79,27 +102,35 @@ Meteor.methods({
     });
     analytics.updateGuild(Guilds.findOne(guildId), {}, Meteor.userId());
 
+    emitMemberEvent(guildId);
     log('addGuildUsers: done');
   },
-  removeTeamUser(guildId, userId) {
-    check([guildId, userId], [Match.Id]);
-    log('removeTeamUser: start', { guildId, userId });
+  removeTeamUsers(guildId, userIds) {
+    check(guildId, Match.Id);
+    check(userIds, [Match.Id]);
+    log('removeTeamUsers: start', { guildId, userIds });
 
+    if (!userIds.length) return;
     if (!this.userId) throw new Meteor.Error('not-authorized', 'User not allowed');
 
-    if (!canEditGuild(Meteor.user(), Guilds.findOne(guildId))) throw new Meteor.Error('not-authorized', `Missing permissions to edit team members`);
+    const guild = Guilds.findOne(guildId);
+    if (!canEditGuild(Meteor.user(), guild)) throw new Meteor.Error('not-authorized', `Missing permissions to edit team members`);
 
-    const user = Meteor.users.findOne(userId);
-    if (user.guildId !== guildId) throw new Meteor.Error('user-invalid', 'Given user is not in the team');
+    let users = Meteor.users.find({ _id: { $in: userIds }, guildId });
+    if (users.length === 0) throw new Meteor.Error('user-invalid', 'Given user is not in the team');
 
-    Meteor.users.update(userId, { $unset: { guildId: 1 } });
+    Meteor.users.update({ _id: { $in: userIds } }, { $unset: { guildId: 1 } });
 
     // analytics
-    analytics.identify(Meteor.users.findOne(userId));
-    analytics.track(this.userId, '👨‍👨‍👦 Guild Remove User', { user_id: userId, guild_id: guildId });
-    analytics.updateGuild(Guilds.findOne(guildId), {}, userId);
+    users = Meteor.users.find({ _id: { $in: userIds } }).fetch();
+    users.forEach(currentUser => {
+      analytics.identify(Meteor.users.findOne(currentUser));
+      analytics.track(this.userId, '👨‍👨‍👦 Guild Remove User', { user_id: currentUser._id, guild_id: guildId });
+    });
+    analytics.updateGuild(Guilds.findOne(guildId), {}, Meteor.userId());
 
-    log('removeTeamUser: done');
+    emitMemberEvent(guildId);
+    log('removeTeamUsers: done');
   },
   guilds(guildIds) {
     if (!this.userId) throw new Meteor.Error('not-authorized', 'User not allowed');
