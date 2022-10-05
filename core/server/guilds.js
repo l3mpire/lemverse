@@ -135,6 +135,12 @@ Meteor.methods({
 
     analytics.updateGuild(Guilds.findOne(guildId), {}, this.userId);
   },
+  teamUserCount(guildId) {
+    if (!this.userId) return 0;
+    check(guildId, Match.Id);
+
+    return Meteor.users.find({ guildId }).count();
+  },
 });
 
 
