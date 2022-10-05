@@ -1,128 +1,328 @@
 @import "../_variables";
 
 .onboarding {
-    background: #222;
-    background-size: contain;
-    height: 100vh;
+  background: #222;
+  background-size: contain;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  padding: 32px 64px;
+  position: absolute;
+  z-index: 1;
+  animation: fadeInOnboarding 1s;
+  overflow-y: auto;
+
+  .logo {
+    width: fit-content;
+    height: 70px;
+    margin-bottom: 10px;
+  }
+
+  .main {
     display: flex;
+    align-items: center;
     flex-direction: column;
+    gap: 32px;
+  }
+
+  .main-title {
+    padding: 8px 16px;
+    max-width: 412px;
+    background: $lem-color-6;
+    border-radius: 8px;
+    color: #FFFFFF;
+    font-size: 1rem;
+    line-height: 32px;
+    text-align: center;
+    font-weight: bold;
+
+    @media (min-width: 480px) {
+      font-size: 1.5rem;
+    }
+  }
+
+  .content {
+    display: flex;
+    align-items: center;
     justify-content: space-between;
+    flex-direction: column;
     width: 100%;
-    padding: 32px 64px;
-    position: absolute;
-    z-index: 10;
-    animation: fadeInOnboarding 1s;
-    overflow-y: auto;
-    
-    .logo {
-        width: fit-content;
-        height: 70px;
-        margin-bottom: 10px;
-    }
-    
-    .main {
+    height: 100%;
+    max-width: 648px;
+    background: $new-dark-secondary;
+    border-radius: 16px;
+    padding: 40px 20px;
+    position: relative;
+  }
+
+  .direction-content {
+    height: 460px;
+    align-items: center;
+    justify-content: center;
+
+    .keyboards {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      position: absolute;
+      top: 24px;
+      padding: 0 24px;
+
+      .keyboard {
         display: flex;
-        align-items: center;
         flex-direction: column;
-        gap: 32px;
-    }
-    
-    .main-title {
-        padding: 8px 16px;
-        max-width: 412px;
-        background: $lem-color-6;
-        border-radius: 8px;
-        color: #FFFFFF;
-        font-size: 1rem;
-        line-height: 32px;
-        text-align: center;
-        font-weight: bold;
-    
-        @media (min-width: 480px) {
-            font-size: 1.5rem;
+        align-items: center;
+        gap: 8px;
+
+        .keyinput {
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+          width: 40px;
+          height: 40px;
+          border: 1px solid #FFFFFF;
+          border-radius: 8px;
+          color: white;
+          align-items: center;
+          justify-content: center;
         }
+
+        .pressed {
+          background-color: $lem-color-6;
+        }
+
+        .bottom-keyinput {
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+        }
+      }
     }
-    
-    .content {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-direction: column;
-        width: 100%;
-        max-width: 648px;
-        background: $new-dark-secondary;
-        border-radius: 16px;
-        padding: 40px 20px;
-    }
-    
-    .permission-img {
-        width: 100%;
-        height: 100%;
-        max-width: 320px;
-        max-height: 160px;
-        object-fit: contain;
-        border-radius: 8px;
-    }
-    
-    .continue-button {
-        all: unset;
-        cursor: pointer;
-        padding: 12px 16px;
-        background: $lem-color-6;
-        border-radius: 8px;
-        font-size: 1rem;
-        font-weight: bold;
-        max-width: fit-content;
+
+    .arrows {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      align-items: center;
+
+      .arrow {
         color: white;
-        margin-top: 16px;
-    
-        &__disabled {
-            background: $gray200;
-        }
-    
-        @media (min-width: 480px) {
-            font-size: 1.5rem;
-        }
-    }
+      }
 
-    .header {
-        display: none;
-    }
+      .middle-arrow {
+        display: flex;
+        flex-direction: row;
+        opacity: 1;
+        gap: 60px;
+      }
 
-    .settingsCharacter {
-        max-width: 650px;
-        margin-bottom: 18px;
-    }
-    
-}
+      .avatar {
+        height: 26px;
+        width: 16px;
+        scale: 2;
+        background-position: -48px -7px;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: -o-crisp-edges;
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: pixelated;
+        image-rendering: optimize-contrast;
+        -ms-interpolation-mode: nearest-neighbor;
+      }
 
-.onboarding:after {
+      .left {
+        animation: avatarLeft 0.5s steps(6) infinite;
+      }
+
+      .right {
+        animation: avatarRight 0.5s steps(6) infinite;
+      }
+
+      .up {
+        animation: avatarUp 0.5s steps(6) infinite;
+      }
+
+      .down {
+        animation: avatarDown 0.5s steps(6) infinite;
+      }
+    }
+  }
+
+  .direction-content:after {
     content: ' ';
     display: block;
-    position: fixed;
+    position: absolute;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-image: url('assets/images/scene-loader-background.png');
+    background-image: url('assets/images/scene-onboarding-background.png');
     background-repeat: repeat;
-    opacity: 0.1;
-    z-index: -1;
-    animation: anim 10s linear infinite, fadeInBackground 2s;
+    border-radius: 16px;
+  }
+
+  .left:after {
+    animation: backgroundLeft 2s linear infinite;
+  }
+
+  .right:after {
+    animation: backgroundRight 2s linear infinite;
+  }
+
+  .down:after {
+    animation: backgroundDown 2s linear infinite;
+  }
+
+  .up:after {
+    animation: backgroundUp 2s linear infinite;
+  }
+
+  .permission-img {
+    width: 100%;
+    height: 100%;
+    max-width: 320px;
+    max-height: 160px;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+
+  .button {
+    all: unset;
+    cursor: pointer;
+    padding: 12px 16px;
+    background: $lem-color-6;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    max-width: fit-content;
+    color: white;
+    margin-top: 16px;
+
+    .disabled {
+      background: $gray200;
+    }
+
+    @media (min-width: 480px) {
+      font-size: 1.5rem;
+    }
+  }
+
+  .header {
+    display: none;
+  }
+
+  .settingsCharacter {
+    max-width: 650px;
+    margin-bottom: 18px;
+    z-index: 2;
+  }
+
+}
+
+.onboarding:after {
+  content: ' ';
+  display: block;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('assets/images/scene-loader-background.png');
+  background-repeat: repeat;
+  opacity: 0.1;
+  z-index: -1;
+  animation: anim 10s linear infinite, fadeInBackground 2s;
 }
 
 @keyframes fadeInOnboarding {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes anim {
-    100% {
-        background-position: -416px -416px;
-    }
+  100% {
+    background-position: -416px -416px;
+  }
 }
 
 @keyframes fadeInBackground {
-    0% { opacity: 0; }
-    100% { opacity: 0.1; }
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0.1;
+  }
+}
+
+
+@keyframes backgroundRight {
+  100% {
+    background-position: -416px 0px;
+  }
+}
+
+
+@keyframes backgroundLeft {
+  100% {
+    background-position: 416px 0px;
+  }
+}
+
+@keyframes backgroundDown {
+  100% {
+    background-position: 0px -416px;
+  }
+}
+
+@keyframes backgroundUp {
+  100% {
+    background-position: 0px 416px;
+  }
+}
+
+@keyframes avatarRight {
+  from {
+    background-position: 0px -70px;
+  }
+
+  to {
+    background-position: -96px -70px;
+  }
+}
+
+@keyframes avatarLeft {
+  from {
+    background-position: -192px -70px;
+  }
+
+  to {
+    background-position: -288px -70px;
+  }
+}
+
+@keyframes avatarUp {
+  from {
+    background-position: -96px -70px;
+  }
+
+  to {
+    background-position: -192px -70px;
+  }
+}
+
+@keyframes avatarDown {
+  from {
+    background-position: -288px -70px;
+  }
+
+  to {
+    background-position: -384px -70px;
+  }
 }

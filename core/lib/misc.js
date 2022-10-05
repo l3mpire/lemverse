@@ -204,6 +204,8 @@ const generateRandomCharacterSkin = (userId, levelId = undefined) => {
 };
 
 const completeUserProfile = (user, email, name) => {
+  const hasOnboarding = Meteor.settings.public.lp.enableOnboarding;
+
   try {
     Promise.await(Meteor.users.update(user._id, {
       $set: {
@@ -221,7 +223,12 @@ const completeUserProfile = (user, email, name) => {
     }));
   } catch (err) { throw new Meteor.Error('email-duplicate', 'Email already exists'); }
 
-  Meteor.users.update(user._id, { $unset: { username: true } });
+  Meteor.users.update(user._id, {
+    $unset: {
+      ...(!hasOnboarding ? { 'profile.guest': true } : {}),
+      username: true,
+    },
+  });
 
   return generateRandomCharacterSkin(Meteor.userId(), user.profile.levelId);
 };
