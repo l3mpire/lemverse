@@ -27,10 +27,8 @@ function clearLastPreviewTiles() {
       tile.x = previewInfo.previewTiles.x + x;
       tile.y = previewInfo.previewTiles.y + y;
       if (tile.index) {
-        // console.log('put tile at', tile.x, tile.y, tile.layer, tile.index);
         map.putTileAt(tile.index, tile.x, tile.y, false, tile.layer).setAlpha(1);
       } else {
-        // console.log('remove tile at', tile.x, tile.y, tile.layer);
         map.removeTileAt(tile.x, tile.y, true, false, tile.layer);
       }
     }
@@ -145,14 +143,12 @@ EditorScene = new Phaser.Class({
           if (!zone) return;
           const { startPosition, endPosition } = this.computePositions(zone, worldPoint, Session.get('selectedZonePoint'), altIsDown);
 
-          Zones.update(zoneId, {
-            $set: {
-              x1: startPosition.x | 0,
-              y1: startPosition.y | 0,
-              x2: endPosition.x | 0,
-              y2: endPosition.y | 0,
-            },
-          });
+          Zones.update(zoneId, { $set: {
+            x1: startPosition.x | 0,
+            y1: startPosition.y | 0,
+            x2: endPosition.x | 0,
+            y2: endPosition.y | 0,
+          } });
 
           if (!zone?.x2) {
             Session.set('selectedZonePoint', 2);
@@ -189,47 +185,50 @@ EditorScene = new Phaser.Class({
 
         const mapSelectedTileset = map.getTileset(selectedTiles.tilesetId);
 
-        if (!mapSelectedTileset) return;
+        if (mapSelectedTileset) {
+          // We have to clear in a seperate loop, because we need the layer to be clear to draw over.
+          // That way we can only render on mouse movements.
+          // This has a complexity of 2n^2 every mouse movements instead of n^2 every frame.
+          clearLastPreviewTiles();
 
-        // We have to clear in a seperate loop, because we need the layer to be clear to draw over.
-        // That way we can only render on mouse movements.
-        // This has a complexity of 2n^2 every mouse movements instead of n^2 every frame.
-        clearLastPreviewTiles();
+          const previousTiles = [];
 
-        const previousTiles = [];
+          for (let x = 0; x < selectedTiles.w; x++) {
+            for (let y = 0; y < selectedTiles.h; y++) {
+              const selectedTileIndex = ((selectedTiles.y + y) * selectedTileset.width) / 16 + (selectedTiles.x + x);
+              const globalSelectedTileIndex = levelManager.tileGlobalIndex(mapSelectedTileset, selectedTileIndex);
 
-        for (let x = 0; x < selectedTiles.w; x++) {
-          for (let y = 0; y < selectedTiles.h; y++) {
-            const selectedTileIndex = ((selectedTiles.y + y) * selectedTileset.width) / 16 + (selectedTiles.x + x);
-            const globalSelectedTileIndex = levelManager.tileGlobalIndex(mapSelectedTileset, selectedTileIndex);
+              const tile = {
+                x: pointerTileX + x,
+                y: pointerTileY + y,
+                index: globalSelectedTileIndex,
+              };
 
-            const tile = {
-              x: pointerTileX + x,
-              y: pointerTileY + y,
-              index: globalSelectedTileIndex,
-            };
+              const layer = levelManager.tileLayer(mapSelectedTileset, selectedTileIndex);
+              const previousTile = map.getTileAt(tile.x, tile.y, false, layer);
 
-            const layer = levelManager.tileLayer(mapSelectedTileset, selectedTileIndex);
-            const previousTile = map.getTileAt(tile.x, tile.y, false, layer);
+              previousTiles.push({
+                index: previousTile?.index,
+                layer,
+              });
 
-            previousTiles.push({
-              index: previousTile?.index,
-              layer,
-            });
-
-            if ((previousTile && previousTile.index !== tile.index) || !previousTile) {
-              map.putTileAt(tile.index, tile.x, tile.y, false, layer).setAlpha(0.15);
+              if ((previousTile && previousTile.index !== tile.index) || !previousTile) {
+                map.putTileAt(tile.index, tile.x, tile.y, false, layer).setAlpha(0.65);
+              }
             }
           }
+          previewInfo.lastSelectedTiles = selectedTiles;
+          previewInfo.previewTiles = {
+            x: pointerTileX,
+            y: pointerTileY,
+            w: selectedTiles.w,
+            h: selectedTiles.h,
+          };
+          previewInfo.previousTiles = previousTiles;
         }
-        previewInfo.lastSelectedTiles = selectedTiles;
-        previewInfo.previewTiles = {
-          x: pointerTileX,
-          y: pointerTileY,
-          w: selectedTiles.w,
-          h: selectedTiles.h,
-        };
-        previewInfo.previousTiles = previousTiles;
+        else {
+          clearLastPreviewTiles();
+        }
       }
 
       previewInfo.lastMousePosition = currentMousePosition;

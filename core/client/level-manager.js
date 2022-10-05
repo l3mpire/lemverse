@@ -87,7 +87,6 @@ levelManager = {
       layer.setName(`${i}`);
       layer.setCullPadding(4, 4);
       if (defaultLayerDepth[i]) layer.setDepth(defaultLayerDepth[i]);
-
       this.layers.push(layer);
 
       return i;
