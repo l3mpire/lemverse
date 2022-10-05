@@ -55,8 +55,8 @@ const createGuild = params => {
  *
  * @returns {void}
  */
-const emitMemberEvent = _guildId => {
-  const guildMembers = Meteor.users.find({ guildId: _guildId }).fetch();
+const _emitTeamMemberEvent = _guildId => {
+  const guildMembersCount = Meteor.users.find({ guildId: _guildId }).count();
   /**
    * Number of guild member change event.
    * @event member_changed
@@ -66,7 +66,7 @@ const emitMemberEvent = _guildId => {
    */
   guildEvents.emit('member_changed', {
     id: _guildId,
-    count: guildMembers.length,
+    count: guildMembersCount,
   });
 };
 
@@ -102,7 +102,7 @@ Meteor.methods({
     });
     analytics.updateGuild(Guilds.findOne(guildId), {}, Meteor.userId());
 
-    emitMemberEvent(guildId);
+    _emitTeamMemberEvent(guildId);
     log('addGuildUsers: done');
   },
   removeTeamUsers(guildId, userIds) {
@@ -117,19 +117,19 @@ Meteor.methods({
     if (!canEditGuild(Meteor.user(), guild)) throw new Meteor.Error('not-authorized', `Missing permissions to edit team members`);
 
     let users = Meteor.users.find({ _id: { $in: userIds }, guildId });
-    if (users.length === 0) throw new Meteor.Error('user-invalid', 'Given user is not in the team');
+    if (users.length !== userIds.length) throw new Meteor.Error('user-invalid', 'Given user is not in the team');
 
     Meteor.users.update({ _id: { $in: userIds } }, { $unset: { guildId: 1 } });
 
     // analytics
     users = Meteor.users.find({ _id: { $in: userIds } }).fetch();
     users.forEach(currentUser => {
-      analytics.identify(Meteor.users.findOne(currentUser));
+      analytics.identify(currentUser);
       analytics.track(this.userId, '👨‍👨‍👦 Guild Remove User', { user_id: currentUser._id, guild_id: guildId });
     });
     analytics.updateGuild(Guilds.findOne(guildId), {}, Meteor.userId());
 
-    emitMemberEvent(guildId);
+    _emitTeamMemberEvent(guildId);
     log('removeTeamUsers: done');
   },
   guilds(guildIds) {
