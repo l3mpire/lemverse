@@ -3,6 +3,39 @@ import Phaser from 'phaser';
 import { canEditActiveLevel } from '../../lib/misc';
 
 const editorGraphicsDepth = 10002;
+const previewLayer = 9;
+
+const previewInfo = {
+  previewTiles: {},
+  lastSelectedTiles: {},
+  lastMousePosition: {},
+};
+
+function compareLastAndCurrentPreviewTiles(lastPreviewTiles, currentPreviewTiles) {
+  const keysToCompare = ['x', 'y', 'tilesetId', 'index', 'w', 'h'];
+
+  for (let i = 0; i < keysToCompare.length; i++) {
+    const key = keysToCompare[i];
+    if (lastPreviewTiles[key] !== currentPreviewTiles[key]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function compareMouseMovements(currentPosition, lastMousePosition) {
+  return currentPosition.x === lastMousePosition.x && currentPosition.y === lastMousePosition.y;
+}
+
+function clearLastPreviewTiles() {
+  const { map } = levelManager;
+  for (let x = 0; x < previewInfo.previewTiles.w; x++) {
+    for (let y = 0; y < previewInfo.previewTiles.h; y++) {
+      map.removeTileAt(previewInfo.previewTiles.x + x, previewInfo.previewTiles.y + y, true, false, previewLayer);
+    }
+  }
+  previewInfo.previewTiles = {};
+}
 
 const insertTile = data => {
   const user = Meteor.user();
@@ -111,12 +144,14 @@ EditorScene = new Phaser.Class({
           if (!zone) return;
           const { startPosition, endPosition } = this.computePositions(zone, worldPoint, Session.get('selectedZonePoint'), altIsDown);
 
-          Zones.update(zoneId, { $set: {
-            x1: startPosition.x | 0,
-            y1: startPosition.y | 0,
-            x2: endPosition.x | 0,
-            y2: endPosition.y | 0,
-          } });
+          Zones.update(zoneId, {
+            $set: {
+              x1: startPosition.x | 0,
+              y1: startPosition.y | 0,
+              x2: endPosition.x | 0,
+              y2: endPosition.y | 0,
+            }
+          });
 
           if (!zone?.x2) {
             Session.set('selectedZonePoint', 2);
@@ -144,6 +179,47 @@ EditorScene = new Phaser.Class({
       this.marker.y = map.tileToWorldY(pointerTileY);
 
       let selectedTiles = Session.get('selectedTiles');
+
+      const currentMousePosition = { x: pointerTileX, y: pointerTileY };
+
+      // preview tiles
+      if (selectedTiles && !compareMouseMovements(currentMousePosition, previewInfo.lastMousePosition)) {
+        const selectedTileset = Tilesets.findOne(selectedTiles.tilesetId);
+
+        const mapSelectedTileset = map.getTileset(selectedTiles.tilesetId);
+
+        if (!mapSelectedTileset) return;
+
+        // We have to clear in a seperate loop, because we need the layer to be clear to draw over.
+        // That way we can only render on mouse movements.
+        // This has a complexity of 2n^2 every mouse movements instead of n^2 every frame.
+        clearLastPreviewTiles();
+
+        for (let x = 0; x < selectedTiles.w; x++) {
+          for (let y = 0; y < selectedTiles.h; y++) {
+            const selectedTileIndex = levelManager.tileGlobalIndex(mapSelectedTileset,
+              ((selectedTiles.y + y) * selectedTileset.width) / 16 + (selectedTiles.x + x),
+            );
+
+            const tile = {
+              x: pointerTileX + x,
+              y: pointerTileY + y,
+              index: selectedTileIndex,
+            };
+
+            map.putTileAt(tile.index, tile.x, tile.y, false, previewLayer);
+          }
+        }
+        previewInfo.lastSelectedTiles = selectedTiles;
+        previewInfo.previewTiles = {
+          x: pointerTileX,
+          y: pointerTileY,
+          w: selectedTiles.w,
+          h: selectedTiles.h,
+        };
+      }
+
+      previewInfo.lastMousePosition = currentMousePosition;
 
       if (shiftIsDown && this.input.manager.activePointer.isDown && canvasClicked) {
         let selectedTileGlobalIndex;
@@ -297,6 +373,14 @@ EditorScene = new Phaser.Class({
     this.updateEditionMarker(Session.get('selectedTiles'));
     this.marker.setVisible(mode === editorModes.tiles);
     this.mode = mode;
+
+    // Clear preview on leaving editor
+    if (mode === undefined) {
+      if (Object.keys(previewInfo.lastSelectedTiles).length !== 0 && previewInfo.lastSelectedTiles.constructor === Object) {
+        clearLastPreviewTiles();
+        previewInfo.lastSelectedTiles = {};
+      }
+    }
   },
 
   shutdown() {
