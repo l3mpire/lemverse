@@ -1,0 +1,49 @@
+name: Run tests
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: [master]
+
+jobs:
+  handlebars:
+    runs-on: ubuntu-latest
+    name: Coding style handlebars
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run coding style tests (handlebars)
+        run: docker build . -f ./Docker/djlint.Dockerfile -t lemverse/djlint
+      - name: Cleanup
+        if: always()
+        run: docker run lemverse/djlint
+  eslint:
+    runs-on: ubuntu-latest
+    name: Coding style javascript
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run coding style tests (javascript)
+        run: docker build . -f ./Docker/eslint.Dockerfile -t lemverse/eslint
+      - name: Cleanup
+        if: always()
+        run: docker run lemverse/eslint
+  eclint:
+    runs-on: ubuntu-latest
+    name: Coding style global
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run coding style tests (all files)
+        run: docker build . -f ./Docker/editorconfig.Dockerfile -t lemverse/editorconfig
+      - name: Cleanup
+        if: always()
+        run: docker run lemverse/editorconfig
+  stylelint:
+    runs-on: ubuntu-latest
+    name: Coding style stylesheets
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run coding style tests (scss)
+        run: docker build . -f ./Docker/stylelint.Dockerfile -t lemverse/stylelint
+      - name: Cleanup
+        if: always()
+        run: docker run lemverse/stylelint

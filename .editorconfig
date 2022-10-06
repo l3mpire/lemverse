@@ -6,3 +6,6 @@ insert_final_newline = true
 charset = utf-8
 indent_style = space
 indent_size = 2
+
+[{*.hbs.html,*.js}]
+indent_size = 0 # disable indentation for handlebars and js files, they use eslint and djlint

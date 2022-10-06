@@ -23,6 +23,7 @@ module.exports = {
     'no-multiple-empty-lines': 'off',
     'meteor/no-session': 'off',
     'import/no-unresolved': 0,
+    'import/no-extraneous-dependencies': 0,
     'object-curly-newline': 0,
     quotes: ['error', 'single', { allowTemplateLiterals: true }],
     'object-shorthand': ['error', 'always'],

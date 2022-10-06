@@ -1,0 +1,28 @@
+repos:
+  - repo: local
+    # FIXME: use anchors
+    hooks:
+      - id: coding-style-js
+        name: Coding style js
+        description: Check if code respects the javascript coding-style
+        language: system
+        entry: ./scripts/eslint.sh
+        stages: ["commit"]
+      - id: coding-style-css
+        name: Coding style css
+        description: Check if code respects the css/scss/sass coding-style
+        language: system
+        entry: ./scripts/stylelint.sh
+        stages: ["commit"]
+      - id: coding-style-handlebars
+        name: Coding style handlebars
+        description: Check if code respects the handlebars coding-style
+        language: system
+        entry: ./scripts/djlint.sh
+        stages: ["commit"]
+      - id: coding-style-editorconfig
+        name: Coding style editorconfig
+        description: Check if code respects the editorconfig coding-style
+        language: system
+        entry: ./scripts/editorconfig.sh
+        stages: ["commit"]

@@ -23,6 +23,7 @@
     "@babel/core": "^7.18.10",
     "@babel/eslint-parser": "^7.18.9",
     "@babel/eslint-plugin": "^7.18.10",
+    "eclint": "^2.8.1",
     "editorconfig-checker": "^4.0.2",
     "eslint": "^8.21.0",
     "eslint-config-airbnb-base": "^15.0.0",
