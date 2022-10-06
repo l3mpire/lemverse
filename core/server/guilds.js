@@ -117,7 +117,7 @@ Meteor.methods({
     if (!canEditGuild(Meteor.user(), guild)) throw new Meteor.Error('not-authorized', `Missing permissions to edit team members`);
 
     let users = Meteor.users.find({ _id: { $in: userIds }, guildId });
-    if (users.length !== userIds.length) throw new Meteor.Error('user-invalid', 'Given user is not in the team');
+    if (users.count() !== userIds.length) throw new Meteor.Error('user-invalid', 'Given user is not in the team');
 
     Meteor.users.update({ _id: { $in: userIds } }, { $unset: { guildId: 1 } });
 
