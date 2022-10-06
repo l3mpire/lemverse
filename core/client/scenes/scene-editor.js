@@ -27,7 +27,7 @@ function clearLastPreviewTiles() {
       tile.x = previewInfo.previewTiles.x + x;
       tile.y = previewInfo.previewTiles.y + y;
       if (tile.index) {
-        map.putTileAt(tile.index, tile.x, tile.y, false, tile.layer).setAlpha(1);
+        map.putTileAt(tile.index, tile.x, tile.y, false, tile.layer)?.setAlpha(1);
       } else {
         map.removeTileAt(tile.x, tile.y, true, false, tile.layer);
       }

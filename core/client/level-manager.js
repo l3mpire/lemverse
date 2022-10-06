@@ -51,7 +51,7 @@ levelManager = {
     const tileset = this.map.getTileset(newTile.tilesetId) || defaultTileset;
     const layer = this.tileLayer(tileset, newTile.index);
 
-    this.map.putTileAt(this.tileGlobalIndex(tileset, newTile.index), newTile.x, newTile.y, false, layer).setAlpha(1);
+    this.map.putTileAt(this.tileGlobalIndex(tileset, newTile.index), newTile.x, newTile.y, false, layer)?.setAlpha(1);
     window.dispatchEvent(new CustomEvent(eventTypes.onTileChanged, { detail: { tile: newTile, layer } }));
   },
 
