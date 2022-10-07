@@ -180,6 +180,7 @@ Meteor.users.find({ 'status.online': true }).observeChanges({
     const guild = Guilds.findOne(guildId);
 
     if (guild?.forceDefaultLevel) {
+      lp.notif.warning('Your level is unavailable, your have been redirected to default level.');
       const spawnPosition = levelSpawnPosition(defaultLevelId);
       Meteor.users.update(user._id, { $set: { 'profile.x': spawnPosition.x, 'profile.y': spawnPosition.y } });
       return;
