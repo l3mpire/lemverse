@@ -1,3 +1,6 @@
+import { guestAllowed } from '../../../lib/misc';
+import { permissionType } from '../misc';
+
 Template.userListMessageButton.events({
   'click .js-send-message'(event) {
     event.preventDefault();
@@ -11,5 +14,8 @@ Template.userListMessageButton.events({
 });
 
 Template.userListMessageButton.helpers({
-  show() { return this.user._id !== Meteor.userId() && !Meteor.user().profile.guest; },
+  show() {
+    if (this.user._id === Meteor.userId()) return false;
+    return this.user.profile.guest && guestAllowed(permissionType);
+  },
 });

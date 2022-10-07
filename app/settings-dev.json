@@ -72,7 +72,14 @@
       "allowAccountCreation": "all",
       "allowLevelCreation": true,
       "allowProfileEdition": true,
-      "contactURL": ""
+      "contactURL": "",
+      "guest": {
+        "changeSkin": false,
+        "talkToUsers": false,
+        "useEntity": false,
+        "useMeetingRoom": false,
+        "useMessaging": false
+      }
     },
 
     "passwordless": false,

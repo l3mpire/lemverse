@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 import audioManager from './audio-manager';
 import meetingRoom from './meeting-room';
 import { setReaction } from './helpers';
+import { guestAllowed, permissionTypes } from '../lib/misc';
 import initSentryClient from './sentry';
 
 initSentryClient();
@@ -122,7 +123,11 @@ Template.lemverse.onCreated(function () {
     game.scene.add('BootScene', BootScene, true);
 
     Tracker.nonreactive(() => {
-      if (!Meteor.user()?.profile.guest) peer.createMyPeer();
+      const user = Meteor.user();
+      if (!user) return;
+      if (user.profile.guest && !guestAllowed(permissionTypes.talkToUsers)) return;
+
+      peer.createMyPeer();
     });
   });
 
@@ -130,7 +135,8 @@ Template.lemverse.onCreated(function () {
     const { status } = Meteor.status();
     Tracker.nonreactive(() => {
       const user = Meteor.user();
-      if (!user || user.profile.guest) return;
+      if (!user) return;
+      if (user.profile.guest && !guestAllowed(permissionTypes.talkToUsers)) return;
 
       if (status === 'connected') peer.createMyPeer();
       else peer.peerInstance?.disconnect();

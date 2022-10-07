@@ -1,3 +1,5 @@
+import { guestAllowed, permissionTypes } from '../../lib/misc';
+
 Template.settingsCharacter.onCreated(() => {
   if (!Session.get('settings-character-category')) Session.set('settings-character-category', 'body');
 });
@@ -11,6 +13,7 @@ Template.settingsCharacter.helpers({
     return Meteor.user().profile[Session.get('settings-character-category')] === id;
   },
   user() { return Meteor.user(); },
+  canEditSkin() { return !Meteor.user({ fields: { 'profile.guest': 1 } }).profile.guest || guestAllowed(permissionTypes.changeSkin); },
 });
 
 Template.settingsCharacter.events({

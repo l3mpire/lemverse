@@ -1,9 +1,11 @@
 // https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe
 import escapeStringRegexp from 'escape-string-regexp';
+import { guestAllowed } from '../../../lib/misc';
 
 import meetingRoom from '../../../client/meeting-room';
 
 let linkedZoneId;
+const permissionType = 'useMeetingRoom';
 
 const updateMeetStates = zone => {
   const { unmute, unhide, shareScreen } = zone;
@@ -16,18 +18,21 @@ const updateMeetStates = zone => {
 const onZoneEntered = e => {
   if (!meetingRoom.isEnabled()) return;
 
-  const user = Meteor.user();
-  if (user.profile.guest) return;
-
   const { zone } = e.detail;
   const { _id, roomName, fullscreen, jitsiLowLevel } = zone;
   const meetingRoomService = jitsiLowLevel ? meetLowLevel : meetHighLevel;
   meetingRoom.setMeetingRoomService(meetingRoomService);
 
   if (!meetingRoomService.api && roomName) {
+    const user = Meteor.user();
+    if (user.profile.guest && !guestAllowed(permissionType)) {
+      lp.notif.warning('You need to create an account to use meeting rooms');
+      return;
+    }
+
     userManager.saveMediaStates();
     Meteor.call('computeMeetRoomAccess', _id, (err, data) => {
-      if (err) { lp.notif.error('You cannot access this zone'); return; }
+      if (err) { lp.notif.warning('You cannot access this zone'); return; }
       if (!data) { lp.notif.error('Unable to load a room, please try later'); return; }
 
       meetingRoomService.open(data);

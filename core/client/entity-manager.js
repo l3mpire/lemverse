@@ -1,3 +1,5 @@
+import { guestAllowed, permissionTypes } from '../lib/misc';
+
 const entityAnimations = {
   spawn: (sprite, scene) => {
     sprite.scaleY = 1.35;
@@ -146,7 +148,7 @@ entityManager = {
 
   allowedToUseEntity(entity) {
     const user = Meteor.user();
-    if (user.profile.guest) return false;
+    if (user.profile.guest && !guestAllowed(permissionTypes.useEntity)) return false;
 
     if (!entity.requiredItems?.length) return true;
 

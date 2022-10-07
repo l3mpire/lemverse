@@ -152,7 +152,7 @@ sendAudioChunksToUsersInZone = async chunks => {
 sendAudioChunksToNearUsers = chunks => {
   const { nearUsers } = userProximitySensor;
   const userIds = [...new Set(_.keys(nearUsers))].filter(target => target !== Meteor.userId());
-  if (!userIds.length) { lp.notif.error(`You need someone near you to whisper`); return undefined; }
+  if (!userIds.length) { lp.notif.warning(`You need someone near you to whisper`); return undefined; }
 
   lp.notif.success('✉️ Your voice message has been sent!');
   return sendAudioChunksToTargets(chunks, userIds);

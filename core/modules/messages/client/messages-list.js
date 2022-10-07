@@ -50,7 +50,7 @@ Template.messagesListMessage.onCreated(function () {
 
 Template.messagesListMessage.helpers({
   user() { return Meteor.users.findOne(this.message.createdBy); },
-  userName() { return Meteor.users.findOne(this.message.createdBy)?.profile.name || '[removed]'; },
+  userName() { return Meteor.users.findOne(this.message.createdBy)?.profile.name || 'Guest'; },
   text() { return formatText(this.message.text); },
   file() {
     if (!this.message.fileId) return undefined;

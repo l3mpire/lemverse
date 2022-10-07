@@ -4,6 +4,7 @@ import audioManager from './audio-manager';
 import networkManager from './network-manager';
 import meetingRoom from './meeting-room';
 import { guestSkin, textDirectionToVector, vectorToTextDirection } from './helpers';
+import { guestAllowed, permissionTypes } from '../lib/misc';
 
 const defaultUserMediaColorError = '0xd21404';
 const characterPopInOffset = { x: 0, y: -90 };
@@ -44,15 +45,17 @@ userManager = {
   onDocumentAdded(user) {
     if (this.characters[user._id]) return null;
 
-    const { x, y, guest, direction, name, baseline, nameColor } = user.profile;
+    const { x, y, guest, direction } = user.profile;
 
     const character = new Character(this.scene, x, y);
     character.setData('userId', user._id);
     character.direction = direction;
     this.characters[user._id] = character;
 
-    if (guest) character.updateSkin(guestSkin()); // init with custom skin
-    else character.setName(name, baseline, nameColor);
+    if (guest) {
+      character.updateSkin(guestSkin()); // init with custom skin
+      character.setName('Guest');
+    }
 
     window.setTimeout(() => this.onDocumentUpdated(user), 0);
 
@@ -111,11 +114,11 @@ userManager = {
     const character = this.characters[user._id];
     if (!character) return;
 
-    const { x, y, direction, reaction, shareAudio, guest, userMediaError, name, baseline, nameColor } = user.profile;
+    const { x, y, direction, reaction, shareAudio, userMediaError, name, baseline, nameColor, guest } = user.profile;
 
     // update character instance
     networkManager.onCharacterStateReceived({ userId: user._id, x, y, direction });
-    character.showMutedStateIndicator(!guest && !shareAudio);
+    character.showMutedStateIndicator(!shareAudio);
 
     // is account transformed from guest to user?
     if (!user.profile.guest && oldUser?.profile.guest) {
@@ -137,12 +140,12 @@ userManager = {
     }
 
     // update name
-    const nameUpdated = !guest && (name !== oldUser?.profile.name || baseline !== oldUser?.profile.baseline || nameColor !== oldUser?.profile.nameColor);
-    if (nameUpdated) character.setName(name, baseline, nameColor);
+    const nameUpdated = (name !== oldUser?.profile.name || baseline !== oldUser?.profile.baseline || nameColor !== oldUser?.profile.nameColor);
+    if (nameUpdated) character.setName(name || 'Guest', baseline, nameColor);
 
     const userHasMoved = x !== oldUser?.profile.x || y !== oldUser?.profile.y;
     const loggedUser = Meteor.user();
-    const shouldCheckDistance = userHasMoved && !guest;
+    const shouldCheckDistance = userHasMoved;
 
     if (user._id === loggedUser._id) {
       // network rubber banding
@@ -166,7 +169,7 @@ userManager = {
       }
     } else {
       if (shouldCheckDistance) userProximitySensor.checkDistance(loggedUser, user);
-      if (!guest && user.profile.shareScreen !== oldUser?.profile.shareScreen) peer.onStreamSettingsChanged(user);
+      if (user.profile.shareScreen !== oldUser?.profile.shareScreen) peer.onStreamSettingsChanged(user);
     }
   },
 
@@ -188,7 +191,6 @@ userManager = {
     this.controlledCharacter?.enablePhysics(false);
     this.controlledCharacter?.enableEffects(false);
     this.controlledCharacter = undefined;
-    hotkeys.setScope('guest');
 
     if (this.scene) {
       this.scene.cameras.main.stopFollow();
@@ -208,9 +210,7 @@ userManager = {
 
       this.scene.cameras.main.startFollow(character, true, 0.1, 0.1);
 
-      if (Meteor.user().guest) hotkeys.setScope('guest');
-      else hotkeys.setScope(scopes.player);
-
+      hotkeys.setScope(scopes.player);
       this.controlledCharacter = character;
       this.controlledCharacter.enableEffects(true);
     }
@@ -257,7 +257,11 @@ userManager = {
     this.handleUserInputs();
     this.controlledCharacter.running = this.scene.keys.shift.isDown;
     this.controlledCharacter.moveDirection = this.inputVector;
-    this.controlledCharacter.enableChatCircle(peer.isEnabled() && !Session.get('menu') && userProximitySensor.nearUsersCount() > 0);
+
+    if (peer.isEnabled() && !Session.get('menu')) {
+      const nearUsersCount = guestAllowed(permissionTypes.talkToUsers) ? userProximitySensor.nearUsersCount() : userProximitySensor.nearNonGuestUsers().length;
+      this.controlledCharacter.enableChatCircle(nearUsersCount > 0);
+    } else this.controlledCharacter.enableChatCircle(false);
 
     const newVelocity = this.controlledCharacter.physicsStep();
     const moving = Math.abs(newVelocity.x) > 0.1 || Math.abs(newVelocity.y) > 0.1;

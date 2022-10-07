@@ -1,4 +1,7 @@
 import audioManager from '../../../client/audio-manager';
+import { guestAllowed } from '../../../lib/misc';
+
+const permissionType = 'useMessaging';
 
 window.addEventListener('load', () => {
   registerModules(['textualCommunicationTools']);
@@ -103,6 +106,11 @@ Template.textualCommunicationTools.onDestroyed(() => {
 });
 
 Template.textualCommunicationTools.helpers({
-  guest: () => Meteor.user({ fields: { 'profile.guest': 1 } })?.profile.guest,
   show: () => Session.get('console'),
+  canUseModule: () => {
+    const guest = Meteor.user({ fields: { 'profile.guest': 1 } })?.profile.guest;
+    if (guest) return guestAllowed(permissionType);
+
+    return true;
+  },
 });

@@ -1,5 +1,5 @@
 <template name="textualCommunicationTools">
-  {{#unless guest}}
+  {{#if canUseModule}}
     <div class="two-cols-modules {{#if show}}show{{/if}}">
       <div class="left-content">
         {{> messagesChannelSelector}}
@@ -11,5 +11,5 @@
         {{> console}}
       </div>
     </div>
-  {{/unless}}
+  {{/if}}
 </template>

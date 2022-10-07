@@ -2,6 +2,7 @@ import Peer from 'peerjs';
 import audioManager from './audio-manager';
 import meetingRoom from './meeting-room';
 import { canAnswerCall, meteorCallWithPromise } from './helpers';
+import { guestAllowed, permissionTypes } from '../lib/misc';
 
 const debug = (text, meta) => {
   if (!Meteor.user()?.options?.debug) return;
@@ -206,6 +207,11 @@ peer = {
     }
 
     const peer = await this.getPeer();
+    if (!peer) {
+      debug(`createPeerCalls: peer not created`);
+      return;
+    }
+
     if (shareAudio || shareVideo) userStreams.createStream().then(stream => this.createPeerCall(peer, user, stream, streamTypes.main));
     if (shareScreen) userStreams.createScreenStream().then(stream => this.createPeerCall(peer, user, stream, streamTypes.screen));
   },
@@ -271,10 +277,8 @@ peer = {
   onProximityStarted(nearUsers) {
     if (!this.isEnabled()) return;
 
-    const user = Meteor.user();
-    if (user?.profile.guest) return; // disable proximity sensor for guest user
-
     nearUsers.forEach(nearUser => {
+      if (nearUser.profile.guest && !guestAllowed(permissionTypes.talkToUsers)) return;
       if (this.isCallInState(nearUser._id, callAction.open)) return;
       this.cancelWaitingCallAction(nearUser._id);
 
@@ -465,8 +469,10 @@ peer = {
 
   async createMyPeer(skipConfig = false) {
     if (this.isPeerValid(this.peerInstance)) return this.peerInstance;
-    if (!Meteor.user()) throw new Error(`an user is required to create a peer`);
-    if (Meteor.user().profile.guest) throw new Error(`peer is forbidden for guest account`);
+
+    const user = Meteor.user();
+    if (!user) throw new Error(`an user is required to create a peer`);
+    if (user.profile.guest && !guestAllowed(permissionTypes.talkToUsers)) throw new Error(`You need an account to talk to other users`);
 
     this.peerLoading = true;
     const result = await meteorCallWithPromise('getPeerConfig');
@@ -500,8 +506,8 @@ peer = {
       else if (peerErr.type === 'unavailable-id') lp.notif.error(`It seems that ${Meteor.settings.public.lp.product} is already open in another tab (unavailable-id)`);
       else if (peerErr.type === 'peer-unavailable') {
         const userId = peerErr.message.split(' ').pop();
-        const user = Meteor.users.findOne(userId);
-        lp.notif.warning(`User ${user?.profile.name || userId} was unavailable`);
+        const userUnavailable = Meteor.users.findOne(userId);
+        lp.notif.warning(`User ${userUnavailable?.profile.name || userId} was unavailable`);
       } else lp.notif.error(`Peer ${peerErr} (${peerErr.type})`);
 
       debug(`peer error ${peerErr.type}`, peerErr);
