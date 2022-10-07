@@ -18,6 +18,7 @@
     "body-parser": "^1.20.0",
     "escape-string-regexp": "^5.0.0",
     "fast-json-stable-stringify": "^2.1.0",
+    "favicons": "^7.0.1",
     "file-type": "^16.5.3",
     "gm": "^1.23.1",
     "hotkeys-js": "^3.9.4",

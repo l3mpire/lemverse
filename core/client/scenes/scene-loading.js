@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { getSimulationSize } from '../helpers';
+import { getSimulationSize, filesURL } from '../helpers';
 
 LoadingScene = new Phaser.Class({
   Extends: Phaser.Scene,
@@ -15,8 +15,10 @@ LoadingScene = new Phaser.Class({
   },
 
   preload() {
+    const { logoURL } = Meteor.settings.public.lp;
+
     this.load.setBaseURL('/');
-    this.load.image('logo', 'lemverse.png');
+    this.load.image('logo', logoURL ? `${filesURL}logo` : null || 'lemverse.png');
     this.load.image('scene-loader-background', 'assets/images/scene-loader-background.png');
   },
 
