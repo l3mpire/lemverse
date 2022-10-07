@@ -27,6 +27,16 @@
     overflow: auto;
     height: 100%;
 
+    .js-selectable {
+      &.selected {
+        background-color: rgba($light-green, 0.35);
+
+        &:hover {
+          background-color: rgba($light-green, 0.5);
+        }
+      }
+    }
+
     .team-user {
       margin: 2px 0;
       padding: 0;

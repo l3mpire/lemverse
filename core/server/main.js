@@ -1,8 +1,10 @@
 import stringify from 'fast-json-stable-stringify';
 import bodyParser from 'body-parser';
 import initSentryServer from './sentry';
+import initMonti from './monti'
 
 initSentryServer();
+initMonti();
 
 Picker.middleware(bodyParser.json({ limit: '5mb' }));
 

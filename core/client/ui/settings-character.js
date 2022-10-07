@@ -5,8 +5,9 @@ Template.settingsCharacter.onCreated(() => {
 });
 
 Template.settingsCharacter.helpers({
-  getAllImages() {
-    return Characters.find({ category: Session.get('settings-character-category'), $or: [{ hide: { $exists: false } }, { hide: false }] }).fetch();
+  getAllImages(category) {
+    if (category === undefined) category = Session.get('settings-character-category');
+    return Characters.find({ category: category, $or: [{ hide: { $exists: false } }, { hide: false }] }).fetch();
   },
   isBodyPart(id) {
     return Meteor.user().profile[Session.get('settings-character-category')] === id;

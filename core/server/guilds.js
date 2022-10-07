@@ -1,8 +1,73 @@
+import { EventEmitter } from 'node:events';
 import { canEditGuild } from '../lib/misc';
+
+/**
+ * Guild event emitter
+ * @type {EventEmitter}
+ */
+const guildEvents = new EventEmitter();
 
 const guilds = guildIds => {
   check(guildIds, [Match.Id]);
   return Guilds.find({ _id: { $in: guildIds } });
+};
+
+/**
+ * Create a new guild and emit event new_guild
+ * @fires new_guild
+ * @param {tNewGuildParams} params - External guild parameters
+ *
+ * @returns {string} The guild ID
+ */
+const createGuild = params => {
+  /** @type {string} */
+  const guildId = Guilds.id();
+  Guilds.insert({
+    _id: guildId,
+    createAt: new Date(),
+    name: params.name,
+    owners: params.owners,
+    createdBy: params.createdBy,
+  });
+
+  /**
+   * New guild event.
+   * @event new_guild
+   * @type {object}
+   * @property {string} guildId - The new guild ID
+   * @property {string} name - The new guild name
+   * @property {string} email - The new guild owner email
+   */
+  guildEvents.emit('new_guild', {
+    id: guildId,
+    name: params.name,
+    email: params.email,
+  });
+
+  return guildId;
+};
+
+
+/**
+ * Create a new guild and emit event new_guild
+ * @fires member_changed
+ * @param {string} _guildId - The modified guild ID
+ *
+ * @returns {void}
+ */
+const _emitTeamMemberEvent = _guildId => {
+  const guildMembersCount = Meteor.users.find({ guildId: _guildId }).count();
+  /**
+   * Number of guild member change event.
+   * @event member_changed
+   * @type {object}
+   * @property {string} guildId - The new guild ID
+   * @property {number} count - Number of guild member
+   */
+  guildEvents.emit('member_changed', {
+    id: _guildId,
+    count: guildMembersCount,
+  });
 };
 
 Meteor.publish('guilds', function (guildIds) {
@@ -37,27 +102,33 @@ Meteor.methods({
     });
     analytics.updateGuild(Guilds.findOne(guildId), {}, Meteor.userId());
 
+    _emitTeamMemberEvent(guildId);
     log('addGuildUsers: done');
   },
-  removeTeamUser(guildId, userId) {
-    check([guildId, userId], [Match.Id]);
-    log('removeTeamUser: start', { guildId, userId });
+  removeTeamUsers(guildId, userIds) {
+    check(guildId, Match.Id);
+    check(userIds, [Match.Id]);
+    log('removeTeamUsers: start', { guildId, userIds });
 
+    if (!userIds.length) return;
     if (!this.userId) throw new Meteor.Error('not-authorized', 'User not allowed');
 
-    if (!canEditGuild(Meteor.user(), Guilds.findOne(guildId))) throw new Meteor.Error('not-authorized', `Missing permissions to edit team members`);
+    const guild = Guilds.findOne(guildId);
+    if (!canEditGuild(Meteor.user(), guild)) throw new Meteor.Error('not-authorized', `Missing permissions to edit team members`);
 
-    const user = Meteor.users.findOne(userId);
-    if (user.guildId !== guildId) throw new Meteor.Error('user-invalid', 'Given user is not in the team');
-
-    Meteor.users.update(userId, { $unset: { guildId: 1 } });
+    // remove users from the guild
+    Meteor.users.update({ _id: { $in: userIds }, guildId }, { $unset: { guildId: 1 } });
 
     // analytics
-    analytics.identify(Meteor.users.findOne(userId));
-    analytics.track(this.userId, '👨‍👨‍👦 Guild Remove User', { user_id: userId, guild_id: guildId });
-    analytics.updateGuild(Guilds.findOne(guildId), {}, userId);
+    const teamRemovedUsers = Meteor.users.find({ _id: { $in: userIds }, guildId: { $exists: false } }).fetch();
+    teamRemovedUsers.forEach(teamRemovedUser => {
+      analytics.identify(teamRemovedUser);
+      analytics.track(this.userId, '👨‍👨‍👦 Guild Remove User', { user_id: teamRemovedUser._id, guild_id: guildId });
+    });
+    analytics.updateGuild(Guilds.findOne(guildId), {}, Meteor.userId());
 
-    log('removeTeamUser: done');
+    _emitTeamMemberEvent(guildId);
+    log('removeTeamUsers: done');
   },
   guilds(guildIds) {
     if (!this.userId) throw new Meteor.Error('not-authorized', 'User not allowed');
@@ -93,4 +164,25 @@ Meteor.methods({
 
     analytics.updateGuild(Guilds.findOne(guildId), {}, this.userId);
   },
+  teamUserCount(guildId) {
+    if (!this.userId) return 0;
+    check(guildId, Match.Id);
+
+    return Meteor.users.find({ guildId }).count();
+  },
 });
+
+
+export {
+  createGuild,
+
+  guildEvents,
+};
+
+/**
+ * @typedef {object} tNewGuildParams
+ * @property {string} name - The guild name
+ * @property {string[]} owners - Array of owners ID
+ * @property {string} createdBy - The creator
+ * @property {string} email - The creator email
+ */
