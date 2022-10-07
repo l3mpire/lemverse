@@ -5,11 +5,14 @@ import { canEditActiveLevel } from '../../lib/misc';
 const editorGraphicsDepth = 10002;
 
 const previewInfo = {
-  previewTiles: {},
-  lastSelectedTiles: {},
   lastMousePosition: {},
-  previousTiles: null,
+  previousTiles: [],
+  recalculatePreview: false,
 };
+
+let isSelecting = false;
+let selection = {};
+let timerResetCopyPaste;
 
 
 function compareMouseMovements(currentPosition, lastMousePosition) {
@@ -21,25 +24,33 @@ function clearLastPreviewTiles() {
   const { map } = levelManager;
   if (previousTiles === null) return;
 
-  for (let x = 0; x < previewInfo.previewTiles.w; x++) {
-    for (let y = 0; y < previewInfo.previewTiles.h; y++) {
-      const tile = previousTiles[x * previewInfo.previewTiles.h + y];
-      tile.x = previewInfo.previewTiles.x + x;
-      tile.y = previewInfo.previewTiles.y + y;
-      if (tile.index) {
-        map.putTileAt(tile.index, tile.x, tile.y, false, tile.layer)?.setAlpha(1);
-      } else {
-        map.removeTileAt(tile.x, tile.y, true, false, tile.layer);
-      }
+  for (let i = 0; i < previousTiles.length; i += 1) {
+    const tile = previousTiles[i];
+    if (tile.index) {
+      map.putTileAt(tile.index, tile.x, tile.y, false, tile.layer)?.setAlpha(1);
+    } else {
+      map.removeTileAt(tile.x, tile.y, true, false, tile.layer);
     }
   }
-  previewInfo.previewTiles = {};
 }
 
 const insertTile = data => {
   const user = Meteor.user();
   return Tiles.insert({ _id: Tiles.id(), createdAt: new Date(), createdBy: user._id, levelId: user.profile.levelId, ...data });
 };
+
+function getDatabaseTile(x, y, localTile) {
+  const databaseTileset = Tilesets.findOne({ gid: { $lte: localTile.index } }, { sort: { gid: -1 } });
+  const tileLocalIndex = localTile.index - databaseTileset.gid;
+  const data = {
+    x,
+    y,
+    tilesetId: databaseTileset._id,
+    index: tileLocalIndex,
+  };
+  return Tiles.findOne(data);
+}
+
 
 EditorScene = new Phaser.Class({
   Extends: Phaser.Scene,
@@ -117,6 +128,13 @@ EditorScene = new Phaser.Class({
     this.cameras.remove(camerasToDestroy, true);
   },
 
+  clearCopyPasteMode() {
+    this.marker.defaultStrokeColor = 0xffffff;
+    this.updateEditionMarker();
+    selection = {};
+    isSelecting = false;
+  },
+
   update() {
     if (!Session.get('editor')) return;
 
@@ -172,90 +190,215 @@ EditorScene = new Phaser.Class({
       }
     } else if (this.mode === editorModes.tiles) {
       // Snap to tile coordinates, but in world space
-      this.marker.x = map.tileToWorldX(pointerTileX);
-      this.marker.y = map.tileToWorldY(pointerTileY);
+      if (selection.x !== undefined) {
+        this.marker.x = map.tileToWorldX(selection.x);
+        this.marker.y = map.tileToWorldY(selection.y);
+      } else {
+        this.marker.x = map.tileToWorldX(pointerTileX);
+        this.marker.y = map.tileToWorldY(pointerTileY);
+      }
 
-      let selectedTiles = Session.get('selectedTiles');
+      const selectedTiles = Session.get('selectedTiles');
 
       const currentMousePosition = { x: pointerTileX, y: pointerTileY };
+      const updateMousePosition = !compareMouseMovements(currentMousePosition, previewInfo.lastMousePosition);
 
       // preview tiles
-      if (selectedTiles && !compareMouseMovements(currentMousePosition, previewInfo.lastMousePosition)) {
-        const selectedTileset = Tilesets.findOne(selectedTiles.tilesetId);
+      if (updateMousePosition || previewInfo.recalculatePreview) {
+        previewInfo.recalculatePreview = false;
+        if (selectedTiles) {
+          const selectedTileset = Tilesets.findOne(selectedTiles.tilesetId);
 
-        const mapSelectedTileset = map.getTileset(selectedTiles.tilesetId);
+          const mapSelectedTileset = map.getTileset(selectedTiles.tilesetId);
 
-        if (mapSelectedTileset) {
-          // We have to clear in a seperate loop, because we need the layer to be clear to draw over.
-          // That way we can only render on mouse movements.
-          // This has a complexity of 2n^2 every mouse movements instead of n^2 every frame.
+          if (mapSelectedTileset) {
+            // We have to clear in a seperate loop, because we need the layer to be clear to draw over.
+            // That way we can only render on mouse movements.
+            // This has a complexity of 2n^2 every mouse movements instead of n^2 every frame.
+            clearLastPreviewTiles();
+
+            const previousTiles = [];
+
+            for (let x = 0; x < selectedTiles.w; x++) {
+              for (let y = 0; y < selectedTiles.h; y++) {
+                const selectedTileIndex = ((selectedTiles.y + y) * selectedTileset.width) / 16 + (selectedTiles.x + x);
+                const globalSelectedTileIndex = levelManager.tileGlobalIndex(mapSelectedTileset, selectedTileIndex);
+
+                const tile = {
+                  x: pointerTileX + x,
+                  y: pointerTileY + y,
+                  index: globalSelectedTileIndex,
+                };
+
+                const layer = levelManager.tileLayer(mapSelectedTileset, selectedTileIndex);
+                const previousTile = map.getTileAt(tile.x, tile.y, false, layer);
+
+                previousTiles.push({
+                  index: previousTile?.index,
+                  x: tile.x,
+                  y: tile.y,
+                  layer,
+                });
+
+                if ((previousTile && previousTile.index !== tile.index) || !previousTile) {
+                  map.putTileAt(tile.index, tile.x, tile.y, false, layer)?.setAlpha(0.65);
+                }
+              }
+            }
+            previewInfo.previousTiles = previousTiles;
+          } else {
+            clearLastPreviewTiles();
+          }
+        } else if (selection.x !== undefined && !isSelecting) {
           clearLastPreviewTiles();
 
           const previousTiles = [];
 
-          for (let x = 0; x < selectedTiles.w; x++) {
-            for (let y = 0; y < selectedTiles.h; y++) {
-              const selectedTileIndex = ((selectedTiles.y + y) * selectedTileset.width) / 16 + (selectedTiles.x + x);
-              const globalSelectedTileIndex = levelManager.tileGlobalIndex(mapSelectedTileset, selectedTileIndex);
+          for (let x = 0; x < selection.w; x++) {
+            for (let y = 0; y < selection.h; y++) {
+              const copyX = selection.x + x;
+              const copyY = selection.y + y;
 
-              const tile = {
-                x: pointerTileX + x,
-                y: pointerTileY + y,
-                index: globalSelectedTileIndex,
-              };
+              const currentTileX = pointerTileX + x;
+              const currentTileY = pointerTileY + y;
 
-              const layer = levelManager.tileLayer(mapSelectedTileset, selectedTileIndex);
-              const previousTile = map.getTileAt(tile.x, tile.y, false, layer);
+              const layers = map.layers.length;
+              for (let layer = 0; layer < layers; layer++) {
+                const tileToCopy = map.getTileAt(copyX, copyY, false, layer);
 
-              previousTiles.push({
-                index: previousTile?.index,
-                layer,
-              });
+                // Disabling this for now to have an algorithm in Θ(x*y*l) instead of Θ(x*y*(l+m)) with a higher memory usage
+                // eslint-disable-next-line no-continue
+                if (!tileToCopy) continue;
 
-              if ((previousTile && previousTile.index !== tile.index) || !previousTile) {
-                map.putTileAt(tile.index, tile.x, tile.y, false, layer).setAlpha(0.65);
+                const previousTile = map.getTileAt(currentTileX, currentTileY, false, layer);
+
+                previousTiles.push({
+                  index: previousTile?.index,
+                  x: currentTileX,
+                  y: currentTileY,
+                  layer,
+                });
+
+                if ((previousTile && previousTile.index !== tileToCopy.index) || !previousTile) {
+                  map.putTileAt(tileToCopy.index, currentTileX, currentTileY, false, layer)?.setAlpha(0.65);
+                }
               }
             }
           }
-          previewInfo.lastSelectedTiles = selectedTiles;
-          previewInfo.previewTiles = {
-            x: pointerTileX,
-            y: pointerTileY,
-            w: selectedTiles.w,
-            h: selectedTiles.h,
-          };
           previewInfo.previousTiles = previousTiles;
-        }
-        else {
+        } else {
           clearLastPreviewTiles();
         }
       }
 
+
       previewInfo.lastMousePosition = currentMousePosition;
 
+      if (shiftIsDown) {
+        clearLastPreviewTiles();
+        previewInfo.recalculatePreview = true;
+      }
+
+      // quit selecting mode (copy/paste)
+      if (!shiftIsDown && isSelecting) {
+        this.marker.defaultStrokeColor = 0x00ff00;
+        isSelecting = false;
+        this.updateEditionMarker(selection);
+      }
+
+      // pasting
+      if (selection.x !== undefined && !isSelecting && !shiftIsDown && this.input.manager.activePointer.isDown && canvasClicked) {
+        // lock paste every 100ms to avoid spamming
+        const date = Date.now();
+        if (timerResetCopyPaste) {
+          if (date - timerResetCopyPaste < 500) {
+            return;
+          }
+        }
+        timerResetCopyPaste = date;
+        clearLastPreviewTiles();
+        previewInfo.previousTiles = [];
+        for (let x = 0; x < selection.w; x++) {
+          for (let y = 0; y < selection.h; y++) {
+            const copyX = selection.x + x;
+            const copyY = selection.y + y;
+
+            const pointerOffsetX = pointerTileX + x;
+            const pointerOffsetY = pointerTileY + y;
+
+            for (let layer = 0; layer < map.layers.length; layer++) {
+              const tileToCopy = map.getTileAt(copyX, copyY, false, layer);
+
+              // clearing layers that WERE used, but WONT be anymore by the copy
+              const tileToUpdate = map.getTileAt(pointerTileX + x, pointerTileY + y, false, layer);
+              if (!tileToCopy) {
+                if (tileToUpdate) {
+                  Tiles.remove(getDatabaseTile(pointerOffsetX, pointerOffsetY, tileToUpdate)._id);
+                }
+
+                // Disabling this for now to have an algorithm in Θ(x*y*l) instead of Θ(x*y*(l+m)) with a higher memory usage
+                // eslint-disable-next-line no-continue
+                continue;
+              }
+
+              const databaseTilesetToCopy = Tilesets.findOne({ gid: { $lte: tileToCopy.index } }, { sort: { gid: -1 } });
+              const tileToCopyLocalIndex = tileToCopy.index - databaseTilesetToCopy.gid;
+
+              // updating tile that already exists
+              if (tileToUpdate && tileToCopy.index !== tileToUpdate.index) {
+                const databaseTileToUpdate = getDatabaseTile(pointerOffsetX, pointerOffsetY, tileToUpdate);
+                this.undoTiles.push(databaseTileToUpdate);
+                Tiles.update(databaseTileToUpdate._id, { $set: { createdAt: new Date(), createdBy: Meteor.userId(), index: tileToCopyLocalIndex, tilesetId: databaseTilesetToCopy._id } });
+              } else if (!tileToUpdate) {
+                const data = {
+                  x: pointerTileX + x,
+                  y: pointerTileY + y,
+                  tilesetId: databaseTilesetToCopy._id,
+                  index: tileToCopyLocalIndex,
+                };
+                const tileId = insertTile(data);
+                this.undoTiles.push({ _id: tileId, index: -1 });
+              }
+            }
+          }
+        }
+        return;
+      }
+
       if (shiftIsDown && this.input.manager.activePointer.isDown && canvasClicked) {
-        let selectedTileGlobalIndex;
-        for (let l = map.layers.length; l >= 0; l--) {
-          selectedTileGlobalIndex = map.getTileAt(pointerTileX, pointerTileY, false, l)?.index;
-          if (selectedTileGlobalIndex >= 0) break;
+        // only clear if shift + click
+        if (selectedTiles) {
+          this.updateEditionMarker(selection);
+
+          Session.set('selectedTiles', undefined);
+          this.marker.defaultStrokeColor = 0xff0000;
         }
 
-        if (selectedTileGlobalIndex >= 0) {
-          if (!selectedTiles) selectedTiles = {};
+        if (!isSelecting) {
+          // start a new copy-selection
+          this.clearCopyPasteMode();
+          timerResetCopyPaste = Date.now();
 
-          const tileset = Tilesets.findOne({ gid: { $lte: selectedTileGlobalIndex } }, { sort: { gid: -1 } });
-          const tileIndex = selectedTileGlobalIndex - tileset.gid;
 
-          selectedTiles.tilesetId = tileset._id;
-          selectedTiles.index = tileIndex;
-          selectedTiles.x = (tileIndex % (tileset.width / 16));
-          selectedTiles.y = (tileIndex / (tileset.width / 16) | 0);
-          selectedTiles.w = 1;
-          selectedTiles.h = 1;
-
-          Session.set('selectedTiles', selectedTiles);
+          this.marker.defaultStrokeColor = 0x0000ff;
+          isSelecting = true;
+          selection = { x: pointerTileX, y: pointerTileY, w: 1, h: 1 };
+        } else if (updateMousePosition) {
+          // update current copy-selection
+          selection.w = pointerTileX - selection.x + 1;
+          selection.h = pointerTileY - selection.y + 1;
+          this.updateEditionMarker(selection);
         }
-      } else if (this.input.manager.activePointer.isDown && canvasClicked) {
+
+        return;
+      }
+      if (selectedTiles) {
+        // quit copy past mode
+        this.clearCopyPasteMode();
+      }
+
+
+      if (this.input.manager.activePointer.isDown && canvasClicked) {
         previewInfo.previousTiles = null;
         if (selectedTiles?.index === -99) {
           Tiles.find({ x: pointerTileX, y: pointerTileY }).forEach(tile => {
@@ -337,10 +480,10 @@ EditorScene = new Phaser.Class({
     }
   },
 
+
   updateEditionMarker(selectedTiles) {
     if (!this.marker) return;
     if (!levelManager.map) return;
-
     const width = levelManager.map.tileWidth * (selectedTiles?.w || 1);
     const height = levelManager.map.tileHeight * (selectedTiles?.h || 1);
     this.marker.clear();
@@ -389,10 +532,8 @@ EditorScene = new Phaser.Class({
 
     // Clear preview on leaving editor
     if (mode === undefined) {
-      if (Object.keys(previewInfo.lastSelectedTiles).length !== 0 && previewInfo.lastSelectedTiles.constructor === Object) {
-        clearLastPreviewTiles();
-        previewInfo.lastSelectedTiles = {};
-      }
+      this.clearCopyPasteMode();
+      clearLastPreviewTiles();
     }
   },
 
