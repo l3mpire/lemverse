@@ -176,6 +176,15 @@ Meteor.users.find({ 'status.online': true }).observeChanges({
     if (!user.status.lastLogoutAt) return;
 
     const { defaultLevelId, respawnDelay } = Meteor.settings;
+    const { guildId } = user;
+    const guild = Guilds.findOne(guildId);
+
+    if (guild?.forceDefaultLevel) {
+      const spawnPosition = levelSpawnPosition(defaultLevelId);
+      Meteor.users.update(user._id, { $set: { 'profile.x': spawnPosition.x, 'profile.y': spawnPosition.y } });
+      return;
+    }
+
     if (!respawnDelay) return;
 
     const diffInMinutes = (Date.now() - new Date(user.status.lastLogoutAt).getTime()) / 60000;
@@ -183,6 +192,7 @@ Meteor.users.find({ 'status.online': true }).observeChanges({
 
     const levelId = user.profile.levelId || defaultLevelId;
     const currentLevel = Levels.findOne(levelId);
+
 
     const spawnPosition = levelSpawnPosition(currentLevel);
     Meteor.users.update(user._id, { $set: { 'profile.x': spawnPosition.x, 'profile.y': spawnPosition.y } });
