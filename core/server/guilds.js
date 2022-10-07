@@ -116,16 +116,14 @@ Meteor.methods({
     const guild = Guilds.findOne(guildId);
     if (!canEditGuild(Meteor.user(), guild)) throw new Meteor.Error('not-authorized', `Missing permissions to edit team members`);
 
-    let users = Meteor.users.find({ _id: { $in: userIds }, guildId });
-    if (users.count() !== userIds.length) throw new Meteor.Error('user-invalid', 'Given user is not in the team');
-
-    Meteor.users.update({ _id: { $in: userIds } }, { $unset: { guildId: 1 } });
+    // remove users from the guild
+    Meteor.users.update({ _id: { $in: userIds }, guildId }, { $unset: { guildId: 1 } });
 
     // analytics
-    users = Meteor.users.find({ _id: { $in: userIds } }).fetch();
-    users.forEach(currentUser => {
-      analytics.identify(currentUser);
-      analytics.track(this.userId, '👨‍👨‍👦 Guild Remove User', { user_id: currentUser._id, guild_id: guildId });
+    const teamRemovedUsers = Meteor.users.find({ _id: { $in: userIds }, guildId: { $exists: false } }).fetch();
+    teamRemovedUsers.forEach(teamRemovedUser => {
+      analytics.identify(teamRemovedUser);
+      analytics.track(this.userId, '👨‍👨‍👦 Guild Remove User', { user_id: teamRemovedUser._id, guild_id: guildId });
     });
     analytics.updateGuild(Guilds.findOne(guildId), {}, Meteor.userId());
 
