@@ -3,6 +3,7 @@
     <h2 class="h2">Character</h2>
     <hr class="separator">
   </div>
+  <div class="settingsCharacter container">
   {{#if canEditSkin}}
     <div class="renderCharacter">
       {{> avatarViewer user=user}}
@@ -34,9 +35,22 @@
       </div>
       {{/if}}
     </div>
+    <div class="customize-selection">
+      {{#if or (eq (Session 'settings-character-category') "hair") (eq (Session 'settings-character-category') "accessory")}}
+        <div class="characters-choices {{#if isBodyPart this._id}}selected{{/if}}">
+          <div class="js-new-part sprite-character empty-choices" data-id="null"></div>
+        </div>
+      {{/if}}
+      {{#each getAllImages}}
+        <div class="characters-choices {{#if isBodyPart this._id}}selected{{/if}}">
+          <img class="js-new-part sprite-character" height="{{zoom height 2}}" width="{{zoom width 2}}" data-id="{{this._id}}" src="{{concat '/api/files/' this.fileId}}" alt="character-part" />
+        </div>
+      {{/each}}
+    </div>
   {{else}}
     <div class="alert warning">
       <p><strong>Warning!</strong> You need to create an account to edit your character</p>
     </div>
   {{/if}}
+  </div>
 </template>
