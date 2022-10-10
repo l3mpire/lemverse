@@ -4,6 +4,7 @@ import { guestAllowed } from '../../../lib/misc';
 const permissionType = 'useMessaging';
 
 window.addEventListener('load', () => {
+  if (Meteor.settings.public.disabledFeatures.includes('textualCommunicationTools')) return;
   registerModules(['textualCommunicationTools']);
   registerUserListModules(['userListMessageButton']);
 
