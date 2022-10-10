@@ -107,7 +107,6 @@ Template.formLogIn.helpers({
   password() { return Template.instance().password; },
   loginMode() { return Template.instance().loginMode.get(); },
   contactURL() { return Meteor.settings.public.permissions?.contactURL; },
-  passwordless() { return Meteor.settings.public.passwordless; },
   emailSent() { return Template.instance().emailSent.get(); },
   counter() { return Template.instance().counter.get(); },
   canRetry() { return !!Template.instance().counter.get(); },
