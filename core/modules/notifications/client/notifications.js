@@ -1,3 +1,5 @@
+import { getChannelType } from '../../../lib/misc';
+
 const notifsReadMaxDisplayed = 20;
 
 const formatedDuration = value => {
@@ -14,8 +16,6 @@ const resetPlayButtonState = template => template._playing.set(false);
 const markNotificationAsRead = notificationId => Meteor.call('markNotificationAsRead', notificationId);
 
 const markAllNotificationsAsRead = () => Meteor.call('markAllNotificationsAsRead');
-
-const isQuestNotification = notification => notification.questId || notification.channelId?.includes('qst_');
 
 Template.notificationsAudioPlayer.onCreated(function () {
   this._duration = new ReactiveVar(0);
@@ -71,7 +71,7 @@ Template.notificationButton.helpers({
 Template.notification.helpers({
   date() { return moment(this.createdAt).calendar(); },
   user() { return Meteor.users.findOne(Template.instance().data.createdBy); },
-  quest() { return isQuestNotification(this); },
+  type() { return getChannelType(this.channelId); },
   newQuest() { return this.type === 'quest-new'; },
 });
 

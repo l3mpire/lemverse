@@ -246,10 +246,25 @@ const guestAllowed = permissionType => {
   return !!guestPermissions[permissionType];
 };
 
+const getChannelType = channelId => {
+  switch (channelId?.split('_')[0]) {
+    case 'qst':
+      return 'quest';
+    case 'zon':
+      return 'zone';
+    case 'lvl':
+      return 'level';
+    case 'usr':
+      return 'discussion';
+    default:
+      return 'unknown';
+  }
+};
+
 export {
   canAccessZone,
-  canEditGuild,
   canEditActiveLevel,
+  canEditGuild,
   canEditLevel,
   canEditUserPermissions,
   canModerateLevel,
@@ -259,6 +274,7 @@ export {
   fileOnBeforeUpload,
   generateRandomCharacterSkin,
   guestAllowed,
+  getChannelType,
   isLevelOwner,
   levelSpawnPosition,
   permissionTypes,

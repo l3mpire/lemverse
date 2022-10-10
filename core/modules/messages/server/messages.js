@@ -1,5 +1,5 @@
 import { messagingAllowed } from '../misc';
-import { subscribedUsersToEntity } from '../../../lib/misc';
+import { getChannelType, subscribedUsersToEntity } from '../../../lib/misc';
 
 const limit = 20;
 
@@ -48,38 +48,38 @@ const notifyQuestSubscribersAboutNewMessage = (questId, message) => {
 
 const setZoneLastMessageAtToNow = zoneId => Zones.update(zoneId, { $set: { lastMessageAt: new Date() } });
 
-const notifyUsers = (channel, message) => {
-  log('notifyUsers: start', { channel });
+const notifyUsers = message => {
+  const { channel, createdBy } = message;
 
+  log('notifyUsers: start', { channel });
   removePreviousNotifications(message);
 
-  const userIds = channel.split(';').filter(userId => userId !== message.createdBy);
+  let userIds = [];
+
+  if (getChannelType(channel) === 'level') {
+    userIds = Meteor.users.find({ _id: { $ne: createdBy }, 'status.online': true, 'profile.levelId': channel }, { fields: { 'profile._id': 1 } }).fetch().map(item => item._id);
+  } else userIds = channel.split(';').filter(userId => userId !== createdBy);
+
   const notifications = userIds.map(userId => ({
     _id: Notifications.id(),
     channelId: channel,
     userId,
     createdAt: new Date(),
-    createdBy: message.createdBy,
+    createdBy,
   }));
   Notifications.rawCollection().insertMany(notifications);
 
   log('notifyUsers: done', { userIds });
 };
 
-const context = channel => {
-  if (channel.includes('zon_')) return 'zone';
-  if (channel.includes('usr_')) return 'discussion';
-  if (channel.includes('qst_')) return 'quest';
-
-  return 'unknown';
-};
-
 Meteor.startup(() => {
   Messages.find({ createdAt: { $gte: new Date() } }).observe({
     added(message) {
-      if (message.channel.includes('qst_')) notifyQuestSubscribersAboutNewMessage(message.channel, message);
-      else if (message.channel.includes('zon_')) setZoneLastMessageAtToNow(message.channel);
-      else if (message.channel.includes('usr_')) notifyUsers(message.channel, message);
+      const channelType = getChannelType(message.channel);
+
+      if (channelType === 'quest') notifyQuestSubscribersAboutNewMessage(message.channel, message);
+      else if (channelType === 'zone') setZoneLastMessageAtToNow(message.channel);
+      else if (channelType === 'user' || channelType === 'level') notifyUsers(message);
     },
   });
 });
@@ -128,7 +128,7 @@ Meteor.methods({
       createdBy: this.userId,
     });
 
-    analytics.track(this.userId, '✍️ Message Sent', { user_id: this.userId, context: context(channel) });
+    analytics.track(this.userId, '✍️ Message Sent', { user_id: this.userId, context: getChannelType(channel) });
     log('sendMessage: done', { messageId });
 
     return messageId;
