@@ -4,17 +4,14 @@
   </div>
   <span>{{name}}</span>
 </template>
-
 <template name="entityTemplateList">
   {{#modal title="Entities"}}
   <div class="entity-template-list">
     <ul class="list">
-      {{#each entities}}
-      <li class="js-entity-entry">
-        {{> entityTemplateEntry}}
-      </li>
+      {{#each entities }}
+        <li class="js-entity-entry">{{> entityTemplateEntry}}</li>
       {{/each}}
     </ul>
   </div>
-  {{/modal}}
+{{/modal}}
 </template>

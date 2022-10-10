@@ -1,18 +1,16 @@
 <template name="loginServices">
-    {{#if loginService.length}}
+  {{#if loginService.length }}
     <div class="oauth-login buttons-group bottom">
-        {{#each loginService}}
-        <button
-                type="button"
+      {{#each loginService }}
+        <button type="button"
                 class="submit external-login {{service.service}} button"
                 title="{{displayName}}"
-                style="{{#if service.buttonBackgroundColor}}background-color:{{service.buttonBackgroundColor}};{{/if}}{{#if service.buttonTextColor}}color:{{service.buttonTextColor}};{{/if}}"
-        >
-            <i class="icon-{{icon}} service-icon"></i
+                style="{{#if service.buttonBackgroundColor }}background-color:{{service.buttonBackgroundColor }};{{/if }}{{#if service.buttonTextColor }}color:{{service.buttonTextColor }};{{/if }}">
+          <i class="icon-{{icon}} service-icon"></i
             ><i class="icon-spin animate-spin loading-icon hidden"></i
-        ><span>{{displayName}}</span>
-        </button>
+            ><span>{{displayName}}</span>
+          </button>
         {{/each}}
-    </div>
+      </div>
     {{/if}}
-</template>
+  </template>

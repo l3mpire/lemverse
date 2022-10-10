@@ -8,22 +8,23 @@
       <span class="button js-zone-save">💾 Save</span>
     </div>
   </div>
-  {{/modal}}
+{{/modal}}
 </template>
-
 <template name="zonesToolbox">
   <div class="zones-toolbox">
     <div class="button js-zone-add">＋ Add a zone</div>
     <div class="zones">
-      {{#each zonesSortedByDistance}}
-      <div class="zone {{#if eq (Session 'selectedZoneId') _id}}active{{/if}}">
-        <span class="point js-properties">{{#if name}}<b>{{name}}</b>{{else}}{{_id}}{{/if}}</span>
-        <span class="point js-set1 {{#if eq (Session 'selectedZonePoint') 1}}active{{/if}}">{{x1}}/{{y1}}</span>
-        ->
-        <span class="point js-set2 {{#if eq (Session 'selectedZonePoint') 2}}active{{/if}}">{{x2}}/{{y2}}</span>
+      {{#each zonesSortedByDistance }}
+        <div class="zone {{#if eq (Session 'selectedZoneId') _id }}active{{/if }}">
+          <span class="point js-properties">
+            {{#if name }}
+              <b>{{name}}</b>{{else}}{{_id}}{{/if}}</span>
+            <span class="point js-set1 {{#if eq (Session 'selectedZonePoint') 1 }}active{{/if }}">{{x1 }}/{{y1 }}</span>
+            ->
+            <span class="point js-set2 {{#if eq (Session 'selectedZonePoint') 2 }}active{{/if }}">{{x2 }}/{{y2 }}</span>
+          </div>
+        {{/each}}
       </div>
-      {{/each}}
+      <span class="pointer">Pointer {{Session 'pointerX'}}/{{Session 'pointerY'}}</span>
     </div>
-    <span class="pointer">Pointer {{Session 'pointerX'}}/{{Session 'pointerY'}}</span>
-  </div>
-</template>
+  </template>

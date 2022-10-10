@@ -10,7 +10,6 @@ div.settings {
         display: block;
       }
     }
-
   }
 
   .menu {
@@ -49,14 +48,14 @@ div.settings {
     }
 
     .options {
-        display: grid;
-        grid-template-rows: auto min-content;
-        width: 100%;
-        overflow: hidden;
-        height: 100%;
+      display: grid;
+      grid-template-rows: auto min-content;
+      width: 100%;
+      overflow: hidden;
+      height: 100%;
 
       form {
-          overflow: auto;
+        overflow: auto;
 
         padding: 0 20px;
 
@@ -90,7 +89,6 @@ div.settings {
         .form-element-s {
           width: 33%;
         }
-
       }
 
       .actions {
@@ -156,5 +154,4 @@ div.settings {
       padding-bottom: 5px;
     }
   }
-
 }

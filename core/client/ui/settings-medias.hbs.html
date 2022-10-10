@@ -5,24 +5,25 @@
   </div>
   <div class="container">
     <div>
-      <video id="js-video-preview" muted></video>
+      <video id="js-video-preview" muted>
+      </video>
       <label for="video-source" class="label">Video source</label>
       <select name="video-source" id="video-source" class="js-cam-select select">
-        {{#each videoRecorders}}
-          <option value={{this.deviceId}} selected={{eq this.deviceId currentUser.profile.videoRecorder}}>{{this.label}}</option>
+        {{#each videoRecorders }}
+          <option value={{this.deviceId}} selected={{eq this.deviceId currentUser.profile.videoRecorder}}>{{this.label}}
+          </option>
         {{/each}}
       </select>
     </div>
-
     <div>
       <label for="audio-source" class="label">Audio source</label>
       <select name="audio-source" id="audio-source" class="js-mic-select select">
-        {{#each audioRecorders}}
-          <option value={{this.deviceId}} selected={{eq this.deviceId currentUser.profile.audioRecorder}}>{{this.label}}</option>
+        {{#each audioRecorders }}
+          <option value={{this.deviceId}} selected={{eq this.deviceId currentUser.profile.audioRecorder}}>{{this.label}}
+          </option>
         {{/each}}
       </select>
     </div>
-
     <div>
       <label for="video-framerate" class="label">Screen sharing framerate ({{frameRate}})</label>
       <input type="range" class="js-screen-framerate input" name="video-framerate" min="5" max="30" value={{frameRate}}>

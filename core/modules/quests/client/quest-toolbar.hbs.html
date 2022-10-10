@@ -1,29 +1,28 @@
 <template name="questToolbar">
-  <div class="quest-toolbar {{#if show}}show{{/if}} {{#if completed}}completed{{/if}}">
-    <input type="text" class="js-quest-name" value="{{title}}" placeholder="Quest title (✎)" tabindex="0">
-    
-    {{#if showActions}}
+  <div class="quest-toolbar {{#if show }}show{{/if }} {{#if completed }}completed{{/if }}">
+    <input type="text"
+           class="js-quest-name"
+           value="{{title}}"
+           placeholder="Quest title (✎)"
+           tabindex="0">
+    {{#if showActions }}
       <div class="actions">
-        {{#if showJoinButton}}
+        {{#if showJoinButton }}
           <button type="button" class="js-quest-join" tabindex="10">🖐 Take the quest</button>
-        {{else if showLeaveButton}}
+          {{else if showLeaveButton}}
           <button type="button" class="js-quest-leave" tabindex="10">Leave the quest</button>
         {{/if}}
-
-        {{#if showActionsButton}}
+        {{#if showActionsButton }}
           <button type="button" class="js-toggle-state" tabindex="11">Complete</button>
           <button type="button" class="js-toggle-state closed" tabindex="11">Reopen</button>
         {{/if}}
-
         <div class="users">
           <ul class="user-list">
-            {{#each user in users}}
-              <li class="{{#if createdBy user}}created-by{{/if}}">
-                {{> avatarViewer user=user showStatus=true}}
-              </li>
+            {{#each user in users }}
+              <li class="{{#if createdBy user }}created-by{{/if }}">{{> avatarViewer user=user showStatus=true }}</li>
             {{/each}}
           </ul>
-          {{#if showInviteButton}}
+          {{#if showInviteButton }}
             <button type="button" class="js-quest-invite"  tabindex="12">Invite</button>
           {{/if}}
         </div>

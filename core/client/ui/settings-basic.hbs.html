@@ -1,72 +1,98 @@
 <template name="characterNameColorSelector">
   <select name="nameColor" class="js-name-color select">
-    {{#each value in colors}}
-    {{#if eq currentUser.profile.nameColor value}}
-    <option selected="selected" value="{{value}}">{{value}}</option>
-    {{else}}
-    <option value="{{value}}">{{value}}</option>
-    {{/if}}
+    {{#each value in colors }}
+      {{#if eq currentUser.profile.nameColor value }}
+        <option selected="selected" value="{{value}}">
+          {{value}}
+        </option>
+      {{else}}
+        <option value="{{value}}">
+          {{value}}
+        </option>
+      {{/if}}
     {{/each}}
   </select>
 </template>
-
 <template name="settingsBasic">
   <div class="header">
     <h2 class="h2">My account</h2>
     <hr class="separator">
   </div>
-
   <div class="options">
     <form>
       <div class="form-element-m">
         <label for="name" class="label">Name</label>
-        <input type="text" name="name" id="name" class="js-name input" data-oldvalue="{{currentUser.profile.name}}" value="{{currentUser.profile.name}}">
+        <input type="text"
+               name="name"
+               id="name"
+               class="js-name input"
+               data-oldvalue="{{currentUser.profile.name}}"
+               value="{{currentUser.profile.name}}">
       </div>
-
       <div class="form-element-m">
         <label for="baseline" class="label">Baseline</label>
-        <input type="text" name="baseline" id="baseline" class="js-name input" data-oldvalue="{{currentUser.profile.baseline}}" value="{{currentUser.profile.baseline}}">
+        <input type="text"
+               name="baseline"
+               id="baseline"
+               class="js-name input"
+               data-oldvalue="{{currentUser.profile.baseline}}"
+               value="{{currentUser.profile.baseline}}">
       </div>
-
-      {{#if length nameColors}}
-      <div class="form-element-m">
-        <label for="name-color" class="label">Name color</label>
-        {{> characterNameColorSelector colors=nameColors}}
-      </div>
+      {{#if length nameColors }}
+        <div class="form-element-m">
+          <label for="name-color" class="label">Name color</label>
+          {{> characterNameColorSelector colors=nameColors}}
+        </div>
       {{/if}}
-
       <div class="form-element-m">
         <label for="website" class="label">Website</label>
-        <input type="text" id="website" name="website" class="js-website input" data-oldvalue="{{currentUser.profile.website}}" value="{{currentUser.profile.website}}" />
+        <input type="text"
+               id="website"
+               name="website"
+               class="js-website input"
+               data-oldvalue="{{currentUser.profile.website}}"
+               value="{{currentUser.profile.website}}"/>
       </div>
-
       <div>
         <label for="bio" class="label">Bio/Hobbies</label>
         <textarea id="bio" name="bio" class="js-bio input" data-oldvalue="{{currentUser.profile.bio}}">{{currentUser.profile.bio}}</textarea>
       </div>
-
       <hr class="separator">
-
       <h3 class="h3">Set discussion picture</h3>
-      <p>Indicate a list of keywords that suit you, {{settings.public.lp.product}} will then display a picture related to these words when your webcam is not active.</p>
-
+      <p>
+        Indicate a list of keywords that suit you, {{settings.public.lp.product}} will then display a picture related to these words when your webcam is not active.
+      </p>
       <div class="form-element-m">
-        <input type="text" name="avatar" id="avatar" class="js-avatar input" data-oldvalue="{{or currentUser.profile.avatar "cat"}}" value="{{or currentUser.profile.avatar "cat"}}" placeholder="happy cat">
+        <input type="text"
+               name="avatar"
+               id="avatar"
+               class="js-avatar input"
+               data-oldvalue="{{or currentUser.profile.avatar "cat"}}"
+               value="{{or currentUser.profile.avatar "cat"}}"
+               placeholder="happy cat">
       </div>
-
       <hr class="separator">
-      
       <h3 class="h3">Custom reaction</h3>
-      <p>By pressing "l" or using the menu of emojis you can play this personalized reaction for everyone on your level to see.</p>
+      <p>
+        By pressing "l" or using the menu of emojis you can play this personalized reaction for everyone on your level to see.
+      </p>
       <div class="form-element-m">
-        <input type="text" name="defaultReaction" id="defaultReaction" class="js-reaction input" data-oldvalue="{{or currentUser.profile.defaultReaction "❤️"}}" value="{{or currentUser.profile.defaultReaction "❤️"}}">
+        <input type="text"
+               name="defaultReaction"
+               id="defaultReaction"
+               class="js-reaction input"
+               data-oldvalue="{{or currentUser.profile.defaultReaction "❤️"}}"
+               value="{{or currentUser.profile.defaultReaction "❤️"}}">
       </div>
-
     </form>
-      <div class="actions show">
-        <button type="button" class="cancel link" aria-label="Cancel updates">Cancel</button>
-        <button type="button" class="submit button" aria-label="Save changes" disabled="{{#if not fieldUpdated}}disabled{{/if}}">Save changes</button>
-      </div>
+    <div class="actions show">
+      <button type="button" class="cancel link" aria-label="Cancel updates">Cancel</button>
+      <button type="button"
+              class="submit button"
+              aria-label="Save changes"
+              disabled="{{#if not fieldUpdated }}disabled{{/if }}">
+        Save changes
+      </button>
+    </div>
   </div>
-
 </template>

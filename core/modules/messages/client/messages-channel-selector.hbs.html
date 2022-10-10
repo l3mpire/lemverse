@@ -1,9 +1,10 @@
 <template name="messagesChannelSelector">
-  <div class="messages-channel-selector {{#if show}}show{{/if}}">
+  <div class="messages-channel-selector {{#if show }}show{{/if }}">
     <h2 class="title">Channels</h2>
     <ul>
-      {{#each channels}}
-        <li class="js-channel-selector {{#if active}}selected{{/if}}" data-channel-id="{{channel}}">{{name}}</li>
+      {{#each channels }}
+        <li class="js-channel-selector {{#if active }}selected{{/if }}"
+            data-channel-id="{{channel}}">{{name}}</li>
       {{/each}}
     </ul>
   </div>

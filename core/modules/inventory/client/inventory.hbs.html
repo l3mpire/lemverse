@@ -1,6 +1,6 @@
 <template name="inventoryItemPanel">
-  <div class="inventory-item-panel {{#if exist}}show{{/if}}">
-    {{#if exist}}
+  <div class="inventory-item-panel {{#if exist }}show{{/if }}">
+    {{#if exist }}
       <div>
         <img src="{{thumbnail}}" alt="thumbnail" class="thumbnail">
         <span class="amount">x{{amount}}</span>
@@ -15,33 +15,31 @@
     {{/if}}
   </div>
 </template>
-
 <template name="inventoryItem">
-  {{#if exist}}
+  {{#if exist }}
     <div class="inventory-item js-inventory-item">
       <img src="{{thumbnail}}" alt="thumbnail" class="thumbnail">
       <span class="amount">x{{amount}}</span>
     </div>
   {{/if}}
 </template>
-
 <template name="inventory">
   {{#modal title="Inventory"}}
-    <div class="header">
-      <h2 class="h2">Inventory</h2>
-      <hr class="separator">
-    </div>
-    <div class="inventory">
-      {{#if hasItems}}
-        <div class="items">
-          {{#each item in items}}
-            {{> inventoryItem item=item }}
-          {{/each}}
-        </div>
-      {{else}}
-        <p>--- Your inventory is empty ---</p>
-      {{/if}}
-      {{> inventoryItemPanel}}
-    </div>
-  {{/modal}}
+  <div class="header">
+    <h2 class="h2">Inventory</h2>
+    <hr class="separator">
+  </div>
+  <div class="inventory">
+    {{#if hasItems }}
+      <div class="items">
+        {{#each item in items }}
+          {{> inventoryItem item=item }}
+        {{/each}}
+      </div>
+    {{else}}
+      <p>--- Your inventory is empty ---</p>
+    {{/if}}
+    {{> inventoryItemPanel}}
+  </div>
+{{/modal}}
 </template>

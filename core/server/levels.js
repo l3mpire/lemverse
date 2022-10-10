@@ -94,7 +94,7 @@ const cloneLevelContent = (originalLevelId, targetedLevelId) => {
       entity.entityId = idMap[entity.entityId];
       Entities.insert(entity);
     } else {
-      log('cloneLevelContent: Found entity with entityId without any match: ', elem);
+      log('cloneLevelContent: Found entity with entityId without any match: ', entity);
     }
   });
 

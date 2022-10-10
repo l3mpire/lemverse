@@ -1,11 +1,12 @@
 <template name="marker">
-  <div class="marker" style="left:{{tile2domX tileIndex}}px; top:{{tile2domY tileIndex}}px; width:{{zoom 16 w}}px; height:{{zoom 16 h}}px; border-color:{{color}}; {{#if bg}}background-color:{{bg}}; opacity: 0.2;{{/if}}"></div>
+  <div class="marker"
+       style="left:{{tile2domX tileIndex}}px; top:{{tile2domY tileIndex}}px; width:{{zoom 16 w}}px; height:{{zoom 16 h}}px; border-color:{{color}}; {{#if bg }}background-color:{{bg }}; opacity: 0.2;{{/if }}">
+  </div>
 </template>
-
 <template name="layer">
-  <div class="layer" style="left:{{tile2domX tileIndex}}px; top:{{tile2domY tileIndex}}px">{{layer}}</div>
+  <div class="layer"
+       style="left:{{tile2domX tileIndex}}px; top:{{tile2domY tileIndex}}px">{{layer}}</div>
 </template>
-
 <template name="tilePropertiesModal">
   <div class="modal tile-properties-modal">
     <div>
@@ -18,15 +19,18 @@
     </div>
   </div>
 </template>
-
 <template name="editorTilesets">
   <div class="selected-tileset">
     {{#with selectedTileset}}
-      <img src="/api/files/{{fileId}}" style="width:{{zoom width 1}}px; height:{{zoom height 1}}px;" draggable="false" alt="tileset image">
-      {{#each collisionTileIndexes}}
+      <img src="/api/files/{{fileId}}"
+           style="width:{{zoom width 1}}px;
+                  height:{{zoom height 1}}px;"
+           draggable="false"
+           alt="tileset image">
+      {{#each collisionTileIndexes }}
         {{> marker tileIndex=tileIndex color='transparent' w=1 h=1 bg='#FF0000'}}
       {{/each}}
-      {{#each tilesAsArray}}
+      {{#each tilesAsArray }}
         {{> layer}}
       {{/each}}
     {{/with}}
@@ -35,7 +39,6 @@
       {{> marker tileIndex=index w=1 h=1 color='#0000FF'}}
     {{/with}}
   </div>
-
   <div class="info">
     {{#with Session 'pointerTileIndex'}}
       pointer: {{this}}
@@ -45,33 +48,41 @@
       selected: {{index}}
     {{/with}}
     <hr>
-    <div class="drop-tileset js-drop-tileset {{#if Session 'showDropZone'}}is-over{{/if}}">
+    <div class="drop-tileset js-drop-tileset {{#if Session 'showDropZone' }}is-over{{/if }}">
       <h3>Drag &amp; Drop file here</h3>
     </div>
     <hr>
-    0: floors &amp; walls<br>
-    1: carpets &amp; doors<br>
-    2: left furniture &amp; others<br>
-    3: right furniture<br>
-    4: left object on furniture<br>
-    5: right object on furniture<br>
-    6: left above user<br>
-    7: right above user<br>
-    8: temp events<br>
+    0: floors &amp; walls
+    <br>
+    1: carpets &amp; doors
+    <br>
+    2: left furniture &amp; others
+    <br>
+    3: right furniture
+    <br>
+    4: left object on furniture
+    <br>
+    5: right object on furniture
+    <br>
+    6: left above user
+    <br>
+    7: right above user
+    <br>
+    8: temp events
+    <br>
     <hr>
-    {{#each tilesets}}
-      <div class="js-tilesets-select {{#if and (eq (Session 'selectedTilesetId') _id) (neq (Session 'selectedEditTilesetId') _id)}}active{{/if}}">
-        {{#if neq (Session 'selectedEditTilesetId') _id}}
+    {{#each tilesets }}
+      <div class="js-tilesets-select {{#if and (eq (Session 'selectedTilesetId') _id) (neq (Session 'selectedEditTilesetId') _id) }}active{{/if }}">
+        {{#if neq (Session 'selectedEditTilesetId') _id }}
           <input type="checkbox" class="js-toggle-visibility" checked="{{hidden}}">
           <div class='js-tileset-remove'>❌</div>
           <div class='tileset-name'>{{name}}</div>
         {{/if}}
-        <input id={{_id}} value={{name}} class="js-tileset-name {{#if neq (Session 'selectedEditTilesetId') _id}}hidden{{/if}}" autocomplete="off" />
+        <input id={{_id}} value={{name}} class="js-tileset-name {{#if neq (Session 'selectedEditTilesetId') _id }}hidden{{/if }}" autocomplete="off" />
       </div>
     {{/each}}
   </div>
-
-  {{#if displayTilesetPropertiesModal}}
+  {{#if displayTilesetPropertiesModal }}
     {{> tilePropertiesModal}}
   {{/if}}
 </template>

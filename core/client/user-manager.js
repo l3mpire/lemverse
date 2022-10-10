@@ -114,7 +114,7 @@ userManager = {
     const character = this.characters[user._id];
     if (!character) return;
 
-    const { x, y, direction, reaction, shareAudio, userMediaError, name, baseline, nameColor, guest } = user.profile;
+    const { x, y, direction, reaction, shareAudio, userMediaError, name, baseline, nameColor } = user.profile;
 
     // update character instance
     networkManager.onCharacterStateReceived({ userId: user._id, x, y, direction });

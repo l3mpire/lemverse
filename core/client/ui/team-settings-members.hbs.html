@@ -13,16 +13,14 @@
     </div>
   </div>
 </template>
-
 <template name="teamSettingsMembers">
   <div class="header">
     <h2 class="h2">Team members</h2>
     <hr class="separator">
   </div>
-
   <div class="team-settings-members">
     <ul class="team-users">
-      {{#each user in teamMembers}}
+      {{#each user in teamMembers }}
         <li>{{> teamMemberEntry user=user}}</li>
       {{/each}}
     </ul>
@@ -30,5 +28,4 @@
       <button type="button" class="button green js-add-team-user">Add user</button>
     </div>
   </div>
-
 </template>

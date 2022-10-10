@@ -1,23 +1,24 @@
 <template name="userListSelection">
   {{#modal title="User selection"}}
-    <div class="header">
-      <h2 class="h2">Users</h2>
-      <hr class="separator">
+  <div class="header">
+    <h2 class="h2">Users</h2>
+    <hr class="separator">
+  </div>
+  <div class="user-list-selection">
+    <ul>
+      {{#each users }}
+        <li class="user js-selectable {{#if selected }}selected{{/if }}"
+            data-user-id="{{this._id}}">
+          {{> avatarViewer user=this showStatus=true}}
+          <span>{{this.profile.name}}</span>
+        </li>
+      {{else}}
+        <li class="empty">No users to add</li>
+      {{/each}}
+    </ul>
+    <div>
+      <button type="button" class="button green js-submit">Submit ({{amountSelected}})</button>
     </div>
-    <div class="user-list-selection">
-      <ul>
-        {{#each users}}
-          <li class="user js-selectable {{#if selected}}selected{{/if}}" data-user-id="{{this._id}}">
-            {{> avatarViewer user=this showStatus=true}}
-            <span>{{this.profile.name}}</span>
-          </li>
-        {{else}}
-          <li class="empty">No users to add</li>
-        {{/each}}
-      </ul>
-      <div>
-        <button type="button" class="button green js-submit">Submit ({{amountSelected}})</button>
-      </div>
-    </div>
-  {{/modal}}
+  </div>
+{{/modal}}
 </template>

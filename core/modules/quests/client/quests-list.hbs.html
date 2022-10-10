@@ -2,24 +2,32 @@
   {{> avatarViewer user=user}}
   <span>{{title}}</span>
 </template>
-
 <template name="questsList">
-  <div class="quests-list {{#if show}}show{{/if}}">
-  
+  <div class="quests-list {{#if show }}show{{/if }}">
     <div class="quest-mode-selectors">
-      <button type="button" class="js-quest-switch-mode {{#if isActiveMode "mine"}}active{{/if}}" data-mode="mine"><span>📜</span> To do</button>
-      <button type="button" class="js-quest-switch-mode {{#if isActiveMode "completed"}}active{{/if}}" data-mode="completed"><span>🎉</span> Completed</button>
+      <button type="button"
+              class="js-quest-switch-mode {{#if isActiveMode "mine" }}active{{/if }}"
+              data-mode="mine">
+        <span>📜</span> To do
+      </button>
+      <button type="button"
+              class="js-quest-switch-mode {{#if isActiveMode "completed" }}active{{/if }}"
+              data-mode="completed">
+        <span>🎉</span> Completed
+      </button>
     </div>
-
     <ul class="quests">
-      {{#if newQuest}}
-        <li class="js-quest quest creating  {{#if draftQuestSelected}}selected{{/if}}" data-quest-id="{{draftQuestId}}"><i>(draft) {{newQuest}}</i></li>
+      {{#if newQuest }}
+        <li class="js-quest quest creating  {{#if draftQuestSelected }}selected{{/if }}"
+            data-quest-id="{{draftQuestId}}">
+          <i>(draft) {{newQuest}}</i>
+        </li>
       {{/if}}
-
-      {{#each questsCategorized}}
+      {{#each questsCategorized }}
         <li class="js-category-name">{{name}} ({{count}})</li>
-        {{#each quests}}
-          <li class="js-quest quest {{#if questSelected}}selected{{/if}} {{#if questHasUpdates}}updated{{/if}}" data-quest-id="{{this._id}}">
+        {{#each quests }}
+          <li class="js-quest quest {{#if questSelected }}selected{{/if }} {{#if questHasUpdates }}updated{{/if }}"
+              data-quest-id="{{this._id}}">
             {{> questListEntry}}
           </li>
         {{/each}}

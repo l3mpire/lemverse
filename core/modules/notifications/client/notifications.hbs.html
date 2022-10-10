@@ -1,53 +1,55 @@
 <template name="notificationsAudioPlayer">
-  <button type="button" class="js-play {{#if isPlaying}}playing{{/if}}"></button>
+  <button type="button" class="js-play {{#if isPlaying }}playing{{/if }}"></button>
   <span>{{duration}}</span>
 </template>
-
 <template name="notification">
-  <div class="notification-entry {{#if read}}read{{/if}} {{#unless fileId}}js-notification-clickable{{/unless}}">
+  <div class="notification-entry {{#if read }}read{{/if }} {{#unless fileId }}js-notification-clickable{{/unless }}">
     {{> avatarViewer user=user}}
     <div class="notification-content">
       <div class="date">{{date}}</div>
       <div class="name">{{user.profile.name}}</div>
       <div class="subject">
-        {{#if fileId}}
+        {{#if fileId }}
           {{> notificationsAudioPlayer}}
-        {{else if quest}}
-          <div class="subject">{{#if newQuest}}has a new quest for you{{else}}has updated a quest{{/if}}</div>
-        {{else}}
-          <div class="subject">sent you a message</div>
-        {{/if}}
+          {{else if quest}}
+          <div class="subject">
+            {{#if newQuest }}
+            has a new quest for you{{else}}has updated a quest{{/if}}
+            </div>
+          {{else}}
+            <div class="subject">sent you a message</div>
+          {{/if}}
+        </div>
       </div>
     </div>
-  </div>
-</template>
-
-<template name="notificationButton">
-  {{#unless guest}}
-    <button type="button" class="button js-notifications {{#if pendingNotificationsCount}}visible{{/if}}" data-count="{{ pendingNotificationsCount }}">🔔</button>
+  </template>
+  <template name="notificationButton">
+    {{#unless guest}}
+    <button type="button"
+            class="button js-notifications {{#if pendingNotificationsCount }}visible{{/if }}"
+            data-count="{{ pendingNotificationsCount }}">
+      🔔
+    </button>
   {{/unless}}
 </template>
-
 <template name="notifications">
   {{#modal id="displayNotificationsPanel" title="Notifications"}}
-    <div class="header">
-      <h2 class="h2">
-        <span>Notifications</span>
-        <div class="tooltip">
-          <button type="button" class="mark-as-read js-notification-mark-all-as-read">📨</button>
-          <span class="tooltiptext">Mark all as read</span>
-        </div>
-      </h2>
-      <hr class="separator">
-    </div>
-    <div class="notifications">
-      <ul>
-        {{#each notifications}}
-          <li class="notification">
-            {{> notification}}  
-          </li>
-        {{/each}}
-      </ul>
-    </div>
-  {{/modal}}
+  <div class="header">
+    <h2 class="h2">
+      <span>Notifications</span>
+      <div class="tooltip">
+        <button type="button" class="mark-as-read js-notification-mark-all-as-read">📨</button>
+        <span class="tooltiptext">Mark all as read</span>
+      </div>
+    </h2>
+    <hr class="separator">
+  </div>
+  <div class="notifications">
+    <ul>
+      {{#each notifications }}
+        <li class="notification">{{> notification}}</li>
+      {{/each}}
+    </ul>
+  </div>
+{{/modal}}
 </template>

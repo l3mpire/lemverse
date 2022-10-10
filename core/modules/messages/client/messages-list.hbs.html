@@ -1,11 +1,11 @@
 <template name="messagesListMessage">
   <div class="js-message">
-    {{#if user}}
+    {{#if user }}
       {{> avatarViewer user=user showStatus=true}}
       <div class="message-content">
         <span class="js-username">{{userName}}</span> <span class="time" title="{{date}}">{{time}}</span>
         <p class="text">{{{text}}}</p>
-        {{#if file}}
+        {{#if file }}
           <div class="files">
             <a href="{{file.link}}" target="_blank" rel="noopener">
               <img src="{{file.link}}" alt="{{file.name}}">
@@ -13,35 +13,42 @@
           </div>
         {{/if}}
         <ul class="reactions">
-          {{#each reaction in reactions}}
-            {{#if reaction.amount}}
-              <li data-reaction="{{reaction.reaction}}" class="reaction {{#if reaction.owner}}owner{{/if}} js-message-reaction">{{reaction.reaction}} {{reaction.amount}}</li>
+          {{#each reaction in reactions }}
+            {{#if reaction.amount }}
+              <li data-reaction="{{reaction.reaction}}"
+                  class="reaction {{#if reaction.owner }}owner{{/if }} js-message-reaction">
+                {{reaction.reaction}} {{reaction.amount}}
+              </li>
             {{/if}}
           {{/each}}
         </ul>
       </div>
       <div class="actions show">
-        <button type="button" class="button js-message-open-reactions-box" tabindex="-1">👍</button> 
+        <button type="button"
+                class="button js-message-open-reactions-box"
+                tabindex="-1">👍</button>
       </div>
-      <div class="owner-actions {{#if showActions}}show{{/if}}">
-        <button type="button" class="button js-message-remove" tabindex="-1">x</button> 
+      <div class="owner-actions {{#if showActions }}show{{/if }}">
+        <button type="button" class="button js-message-remove" tabindex="-1">x</button>
       </div>
     {{/if}}
   </div>
 </template>
-
 <template name="messagesList">
   <div class="messages-module">
     <h3 class="channel-name">{{channelName}}</h3>
-    <button type="button" class="js-message-list-close" title="Close" tabindex="15">
+    <button type="button"
+            class="js-message-list-close"
+            title="Close"
+            tabindex="15">
       <span class="simple-modal-close__text">✖</span>
     </button>
     <div class="actions">
-      {{#if canSubscribe}}
-        {{#if subscribed}}
+      {{#if canSubscribe }}
+        {{#if subscribed }}
           <button type="button" class="js-channel-subscribe">Subscribe</button>
         {{else}}
-          {{#if muted}}
+          {{#if muted }}
             <button type="button" class="js-channel-mute">Mute</button>
           {{else}}
             <button type="button" class="js-channel-unmute">Unmute</button>
@@ -51,15 +58,15 @@
       {{/if}}
     </div>
     <div class="messages-list">
-      {{#each message in messages}}
+      {{#each message in messages }}
         {{#unless sameDay @index}}
-          <div class="separation-day">
-            <div class="text">{{formattedSeparationDate @index}}</div>
-          </div>
-        {{/unless}}
-        {{> messagesListMessage message=message }}
-      {{/each}}
-    </div>
-    {{> messageReaction}}
+        <div class="separation-day">
+          <div class="text">{{formattedSeparationDate @index}}</div>
+        </div>
+      {{/unless}}
+      {{> messagesListMessage message=message }}
+    {{/each}}
   </div>
+  {{> messageReaction}}
+</div>
 </template>

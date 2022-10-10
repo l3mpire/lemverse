@@ -1,10 +1,12 @@
 <template name="messageReaction">
-  <div class="message-reaction {{#if visible}}visible{{/if}}" style="top: {{position.y}}px; left: {{position.x}}px;">
+  <div class="message-reaction {{#if visible }}visible{{/if }}"
+       style="top: {{position.y}}px;
+              left: {{position.x}}px;">
     <ul>
       <li>
         <button type="button" class="js-close">❌</button>
       </li>
-      {{#each emoji in emojis}}
+      {{#each emoji in emojis }}
         <li>
           <button type="button" class="js-emoji">{{emoji}}</button>
         </li>

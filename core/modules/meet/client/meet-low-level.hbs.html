@@ -1,7 +1,7 @@
 <template name="meetLowLevelTracks">
-  {{#if sessionMeetLowLevelTracks.length}}
-    <div class="meet-low-level-tracks js-streams {{#if Session 'meetLowLevelFullscreenTrackId'}}fullscreen{{/if}}">
-      {{#each sessionMeetLowLevelTracks}}
+  {{#if sessionMeetLowLevelTracks.length }}
+    <div class="meet-low-level-tracks js-streams {{#if Session 'meetLowLevelFullscreenTrackId' }}fullscreen{{/if }}">
+      {{#each sessionMeetLowLevelTracks }}
         {{#with track}}
           {{> meetLowLevelTrack}}
         {{/with}}
@@ -9,26 +9,25 @@
     </div>
   {{/if}}
 </template>
-
 <template name="meetLowLevelTrack">
-  {{#if eq getType "audio"}}
+  {{#if eq getType "audio" }}
     {{> meetLowLevelAudioTrack}}
   {{else}}
     {{> meetLowLevelVideoTrack}}
   {{/if}}
 </template>
-
 <template name="meetLowLevelAudioTrack">
   <div id="{{getId}}" class="hide">
     <audio class="st" autoplay="1" id="{{getId}}" muted={{isLocal}}></audio>
   </div>
 </template>
-
 <template name="meetLowLevelVideoTrack">
-  <div id="{{getId}}" class="stream {{#if eq (Session 'meetLowLevelFullscreenTrackId') getId}}active{{/if}}">
+  <div id="{{getId}}"
+       class="stream {{#if eq (Session 'meetLowLevelFullscreenTrackId') getId }}active{{/if }}">
     <div class="stream-name">{{name}}</div>
     <div class="webcam js-fullscreen">
-      <video class="st" autoplay="1"></video>
+      <video class="st" autoplay="1">
+      </video>
     </div>
   </div>
 </template>

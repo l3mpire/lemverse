@@ -1,23 +1,24 @@
 <template name="modal">
   <div class="modal visible">
-    <dialog id="js-modal" class="modal-window {{classes}}" role="dialog" open="" aria-labelledby="modal-title">
+    <dialog id="js-modal"
+            class="modal-window {{classes}}"
+            role="dialog"
+            open=""
+            aria-labelledby="modal-title">
       <div role="document" class="modal-body">
         <button type="button" class="js-modal-close" title="Close this modal">
           <span class="simple-modal-close__text">✖</span>
         </button>
-        <div class="modal-content">
-          {{> Template.contentBlock }}
-        </div>
+        <div class="modal-content">{{> Template.contentBlock }}</div>
       </div>
     </dialog>
   </div>
 </template>
-
 <template name="modalContainer">
-  <div class="modal-container {{#if modal}}visible{{/if}}">
+  <div class="modal-container {{#if modal }}visible{{/if }}">
     <div class="background js-modal-background"></div>
-    {{#if modal}}
-        {{> Template.dynamic template=modal.template data=modal}}
+    {{#if modal }}
+      {{> Template.dynamic template=modal.template data=modal}}
     {{/if}}
   </div>
 </template>

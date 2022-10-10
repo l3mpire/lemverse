@@ -1,41 +1,42 @@
 <template name="remoteStream">
-  <div class="stream js-video-{{remoteUser._id}} {{#if isTalking}}talking{{/if}}" data-state="{{state}}">
-    <div class="stream-name">
-        {{remoteUser.name}}
-    </div>
+  <div class="stream js-video-{{remoteUser._id}} {{#if isTalking }}talking{{/if }}"
+       data-state="{{state}}">
+    <div class="stream-name">{{remoteUser.name}}</div>
     <div class="js-webcam webcam">
       {{#unless mediaState.shareAudio}}
-        <div class="mute">
-          <div>🎤</div>
-          <div>❌</div>
-        </div>
-      {{/unless}}
-      {{#unless mediaState.shareVideo}}
-        <img src={{remoteUser.avatar}} alt="avatar">
-      {{/unless}}
-      {{#if hasMainStream}}
-        {{> webcam triggerVar=talkingVar remoteUser=remoteUser}}
-      {{/if}}
-    </div>
-    {{#if hasScreenStream}}
-      <div class="js-screenshare screenshare">
-        {{> screenshare triggerVar=talkingVar remoteUser=remoteUser}}
+      <div class="mute">
+        <div>🎤</div>
+        <div>❌</div>
       </div>
-    {{/if}}
-  </div>
+    {{/unless}}
+    {{#unless mediaState.shareVideo}}
+    <img src={{remoteUser.avatar}} alt="avatar">
+  {{/unless}}
+  {{#if hasMainStream }}
+    {{> webcam triggerVar=talkingVar remoteUser=remoteUser}}
+  {{/if}}
+</div>
+{{#if hasScreenStream }}
+  <div class="js-screenshare screenshare">{{> screenshare triggerVar=talkingVar remoteUser=remoteUser}}</div>
+{{/if}}
+</div>
 </template>
-
 <template name="closefullscreen">
   <button type="button" class="js-fullscreen-close">
     <span>✖</span>
   </button>
 </template>
-
 <template name="webcam">
-  <video id="webcam-{{_id}}" type="video/mp4" width="320" height="240" autoplay></video>
+  <video id="webcam-{{_id}}"
+         type="video/mp4"
+         width="320"
+         height="240"
+         autoplay>
+  </video>
   {{> closefullscreen}}
 </template>
 <template name="screenshare">
-  <video id="screen-{{_id}}" type="video/mp4" autoplay muted></video>
+  <video id="screen-{{_id}}" type="video/mp4" autoplay muted>
+  </video>
   {{> closefullscreen}}
 </template>

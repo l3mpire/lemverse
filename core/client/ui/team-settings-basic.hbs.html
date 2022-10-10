@@ -3,30 +3,39 @@
     <h2 class="h2">Main settings</h2>
     <hr class="separator">
   </div>
-
   <div class="options">
     <form>
       <div class="form-element-m">
         <label for="name" class="label">Name</label>
-        <input type="text" name="name" id="name" class="js-name input" data-oldvalue="{{team.name}}" value="{{team.name}}">
+        <input type="text"
+               name="name"
+               id="name"
+               class="js-name input"
+               data-oldvalue="{{team.name}}"
+               value="{{team.name}}">
       </div>
-
       <div class="form-element-m">
         <label for="website" class="label">Website</label>
-        <input type="text" id="website" name="website" class="js-website input" data-oldvalue="{{team.website}}" value="{{team.website}}" />
+        <input type="text"
+               id="website"
+               name="website"
+               class="js-website input"
+               data-oldvalue="{{team.website}}"
+               value="{{team.website}}"/>
       </div>
-
       <div>
         <label for="bio" class="label">Description</label>
         <textarea id="bio" name="description" class="js-description input" data-oldvalue="{{team.description}}">{{team.description}}</textarea>
       </div>
     </form>
-
     <div class="actions show">
       <button type="button" class="cancel link" aria-label="Cancel updates">Cancel</button>
-      <button type="button" class="submit button" aria-label="Save changes" disabled="{{#if not fieldUpdated}}disabled{{/if}}">Save changes</button>
+      <button type="button"
+              class="submit button"
+              aria-label="Save changes"
+              disabled="{{#if not fieldUpdated }}disabled{{/if }}">
+        Save changes
+      </button>
     </div>
-
   </div>
-
 </template>

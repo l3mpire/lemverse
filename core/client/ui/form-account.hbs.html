@@ -1,5 +1,5 @@
 <template name="formAccount">
-  {{#if (or showLogForm restrictedRegistration)}}
+  {{#if (or showLogForm restrictedRegistration) }}
     {{> formLogIn visible=isLoading restrictedRegistration=restrictedRegistration}}
   {{else}}
     {{> formSignIn visible=isLoading}}

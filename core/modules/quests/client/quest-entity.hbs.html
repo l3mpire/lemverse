@@ -1,18 +1,22 @@
 <template name="questEntity">
   {{#modal title=title}}
-    <div class="quest-entity">
-      <div class="actions">
-        <button type="button" class="button js-quest-subscribe {{#if userSubscribed}}unsubscribe{{else}}subscribe{{/if}}">{{#if userSubscribed}}Unsubscribe{{else}}Subscribe{{/if}}</button>
-      </div>
-      <ul>
-        {{#each subscriber in subscribers}}
-          <li>
-            {{> avatarViewer user=subscriber showStatus=true}}
-            <span>{{subscriber.profile.name}}</span>
-          </li>
-        {{/each}}
-      </ul>
-      <button type="button" class="button js-quest-create">📖 Create new quest</button>
+  <div class="quest-entity">
+    <div class="actions">
+    <button type="button"
+            class="button js-quest-subscribe {{#if userSubscribed }}unsubscribe{{else }}subscribe{{/if }}">
+      {{#if userSubscribed }}
+      Unsubscribe{{else}}Subscribe{{/if}}
+      </button>
     </div>
-  {{/modal}}
+    <ul>
+      {{#each subscriber in subscribers }}
+        <li>
+          {{> avatarViewer user=subscriber showStatus=true}}
+          <span>{{subscriber.profile.name}}</span>
+        </li>
+      {{/each}}
+    </ul>
+    <button type="button" class="button js-quest-create">📖 Create new quest</button>
+  </div>
+{{/modal}}
 </template>

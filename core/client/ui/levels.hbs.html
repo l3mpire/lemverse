@@ -1,6 +1,6 @@
 <template name="levels">
   <div class="levels">
-    {{#if loading}}
+    {{#if loading }}
       <div class="loading">
         <span>⌛</span>
         <span>Loading …</span>
@@ -8,36 +8,48 @@
     {{else}}
       <div class="container">
         <div class="tabs">
-          <button type="button" data-mode="list" class="js-tab-switcher {{#if showList}}active{{/if}}">Levels</button>
-          <button type="button" data-mode="create" class="js-tab-switcher {{#if showCreate}}active{{/if}}">Create</button>
+          <button type="button"
+                  data-mode="list"
+                  class="js-tab-switcher {{#if showList }}active{{/if }}">Levels</button>
+          <button type="button"
+                  data-mode="create"
+                  class="js-tab-switcher {{#if showCreate }}active{{/if }}">Create</button>
         </div>
-        {{#if showList}}
+        {{#if showList }}
           <ul class="levels-list">
-            {{#each level in levels}}
+            {{#each level in levels }}
               <li>
                 <button type="button" data-level-id={{level._id}} class="js-level-select">
-                  <span class="left">{{levelName level}} {{#if isLevelOwner level}}👑{{/if}}</span>
-                  <span class="small">{{levelVisitCount level}}</span>
-                </button>
-              </li>
-            {{/each}}
-          </ul>
-        {{else if restrictedLevelCreation}}
-          <div>
-            <div class="request-access">
-              <h2>Set up your virtual office on {{settings.public.lp.product}}!</h2>
-              <div>Book a meeting with someone who will create your custom virtual office for you</div>
-              <div>and who will get you all set up on making the most out of your remote work experience on {{settings.public.lp.product}}!</div>
-              <div><a href="{{contactURL}}" target="_blank" rel="noopener" class="button">Schedule Time</a></div>
+                  <span class="left">{{levelName level}}
+                    {{#if isLevelOwner level }}
+                    👑{{/if}}</span>
+                    <span class="small">{{levelVisitCount level}}</span>
+                  </button>
+                </li>
+              {{/each}}
+            </ul>
+            {{else if restrictedLevelCreation}}
+            <div>
+              <div class="request-access">
+                <h2>Set up your virtual office on {{settings.public.lp.product}}!</h2>
+                <div>Book a meeting with someone who will create your custom virtual office for you</div>
+                <div>
+                  and who will get you all set up on making the most out of your remote work experience on {{settings.public.lp.product}}!
+                </div>
+                <div>
+                  <a href="{{contactURL}}" target="_blank" rel="noopener" class="button">Schedule Time</a>
+                </div>
+              </div>
             </div>
-          </div>
-        {{else}}
-          <div class="level-create">
-            {{> levelTemplateList}}
-            <div><button class="button js-create-level">Create a new empty level</button></div>
-          </div>
-        {{/if}}
-      </div>
-    {{/if}}
-  </div>
-</template>
+          {{else}}
+            <div class="level-create">
+              {{> levelTemplateList}}
+              <div>
+                <button class="button js-create-level">Create a new empty level</button>
+              </div>
+            </div>
+          {{/if}}
+        </div>
+      {{/if}}
+    </div>
+  </template>

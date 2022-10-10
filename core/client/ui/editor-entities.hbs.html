@@ -5,15 +5,12 @@
   <input type="text" value="{{label}}" class="entity-label">
   <input type="checkbox" checked="{{validated}}" class="validated">
 </template>
-
 <template name="editorEntities">
   <div class="editor-entities">
     <div class="entity-list">
       <ul>
-        {{#each entities}}
-          <li>
-            {{> editorEntity}}
-          </li>
+        {{#each entities }}
+          <li>{{> editorEntity}}</li>
         {{/each}}
       </ul>
     </div>

@@ -1,25 +1,25 @@
 <template name="userProfile">
   {{#modal title=title}}
-    <div class="header">
-      <h2 class="h2">{{title}}</h2>
-      <hr class="separator">
-    </div>
-    <div class="user-profile">
-      <div class="content container">
-        <div>
-          <label for="team" class="label">Team</label>
-          {{or guild "-"}}
-        </div>
-        <div>
-          <label for="website" class="label">Website</label>
-          {{or website "-"}}
-        </div>
-        <div>
-          <label for="bio" class="label">Bio/Hobbies</label>
-          {{or profile.bio "-"}}
-        </div>
+  <div class="header">
+    <h2 class="h2">{{title}}</h2>
+    <hr class="separator">
+  </div>
+  <div class="user-profile">
+    <div class="content container">
+      <div>
+        <label for="team" class="label">Team</label>
+        {{or guild "-"}}
       </div>
-      <div class="age">{{age}} days old in {{settings.public.lp.product}}</div>
+      <div>
+        <label for="website" class="label">Website</label>
+        {{or website "-"}}
+      </div>
+      <div>
+        <label for="bio" class="label">Bio/Hobbies</label>
+        {{or profile.bio "-"}}
+      </div>
     </div>
-  {{/modal}}
+    <div class="age">{{age}} days old in {{settings.public.lp.product}}</div>
+  </div>
+{{/modal}}
 </template>

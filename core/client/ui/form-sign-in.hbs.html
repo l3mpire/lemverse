@@ -1,16 +1,25 @@
 <template name="formSignIn">
   <div class="form-account {{#unless visible}}visible{{/unless}}">
-    {{#if eq getStep 1}}
+    {{#if eq getStep 1 }}
       <div class="step">
         <h1 class="title">Welcome to {{settings.public.lp.product}}</h1>
-        <p>You are using a guest account, <u>your actions are limited</u>.<br> Create an account right now to discover all the features of lemverse!</p>
-        <button type="button" class="js-next-step submit" aria-label="create an account">Join the living world</button><br />
+        <p>
+          You are using a guest account, <u>your actions are limited</u>.
+          <br>
+          Create an account right now to discover all the features of lemverse!
+        </p>
+        <button type="button"
+                class="js-next-step submit"
+                aria-label="create an account">Join the living world</button>
+        <br />
         <a href="?mode=login" class="link">Already have an account, go here!</a>
       </div>
     {{/if}}
-    {{#if eq getStep 2}}
+    {{#if eq getStep 2 }}
       <div class="step">
-        <button type="button" class="js-previous-step" aria-label="go to the previous step">&laquo;</button>
+        <button type="button"
+                class="js-previous-step"
+                aria-label="go to the previous step">&laquo;</button>
         <h1 class="title">✉️ Your email address</h1>
         <p>Get all updates about {{settings.public.lp.product}}! We don't spam.</p>
         <form>
@@ -21,36 +30,45 @@
         </form>
       </div>
     {{/if}}
-
-    {{#if eq getStep 3}}
+    {{#if eq getStep 3 }}
       <div class="step">
-        <button type="button" class="js-previous-step" aria-label="go to the previous step">&laquo;</button>
+        <button type="button"
+                class="js-previous-step"
+                aria-label="go to the previous step">&laquo;</button>
         <h1 class="title">🔑 Your password</h1>
         <p>Create a password... Promise, I won't share it with anyone 🤐.</p>
         <form>
           <div class="group-field">
-            <input name="password" type="password" value="{{password}}" class="js-edit js-password">
+            <input name="password"
+                   type="password"
+                   value="{{password}}"
+                   class="js-edit js-password">
           </div>
           <button type="submit" class="submit" aria-label="go to the next step">Next step</button>
         </form>
       </div>
     {{/if}}
-
-    {{#if eq getStep 4}}
+    {{#if eq getStep 4 }}
       <div class="step">
-        <button type="button" class="js-previous-step" aria-label="go to the previous step">&laquo;</button>
+        <button type="button"
+                class="js-previous-step"
+                aria-label="go to the previous step">&laquo;</button>
         <h1 class="title">🧑 Your nickname</h1>
         <p>This is the name that will appear above your character.</p>
         <form>
           <div class="group-field">
-            <input name="nickname" type="text" value="{{nickname}}" class="js-edit js-nickname">
+            <input name="nickname"
+                   type="text"
+                   value="{{nickname}}"
+                   class="js-edit js-nickname">
           </div>
           <button type="submit" class="submit" aria-label="create my character">Create my character</button>
-          <p class="tos">By clicking "Create my character", you agree on <a href="{{termsLink}}" target="_blank" rel="noopener">Terms</a> and that you have read our <a href="{{privacyLink}}" target="_blank" rel="noopener">Data use policy</a>, including our <a href="{{cookiesLink}}" target="_blank" rel="noopener">Cookie use</a>.</p>
+          <p class="tos">
+            By clicking "Create my character", you agree on <a href="{{termsLink}}" target="_blank" rel="noopener">Terms</a> and that you have read our <a href="{{privacyLink}}" target="_blank" rel="noopener">Data use policy</a>, including our <a href="{{cookiesLink}}" target="_blank" rel="noopener">Cookie use</a>.
+          </p>
         </form>
       </div>
     {{/if}}
-
     {{> loginServices }}
   </div>
 </template>
