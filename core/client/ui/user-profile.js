@@ -30,6 +30,7 @@ Template.userProfile.helpers({
     const template = Template.instance();
     return getUser(template).profile.name;
   },
+  myProfile() { return Meteor.userId() === Template.instance().data.userId; },
   age() { return moment().diff(getUser(Template.instance()).createdAt, 'days'); },
   website() {
     const { website } = getUser(Template.instance()).profile;
@@ -43,7 +44,11 @@ Template.userProfile.helpers({
 });
 
 Template.userProfile.events({
-  'click .header'(event, templateInstance) {
+  'click .js-title'(event, templateInstance) {
     navigator.clipboard.writeText(getUser(templateInstance)._id).then(() => lp.notif.success('✂️ Identifier copied to your clipboard'));
+  },
+  'click .js-report'(event, templateInstance) {
+    const { userId } = templateInstance.data;
+    Session.set('modal', { template: 'report', userId });
   },
 });

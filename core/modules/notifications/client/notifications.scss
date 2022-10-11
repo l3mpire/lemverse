@@ -1,6 +1,6 @@
 @import "../../../client/variables";
 
-button.mark-as-read {
+button.emoji-before-tooltip {
   background: none;
   color: inherit;
   border: none;
@@ -22,7 +22,7 @@ button.mark-as-read {
   border-radius: 50%;
 }
 
-.mark-as-read:hover {
+.emoji-before-tooltip:hover {
   background-color: darken($light-blue, 15%);
   border-radius: 35%;
   transition: all 0.2s ease-in-out;

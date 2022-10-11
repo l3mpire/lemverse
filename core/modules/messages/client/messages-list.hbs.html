@@ -20,11 +20,20 @@
           {{/each}}
         </ul>
       </div>
-      <div class="actions show">
-        <button type="button" class="button js-message-open-reactions-box" tabindex="-1">👍</button> 
-      </div>
-      <div class="owner-actions {{#if showActions}}show{{/if}}">
-        <button type="button" class="button js-message-remove" tabindex="-1">x</button> 
+      <div class="actions-container">
+        <div class="action show">
+          <button type="button" class="button js-message-open-reactions-box" tabindex="-1">👍</button> 
+        </div>
+        {{#if showActions}}
+        <div class="action show">
+          <button type="button" class="button js-message-remove" tabindex="-1">x</button> 
+        </div>
+        {{/if}}
+        {{#unless isOwner}}
+        <div class="action show">
+          <button type="button" class="button js-message-report" tabindex="-1">🚨</button>
+        </div>
+        {{/unless}}
       </div>
     {{/if}}
   </div>
