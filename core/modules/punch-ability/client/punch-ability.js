@@ -29,7 +29,7 @@ window.addEventListener('load', () => {
 
   hotkeys('x', { scope: scopes.player }, e => {
     const user = Meteor.user({ fields: { _id: 1, 'profile.levelId': 1, roles: 1 } });
-    if (!user || !canUseLevelFeature(user, 'punch')) return;
+    if (!user || !canUseLevelFeature(user, 'punch', true)) return;
 
     e.preventDefault();
     e.stopPropagation();

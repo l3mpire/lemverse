@@ -21,6 +21,12 @@ const updateLevel = (name, spawnPosition, hide = false, featuresPermissions) => 
 };
 
 const getFeaturesPermissions = () => currentLevel(Meteor.user()).featuresPermissions || {};
+const updateFeaturePermissionLevel = (permission, event) => {
+  const level = currentLevel(Meteor.user());
+
+  updateLevel(level.name, level.spawn, level.hide, { [permission]: event.target.value });
+  event.target.blur();
+};
 
 Template.levelToolbox.events({
   'focus input'() { toggleUIInputs(true); },
@@ -39,23 +45,9 @@ Template.levelToolbox.events({
     const { x, y } = user.profile;
     updateLevel(level.name, { x, y }, level.hide);
   },
-  'change .js-voice-amplifier-select'(event) {
-    const level = currentLevel(Meteor.user());
-
-    updateLevel(level.name, level.spawn, level.hide, { shout: event.target.value });
-    event.target.blur();
-  },
-  'change .js-global-chat-select'(event) {
-    const level = currentLevel(Meteor.user());
-
-    updateLevel(level.name, level.spawn, level.hide, { globalChat: event.target.value });
-    event.target.blur();
-  },
-  'change .js-punch-select'(event) {
-    const level = currentLevel(Meteor.user());
-
-    updateLevel(level.name, level.spawn, level.hide, { punch: event.target.value });
-    event.target.blur();
+  'change .permission-list select'(event) {
+    const { permission } = event.target.dataset;
+    updateFeaturePermissionLevel(permission, event);
   },
 });
 
@@ -76,4 +68,9 @@ Template.levelToolbox.helpers({
   shout() { return getFeaturesPermissions().shout || 'enabled'; },
   globalChat() { return getFeaturesPermissions().globalChat || 'enabled'; },
   punch() { return getFeaturesPermissions().punch || 'enabled'; },
+  reactions() { return getFeaturesPermissions().reactions || 'enabled'; },
+  follow() { return getFeaturesPermissions().follow || 'enabled'; },
+  sendVocal() { return getFeaturesPermissions().sendVocal || 'enabled'; },
+  sendLove() { return getFeaturesPermissions().sendLove || 'enabled'; },
+  sendText() { return getFeaturesPermissions().sendText || 'enabled'; },
 });

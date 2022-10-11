@@ -230,7 +230,7 @@ Meteor.methods({
     check(name, String);
     check(position, { x: Number, y: Number });
     check(hide, Boolean);
-    check(featurePermission, Match.OneOf(null, { shout: String }, { globalChat: String }, { punch: String }));
+    check(featurePermission, Match.OneOf(null, { shout: String }, { globalChat: String }, { punch: String }, { reactions: String }, { follow: String }, { sendVocal: String }, { sendLove: String }, { sendText: String }));
 
     const user = Meteor.user();
     const level = currentLevel(Meteor.user());

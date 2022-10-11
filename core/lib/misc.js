@@ -290,7 +290,7 @@ const guestAllowed = permissionType => {
   return !!guestPermissions[permissionType];
 }
 
-const canUseLevelFeature = (user, featureName) => {
+const canUseLevelFeature = (user, featureName, showNotifications = false) => {
   check(user._id, Match.Id);
   check(featureName, String);
 
@@ -298,7 +298,7 @@ const canUseLevelFeature = (user, featureName) => {
   const featurePermission = level?.featuresPermissions?.[featureName];
 
   if (featurePermission === 'disabled') {
-    if (user.roles?.admin) lp.notif.error(`This feature is disabled: ${featureName}`);
+    if (user.roles?.admin && showNotifications) lp.notif.error(`This feature is disabled: ${featureName}`);
     return false;
   } else if (!user.roles?.admin && featurePermission === 'adminOnly') {
     return false;
