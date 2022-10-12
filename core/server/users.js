@@ -176,24 +176,17 @@ Meteor.users.find({ 'status.online': true }).observeChanges({
     if (!user.status.lastLogoutAt) return;
 
     const { defaultLevelId, respawnDelay } = Meteor.settings;
-    const { guildId } = user;
-    const guild = Guilds.findOne(guildId);
-
-    if (guild?.forceDefaultLevel) {
-      lp.notif.warning('Your level is unavailable, your have been redirected to default level.');
-      const spawnPosition = levelSpawnPosition(defaultLevelId);
-      Meteor.users.update(user._id, { $set: { 'profile.x': spawnPosition.x, 'profile.y': spawnPosition.y } });
-      return;
-    }
-
     if (!respawnDelay) return;
 
     const diffInMinutes = (Date.now() - new Date(user.status.lastLogoutAt).getTime()) / 60000;
     if (diffInMinutes < respawnDelay) return;
 
     const levelId = user.profile.levelId || defaultLevelId;
-    const currentLevel = Levels.findOne(levelId);
+    let currentLevel = Levels.findOne(levelId);
 
+    if (currentLevel.disabled === true) {
+      currentLevel = Levels.findOne(defaultLevelId);
+    }
 
     const spawnPosition = levelSpawnPosition(currentLevel);
     Meteor.users.update(user._id, { $set: { 'profile.x': spawnPosition.x, 'profile.y': spawnPosition.y } });
