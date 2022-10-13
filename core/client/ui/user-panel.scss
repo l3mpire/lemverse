@@ -37,7 +37,7 @@
       right: 0;
       display: flex;
       gap: 7px;
-      justify-content: space-evenly;
+      justify-content: center;
 
       .button {
         position: relative;
@@ -125,7 +125,7 @@
       right: 0;
       display: flex;
       gap: 7px;
-      justify-content: space-evenly;
+      justify-content: center;
 
       @include media-max("phone-down") {
         justify-content: space-evenly;
