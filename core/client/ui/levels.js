@@ -83,7 +83,9 @@ Template.levels.helpers({
   levelVisitCount(level) { return level.visit || 0; },
   loading() { return Template.instance().loading.get(); },
   showList() { return Template.instance().tab.get() === listMode; },
-  showCreate() { return Template.instance().tab.get() !== listMode; },
+  showCreate() {
+    return (Template.instance().tab.get() !== listMode) && (Meteor?.settings?.public?.features?.createLevel?.enabled !== false);
+  },
   restrictedLevelCreation() {
     const { permissions } = Meteor.settings.public;
     if (!permissions) return false;
