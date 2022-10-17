@@ -55,6 +55,7 @@ userManager = {
     if (guest) {
       character.updateSkin(guestSkin()); // init with custom skin
       character.setName('Guest');
+      character.playAnimation(characterAnimations.run, 'down', true);
     }
 
     window.setTimeout(() => this.onDocumentUpdated(user), 0);
@@ -114,7 +115,7 @@ userManager = {
     const character = this.characters[user._id];
     if (!character) return;
 
-    const { x, y, direction, reaction, shareAudio, userMediaError, name, baseline, nameColor, guest } = user.profile;
+    const { x, y, direction, reaction, shareAudio, userMediaError, name, baseline, nameColor } = user.profile;
 
     // update character instance
     networkManager.onCharacterStateReceived({ userId: user._id, x, y, direction });

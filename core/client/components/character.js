@@ -105,7 +105,7 @@ class Character extends Phaser.GameObjects.Container {
     effect.emitters.list.forEach(emitter => emitter.explode());
   }
 
-  playAnimation(animationName, direction, forceUpdate = false) {
+  playAnimation(animationName, direction = configuration.defaultDirection, forceUpdate = false) {
     this.setAnimationPaused(false);
 
     const key = animationName + direction;
