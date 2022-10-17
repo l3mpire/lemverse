@@ -189,7 +189,7 @@ Meteor.users.find({ 'status.online': true }).observeChanges({
     }
 
     const spawnPosition = levelSpawnPosition(currentLevel);
-    Meteor.users.update(user._id, { $set: { 'profile.x': spawnPosition.x, 'profile.y': spawnPosition.y } });
+    Meteor.users.update(user._id, { $set: { levelId: currentLevel._id, 'profile.x': spawnPosition.x, 'profile.y': spawnPosition.y } });
   },
   removed(id) {
     const user = Meteor.users.findOne(id);
