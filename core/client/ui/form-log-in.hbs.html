@@ -28,7 +28,7 @@
             <input name="email" type="email" value="{{email}}" class="js-edit js-email" autofocus>
           </div>
           {{#if loginMode}}
-            {{#if passwordless}}
+            {{#if settings.public.passwordless}}
               <button type="submit" class="button submit" aria-label="send magic link email">Send</button>
             {{else}}
               <div class="group-field">
