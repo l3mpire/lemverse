@@ -39,6 +39,9 @@ const passwordlessLogin = template => {
     if (err && err.message !== 'User not found [403]') {
       lp.notif.error(err.message);
       return;
+    } else if (err && err.message === 'User not found [403]') {
+      lp.notif.error('Account not found 😟');
+      return;
     }
     template.emailSent.set(true);
     startRetryCountdown(template);
