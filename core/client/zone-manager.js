@@ -266,7 +266,7 @@ zoneManager = {
   hasNewContent(zone) {
     if (!zone.lastMessageAt || Session.get('messagesChannel') === zone._id) return false;
 
-    const user = Meteor.user();
+    const user = Meteor.user({ fields: { lastMessageAt: 1 } });
     if (!user) return false;
 
     const { zoneLastSeenDates } = user;
