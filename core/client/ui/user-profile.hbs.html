@@ -12,7 +12,11 @@
         </div>
         <div>
           <label for="website" class="label">Website</label>
-          {{or website "-"}}
+          {{#if website}}
+            <a target="_blank" class="website-link" href="{{website}}">{{website}}</a>
+          {{else}}
+            -
+          {{/if}}
         </div>
         <div>
           <label for="bio" class="label">Bio/Hobbies</label>
