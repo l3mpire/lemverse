@@ -1,6 +1,8 @@
 import { EventEmitter } from 'node:events';
 import { canEditGuild } from '../lib/misc';
 
+const mainFields = { description: 1, logo: 1, name: 1, website: 1, createdBy: 1, owners: 1 };
+
 /**
  * Guild event emitter
  * @type {EventEmitter}
@@ -9,7 +11,7 @@ const guildEvents = new EventEmitter();
 
 const guilds = guildIds => {
   check(guildIds, [Match.Id]);
-  return Guilds.find({ _id: { $in: guildIds } });
+  return Guilds.find({ _id: { $in: guildIds } }, { fields: mainFields });
 };
 
 /**

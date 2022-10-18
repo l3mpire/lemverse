@@ -182,10 +182,14 @@ Meteor.users.find({ 'status.online': true }).observeChanges({
     if (diffInMinutes < respawnDelay) return;
 
     const levelId = user.profile.levelId || defaultLevelId;
-    const currentLevel = Levels.findOne(levelId);
+    let currentLevel = Levels.findOne(levelId);
+
+    if (currentLevel.disabled === true) {
+      currentLevel = Levels.findOne(defaultLevelId);
+    }
 
     const spawnPosition = levelSpawnPosition(currentLevel);
-    Meteor.users.update(user._id, { $set: { 'profile.x': spawnPosition.x, 'profile.y': spawnPosition.y } });
+    Meteor.users.update(user._id, { $set: { levelId: currentLevel._id, 'profile.x': spawnPosition.x, 'profile.y': spawnPosition.y } });
   },
   removed(id) {
     const user = Meteor.users.findOne(id);

@@ -39,6 +39,9 @@ const passwordlessLogin = template => {
     if (err && err.message !== 'User not found [403]') {
       lp.notif.error(err.message);
       return;
+    } else if (err && err.message === 'User not found [403]') {
+      lp.notif.error('Account not found 😟');
+      return;
     }
     template.emailSent.set(true);
     startRetryCountdown(template);
@@ -107,7 +110,6 @@ Template.formLogIn.helpers({
   password() { return Template.instance().password; },
   loginMode() { return Template.instance().loginMode.get(); },
   contactURL() { return Meteor.settings.public.permissions?.contactURL; },
-  passwordless() { return Meteor.settings.public.passwordless; },
   emailSent() { return Template.instance().emailSent.get(); },
   counter() { return Template.instance().counter.get(); },
   canRetry() { return !!Template.instance().counter.get(); },
