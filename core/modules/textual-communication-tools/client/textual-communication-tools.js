@@ -34,7 +34,7 @@ const openMessagingInterface = channel => {
 };
 
 const onNotificationReceived = async e => {
-  if (Meteor?.settings?.public?.features?.notificationButton?.enabled === false) return;
+  if (Meteor.settings.public.features?.notificationButton?.enabled === false) return;
   const { notification } = e.detail;
 
   if (!notification.channelId?.includes('qst_')) return;
@@ -114,5 +114,5 @@ Template.textualCommunicationTools.helpers({
 
     return true;
   },
-  useGenericChat: () => (Meteor?.settings?.public?.features?.useMessaging?.enabled !== false),
+  useGenericChat: () => (Meteor.settings.public.features?.useMessaging?.enabled !== false),
 });

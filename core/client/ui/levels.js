@@ -91,7 +91,5 @@ Template.levels.helpers({
     return !permissions.allowLevelCreation;
   },
   contactURL() { return Meteor.settings.public.permissions?.contactURL; },
-  allowCreateLevel() {
-    return Meteor?.settings?.public?.features?.createLevel?.enabled !== false;
-  },
+  allowCreateLevel() { return Meteor.settings.public.features?.createLevel?.enabled !== false; },
 });

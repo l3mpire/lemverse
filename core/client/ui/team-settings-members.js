@@ -61,7 +61,7 @@ Template.teamMemberEntry.events({
     toggleUserSelection(userId, templateInstance);
   },
   'click .js-remove-team-user'() {
-    const msg = Meteor?.settings?.public?.confirmMessage?.delUsers || `Are you sure to remove this user from the team?`;
+    const msg = Meteor.settings.public.confirmMessage?.delUsers || `Are you sure to remove this user from the team?`;
     lp.notif.confirm('Team member deletion', msg, () => {
       Meteor.call('removeTeamUsers', Meteor.user().guildId, [this.user._id], error => {
         if (error) lp.notif.error(error);

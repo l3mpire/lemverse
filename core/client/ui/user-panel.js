@@ -47,7 +47,7 @@ Template.userPanel.helpers({
   avatarURL() { return talking() && Template.instance().avatarURL.get(); },
   screenSharing() { return Meteor.user({ fields: { 'profile.shareScreen': 1 } })?.profile.shareScreen; },
   videoActive() { return talking() && Meteor.user({ fields: { 'profile.shareVideo': 1 } })?.profile.shareVideo; },
-  hidden() { return Meteor?.settings?.public?.features?.useMessaging?.enabled === false; },
+  hidden() { return Meteor.settings.public.features?.useMessaging?.enabled === false; },
 });
 
 Template.userPanel.events({

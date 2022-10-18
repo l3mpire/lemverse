@@ -471,7 +471,7 @@ Template.lemverse.helpers({
   modules: () => Session.get('modules'),
   mainModules: () => Session.get('mainModules'),
   gameModules: () => Session.get('gameModules'),
-  displayNotificationButton: () => (Meteor?.settings?.public?.features?.notificationButton?.enabled !== false),
+  displayNotificationButton: () => (Meteor.settings.public.features?.notificationButton?.enabled !== false),
 });
 
 Template.lemverse.events({
