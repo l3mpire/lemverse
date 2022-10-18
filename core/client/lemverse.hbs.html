@@ -2,6 +2,16 @@
   <div class="lemverse {{#if neq (Session 'editor') 0}}edit{{/if}} {{#if loading}}loading{{/if}}">
     <div class="simulation">
       <div id="game"></div>
+      <div id="gameModules">
+        {{#unless guest}}
+          {{> radialMenu }}
+        {{/unless}}
+        {{#each gameModule in gameModules}}
+          {{> Template.dynamic template=gameModule}}
+        {{/each}}
+        {{> userPanel loading=loading}}
+      </div>
+
       <div id="meet"></div>
       <div id="webpage">
         <iframe src="" allowfullscreen="true" id="webpageIframe" title="Embedded content"></iframe>
@@ -12,7 +22,6 @@
       {{> formAccount visible=loading}}
     {{else}}
       {{> editToolbox}}
-      {{> radialMenu }}
     {{/if}}
 
     <div class="js-streams">
@@ -21,9 +30,14 @@
       {{/each}}
     </div>
 
-    {{> userPanel loading=loading}}
     {{> zoneNameToaster}}
-    {{> notificationButton}}
+    {{#if displayNotificationButton}}
+      {{> notificationButton}}
+    {{/if}}
+
+    {{#each mainModule in mainModules}}
+      {{> Template.dynamic template=mainModule}}
+    {{/each}}
 
     {{> modalContainer }}
 

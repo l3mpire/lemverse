@@ -9,7 +9,9 @@
       <div class="container">
         <div class="tabs">
           <button type="button" data-mode="list" class="js-tab-switcher {{#if showList}}active{{/if}}">Levels</button>
+          {{#if allowCreateLevel}}
           <button type="button" data-mode="create" class="js-tab-switcher {{#if showCreate}}active{{/if}}">Create</button>
+          {{/if}}
         </div>
         {{#if showList}}
           <ul class="levels-list">

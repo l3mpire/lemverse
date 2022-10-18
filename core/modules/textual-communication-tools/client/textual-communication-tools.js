@@ -4,8 +4,7 @@ import { guestAllowed } from '../../../lib/misc';
 const permissionType = 'useMessaging';
 
 window.addEventListener('load', () => {
-  if (Meteor?.settings?.public?.features?.useMessaging?.enabled === false) return;
-  registerModules(['textualCommunicationTools']);
+  registerGameModules(['textualCommunicationTools']);
   registerUserListModules(['userListMessageButton']);
 
   registerRadialMenuModules([
@@ -35,6 +34,7 @@ const openMessagingInterface = channel => {
 };
 
 const onNotificationReceived = async e => {
+  if (Meteor?.settings?.public?.features?.notificationButton?.enabled === false) return;
   const { notification } = e.detail;
 
   if (!notification.channelId?.includes('qst_')) return;
@@ -114,4 +114,5 @@ Template.textualCommunicationTools.helpers({
 
     return true;
   },
+  useGenericChat: () => (Meteor?.settings?.public?.features?.useMessaging?.enabled !== false),
 });

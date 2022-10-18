@@ -42,6 +42,7 @@ eventTypes = Object.freeze({
 
 // reset previously loaded modules
 Session.set('modules', []);
+Session.set('mainModules', []);
 Session.set('teamModules', []);
 Session.set('userListModules', []);
 Session.set('radialMenuModules', []);
@@ -207,6 +208,8 @@ const addToSession = (key, values) => {
 };
 
 registerModules = modules => addToSession('modules', modules);
+registerMainModules = modules => addToSession('mainModules', modules);
+registerGameModules = modules => addToSession('gameModules', modules);
 registerTeamModules = modules => addToSession('teamModules', modules);
 registerUserListModules = modules => addToSession('userListModules', modules);
 registerRadialMenuModules = modules => {

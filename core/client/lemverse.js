@@ -469,6 +469,9 @@ Template.lemverse.helpers({
   screenMode: () => Template.instance().screenMode.get(),
   settingsOpen: () => (!Session.get('modal') ? false : (Session.get('modal').template.indexOf('settings') !== -1)),
   modules: () => Session.get('modules'),
+  mainModules: () => Session.get('mainModules'),
+  gameModules: () => Session.get('gameModules'),
+  displayNotificationButton: () => (Meteor?.settings?.public?.features?.notificationButton?.enabled !== false),
 });
 
 Template.lemverse.events({

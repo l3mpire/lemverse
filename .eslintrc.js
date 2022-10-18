@@ -182,6 +182,8 @@ module.exports = {
     messagesModule: 'writable',
     nearUserIdsToString: 'writable',
     registerModules: 'writable',
+    registerMainModules: 'writable',
+    registerGameModules: 'writable',
     registerTeamModules: 'writable',
     registerUserListModules: 'writable',
     registerRadialMenuModules: 'writable',

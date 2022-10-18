@@ -131,7 +131,13 @@ const buildMenuFromOptions = options => {
 const onMouseMove = event => {
   if (!Session.get('menu') || menuOpenUsingKey) return;
   const menuPosition = computeMenuPosition();
-  const mousePosition = { x: event.clientX, y: event.clientY };
+
+  // Get canvas bound go manage mouse position offset
+  const canvasBounds = document.querySelector('#game canvas').getBoundingClientRect();
+  const mousePosition = {
+    x: event.clientX - canvasBounds.x,
+    y: event.clientY - canvasBounds.y,
+  };
   const distance = Math.sqrt((menuPosition.x - mousePosition.x) ** 2 + ((menuPosition.y - radialMenuOffsetY) - mousePosition.y) ** 2);
   if (distance >= mouseDistanceToCloseMenu) closeMenu();
 };

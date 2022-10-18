@@ -274,3 +274,28 @@ button.js-notifications {
     background-color: darken($light-orange, 10%);
   }
 }
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+  &:hover {
+    display: block;
+  }
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgba(0,0,0,.25);
+  border-radius: 5px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,.15);
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,.25);
+}
