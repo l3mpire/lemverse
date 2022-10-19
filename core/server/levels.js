@@ -94,7 +94,7 @@ const cloneLevelContent = (originalLevelId, targetedLevelId) => {
       entity.entityId = idMap[entity.entityId];
       Entities.insert(entity);
     } else {
-      log('cloneLevelContent: Found entity with entityId without any match: ', elem);
+      log('cloneLevelContent: Found entity with entityId without any match: ', { entityId: entity._id });
     }
   });
 
@@ -181,15 +181,18 @@ Meteor.publish('levelTemplates', function () {
 Meteor.publish('currentLevel', function () {
   if (!this.userId) return undefined;
 
-  const { name } = Meteor.user().profile;
-  const { levelId } = Meteor.user().profile || Meteor.settings.defaultLevelId;
-  callHooks(Levels.findOne(levelId), activityType.userEnteredLevel, { userId: this.userId, meta: { name } });
+  const { name, levelId } = Meteor.user().profile;
+  const level = Levels.findOne(levelId || Meteor.settings.defaultLevelId);
 
-  this.onStop(() => callHooks(Levels.findOne(levelId), activityType.userLeavedLevel, { userId: this.userId, meta: { name } }));
+  callHooks(level, activityType.userEnteredLevel, { userId: this.userId, meta: { name } });
+
+  this.onStop(() => callHooks(level, activityType.userLeavedLevel, { userId: this.userId, meta: { name } }));
 
   return Levels.find(
-    { _id: levelId },
-    { fields: { name: 1, spawn: 1, hide: 1, height: 1, width: 1, editorUserIds: 1, createdBy: 1, sandbox: 1, guildId: 1 } },
+    { _id: level._id },
+    { fields: {
+      name: 1, spawn: 1, hide: 1, height: 1, width: 1, editorUserIds: 1, createdBy: 1, sandbox: 1, guildId: 1, disabled: 1,
+    } },
   );
 });
 
