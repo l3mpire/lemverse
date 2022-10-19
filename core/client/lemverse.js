@@ -312,16 +312,20 @@ Template.lemverse.onCreated(function () {
         Session.set('editor', 0);
         worldScene.scene.restart();
         uiScene.onLevelUnloaded();
+        levelManager.onLevelUnloaded(Levels.findOne(this.currentLevelId));
+
         this.currentLevelId = undefined;
         this.levelSubscribeHandler?.stop();
+
         return;
       }
 
       // subscribe to the loaded level
       log(`loading level: ${levelId || 'unknown'}…`);
       this.levelSubscribeHandler = this.subscribe('currentLevel', () => {
-        // update title
         const level = Levels.findOne(levelId);
+        window.dispatchEvent(new CustomEvent(eventTypes.onLevelLoading, { detail: { level } }));
+
         const titleParts = [Meteor.settings.public.lp.product];
         if (level.name) {
           titleParts.push(level.name);
@@ -343,7 +347,7 @@ Template.lemverse.onCreated(function () {
 
           log('loading level: all tiles loaded');
           uiScene.onLevelLoaded();
-          levelManager.onLevelLoaded();
+          levelManager.onLevelLoaded(level);
 
           // force canvas focus on level loaded
           document.activeElement.blur();
