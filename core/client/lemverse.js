@@ -60,6 +60,17 @@ const extractLevelIdFromURL = () => {
   return `lvl_${levelId}`;
 };
 
+const updateWindowTitle = levelDocument => {
+  const titleParts = [Meteor.settings.public.lp.product];
+  if (levelDocument.name) {
+    titleParts.push(levelDocument.name);
+    game.scene.getScene('LoadingScene')?.setText(levelDocument.name);
+  }
+
+  const title = titleParts.reverse().join(' - ');
+  window.history.replaceState({}, title, Meteor.settings.public.lp.website);
+};
+
 Template.lemverse.onCreated(function () {
   Session.set('editor', 0);
   Session.set('sceneWorldReady', false);
@@ -326,14 +337,7 @@ Template.lemverse.onCreated(function () {
         const level = Levels.findOne(levelId);
         window.dispatchEvent(new CustomEvent(eventTypes.onLevelLoading, { detail: { level } }));
 
-        const titleParts = [Meteor.settings.public.lp.product];
-        if (level.name) {
-          titleParts.push(level.name);
-          loadingScene.setText(level.name);
-        }
-        const title = titleParts.reverse().join(' - ');
-        window.history.replaceState({}, title, Meteor.settings.public.lp.website);
-
+        updateWindowTitle(level);
         worldScene.initFromLevel(level);
 
         // Load tiles
