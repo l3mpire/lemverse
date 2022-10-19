@@ -43,13 +43,6 @@ eventTypes = Object.freeze({
   consoleClosed: 'consoleClosed',
 });
 
-// reset previously loaded modules
-Session.set('modules', []);
-Session.set('mainModules', []);
-Session.set('teamModules', []);
-Session.set('userListModules', []);
-Session.set('radialMenuModules', []);
-
 toggleUserProperty = (propertyName, value) => {
   const user = Meteor.user();
   if (!user) return;
@@ -209,8 +202,13 @@ const addToSession = (key, modules) => {
   const loadedModules = Session.get(key) || [];
 
   modules.forEach(module => {
-    if (loadedModules.find(loadedModule => loadedModule.id === module.id)) return;
-    loadedModules.push(module);
+    const moduleAlreadyExists = loadedModules.find(loadedModule => {
+      // todo: reduce algorithm complexity
+      if (module.id) return loadedModule.id === module.id;
+      return loadedModule === module;
+    });
+
+    if (!moduleAlreadyExists) loadedModules.push(module);
   });
 
   Session.set(key, loadedModules);
@@ -225,6 +223,8 @@ const moduleType = {
   RADIAL_MENU: 'radialMenuModules',
 };
 
+// reset previously loaded modules
+Object.values(moduleType).forEach(module => Session.set(module, []));
 
 registerModules = (modules, type = moduleType.GENERIC) => {
   if (!Object.values(moduleType).includes(type)) throw new Error(`Invalid module type ${type}`);
