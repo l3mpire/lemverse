@@ -84,7 +84,6 @@ Template.levels.helpers({
   loading() { return Template.instance().loading.get(); },
   showList() { return Template.instance().tab.get() === listMode; },
   showCreate() { return Template.instance().tab.get() !== listMode; },
-  allowCreate() { return (Meteor?.settings?.public?.features?.createLevel?.enabled !== false); },
   restrictedLevelCreation() {
     const { permissions } = Meteor.settings.public;
     if (!permissions) return false;
@@ -92,4 +91,5 @@ Template.levels.helpers({
     return !permissions.allowLevelCreation;
   },
   contactURL() { return Meteor.settings.public.permissions?.contactURL; },
+  allowCreateLevel() { return Meteor.settings.public.features?.createLevel?.enabled !== false; },
 });

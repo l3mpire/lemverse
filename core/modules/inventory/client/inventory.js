@@ -1,3 +1,5 @@
+import { moduleType } from '../../../client/helpers';
+
 const dropItemDistance = 45;
 
 window.addEventListener('load', () => {
@@ -17,7 +19,10 @@ window.addEventListener('load', () => {
     if (!user || !user.guildId) return;
 
     Tracker.nonreactive(() => {
-      registerRadialMenuModules([{ id: 'open-inventory', icon: '📦', shortcut: 73, label: 'Inventory', closeMenu: true, scope: 'me' }]);
+      registerModules(
+        [{ id: 'open-inventory', icon: '📦', shortcut: 73, label: 'Inventory', closeMenu: true, scope: 'me' }],
+        moduleType.RADIAL_MENU,
+      );
     });
   });
 });

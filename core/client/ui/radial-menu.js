@@ -3,6 +3,9 @@
 import { setReaction } from '../helpers';
 
 let menuOpenUsingKey = false;
+let menuHandler;
+let canvasElement;
+
 const metaKeyCode = 91;
 const keyToOpen = 'shift';
 const keyToOpenDelay = 200;
@@ -13,7 +16,6 @@ const radialMenuOffsetY = 38;
 const mouseDistanceToCloseMenu = 105;
 const itemAmountRequiredForBackground = 2;
 const radialMenuStartingAngle = 3.8; // in radians
-let menuHandler;
 Session.set('radialMenuModules', []);
 
 const menuCurrentUser = (options = {}) => {
@@ -131,7 +133,14 @@ const buildMenuFromOptions = options => {
 const onMouseMove = event => {
   if (!Session.get('menu') || menuOpenUsingKey) return;
   const menuPosition = computeMenuPosition();
-  const mousePosition = { x: event.clientX, y: event.clientY };
+
+  // Get canvas bound go manage mouse position offset
+  if (!canvasElement) canvasElement = document.querySelector('#game canvas');
+  const canvasBounds = canvasElement.getBoundingClientRect();
+  const mousePosition = {
+    x: event.clientX - canvasBounds.x,
+    y: event.clientY - canvasBounds.y,
+  };
   const distance = Math.sqrt((menuPosition.x - mousePosition.x) ** 2 + ((menuPosition.y - radialMenuOffsetY) - mousePosition.y) ** 2);
   if (distance >= mouseDistanceToCloseMenu) closeMenu();
 };

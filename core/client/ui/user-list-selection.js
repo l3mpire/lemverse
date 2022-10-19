@@ -29,7 +29,7 @@ Template.userListSelection.events({
   },
   'click .js-submit'(event, templateInstance) {
     const userList = Object.keys(templateInstance.selectedUsers.get());
-    const msg = Meteor?.settings?.public?.confirmMessage?.addUsers || `Are you sure to add these users to the team?`;
+    const msg = Meteor.settings.public.confirmMessage?.addUsers || `Are you sure to add these users to the team?`;
     lp.notif.confirm('Team member add', msg, () => {
       Session.set('usersSelected', userList);
       closeModal();

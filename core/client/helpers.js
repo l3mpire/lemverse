@@ -42,6 +42,7 @@ eventTypes = Object.freeze({
 
 // reset previously loaded modules
 Session.set('modules', []);
+Session.set('mainModules', []);
 Session.set('teamModules', []);
 Session.set('userListModules', []);
 Session.set('radialMenuModules', []);
@@ -201,23 +202,31 @@ destroyVideoSource = video => {
   video.load();
 };
 
-const addToSession = (key, values) => {
-  const existingModules = Session.get(key) || [];
-  Session.set(key, [...new Set([...existingModules, ...values])]);
-};
-
-registerModules = modules => addToSession('modules', modules);
-registerTeamModules = modules => addToSession('teamModules', modules);
-registerUserListModules = modules => addToSession('userListModules', modules);
-registerRadialMenuModules = modules => {
-  const loadedModules = Session.get('radialMenuModules') || [];
+const addToSession = (key, modules) => {
+  const loadedModules = Session.get(key) || [];
 
   modules.forEach(module => {
     if (loadedModules.find(loadedModule => loadedModule.id === module.id)) return;
     loadedModules.push(module);
   });
 
-  Session.set('radialMenuModules', loadedModules);
+  Session.set(key, loadedModules);
+};
+
+const moduleType = {
+  GENERIC: 'modules',
+  MAIN: 'mainModules',
+  GAME: 'gameModules',
+  TEAM: 'teamModules',
+  USER_LIST: 'userListModules',
+  RADIAL_MENU: 'radialMenuModules',
+};
+
+
+registerModules = (modules, type = moduleType.GENERIC) => {
+  if (!Object.values(moduleType).includes(type)) throw new Error(`Invalid module type ${type}`);
+
+  addToSession(type, modules);
 };
 
 const allowPhaserMouseInputs = () => !Session.get('editor') && !Session.get('console');
@@ -318,4 +327,6 @@ export {
   toggleUIInputs,
   textDirectionToVector,
   vectorToTextDirection,
+
+  moduleType,
 };

@@ -1,6 +1,9 @@
+import { moduleType } from '../../../client/helpers';
+
 window.addEventListener('load', () => {
-  registerRadialMenuModules([
+  registerModules([
     { id: 'shout', icon: '📢', label: 'Shout', order: 40, shortcut: 55, scope: 'me' },
+    moduleType.RADIAL_MENU,
   ]);
 
   hotkeys('r', { keyup: true, scope: scopes.player }, event => {
