@@ -56,7 +56,7 @@ const networkManager = {
     const character = userManager.getCharacter(state.userId);
     if (!character) return;
 
-    character.direction = state.direction;
+    if (state.direction) character.direction = state.direction;
     character.lwOriginX = character.x;
     character.lwOriginY = character.y;
     character.lwOriginDate = Date.now();
