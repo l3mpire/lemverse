@@ -1,28 +1,35 @@
 import audioManager from '../../../client/audio-manager';
 import { guestAllowed } from '../../../lib/misc';
+import { moduleType } from '../../../client/helpers';
 
 const permissionType = 'useMessaging';
 
 window.addEventListener('load', () => {
-  registerGameModules(['textualCommunicationTools']);
-  registerUserListModules(['userListMessageButton']);
+  registerModules(['textualCommunicationTools'], moduleType.GAME);
+  registerModules(['userListMessageButton'], moduleType.USER_LIST);
 
-  registerRadialMenuModules([
-    { id: 'send-text', icon: '💬', shortcut: 56, order: 41, label: 'Text', closeMenu: true, scope: 'other' },
-    { id: 'open-console', icon: '💬', shortcut: 56, order: 41, label: 'Text', closeMenu: true, scope: 'me' },
-  ]);
+  registerModules(
+    [
+      { id: 'send-text', icon: '💬', shortcut: 56, order: 41, label: 'Text', closeMenu: true, scope: 'other' },
+      { id: 'open-console', icon: '💬', shortcut: 56, order: 41, label: 'Text', closeMenu: true, scope: 'me' },
+    ],
+    moduleType.RADIAL_MENU,
+  );
 
   Tracker.autorun(() => {
     const user = Meteor.user({ fields: { guildId: 1 } });
     if (!user || !user.guildId) return;
 
     Tracker.nonreactive(() => {
-      registerRadialMenuModules([
-        { id: 'new-quest', icon: '📜', shortcut: 53, label: 'New task', closeMenu: true, scope: 'other' },
-        { id: 'show-quests', icon: '📜', shortcut: 57, order: 42, label: 'Tasks', closeMenu: true, scope: 'me' },
-      ]);
+      registerModules(
+        [
+          { id: 'new-quest', icon: '📜', shortcut: 53, label: 'New task', closeMenu: true, scope: 'other' },
+          { id: 'show-quests', icon: '📜', shortcut: 57, order: 42, label: 'Tasks', closeMenu: true, scope: 'me' },
+        ],
+        moduleType.RADIAL_MENU,
+      );
 
-      registerUserListModules(['userListQuestButton']);
+      registerModules(['userListQuestButton'], moduleType.USER_LIST);
     });
   });
 });
