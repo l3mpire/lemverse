@@ -20,7 +20,28 @@ const permissionTypes = Object.freeze({
 
 const defaultSpawnPosition = { x: 100, y: 100 };
 
+/**
+ * Returns a random integer in the range [min, max]
+ *
+ * @param {number} min
+ * @param {number} max
+ * @returns {number}
+ */
 const randomInRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+/**
+ * Returns a random float, capped to the given decimals, in the range [min, max]
+ *
+ * @param {number} min
+ * @param {number} max
+ * @param {number} decimals
+ * @returns {number}
+ */
+const randomFloatInRange = (min, max, decimals) =>
+  parseFloat(
+    (Math.random() * (max - min) + min)
+      .toFixed(decimals)
+  );
 
 const subscribedUsersToEntity = entityId => {
   check(entityId, Match.Id);
@@ -264,4 +285,6 @@ export {
   permissionTypes,
   subscribedUsersToEntity,
   teleportUserInLevel,
+  randomInRange,
+  randomFloatInRange,
 };

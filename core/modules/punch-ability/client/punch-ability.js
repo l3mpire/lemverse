@@ -1,14 +1,9 @@
 import audioManager from '../../../client/audio-manager';
-
-const getRandomFloat = (min, max, decimals) =>
-  parseFloat(
-    (Math.random() * (max - min) + min)
-      .toFixed(decimals)
-  );
+import { randomFloatInRange } from '../../../lib/misc';
 
 const playPunchAnimation = () => {
   userManager.scene.cameras.main.shake(250, 0.015, 0.02);
-  const randomPitchRatio = getRandomFloat(0.7, 1.5, 1);
+  const randomPitchRatio = randomFloatInRange(0.7, 1.5, 1);
   audioManager.playPitched('punch.mp3', randomPitchRatio);
 };
 
