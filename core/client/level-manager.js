@@ -164,8 +164,9 @@ levelManager = {
 
   tileLayer(mapTileset, tileIndex) { return mapTileset.tileProperties[tileIndex]?.layer ?? defaultTileset.layer; },
 
-  onLevelLoaded() {
+  onLevelLoaded(levelDocument) {
     this.scene.scene.wake();
+    window.dispatchEvent(new CustomEvent(eventTypes.onLevelLoaded, { detail: { level: levelDocument } }));
 
     // simulate a first frame update to avoid weirds visual effects with characters animation and direction
     this.scene.update(0, 0);
@@ -180,6 +181,10 @@ levelManager = {
     }
 
     if (Tiles.find().count() === 0) this.drawTriggers(true);
+  },
+
+  onLevelUnloaded(levelDocument) {
+    window.dispatchEvent(new CustomEvent(eventTypes.onLevelUnloaded, { detail: { level: levelDocument } }));
   },
 
   onTilesetUpdated(newTileset, oldTileset) {
