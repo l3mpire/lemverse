@@ -90,7 +90,7 @@ updateViewport = (scene, mode) => {
   const lemverseTag = document.querySelector('.lemverse');
   lemverseTag.classList.toggle('screen-splitted', mode === viewportModes.splitScreen);
 
-  const canvas = lemverseTag.querySelector('#game canvas');
+  const { canvas } = game;
   const width = canvas?.width || window.innerWidth;
   const height = canvas?.height || window.innerHeight;
 
