@@ -82,6 +82,15 @@ relativePositionToCamera = (position, camera) => {
   return { x: (position.x - worldView.x) * zoom, y: (position.y - worldView.y) * zoom };
 };
 
+const getSimulationSize = () => {
+  const { canvas } = game;
+
+  return {
+    width: canvas.width || window.innerWidth,
+    height: canvas.height || window.innerHeight,
+  };
+};
+
 updateViewport = (scene, mode) => {
   if (typeof mode !== 'string') mode = scene.viewportMode;
 
@@ -90,9 +99,10 @@ updateViewport = (scene, mode) => {
   const lemverseTag = document.querySelector('.lemverse');
   lemverseTag.classList.toggle('screen-splitted', mode === viewportModes.splitScreen);
 
-  if (mode === viewportModes.small) scene.cameras.main.setViewport(0, 0, window.innerWidth / 3, window.innerHeight);
-  else if (mode === viewportModes.splitScreen) scene.cameras.main.setViewport(0, 0, window.innerWidth / 2, window.innerHeight);
-  else scene.cameras.main.setViewport(0, 0, window.innerWidth, window.innerHeight);
+  const { width, height } = getSimulationSize();
+  if (mode === viewportModes.small) scene.cameras.main.setViewport(0, 0, width / 3, height);
+  else if (mode === viewportModes.splitScreen) scene.cameras.main.setViewport(0, 0, width / 2, height);
+  else scene.cameras.main.setViewport(0, 0, width, height);
 
   scene.viewportMode = mode;
 };
@@ -319,6 +329,7 @@ export {
   allowPhaserMouseInputs,
   canAnswerCall,
   clamp,
+  getSimulationSize,
   guestSkin,
   formatURLs,
   formatURL,

@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import CharacterNameText from '../components/character-name-text';
+import { getSimulationSize } from '../helpers';
 
 const characterUIElementsOffset = -85;
 
@@ -22,8 +23,10 @@ UIScene = new Phaser.Class({
   },
 
   create() {
+    const { width, height } = getSimulationSize();
+
     // cameras
-    this.cameras.main.setViewport(0, 0, window.innerWidth, window.innerHeight);
+    this.cameras.main.setViewport(0, 0, width, height);
     this.cameras.main.setRoundPixels(false);
 
     // plugins
