@@ -266,12 +266,10 @@ zoneManager = {
   hasNewContent(zone) {
     if (!zone.lastMessageAt || Session.get('messagesChannel') === zone._id) return false;
 
-    const user = Meteor.user({ fields: { lastMessageAt: 1 } });
+    const user = Meteor.user({ fields: { zoneLastSeenDates: 1 } });
     if (!user) return false;
 
-    const { zoneLastSeenDates } = user;
-    if (!zoneLastSeenDates) return false;
-
+    const zoneLastSeenDates = user.zoneLastSeenDates || {};
     return zoneLastSeenDates[zone._id] < zone.lastMessageAt;
   },
 
