@@ -12,8 +12,10 @@
       <div class="subject">
         {{#if fileId}}
           {{> notificationsAudioPlayer}}
-        {{else if quest}}
+        {{else if eq type 'quest'}}
           <div class="subject">{{#if newQuest}}has a new quest for you{{else}}has updated a quest{{/if}}</div>
+        {{else if or (eq type 'zone') (eq type 'level')}}
+        <div class="subject">sent message on channel</div>
         {{else}}
           <div class="subject">sent you a message</div>
         {{/if}}
