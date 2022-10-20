@@ -125,6 +125,10 @@ userManager = {
     if (!user.profile.guest && oldUser?.profile.guest) {
       character.toggleMouseInteraction(true);
       character.setName(name, baseline, nameColor);
+      if (user.guildId) {
+        const guildIcon = Guilds.findOne({ _id: user.guildId })?.icon;
+        if (guildIcon) character.setIcon(guildIcon);
+      }
     }
 
     // show reactions
@@ -143,6 +147,9 @@ userManager = {
     // update name
     const nameUpdated = (name !== oldUser?.profile.name || baseline !== oldUser?.profile.baseline || nameColor !== oldUser?.profile.nameColor);
     if (nameUpdated) character.setName(name || 'Guest', baseline, nameColor);
+
+    // update guild icon
+    if (user.guildId !== oldUser?.guildId) character.setIcon(Guilds.findOne({ _id: user.guildId })?.icon);
 
     const userHasMoved = x !== oldUser?.profile.x || y !== oldUser?.profile.y;
     const loggedUser = Meteor.user();

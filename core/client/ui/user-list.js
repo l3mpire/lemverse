@@ -27,6 +27,7 @@ Template.userListEntry.helpers({
     return canModerateUser(Meteor.user({ fields: { guildId: 1, roles: 1 } }), this.user);
   },
   guildName() { return Guilds.findOne(this.user.guildId)?.name; },
+  guildIcon() { return Guilds.findOne(this.user.guildId)?.icon; },
   levelOwner() { return isLevelOwner(this.user, this.level); },
   modules() { return Session.get('userListModules'); },
   user() { return this.user; },

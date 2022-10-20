@@ -109,6 +109,10 @@ UIScene = new Phaser.Class({
     });
   },
 
+  updateUserIcon(userId, icon) {
+    this.characterNamesObjects[userId].setIcon(icon);
+  },
+
   updateUserName(userId, name, baseline, colorName) {
     let textInstance = this.characterNamesObjects[userId];
 
