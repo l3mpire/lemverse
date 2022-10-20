@@ -390,7 +390,20 @@ Please note, that as stated in section `Deploy in production`, there is an addit
       "walkSpeed": 180,
       "runSpeed": 720,
       "sensorNearDistance": 75, // Distance required before starting a call with an user
-      "sensorFarDistance": 85 // Distance required before closing a call with an user
+      "sensorFarDistance": 85, // Distance required before closing a call with an user
+      "nameColors": { // Colors available for user name (shown in the dropdown list in the user profile), if not provided a color picker is displayed
+        "white": ["0xffffff", "0xffffff", "0xffffff", "0xffffff"], // A color gradient is set using the following order: [topLeft, topRight, bottomLeft, bottomRight]
+        "orange": ["0xfc9729", "0xfc9729", "0xf69831", "0xf69831"],
+        "red": ["0xf15739", "0xf15739", "0xee5c3b", "0xee5c3b"],
+        "yellow": ["0xf4c918", "0xf4c918", "0xdbb92a", "0xdbb92a"],
+        "beige": ["0xedc993", "0xedc993", "0xe5bf8a", "0xe5bf8a"],
+        "green": ["0xabdf3a", "0xabdf3a", "0xa1cb44", "0xa1cb44"],
+        "lightGreen": ["0x52d8a2", "0x52d8a2", "0x57cfa0", "0x57cfa0"],
+        "blue": ["0x2394d9", "0x2394d9", "0x3199da", "0x3199da"],
+        "lightBlue": ["0xa4e2fb", "0xa4e2fb", "0xa5dbf0", "0xa5dbf0"],
+        "pink": ["0xe584e1", "0xe584e1", "0xf291f0", "0xf291f0"],
+        "purple": ["0xb558e1", "0xb558e1", "0xfa8ff8", "0xfa8ff8"]
+      }
     },
 
     "permissions": {
