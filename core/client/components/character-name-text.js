@@ -13,17 +13,18 @@ const baselineStyle = {
 };
 
 const defaultTint = 0xFFFFFF;
+const defaultColor = '#fff';
 const baselineOffset = 20;
 const iconMargin = 3;
 
 class CharacterNameText extends Phaser.GameObjects.Container {
-  constructor(scene, name, baseline, tintName) {
+  constructor(scene, name, baseline, color) {
     super(scene);
     this.name = this.createText(name, nameStyle);
     this.nameContainer = new Phaser.GameObjects.Container(scene, 0, 0, [this.name]);
     this.add(this.nameContainer)
       .setBaseline(baseline)
-      .setTintFromName(tintName)
+      .setColor(color)
       .setDepth(99999);
     scene.add.existing(this);
   }
@@ -43,13 +44,16 @@ class CharacterNameText extends Phaser.GameObjects.Container {
     return this;
   }
 
-  setTintFromName(tintName) {
-    const colors = Meteor.settings.public.character.nameColors;
-    if (!colors) return this;
-
-    const color = colors[tintName] || [defaultTint];
-    this.name.setTint(...color);
-    if (this.baseline) this.baseline.setTint(...color);
+  setColor(color) {
+    const tints = Meteor.settings.public.character.nameColors;
+    if (tints) {
+      const tint = tints[color] || [defaultTint];
+      this.name.setTint(...tint);
+      if (this.baseline) this.baseline.setTint(...tint);
+    } else {
+      this.name.setColor(color || defaultColor);
+      if (this.baseline) this.baseline.setColor(color);
+    }
     return this;
   }
 
