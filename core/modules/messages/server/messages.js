@@ -46,7 +46,7 @@ const notifyQuestSubscribersAboutNewMessage = (questId, message) => {
   log('notifyQuestSubscribersAboutNewMessage: done', { amount: usersToNotify.length });
 };
 
-const setZoneLastMessageAtToNow = zoneId => Zones.update(zoneId, { $set: { lastMessageAt: new Date() } });
+const setCollectionLastMessageAtToNow = (collection, documentId) => collection.update(documentId, { $set: { lastMessageAt: new Date() } });
 
 const notifyUsers = message => {
   const { channel, createdBy } = message;
@@ -78,8 +78,12 @@ Meteor.startup(() => {
       const channelType = getChannelType(message.channel);
 
       if (channelType === 'quest') notifyQuestSubscribersAboutNewMessage(message.channel, message);
-      else if (channelType === 'zone') setZoneLastMessageAtToNow(message.channel);
-      else if (channelType === 'discussion' || channelType === 'level') notifyUsers(message);
+      else if (channelType === 'zone') setCollectionLastMessageAtToNow(Zones, message.channel);
+      else if (channelType === 'discussion') notifyUsers(message);
+      else if (channelType === 'level') {
+        setCollectionLastMessageAtToNow(Levels, message.channel);
+        notifyUsers(message);
+      }
     },
   });
 });
@@ -150,5 +154,29 @@ Meteor.methods({
 
     message = Messages.findOne(messageId);
     if (message.reactions[reaction].length === 0) Messages.update(messageId, { $unset: { [`reactions.${reaction}`]: 1 } });
+  },
+  messagesUpdateChannelLastSeenDate(channelId, create = false) {
+    if (!this.userId) return;
+    check(channelId, Match.Id);
+    check(create, Boolean);
+
+    const { zoneLastSeenDates } = Meteor.user();
+    if (create || (zoneLastSeenDates && zoneLastSeenDates[channelId])) {
+      Meteor.users.update(this.userId, {
+        $set: {
+          [`zoneLastSeenDates.${channelId}`]: new Date(),
+        },
+      });
+    }
+  },
+  messagesUnsubscribeFromChannelNotifications(channelId) {
+    if (!this.userId) return;
+    check(channelId, Match.Id);
+
+    Meteor.users.update(this.userId, {
+      $unset: {
+        [`zoneLastSeenDates.${channelId}`]: 1,
+      },
+    });
   },
 });

@@ -101,13 +101,11 @@ Meteor.methods({
 
     Notifications.update({ _id: notificationId, userId: this.userId }, { $set: { read: true } });
   },
-
   markAllNotificationsAsRead() {
     if (!this.userId) return;
 
     Notifications.update({ userId: this.userId }, { $set: { read: true } }, { multi: true });
   },
-
   kickUser(userId) {
     if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
     check(userId, Match.Id);
@@ -117,20 +115,6 @@ Meteor.methods({
     log('kickUser', { kicker: Meteor.userId(), kicked: userId });
 
     Meteor.users.update({ _id: userId }, { $set: { 'profile.levelId': Meteor.settings.defaultKickLevelId } });
-  },
-  updateZoneLastSeenDate(zoneId, create = false) {
-    if (!this.userId) return;
-    check(zoneId, Match.Id);
-    check(create, Boolean);
-
-    const { zoneLastSeenDates } = Meteor.user();
-    if (create || (zoneLastSeenDates && zoneLastSeenDates[zoneId])) Meteor.users.update(this.userId, { $set: { [`zoneLastSeenDates.${zoneId}`]: new Date() } });
-  },
-  unsubscribeFromZone(zoneId) {
-    if (!this.userId) return;
-    check(zoneId, Match.Id);
-
-    Meteor.users.update(this.userId, { $unset: { [`zoneLastSeenDates.${zoneId}`]: 1 } });
   },
   muteFromZone(zoneId) {
     if (!this.userId) return;

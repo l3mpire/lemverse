@@ -38,7 +38,13 @@ const messageModerationAllowed = (user, message) => {
   return canModerateUser(user, userOwningMessage);
 };
 
+const canSubscribeToNotifications = channelId => {
+  if (!channelId) return false;
+  return channelId.includes('zon_') || channelId.includes('lvl_');
+};
+
 export {
+  canSubscribeToNotifications,
   messagingAllowed,
   messageModerationAllowed,
   permissionType,
