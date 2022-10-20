@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { getSimulationSize } from '../helpers';
 
 LoadingScene = new Phaser.Class({
   Extends: Phaser.Scene,
@@ -21,9 +22,12 @@ LoadingScene = new Phaser.Class({
 
   create(visible = true) {
     if (this.container) return;
-    this.background = this.add.rectangle(0, 0, window.innerWidth, window.innerHeight, 0x222222);
+
+    const { width, height } = getSimulationSize();
+
+    this.background = this.add.rectangle(0, 0, width, height, 0x222222);
     this.background.setOrigin(0, 0);
-    this.background_characters = this.add.tileSprite(0, 0, window.innerWidth, window.innerHeight, 'scene-loader-background');
+    this.background_characters = this.add.tileSprite(0, 0, width, height, 'scene-loader-background');
     this.background_characters.setOrigin(0, 0);
     this.background_characters.setAlpha(0.1);
 
@@ -37,10 +41,12 @@ LoadingScene = new Phaser.Class({
   },
 
   refreshSizeAndPosition() {
-    this.background.setSize(window.innerWidth, window.innerHeight);
-    this.background_characters.setSize(window.innerWidth, window.innerHeight);
-    this.logo.setPosition(window.innerWidth / 2.0, window.innerHeight / 2.0 - 60);
-    this.text.setPosition(window.innerWidth / 2.0, window.innerHeight / 2.0 + 45);
+    const { width, height } = getSimulationSize();
+
+    this.background.setSize(width, height);
+    this.background_characters.setSize(width, height);
+    this.logo.setPosition(width / 2.0, height / 2.0 - 60);
+    this.text.setPosition(width / 2.0, height / 2.0 + 45);
   },
 
   hide(callback = undefined) {
