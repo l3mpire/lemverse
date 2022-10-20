@@ -4,6 +4,38 @@ import { canEditActiveLevel } from '../../lib/misc';
 
 const editorGraphicsDepth = 10002;
 
+const previewInfo = {
+  previewTiles: {},
+  lastSelectedTiles: {},
+  lastMousePosition: {},
+  previousTiles: null,
+};
+
+
+function compareMouseMovements(currentPosition, lastMousePosition) {
+  return currentPosition.x === lastMousePosition.x && currentPosition.y === lastMousePosition.y;
+}
+
+function clearLastPreviewTiles() {
+  const { previousTiles } = previewInfo;
+  const { map } = levelManager;
+  if (previousTiles === null) return;
+
+  for (let x = 0; x < previewInfo.previewTiles.w; x++) {
+    for (let y = 0; y < previewInfo.previewTiles.h; y++) {
+      const tile = previousTiles[x * previewInfo.previewTiles.h + y];
+      tile.x = previewInfo.previewTiles.x + x;
+      tile.y = previewInfo.previewTiles.y + y;
+      if (tile.index) {
+        map.putTileAt(tile.index, tile.x, tile.y, false, tile.layer)?.setAlpha(1);
+      } else {
+        map.removeTileAt(tile.x, tile.y, true, false, tile.layer);
+      }
+    }
+  }
+  previewInfo.previewTiles = {};
+}
+
 const insertTile = data => {
   const user = Meteor.user();
   return Tiles.insert({ _id: Tiles.id(), createdAt: new Date(), createdBy: user._id, levelId: user.profile.levelId, ...data });
@@ -145,6 +177,62 @@ EditorScene = new Phaser.Class({
 
       let selectedTiles = Session.get('selectedTiles');
 
+      const currentMousePosition = { x: pointerTileX, y: pointerTileY };
+
+      // preview tiles
+      if (selectedTiles && !compareMouseMovements(currentMousePosition, previewInfo.lastMousePosition)) {
+        const selectedTileset = Tilesets.findOne(selectedTiles.tilesetId);
+
+        const mapSelectedTileset = map.getTileset(selectedTiles.tilesetId);
+
+        if (mapSelectedTileset) {
+          // We have to clear in a seperate loop, because we need the layer to be clear to draw over.
+          // That way we can only render on mouse movements.
+          // This has a complexity of 2n^2 every mouse movements instead of n^2 every frame.
+          clearLastPreviewTiles();
+
+          const previousTiles = [];
+
+          for (let x = 0; x < selectedTiles.w; x++) {
+            for (let y = 0; y < selectedTiles.h; y++) {
+              const selectedTileIndex = ((selectedTiles.y + y) * selectedTileset.width) / 16 + (selectedTiles.x + x);
+              const globalSelectedTileIndex = levelManager.tileGlobalIndex(mapSelectedTileset, selectedTileIndex);
+
+              const tile = {
+                x: pointerTileX + x,
+                y: pointerTileY + y,
+                index: globalSelectedTileIndex,
+              };
+
+              const layer = levelManager.tileLayer(mapSelectedTileset, selectedTileIndex);
+              const previousTile = map.getTileAt(tile.x, tile.y, false, layer);
+
+              previousTiles.push({
+                index: previousTile?.index,
+                layer,
+              });
+
+              if ((previousTile && previousTile.index !== tile.index) || !previousTile) {
+                map.putTileAt(tile.index, tile.x, tile.y, false, layer).setAlpha(0.65);
+              }
+            }
+          }
+          previewInfo.lastSelectedTiles = selectedTiles;
+          previewInfo.previewTiles = {
+            x: pointerTileX,
+            y: pointerTileY,
+            w: selectedTiles.w,
+            h: selectedTiles.h,
+          };
+          previewInfo.previousTiles = previousTiles;
+        }
+        else {
+          clearLastPreviewTiles();
+        }
+      }
+
+      previewInfo.lastMousePosition = currentMousePosition;
+
       if (shiftIsDown && this.input.manager.activePointer.isDown && canvasClicked) {
         let selectedTileGlobalIndex;
         for (let l = map.layers.length; l >= 0; l--) {
@@ -168,6 +256,7 @@ EditorScene = new Phaser.Class({
           Session.set('selectedTiles', selectedTiles);
         }
       } else if (this.input.manager.activePointer.isDown && canvasClicked) {
+        previewInfo.previousTiles = null;
         if (selectedTiles?.index === -99) {
           Tiles.find({ x: pointerTileX, y: pointerTileY }).forEach(tile => {
             this.undoTiles.push(tile);
@@ -297,6 +386,14 @@ EditorScene = new Phaser.Class({
     this.updateEditionMarker(Session.get('selectedTiles'));
     this.marker.setVisible(mode === editorModes.tiles);
     this.mode = mode;
+
+    // Clear preview on leaving editor
+    if (mode === undefined) {
+      if (Object.keys(previewInfo.lastSelectedTiles).length !== 0 && previewInfo.lastSelectedTiles.constructor === Object) {
+        clearLastPreviewTiles();
+        previewInfo.lastSelectedTiles = {};
+      }
+    }
   },
 
   shutdown() {
