@@ -79,7 +79,7 @@ Meteor.startup(() => {
 
       if (channelType === 'quest') notifyQuestSubscribersAboutNewMessage(message.channel, message);
       else if (channelType === 'zone') setZoneLastMessageAtToNow(message.channel);
-      else if (channelType === 'user' || channelType === 'level') notifyUsers(message);
+      else if (channelType === 'discussion' || channelType === 'level') notifyUsers(message);
     },
   });
 });
