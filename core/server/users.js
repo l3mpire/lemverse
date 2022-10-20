@@ -1,4 +1,4 @@
-import { completeUserProfile, levelSpawnPosition, teleportUserInLevel } from '../lib/misc';
+import { completeUserProfile, getSpawnLevel, levelSpawnPosition, teleportUserInLevel } from '../lib/misc';
 
 const mainFields = { options: 1, profile: 1, roles: 1, status: { online: 1 }, beta: 1, guildId: 1 };
 
@@ -179,19 +179,13 @@ Meteor.users.find({ 'status.online': true }).observeChanges({
     const user = Meteor.users.findOne(id);
     if (!user.status.lastLogoutAt) return;
 
-    const { defaultLevelId, respawnDelay } = Meteor.settings;
+    const { respawnDelay } = Meteor.settings;
     if (!respawnDelay) return;
 
     const diffInMinutes = (Date.now() - new Date(user.status.lastLogoutAt).getTime()) / 60000;
     if (diffInMinutes < respawnDelay) return;
 
-    const levelId = user.profile.levelId || defaultLevelId;
-    let currentLevel = Levels.findOne(levelId);
-
-    if (currentLevel.disabled === true) {
-      currentLevel = Levels.findOne(defaultLevelId);
-    }
-
+    const currentLevel = getSpawnLevel(user);
     const spawnPosition = levelSpawnPosition(currentLevel);
     Meteor.users.update(user._id, { $set: { levelId: currentLevel._id, 'profile.x': spawnPosition.x, 'profile.y': spawnPosition.y } });
   },
