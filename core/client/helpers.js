@@ -90,9 +90,13 @@ updateViewport = (scene, mode) => {
   const lemverseTag = document.querySelector('.lemverse');
   lemverseTag.classList.toggle('screen-splitted', mode === viewportModes.splitScreen);
 
-  if (mode === viewportModes.small) scene.cameras.main.setViewport(0, 0, window.innerWidth / 3, window.innerHeight);
-  else if (mode === viewportModes.splitScreen) scene.cameras.main.setViewport(0, 0, window.innerWidth / 2, window.innerHeight);
-  else scene.cameras.main.setViewport(0, 0, window.innerWidth, window.innerHeight);
+  const canvas = lemverseTag.querySelector('#game canvas');
+  const width = canvas?.width || window.innerWidth;
+  const height = canvas?.height || window.innerHeight;
+
+  if (mode === viewportModes.small) scene.cameras.main.setViewport(0, 0, width / 3, height);
+  else if (mode === viewportModes.splitScreen) scene.cameras.main.setViewport(0, 0, width / 2, height);
+  else scene.cameras.main.setViewport(0, 0, width, height);
 
   scene.viewportMode = mode;
 };
