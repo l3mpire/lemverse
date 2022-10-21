@@ -165,6 +165,13 @@ const canModerateUser = (user, otherUser) => {
   return !otherUser.guildId;
 };
 
+const generateGuestSkin = (user) => {
+  const guestSkin = currentLevel(user)?.skins?.guest || Meteor.settings.public.skins.guest || {};
+  const queryFields = {};
+  Object.keys(guestSkin).forEach(characterPartKey => { queryFields[`profile.${characterPartKey}`] = guestSkin[characterPartKey]; });
+  Meteor.users.update(user._id, { $set: { ...queryFields, 'profile.name': 'Guest' } });
+};
+
 const generateRandomCharacterSkin = (userId, levelId = undefined) => {
   check(levelId, Match.Maybe(Match.Id));
   check(userId, Match.Id);
@@ -204,6 +211,8 @@ const generateRandomCharacterSkin = (userId, levelId = undefined) => {
 };
 
 const completeUserProfile = (user, email, name) => {
+  const hasOnboarding = Meteor.settings.public.lp.enableOnboarding;
+
   try {
     Promise.await(Meteor.users.update(user._id, {
       $set: {
@@ -221,7 +230,12 @@ const completeUserProfile = (user, email, name) => {
     }));
   } catch (err) { throw new Meteor.Error('email-duplicate', 'Email already exists'); }
 
-  Meteor.users.update(user._id, { $unset: { 'profile.guest': true, username: true } });
+  Meteor.users.update(user._id, {
+    $unset: {
+      ...(!hasOnboarding ? { 'profile.guest': true } : {}),
+      username: true,
+    },
+  });
 
   return generateRandomCharacterSkin(Meteor.userId(), user.profile.levelId);
 };
@@ -294,6 +308,7 @@ export {
   currentLevel,
   fileOnBeforeUpload,
   generateRandomCharacterSkin,
+  generateGuestSkin,
   guestAllowed,
   getChannelType,
   isLevelOwner,

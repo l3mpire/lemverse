@@ -1,4 +1,4 @@
-import { generateRandomCharacterSkin, levelSpawnPosition, completeUserProfile } from '../lib/misc';
+import { generateRandomCharacterSkin, levelSpawnPosition, completeUserProfile, generateGuestSkin } from '../lib/misc';
 
 Accounts.onCreateUser((options, user) => {
   log('onCreateUser', { options, user });
@@ -27,9 +27,11 @@ Accounts.onLogin(param => {
     Meteor.users.update(user._id, { $set: { 'profile.x': spawnPosition.x, 'profile.y': spawnPosition.y } });
   }
 
-  if (user.profile.guest) return;
-
   const isBodyValid = user.profile.body?.includes('chr_');
+  if (user.profile.guest && user.username) {
+    if (!isBodyValid) generateGuestSkin(user);
+    return;
+  }
   if (!isBodyValid) {
     log('onLogin: setting default skin', { userId: user._id, ip: param.connection?.httpHeaders?.['x-forwarded-for'], userAgent: param.connection?.httpHeaders?.['user-agent'], languages: param.connection?.httpHeaders?.['accept-language'] });
     generateRandomCharacterSkin(user._id, Meteor.settings.defaultLevelId);
