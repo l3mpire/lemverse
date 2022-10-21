@@ -275,12 +275,6 @@ const generateEntityThumbnail = (entity, thumbnailMaxSize = 35) => {
   return `background-image: url("lemverse.png"); background-size: contain; width: 100%; height: 100%;`;
 };
 
-const guestSkin = () => {
-  if (_.isObject(Meteor.settings.public.skins.guest)) return Meteor.settings.public.skins.guest;
-
-  return Levels.findOne().skins?.guest || {};
-};
-
 const meteorCallWithPromise = (method, ...args) => new Promise((resolve, reject) => {
   Meteor.call(method, ...args, (err, result) => {
     if (err) reject(err);
@@ -325,21 +319,23 @@ const vectorToTextDirection = vector => {
   return undefined;
 };
 
+const isMobile = () => window.matchMedia('(pointer: coarse)').matches;
+
 export {
   allowPhaserMouseInputs,
   canAnswerCall,
   clamp,
   getSimulationSize,
-  guestSkin,
-  formatURLs,
   formatURL,
+  formatURLs,
   generateEntityThumbnail,
+  isMobile,
   meteorCallWithPromise,
   nearestDuration,
   replaceTextVars,
   setReaction,
-  toggleUIInputs,
   textDirectionToVector,
+  toggleUIInputs,
   vectorToTextDirection,
 
   moduleType,

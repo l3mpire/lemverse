@@ -53,8 +53,6 @@ userManager = {
     this.characters[user._id] = character;
 
     if (guest) {
-      character.updateSkin(guestSkin()); // init with custom skin
-      character.setName('Guest');
       character.playAnimation(characterAnimations.run, 'down', true);
     }
 
@@ -81,19 +79,9 @@ userManager = {
     player.reactionHandler = setInterval(() => UIScene.spawnReaction(player, reaction, animation, { randomOffset: 10 }), 250);
   },
 
-  _checkForSkinUpdate(character, user, oldUser) {
-    const { guest } = user.profile;
-
+  _checkForSkinUpdate(character, user, oldUser) { 
     // check for skin updates
-    let hasSkinUpdate = !oldUser && !guest;
-    if (!hasSkinUpdate && !guest) {
-      const charactersPartsKeys = Object.keys(charactersParts);
-      charactersPartsKeys.forEach(characterPart => {
-        if (user.profile[characterPart] === oldUser.profile[characterPart]) return;
-        hasSkinUpdate = true;
-      });
-    }
-
+    const hasSkinUpdate = !oldUser || Object.keys(charactersParts).some(part => user.profile[part] !== oldUser.profile[part])
     if (hasSkinUpdate) {
       character.updateSkin({
         body: user.profile.body,

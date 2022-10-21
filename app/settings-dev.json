@@ -8,7 +8,8 @@
       "gods": [],
       "production": false,
       "staging": false,
-      "enableLogClient": false
+      "enableLogClient": false,
+      "enableOnboarding": false
     },
 
     "debug": false,
