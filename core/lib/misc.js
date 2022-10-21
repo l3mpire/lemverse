@@ -165,6 +165,13 @@ const canModerateUser = (user, otherUser) => {
   return !otherUser.guildId;
 };
 
+const generateGuestSkin = (user) => {
+  const guestSkin = currentLevel(user)?.skins?.guest || Meteor.settings.public.skins.guest || {};
+  const queryFields = {};
+  Object.keys(guestSkin).forEach(characterPartKey => { queryFields[`profile.${characterPartKey}`] = guestSkin[characterPartKey]; });
+  Meteor.users.update(user._id, { $set: { ...queryFields, 'profile.name': 'Guest' } });
+};
+
 const generateRandomCharacterSkin = (userId, levelId = undefined) => {
   check(levelId, Match.Maybe(Match.Id));
   check(userId, Match.Id);
@@ -301,6 +308,7 @@ export {
   currentLevel,
   fileOnBeforeUpload,
   generateRandomCharacterSkin,
+  generateGuestSkin,
   guestAllowed,
   getChannelType,
   isLevelOwner,
