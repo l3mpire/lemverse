@@ -240,6 +240,16 @@ const completeUserProfile = (user, email, name) => {
   return generateRandomCharacterSkin(Meteor.userId(), user.profile.levelId);
 };
 
+const getSpawnLevel = user => {
+  const { defaultLevelId } = Meteor.settings;
+  let level = Levels.findOne(user.profile.levelId || defaultLevelId);
+
+  if (level.disabled === true) {
+    level = Levels.findOne(defaultLevelId);
+  }
+  return level;
+};
+
 const levelSpawnPosition = level => {
   check(level._id, Match.Id);
 
@@ -309,6 +319,7 @@ export {
   fileOnBeforeUpload,
   generateRandomCharacterSkin,
   generateGuestSkin,
+  getSpawnLevel,
   guestAllowed,
   getChannelType,
   isLevelOwner,
