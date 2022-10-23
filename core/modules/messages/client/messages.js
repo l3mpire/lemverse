@@ -1,4 +1,5 @@
 import { meteorCallWithPromise } from '../../../client/helpers';
+import { canSubscribeToNotifications } from '../misc';
 
 const messageMaxLength = 4096;
 
@@ -54,8 +55,8 @@ messagesModule = {
   },
 
   markChannelAsRead(channel) {
-    if (channel.includes('zon_')) {
-      Meteor.call('updateZoneLastSeenDate', channel, () => {
+    if (canSubscribeToNotifications(channel)) {
+      Meteor.call('messagesUpdateChannelLastSeenDate', channel, () => {
         const zone = Zones.findOne(channel);
         if (zone) zoneManager.destroyNewContentIndicator(zone);
       });

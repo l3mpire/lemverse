@@ -1,4 +1,4 @@
-import { messageModerationAllowed } from '../misc';
+import { canSubscribeToNotifications, messageModerationAllowed } from '../misc';
 import { currentLevel } from '../../../lib/misc';
 import { formatURLs, replaceTextVars } from '../../../client/helpers';
 
@@ -120,20 +120,22 @@ Template.messagesList.onCreated(function () {
 Template.messagesList.helpers({
   channelName() { return getCurrentChannelName(); },
   messages() { return sortedMessages(); },
-  canSubscribe() { return Session.get('messagesChannel')?.includes('zon_'); },
+  canSubscribe() {
+    return canSubscribeToNotifications(Session.get('messagesChannel'));
+  },
   subscribed() {
-    const channel = Session.get('messagesChannel');
-    if (!channel?.includes('zon_')) return false;
+    const channelId = Session.get('messagesChannel');
+    if (!canSubscribeToNotifications(channelId)) return false;
 
-    const { zoneLastSeenDates } = Meteor.user();
-    return !zoneLastSeenDates || !zoneLastSeenDates[channel];
+    const { zoneLastSeenDates } = Meteor.user({ fields: { zoneLastSeenDates: 1 } });
+    return !zoneLastSeenDates || !zoneLastSeenDates[channelId];
   },
   muted() {
-    const channel = Session.get('messagesChannel');
-    if (!channel?.includes('zon_')) return false;
+    const channelId = Session.get('messagesChannel');
+    if (!canSubscribeToNotifications(channelId)) return false;
 
-    const { zoneMuted } = Meteor.user();
-    return !zoneMuted || !zoneMuted[channel];
+    const { zoneMuted } = Meteor.user({ fields: { zoneMuted: 1 } });
+    return !zoneMuted || !zoneMuted[channelId];
   },
   sameDay(index) {
     if (index === 0) return true;
@@ -160,10 +162,10 @@ Template.messagesList.events({
     event.stopPropagation();
 
     const channelId = Session.get('messagesChannel');
-    if (!channelId.includes('zon_')) return;
-    Meteor.call('updateZoneLastSeenDate', channelId, true, err => {
+    if (!channelId.includes('zon_') && !channelId.includes('lvl_')) return;
+    Meteor.call('messagesUpdateChannelLastSeenDate', channelId, true, err => {
       if (err) return;
-      lp.notif.success('🔔 You will be notified of news from this zone');
+      lp.notif.success('🔔 You will be notified of news from this channel');
     });
   },
   'click .js-channel-unsubscribe'(event) {
@@ -172,7 +174,7 @@ Template.messagesList.events({
 
     const channelId = Session.get('messagesChannel');
     if (!channelId.includes('zon_')) return;
-    Meteor.call('unsubscribeFromZone', channelId, err => {
+    Meteor.call('messagesUnsubscribeFromChannelNotifications', channelId, err => {
       if (err) return;
       lp.notif.success('🔔 You will no longer be notified');
     });
