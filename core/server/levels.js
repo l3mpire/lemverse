@@ -191,7 +191,17 @@ Meteor.publish('currentLevel', function () {
   return Levels.find(
     { _id: level._id },
     { fields: {
-      name: 1, spawn: 1, hide: 1, height: 1, width: 1, editorUserIds: 1, createdBy: 1, sandbox: 1, guildId: 1, disabled: 1,
+      name: 1,
+      spawn: 1,
+      hide: 1,
+      height: 1,
+      width: 1,
+      editorUserIds: 1,
+      createdBy: 1,
+      sandbox: 1,
+      guildId: 1,
+      disabled: 1,
+      lastMessageAt: 1,
     } },
   );
 });
