@@ -321,14 +321,18 @@ const vectorToTextDirection = vector => {
 
 const isMobile = () => window.matchMedia('(pointer: coarse)').matches;
 
+const filesURL = `${Meteor.settings.public.lp.website}${Meteor.settings.public.files.route}/`;
+
 export {
   allowPhaserMouseInputs,
   canAnswerCall,
   clamp,
-  getSimulationSize,
+  filesURL,
   formatURL,
   formatURLs,
   generateEntityThumbnail,
+  getSimulationSize,
+  guestSkin,
   isMobile,
   meteorCallWithPromise,
   nearestDuration,

@@ -9,7 +9,9 @@
       "production": false,
       "staging": false,
       "enableLogClient": false,
-      "enableOnboarding": false
+      "enableOnboarding": false,
+      "logoURL": "https://assets.website-files.com/62b4ba92180b4210cc065959/62b4c09cbc28c2286fc87ed6_Logo.svg",
+      "faviconURL": "https://assets.website-files.com/62b4ba92180b4210cc065959/62bdafd68a5ffb164edbdf51_Favicon%20(1).png"
     },
 
     "debug": false,
