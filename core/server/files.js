@@ -1,7 +1,20 @@
 import FileType from 'file-type';
 import '../collections';
 import gm from 'gm';
+import { favicons } from 'favicons';
 import { fileOnBeforeUpload } from '../lib/misc';
+
+const faviconsConfiguration = {
+  appName: 'lemverse',
+  icons: {
+    android: false,
+    appleIcon: ['apple-touch-icon.png'],
+    appleStartup: false,
+    favicons: ['favicon-16x16.png', 'favicon-32x32.png'],
+    windows: false,
+    yandex: false,
+  },
+};
 
 const filesAfterUploadEditorTileset = (user, fileRef) => {
   log('filesAfterUploadEditorTileset: start', { userId: user._id, fileRef });
@@ -136,6 +149,19 @@ const filesAfterUploadAsset = async (user, fileRef) => {
   log('filesAfterUploadAsset: done', { userId: user._id });
 };
 
+
+const filesAfterUploadFavicon = async fileRef => {
+  log('filesAfterUploadFavicon: start', { fileRef });
+
+  const response = await favicons(fileRef.path, faviconsConfiguration);
+  const allFiles = response.images.concat(response.files);
+
+  // fileId can't contain file extension + special characters like '-'
+  allFiles.forEach(image => Files.write(image.contents, { fileName: image.name, fileId: image.name.split('.')[0].replace('-', '') }, () => {}, true));
+
+  log('filesAfterUploadFavicon: done', { fileRef });
+};
+
 Files.onBeforeUpload = function (file) {
   if (this.eof) {
     const { mime } = Promise.await(FileType.fromFile(file.path)) || file; // fallback to default mime for non binary-based file
@@ -149,13 +175,15 @@ Files.onBeforeUpload = function (file) {
 };
 
 Files.on('afterUpload', fileRef => {
-  const user = Meteor.users.findOne(fileRef.userId);
-  log('FilesCollection: afterUpload start', { userId: user._id, fileRef });
+  const source = fileRef.meta?.source;
+  const user = source !== 'favicon' && Meteor.users.findOne(fileRef.userId);
+  log('FilesCollection: afterUpload start', { userId: user?._id, fileRef });
 
-  if (fileRef.meta?.source === 'editor-assets') filesAfterUploadAsset(user, fileRef);
-  else if (fileRef.meta?.source === 'editor-characters') filesAfterUploadEditorCharacter(user, fileRef);
-  else if (fileRef.meta?.source === 'editor-tilesets') filesAfterUploadEditorTileset(user, fileRef);
-  else if (fileRef.meta?.source === 'voice-recorder') filesAfterUploadVoiceRecorder(user, fileRef);
+  if (source === 'editor-assets') filesAfterUploadAsset(user, fileRef);
+  else if (source === 'editor-characters') filesAfterUploadEditorCharacter(user, fileRef);
+  else if (source === 'editor-tilesets') filesAfterUploadEditorTileset(user, fileRef);
+  else if (source === 'voice-recorder') filesAfterUploadVoiceRecorder(user, fileRef);
+  else if (source === 'favicon') filesAfterUploadFavicon(fileRef);
 });
 
 Meteor.publish('files', fileIds => {
