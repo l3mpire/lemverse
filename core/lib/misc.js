@@ -37,11 +37,10 @@ const randomInRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) 
  * @param {number} decimals
  * @returns {number}
  */
-const randomFloatInRange = (min, max, decimals) =>
-  parseFloat(
-    (Math.random() * (max - min) + min)
-      .toFixed(decimals)
-  );
+const randomFloatInRange = (min, max, decimals) => parseFloat(
+  (Math.random() * (max - min) + min)
+    .toFixed(decimals),
+);
 
 const subscribedUsersToEntity = entityId => {
   check(entityId, Match.Id);
@@ -165,7 +164,7 @@ const canModerateUser = (user, otherUser) => {
   return !otherUser.guildId;
 };
 
-const generateGuestSkin = (user) => {
+const generateGuestSkin = user => {
   const guestSkin = currentLevel(user)?.skins?.guest || Meteor.settings.public.skins.guest || {};
   const queryFields = {};
   Object.keys(guestSkin).forEach(characterPartKey => { queryFields[`profile.${characterPartKey}`] = guestSkin[characterPartKey]; });
