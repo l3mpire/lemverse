@@ -13,9 +13,8 @@ Template.settingsMain.events({
     event.preventDefault();
     event.stopPropagation();
     lp.notif.confirm('Logout', `You will be disconnected from ${Meteor.settings.public.lp.product}, are you sure ?`, () => {
-      Meteor.logout(() => {
-        closeModal();
-      });
+      closeModal();
+      Meteor.logout();
     });
   },
   'click .js-menu-entry'(event) { Session.set('activeSettingsPage', event.currentTarget.dataset.page); },
