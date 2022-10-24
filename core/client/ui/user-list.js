@@ -1,4 +1,4 @@
-import { canEditLevel, canEditGuild, canModerateLevel, canModerateUser, canEditUserPermissions, currentLevel, isLevelOwner } from '../../lib/misc';
+import { canEditLevel, canModerateLevel, canModerateUser, canEditUserPermissions, currentLevel, isLevelOwner } from '../../lib/misc';
 
 const tabs = Object.freeze({
   level: 'level',
@@ -66,6 +66,12 @@ Template.userListEntry.events({
 Template.userList.onCreated(function () {
   const user = Meteor.user();
   this.activeTab = new ReactiveVar(localStorage.getItem(userListTabKey) || (user.guildId ? tabs.team : tabs.level));
+  this.canEditGuild = new ReactiveVar(false);
+
+  Meteor.call('canEditGuild', (error, data) => {
+    if (error) return;
+    this.canEditGuild.set(data);
+  });
 
   const guildIds = Meteor.users.find().map(u => u.guildId).filter(Boolean);
   this.subscribe('guilds', [...new Set(guildIds)]);
@@ -79,13 +85,7 @@ Template.userList.helpers({
   activeTab(name) {
     return Template.instance().activeTab.get() === name;
   },
-  canEditTeam() {
-    const level = currentLevel(Meteor.user());
-    const guild = Guilds.findOne(level.guildId);
-    if (!guild) return false;
-
-    return canEditGuild(Meteor.user(), guild);
-  },
+  canEditTeam() { return Template.instance().canEditGuild.get(); },
   canEditUserPermissions() {
     return canEditUserPermissions(Meteor.user(), currentLevel(Meteor.user()));
   },
