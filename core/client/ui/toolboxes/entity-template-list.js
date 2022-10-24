@@ -62,6 +62,20 @@ Template.entityEditPrefab.events({
     });
   },
   'click .js-prefab-cancel'() { closeModal(); },
+  'click .js-prefab-version'() { 
+    let values;
+     try {
+      values = JSON.parse($('.entity-toolbox-properties textarea').val());
+    } catch (err) { lp.notif.error(`invalid JSON format`, err); }
+    const key = values.gameObject.sprite.key;
+    const match = key.match(/-(\d+)$/);
+    if (match) {
+      values.gameObject.sprite.key = key.replace(/-\d+$/, `-${parseInt(match[1]) + 1}`);
+    } else {
+      values.gameObject.sprite.key = `${key}-1`;
+    }
+    $('.entity-toolbox-properties textarea').val(JSON.stringify(values, ' ', 2));
+  },
   'click .js-prefab-save'() {
     const currentFields = this.entity;
     let newValues;
