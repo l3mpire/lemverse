@@ -172,6 +172,15 @@ Meteor.methods({
 
     return Meteor.users.find({ guildId }).count();
   },
+  canEditGuild() {
+    if (!this.userId) return false;
+    const user = Meteor.user();
+
+    const guild = Guilds.findOne(user.guildId);
+    if (!guild) return false;
+
+    return canEditGuild(user, guild);
+  },
 });
 
 
