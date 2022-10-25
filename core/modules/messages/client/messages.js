@@ -69,8 +69,13 @@ messagesModule = {
   async sendWebRTCMessage(channel, content) {
     try {
       let showPopInOverEmitter = true;
-      if (channel.includes('zon_')) await sendDataToUsersInZone('text', { content, channel }, Meteor.userId());
-      else {
+      if (channel.includes('zon_')) {
+        // only show the pop-in over the character when the targeted channel is the active zone
+        const zone = zoneManager.currentZone(Meteor.user());
+        if (!zone || zone._id !== channel) return;
+
+        await sendDataToUsersInZone('text', { content, channel }, Meteor.userId());
+      } else {
         const userIds = userProximitySensor.filterNearUsers(channel.split(';'));
         showPopInOverEmitter = !!userIds.length;
         await sendDataToUsers('text', { content, channel }, Meteor.userId(), userIds);
