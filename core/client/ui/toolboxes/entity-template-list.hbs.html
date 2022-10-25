@@ -10,11 +10,29 @@
   <div class="entity-template-list">
     <ul class="list">
       {{#each entities}}
-      <li class="js-entity-entry">
-        {{> entityTemplateEntry}}
+      <li>
+        <div class="js-entity-entry">
+          {{> entityTemplateEntry}}
+        </div>
+        <button class="pencil-edit js-entity-edit">✏️</button>
       </li>
       {{/each}}
     </ul>
+  </div>
+  {{/modal}}
+</template>
+
+<template name="entityEditPrefab">
+  {{#modal title=name data=this}}
+  <div class="entity-toolbox-properties">
+    <textarea>{{properties}}</textarea>
+    <div class="actions">
+      <span class="button js-prefab-delete">🗑️ Delete</span>
+      <span class="button js-prefab-delete-all">♻️ Remove all instances</span>
+      <span class="button js-prefab-cancel">❌ Cancel</span>
+      <span class="button js-prefab-version">👍 Version</span>
+      <span class="button js-prefab-save">💾 Save</span>
+    </div>
   </div>
   {{/modal}}
 </template>
