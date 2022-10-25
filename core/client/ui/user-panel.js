@@ -18,6 +18,7 @@ const onMediaStreamStateChanged = event => {
 };
 
 Template.userPanel.onCreated(function () {
+  if (Meteor.settings.public.features?.userPanel?.enabled === false) return;
   this.avatarURL = new ReactiveVar();
   window.addEventListener(eventTypes.onMediaStreamStateChanged, onMediaStreamStateChanged);
 
@@ -47,7 +48,7 @@ Template.userPanel.helpers({
   avatarURL() { return talking() && Template.instance().avatarURL.get(); },
   screenSharing() { return Meteor.user({ fields: { 'profile.shareScreen': 1 } })?.profile.shareScreen; },
   videoActive() { return talking() && Meteor.user({ fields: { 'profile.shareVideo': 1 } })?.profile.shareVideo; },
-  hidden() { return Meteor.settings.public.features?.useMessaging?.enabled === false; },
+  displayUserPanel() { return Meteor.settings.public.features?.userPanel?.enabled !== false; },
 });
 
 Template.userPanel.events({
