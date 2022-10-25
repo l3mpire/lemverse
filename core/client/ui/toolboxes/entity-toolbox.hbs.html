@@ -7,11 +7,14 @@
       {{/each}}
     </ul>
     {{#if customEntityUploadAllowed}}
-    <button type="button" class="button js-open-entity-template-list">Browse catalog</button>
+    <hr>
+    <button type="button" class="button js-open-entity-template-list">Browse the prefabs catalog</button>
     <div class="create-entity-from-file button">
       <label for="js-entity-sprite-upload" class="custom-file-upload">Upload custom element</label>
-      <input id="js-entity-sprite-upload" class="js-entity-sprite-upload" type="file" accept="image/png, image/jpeg, image/gif">
+      <input id="js-entity-sprite-upload" class="js-entity-sprite-upload" type="file"
+        accept="image/png, image/jpeg, image/gif">
     </div>
+    <button type="button" class="button js-create-new-prefab">Create new prefab</button>
     {{/if}}
     {{else}}
     {{> entityEditor}}

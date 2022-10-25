@@ -2,56 +2,71 @@
 
 .entity-template-list {
   padding: 0 15px;
-  width: 100%;
+  width: 93%;
   height: 100%;
+  overflow-y: scroll;
+  overflow-x: auto;
 
   .list {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    overflow-x: scroll;
     max-width: 100%;
     list-style-type: none;
-    overflow: scroll;
     margin: 10px 0;
     padding: 0;
 
-    li.js-entity-entry {
-      padding: 5px;
-      height: 45px;
+    li {
       width: 100%;
-      border-radius: $radius;
-      color: $main-text-color;
       display: flex;
-      flex-direction: row;
+      justify-content: space-between;
       align-items: center;
-      gap: 15px;
 
-      &:hover {
-        cursor: pointer;
-        background-color: lighten($main-color, 10%);
+
+      div.js-entity-entry {
+        padding: 5px;
+        height: 45px;
+        width: 95%;
+        border-radius: $radius;
+        color: $main-text-color;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 15px;
+
+        &:hover {
+          cursor: pointer;
+          background-color: lighten($main-color, 10%);
+
+          .thumbnail {
+            background-color: transparent;
+          }
+        }
 
         .thumbnail {
-          background-color: transparent;
+          height: 45px;
+          width: 45px;
+          background-color: $main-color;
+          padding: 10px;
+
+          * {
+            image-rendering: pixelated;
+            background-position: center;
+            background-repeat: no-repeat;
+          }
+        }
+
+        .name {
+          text-align: center;
+          margin-bottom: auto;
         }
       }
 
-      .thumbnail {
-        height: 45px;
-        width: 45px;
-        background-color: $main-color;
-        padding: 10px;
-
-        * {
-          image-rendering: pixelated;
-          background-position: center;
-          background-repeat: no-repeat;
-        }
-      }
-
-      .name {
-        text-align: center;
-        margin-bottom: auto;
+      .pencil-edit {
+        background-color: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
       }
     }
   }

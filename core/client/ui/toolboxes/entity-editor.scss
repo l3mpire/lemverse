@@ -98,3 +98,38 @@
     font-weight: bold;
   }
 }
+
+.entity-toolbox-properties {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  > :first-child {
+    flex-grow: 1;
+    flex-shrink: 1;
+  }
+
+  textarea {
+    width: 100%;
+    height: 210px;
+    flex: 1;
+    background-color: transparent;
+    color: white;
+    font-size: 0.9rem;
+    line-height: 1.3rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-direction: row;
+
+    .button {
+      width: auto;
+      margin: 5px;
+    }
+
+    .button:nth-last-child(2) {
+      margin-left: auto;
+    }
+  }
+}
