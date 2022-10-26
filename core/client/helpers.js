@@ -332,7 +332,6 @@ export {
   formatURLs,
   generateEntityThumbnail,
   getSimulationSize,
-  guestSkin,
   isMobile,
   meteorCallWithPromise,
   nearestDuration,
