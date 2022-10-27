@@ -1,17 +1,19 @@
 import { isMobile } from '../helpers';
 
 const ONBOARDING_LAST_STEP = 4;
-const keyboards = ['q', 'z', 's', 'd', 'up', 'down', 'right', 'left'];
+const keyboard = ['z', 'q', 's', 'd', 'w', 'a', 'down', 'right', 'left', 'up'];
 
 const getDirectionFromKey = key => {
   switch (key) {
     case 'z':
+    case 'w':
     case 'up':
       return 'up';
     case 's':
     case 'down':
       return 'down';
     case 'q':
+    case 'a':
     case 'left':
       return 'left';
     case 'd':
@@ -21,6 +23,21 @@ const getDirectionFromKey = key => {
       return null;
   }
 };
+
+const getCorrespondingKey = key => {
+    switch (key) {
+      case 'z':
+        return Session.get('isQwerty') ? 'W' : 'Z';
+      case 'q':
+        return Session.get('isQwerty') ? 'A' : 'Q';
+      case 's':
+        return 'S';
+      case 's':
+        return 'D';
+      default:
+        return null;
+    }
+}
 
 
 const requestUserMedia = async () => {
@@ -35,7 +52,7 @@ const requestUserMedia = async () => {
 };
 
 const bindKeyboards = () => {
-  keyboards.forEach(key => {
+  keyboard.forEach(key => {
     hotkeys(key, { keyup: true }, event => {
       if (event.repeat) return;
 
@@ -47,7 +64,7 @@ const bindKeyboards = () => {
         if (!learnedDirections.includes(direction)) learnedDirections.push(direction);
 
         Session.set('learnedDirections', learnedDirections);
-        Session.set('pressedKeyboard', key);
+        Session.set('pressedKeyboard', event.code);
       } else {
         Session.set('pressedKeyboard', null);
       }
@@ -99,4 +116,5 @@ Template.userOnboarding.helpers({
     return `/api/files/${Object.keys(charactersParts).filter(part => user.profile[part]).map(part => Characters.findOne(user.profile[part]))[0].fileId}`;
   },
   isMobile: () => isMobile(),
+  getCorrespondingKey: (key) => getCorrespondingKey(key)
 });
