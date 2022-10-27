@@ -26,7 +26,7 @@ function clearLastPreviewTiles() {
 
   for (let i = 0; i < previousTiles.length; i += 1) {
     const tile = previousTiles[i];
-    if (tile.index) {
+    if (tile.index !== undefined) {
       map.putTileAt(tile.index, tile.x, tile.y, false, tile.layer)?.setAlpha(1);
     } else {
       map.removeTileAt(tile.x, tile.y, true, false, tile.layer);
@@ -347,6 +347,8 @@ EditorScene = new Phaser.Class({
               // updating tile that already exists
               if (tileToUpdate && tileToCopy.index !== tileToUpdate.index) {
                 const databaseTileToUpdate = getDatabaseTile(pointerOffsetX, pointerOffsetY, tileToUpdate);
+                if (!databaseTileToUpdate) return
+
                 this.undoTiles.push(databaseTileToUpdate);
                 Tiles.update(databaseTileToUpdate._id, { $set: { createdAt: new Date(), createdBy: Meteor.userId(), index: tileToCopyLocalIndex, tilesetId: databaseTilesetToCopy._id } });
               } else if (!tileToUpdate) {
