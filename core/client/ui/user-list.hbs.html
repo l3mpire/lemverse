@@ -52,11 +52,13 @@
       </div>
 
       <ul class="users">
-        {{#each user in users}}
-          <li class="user">
-            {{> userListEntry user=user level=level canEditUserPermissions=canEditUserPermissions canModerateLevel=canModerateLevel}}
-          </li>
-        {{/each}}
+        {{#if level}}
+          {{#each user in users}}
+            <li class="user">
+              {{> userListEntry user=user level=level canEditUserPermissions=canEditUserPermissions canModerateLevel=canModerateLevel}}
+            </li>
+          {{/each}}
+        {{/if}}
       </ul>
 
       {{#if activeTab "team"}}

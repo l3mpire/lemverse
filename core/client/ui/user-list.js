@@ -1,4 +1,4 @@
-import { canEditLevel, canModerateLevel, canModerateUser, canEditUserPermissions, currentLevel, isLevelOwner } from '../../lib/misc';
+import { canEditLevel, canModerateLevel, canModerateUser, canEditUserPermissions, isLevelOwner } from '../../lib/misc';
 
 const tabs = Object.freeze({
   level: 'level',
@@ -18,6 +18,17 @@ const users = (mode, guildId) => {
   return Meteor.users.find(filters, { sort: { 'profile.name': 1 }, fields: userFields });
 };
 
+const sortUserList = (a, b) => {
+  if (a.status.online === b.status.online) {
+    const nameA = (a.profile.name || a.username).toLowerCase();
+    const nameB = (b.profile.name || b.username).toLowerCase();
+
+    return nameA.localeCompare(nameB);
+  }
+
+  return a.status.online ? -1 : 1;
+};
+
 Template.userListEntry.helpers({
   admin() { return this.user.roles?.admin; },
   canEditLevel() { return canEditLevel(this.user, this.level); },
@@ -28,7 +39,10 @@ Template.userListEntry.helpers({
   },
   guildName() { return Guilds.findOne(this.user.guildId)?.name; },
   guildIcon() { return Guilds.findOne(this.user.guildId)?.icon; },
-  levelOwner() { return isLevelOwner(this.user, this.level); },
+  levelOwner() {
+    if (!this.level) return false;
+    return isLevelOwner(this.user, this.level);
+  },
   modules() { return Session.get('userListModules'); },
   user() { return this.user; },
   zone() {
@@ -67,6 +81,7 @@ Template.userList.onCreated(function () {
   const user = Meteor.user();
   this.activeTab = new ReactiveVar(localStorage.getItem(userListTabKey) || (user.guildId ? tabs.team : tabs.level));
   this.canEditGuild = new ReactiveVar(false);
+  this.currentLevel = Levels.findOne();
 
   Meteor.call('canEditGuild', (error, data) => {
     if (error) return;
@@ -87,13 +102,13 @@ Template.userList.helpers({
   },
   canEditTeam() { return Template.instance().canEditGuild.get(); },
   canEditUserPermissions() {
-    return canEditUserPermissions(Meteor.user(), currentLevel(Meteor.user()));
+    return canEditUserPermissions(Meteor.user(), Template.instance().currentLevel);
   },
   canModerateLevel() {
-    return canModerateLevel(Meteor.user(), currentLevel(Meteor.user()));
+    return canModerateLevel(Meteor.user(), Template.instance().currentLevel);
   },
   level() {
-    return currentLevel(Meteor.user());
+    return Template.instance().currentLevel;
   },
   title() {
     const activeTab = Template.instance().activeTab.get();
@@ -103,12 +118,7 @@ Template.userList.helpers({
     const activeTab = Template.instance().activeTab.get();
     const { guildId } = Meteor.user({ fields: { guildId: 1 } });
 
-    return users(activeTab, guildId)
-      .fetch()
-      .sort((a, b) => {
-        if (a.status.online === b.status.online) return a.profile.name.toLowerCase().localeCompare(b.profile.name.toLowerCase());
-        return a.status.online ? -1 : 1;
-      });
+    return users(activeTab, guildId).fetch().sort(sortUserList);
   },
 });
 
