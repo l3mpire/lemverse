@@ -12,7 +12,17 @@
             <button disabled="{{#if not streamAccepted}}disabled{{/if}}"
                 class="button {{#if not streamAccepted}}button__disabled{{/if}}">Continue</button>
         </div>
-        {{else if (and (eq step 2) (not isMobile))}}
+        {{else if eq step 2}}
+        <div class="main">
+            <div class="main-title">
+                Meet new people!
+            </div>
+            <div class="content">
+              <img src='meet.gif' alt="Meet" />
+            </div>
+            <button class="button">Continue</button>
+        </div>
+        {{else if (and (eq step 3) (not isMobile))}}
         <div class="main">
             <div class="main-title">
                 Try to move in all directions
@@ -48,7 +58,7 @@
             </div>
             <button disabled="{{#if not hasLearnedAllDirections}}disabled{{/if}}" class="button">Continue</button>
         </div>
-        {{else if (or (eq step 3) (and isMobile (eq step 2)))}}
+        {{else if (or (eq step 4) (and isMobile (eq step 3)))}}
         <div class="main">
             <div class="main-title">
                 Personalize your character!
