@@ -1,6 +1,6 @@
 import { isMobile } from '../helpers';
 
-const ONBOARDING_LAST_STEP = 3;
+const ONBOARDING_LAST_STEP = 4;
 const keyboards = ['q', 'z', 's', 'd', 'up', 'down', 'right', 'left'];
 
 const getDirectionFromKey = key => {
