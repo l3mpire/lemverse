@@ -565,6 +565,18 @@ Please note, that as stated in section `Deploy in production`, there is an addit
     }
   },
 
+  // Use AWS s3 bucket to make the app stateless
+  "s3": {
+    "key": "AWSKEY",
+    "secret": "AWSSECRET",
+    "bucket": "BUCKETNAME",
+    "region": "eu-west-3",
+    // Fetch image from a CDN instead of the bucket
+    "cdn": {
+      "url": "https://cdn.cloudfront.net/"
+    }
+  },
+
   // Use Monti APM
   "monti": {
     "appId": "",

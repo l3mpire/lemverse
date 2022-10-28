@@ -253,6 +253,8 @@
     }
   },
 
+  "s3": {},
+
   "monti": {
     "appId": "",
     "appSecret": "",
