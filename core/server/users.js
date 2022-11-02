@@ -1,6 +1,6 @@
 import { completeUserProfile, getSpawnLevel, levelSpawnPosition, teleportUserInLevel } from '../lib/misc';
 
-const mainFields = { options: 1, profile: 1, roles: 1, status: { online: 1 }, beta: 1, guildId: 1 };
+const mainFields = { options: 1, profile: 1, roles: 1, status: { idle: 1, online: 1 }, beta: 1, guildId: 1 };
 
 Meteor.publish('users', function (levelId) {
   check(levelId, Match.Maybe(Match.Id));
