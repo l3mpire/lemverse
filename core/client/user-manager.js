@@ -320,10 +320,12 @@ userManager = {
         'profile.shareAudio': false,
         'profile.shareScreen': false,
       } }), 0);
+      Meteor.call('user-status-idle');
       peer.disable();
     } else {
       peer.enable();
       this.clearMediaStates();
+      Meteor.call('user-status-active');
     }
 
     this.follow(undefined); // interrupts the follow action
