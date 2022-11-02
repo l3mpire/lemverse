@@ -3,7 +3,7 @@ import Character from './components/character';
 import audioManager from './audio-manager';
 import networkManager from './network-manager';
 import meetingRoom from './meeting-room';
-import { guestSkin, textDirectionToVector, vectorToTextDirection } from './helpers';
+import { textDirectionToVector, vectorToTextDirection } from './helpers';
 import { guestAllowed, permissionTypes } from '../lib/misc';
 
 const defaultUserMediaColorError = '0xd21404';
@@ -79,9 +79,9 @@ userManager = {
     player.reactionHandler = setInterval(() => UIScene.spawnReaction(player, reaction, animation, { randomOffset: 10 }), 250);
   },
 
-  _checkForSkinUpdate(character, user, oldUser) { 
+  _checkForSkinUpdate(character, user, oldUser) {
     // check for skin updates
-    const hasSkinUpdate = !oldUser || Object.keys(charactersParts).some(part => user.profile[part] !== oldUser.profile[part])
+    const hasSkinUpdate = !oldUser || Object.keys(charactersParts).some(part => user.profile[part] !== oldUser.profile[part]);
     if (hasSkinUpdate) {
       character.updateSkin({
         body: user.profile.body,
@@ -368,9 +368,9 @@ userManager = {
       if (!emitterPlayer) return;
       if (!data.content) return;
 
-      const { zoneMuted } = Meteor.user();
+      const { zoneLastSeenDates = [], zoneMuted = [] } = Meteor.user({ fields: { zoneMuted: 1, zoneLastSeenDates: 1 } });
       const userEmitterZoneId = zoneManager.currentZone(userEmitter)?._id;
-      if (!zoneMuted || !zoneMuted[userEmitterZoneId]) audioManager.play('text-sound.wav', 0.5);
+      if (zoneLastSeenDates[userEmitterZoneId] && !zoneMuted[userEmitterZoneId]) audioManager.play('text-sound.wav', 0.5);
 
       const popInIdentifier = `${emitterUserId}-pop-in`;
       meta['pop-in'] = characterPopIns.createOrUpdate(
