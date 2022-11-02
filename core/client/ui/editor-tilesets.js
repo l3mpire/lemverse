@@ -1,5 +1,12 @@
 zoom = 1.5;
-selectedTileset = () => Tilesets.findOne(Session.get('selectedTilesetId')) || {};
+const _selectedTileset = new ReactiveVar();
+selectedTileset = () => _selectedTileset.get();
+
+Tracker.autorun(() => {
+  const tilesetId = Session.get('selectedTilesetId');
+  if (!tilesetId) return;
+  _selectedTileset.set(Tilesets.findOne(tilesetId) || {});
+});
 
 Tracker.autorun(() => {
   const creating = Session.get('selectedEditTilesetId');
@@ -35,10 +42,6 @@ Template.registerHelper('zoom', (v, w) => zoom * v * w);
 
 Template.editorTilesets.onCreated(function () {
   this.subscribe('tilesets');
-
-  this.autorun(() => {
-    selectedTileset();
-  });
 
   hotkeys('p', event => {
     event.preventDefault();
