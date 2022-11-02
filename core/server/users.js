@@ -1,4 +1,4 @@
-import { completeUserProfile, getSpawnLevel, levelSpawnPosition, teleportUserInLevel } from '../lib/misc';
+import { completeUserProfile, getSpawnLevel, kickUser, levelSpawnPosition, teleportUserInLevel } from '../lib/misc';
 
 const mainFields = { options: 1, profile: 1, roles: 1, status: { idle: 1, online: 1 }, beta: 1, guildId: 1 };
 
@@ -107,14 +107,18 @@ Meteor.methods({
     Notifications.update({ userId: this.userId }, { $set: { read: true } }, { multi: true });
   },
   kickUser(userId) {
+    kickUser(userId)
+  },
+  banUser(userId, levelId) {
     if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
     check(userId, Match.Id);
-    if (!Meteor.settings.defaultKickLevelId) throw new Meteor.Error('missing-levelId', 'Missing configuration for defaultKickLevelId');
-    const level = Levels.findOne({ _id: Meteor.settings.defaultKickLevelId });
-    if (!level) throw new Meteor.Error('missing-levelId', 'Level in defaultKickLevelId does not exists');
-    log('kickUser', { kicker: Meteor.userId(), kicked: userId });
+    const level = Levels.findOne({ _id: levelId });
+    if (!level) throw new Meteor.Error('missing-levelId', 'Level is required');
+    log('banUser', { banner: Meteor.userId(), banned: userId });
 
-    Meteor.users.update({ _id: userId }, { $set: { 'profile.levelId': Meteor.settings.defaultKickLevelId } });
+
+    kickUser(userId);
+    Levels.update({ _id: levelId, bannedUserIds: { $ne: userId } }, { $push: { bannedUserIds: userId } });
   },
   muteFromZone(zoneId) {
     if (!this.userId) return;

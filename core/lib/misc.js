@@ -305,6 +305,17 @@ const getChannelType = channelId => {
   }
 };
 
+const kickUser = userId => {
+  // if (!this.userId) throw new Meteor.Error('missing-user', 'A valid user is required');
+  check(userId, Match.Id);
+  if (!Meteor.settings.defaultKickLevelId) throw new Meteor.Error('missing-levelId', 'Missing configuration for defaultKickLevelId');
+  const level = Levels.findOne({ _id: Meteor.settings.defaultKickLevelId });
+  if (!level) throw new Meteor.Error('missing-levelId', 'Level in defaultKickLevelId does not exists');
+  log('kickUser', { kicker: Meteor.userId(), kicked: userId });
+
+  Meteor.users.update({ _id: userId }, { $set: { 'profile.levelId': Meteor.settings.defaultKickLevelId } });
+};
+
 export {
   canAccessZone,
   canEditActiveLevel,
@@ -316,16 +327,17 @@ export {
   completeUserProfile,
   currentLevel,
   fileOnBeforeUpload,
-  generateRandomCharacterSkin,
   generateGuestSkin,
+  generateRandomCharacterSkin,
+  getChannelType,
   getSpawnLevel,
   guestAllowed,
-  getChannelType,
   isLevelOwner,
+  kickUser,
   levelSpawnPosition,
   permissionTypes,
+  randomFloatInRange,
+  randomInRange,
   subscribedUsersToEntity,
   teleportUserInLevel,
-  randomInRange,
-  randomFloatInRange,
 };

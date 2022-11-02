@@ -11,7 +11,14 @@ const levelQueryFilters = ignoredLevelId => ({
 });
 
 const askLoadLevel = (levelId, incrementVisit = false) => {
+  const bannedUserIds = Levels.findOne({ _id: levelId }).bannedUserIds || [];
+
   if (Meteor.user().profile.levelId === levelId) return;
+
+  if (bannedUserIds.includes(Meteor.userId())) {
+    lp.notif.error('You have been banned from this level');
+    return;
+  }
 
   if (incrementVisit) Meteor.call('increaseLevelVisits', levelId);
 
