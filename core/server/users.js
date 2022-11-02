@@ -30,7 +30,7 @@ Meteor.publish('selfUser', function () {
 
   return Meteor.users.find(
     this.userId,
-    { fields: { emails: 1, options: 1, profile: 1, roles: 1, status: 1, beta: 1, entitySubscriptionIds: 1, zoneLastSeenDates: 1, inventory: 1, zoneMuted: 1 } },
+    { fields: { emails: 1, options: 1, profile: 1, roles: 1, status: 1, beta: 1, entitySubscriptionIds: 1, zoneLastSeenDates: 1, inventory: 1, zoneMuted: 1, recentUserList: 1 } },
   );
 });
 
@@ -182,3 +182,5 @@ Meteor.users.find({ 'status.online': true }).observeChanges({
     Meteor.users.update(id, { $set: { 'status.lastLogoutAt': new Date() } });
   },
 });
+
+export default mainFields;
