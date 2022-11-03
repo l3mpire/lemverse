@@ -147,10 +147,10 @@ $z-index: 4;
 
       &.on {
         button {
-          background-color: $light-green;
+          background-color: var(--secondary-color);
 
           &:hover {
-            background-color: darken($light-green, 5%);
+            background-color: var(--secondary-color-darken-5);
           }
         }
       }

@@ -38,7 +38,7 @@
   }
 
   &.talking {
-    border: 2px solid $light-green;
+    border: 2px solid var(--secondary-color);
   }
 
   &::before {

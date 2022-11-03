@@ -1,5 +1,27 @@
-$primary-color: #E8C97A;
-$secondary-color: #3B3A4F;
+:root {
+  --edit-border-size: 1rem;
+  --edit-border-radius: 1rem;
+  --primary-color: #A5E6BA;
+  --secondary-color: #13C4A3;
+
+  // We split the HSL (Hue Saturarion Lightness) value to play with th lightness color
+  // #A5E6BA converted to hsl(139, 57%, 77%);
+  --primary-color-hs: 139, 57%; 
+  --primary-color-l: 77%; 
+  // #13C4A3 converted to hsl(169, 82%, 82%);
+  --secondary-color-hs: 169, 82%; 
+  --secondary-color-l: 82%; 
+
+  // And now if we want our color lighter, we increase the lightness value BUT our value shouldn't be more than 100% or it will be black.
+  --primary-color-lighten-20: hsl(var(--primary-color-hs), calc(var(--primary-color-l) + 20%));
+
+  // Or darker, we decrease the lightness value
+  --secondary-color-darken-5: hsl(var(--secondary-color-hs), calc(var(--secondary-color-l) - 5%));
+  --secondary-color-darken-10: hsl(var(--secondary-color-hs), calc(var(--secondary-color-l) - 10%));
+  --secondary-color-darken-15: hsl(var(--secondary-color-hs), calc(var(--secondary-color-l) - 15%));
+  --secondary-color-darken-20: hsl(var(--secondary-color-hs), calc(var(--secondary-color-l) - 20%));
+}
+
 $text-color: #D17851;
 $lem-border: rgba(0, 38, 255, 0.08);
 $primary-color-transparent-1: rgba(59, 58, 79, 0.4);
@@ -12,6 +34,7 @@ $lem-color-6: #3bbc84;
 $lem-color-7: #d14e53;
 $lem-color-8: #3c3c3c;
 $lem-color-9: #1d1d1d;
+$lem-color-10: #3B3A4F;
 
 // Shade of grey
 $gray100: #f0f7f8;
@@ -22,14 +45,12 @@ $gray500: #425a65;
 $main-color: #201d2c;
 $highlight-color: #b18800;
 $light-red: #EB584E;
-$light-green: #13C4A3;
 $light-blue: #4381C1;
 $light-yellow: #FFE19C;
 $light-orange: #FFBB04;
 $main-text-color: #eeebf1;
 $radius: 0.5rem;
 
-$new-green: #A5E6BA;
 $new-yellow: #E7DFC6;
 $new-red: #C73E1D;
 $new-dark-primary: #201d2c;
@@ -46,6 +67,8 @@ $breakpoints: (
 
 @mixin media-max($_key) {
   @media screen and (max-width: map-get($breakpoints, $_key)) {
-    & { @content; }
+    & {
+      @content;
+    }
   }
 }

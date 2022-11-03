@@ -57,7 +57,7 @@
 
     .js-quest-subscribe {
       &.subscribe {
-        background-color: $light-green;
+        background-color: var(--secondary-color);
       }
 
       &.unsubscribe {

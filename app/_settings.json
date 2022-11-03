@@ -9,7 +9,9 @@
       "production": true,
       "staging": false,
       "enableLogClient": false,
-      "enableOnboarding": false
+      "enableOnboarding": false,
+      "primaryColor": "#A5E6BA",
+      "secondaryColor": "#13C4A3"
     },
 
     "debug": false,
