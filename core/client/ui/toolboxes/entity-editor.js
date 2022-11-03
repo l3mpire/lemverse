@@ -25,6 +25,13 @@ Template.entityEditor.events({
       closeInterface();
     });
   },
+  'input #js-entity-action'(event) {
+    const entity = selectedEntity();
+    if (!entity) return;
+
+    const { value } = event.target;
+    Entities.update(entity._id, { $set: { action: value } });
+  },
   'input #entity-depth'(event) {
     const entity = selectedEntity();
     if (!entity) return;
@@ -71,6 +78,7 @@ Template.entityEditor.helpers({
   flipped() { return selectedEntity()?.gameObject.scale < 0; },
   state() { return linkedEntity()?.state || selectedEntity()?.state; },
   targets() { return targets(); },
-  hasSprite() { return !!selectedEntity()?.gameObject?.sprite; },
-  isActionable() { return selectedEntity()?.actionType === entityActionType.actionable; },
+  hasSprite() { return Boolean(selectedEntity()?.gameObject?.sprite); },
+  isActionable() { return Boolean(selectedEntity()?.actionType === entityActionType.actionable); },
+  hasCustomAction() { return Boolean(selectedEntity()?.action); },
 });
