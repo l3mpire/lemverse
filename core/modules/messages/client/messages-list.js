@@ -59,6 +59,7 @@ Template.messagesListMessage.helpers({
   date() { return this.message.createdAt.toDateString(); },
   time() { return this.message.createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); },
   showActions() { return Template.instance().moderationAllowed; },
+  isOwner() { return this.message.createdBy === Meteor.userId(); },
   reactions() {
     const userId = Meteor.userId();
     return Object.entries(this.message.reactions || []).map(reaction => ({ reaction: reaction[0], amount: reaction[1].length, owner: reaction[1].indexOf(userId) > -1 }));
@@ -76,6 +77,11 @@ Template.messagesListMessage.events({
   'click .js-message-remove'(event, templateInstance) {
     const messageId = templateInstance.data.message._id;
     lp.notif.confirm('Delete message', `Do you really want to delete this message?`, () => Messages.remove(messageId));
+  },
+  'click .js-message-report'(event, templateInstance) {
+    const messageId = templateInstance.data.message._id;
+    const userId = templateInstance.data.message.createdBy;
+    Session.set('modal', { template: 'report', userId, messageId });
   },
   'click .js-message-open-reactions-box'(event, templateInstance) {
     event.preventDefault();

@@ -177,12 +177,7 @@
         }
       }
 
-      &:hover .owner-actions.show {
-        opacity: 1;
-        pointer-events: all;
-      }
-
-      &:hover .actions.show {
+      &:hover .action.show {
         opacity: 1;
         pointer-events: all;
       }
@@ -194,52 +189,48 @@
         margin-right: 10px;
       }
 
-      .owner-actions {
-        position: absolute;
-        right: 35px;
-        top: 8px;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.25s;
+      .actions-container {
+        .action {
+          position: absolute;
+          right: 0px;
+          top: 8px;
+          pointer-events: none;
+          opacity: 0;
+          transition: opacity 0.25s;
 
-        .js-message-remove {
-          background-color: $light-red;
-          color: white;
-          width: 30px;
-          height: 30px;
-          padding: 0;
-          margin: 0;
-          border: 0;
-          font-size: 0.9rem;
-          font-weight: bold;
+          >button {
+            background-color: $light-blue;
+            color: white;
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            margin: 0;
+            border: 0;
+            font-size: 0.9rem;
+            font-weight: bold;
 
-          &:hover {
-            background-color: darken($light-red, 10%);
+            &:hover {
+              background-color: darken($light-blue, 10%);
+            }
           }
-        }
-      }
+          &:nth-child(2) {
+            right: 40px;
+            >button {
+              background-color: $light-red;
 
-      .actions {
-        position: absolute;
-        right: 0px;
-        top: 8px;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.25s;
-
-        .js-message-open-reactions-box {
-          background-color: $light-blue;
-          color: white;
-          width: 30px;
-          height: 30px;
-          padding: 0;
-          margin: 0;
-          border: 0;
-          font-size: 0.9rem;
-          font-weight: bold;
-
-          &:hover {
-            background-color: darken($light-blue, 10%);
+              &:hover {
+                background-color: darken($light-red, 20%);
+              }
+            }
+          }
+          &:nth-child(3) {
+            right: 80px;
+            >button {
+              background-color: darken($light-red, 15%);
+              &:hover {
+                background-color: darken($light-red, 20%);
+              }
+            }
           }
         }
       }

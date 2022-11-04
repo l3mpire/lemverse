@@ -1,7 +1,15 @@
 <template name="userProfile">
   {{#modal title=title}}
     <div class="header">
-      <h2 class="h2">{{title}}</h2>
+      <h2 class="h2">
+        <span class="js-title">{{title}}</span>
+        {{#unless myProfile}}
+        <div class="tooltip">
+          <button type="button" class="emoji-before-tooltip js-report">🚨</button>
+          <span class="tooltiptext">Report</span>
+        </div>
+        {{/unless}}
+      </h2>
       <hr class="separator">
     </div>
     <div class="user-profile">

@@ -1,0 +1,23 @@
+<template name="report">
+  {{#modal title=title }}
+  <div class="header">
+    <h2 class="h2">{{ title }}</h2>
+    <hr class="separator" />
+  </div>
+  <div class="report">
+    <select name="reason-select"
+            id="reason-select"
+            class="js-report-reason-select select">
+      {{#each reportAllReasons }}
+        <option value="{{ this }}">
+          {{ this }}
+        </option>
+      {{/each }}
+    </select>
+    <form class="js-console-form">
+      <textarea class="textarea js-command-input" name="js-command-input" placeholder="Explain here" autocomplete="off"></textarea>
+      <button type="button" class="button js-button-submit">Send</button>
+    </form>
+  </div>
+{{/modal }}
+</template>
