@@ -7,9 +7,9 @@ window.addEventListener('load', () => {
   );
 
   const onMenuOptionSelected = e => {
-    const { user } = e.detail;
+    const { option, user } = e.detail;
 
-    Session.set('modal', { template: 'report', userId: user._id });
+    if (option.id === 'report') Session.set('modal', { template: 'report', userId: user._id });
   };
 
   window.addEventListener(eventTypes.onMenuOptionSelected, onMenuOptionSelected);
