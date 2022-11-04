@@ -1,4 +1,5 @@
 import { guestAllowed, permissionTypes } from '../lib/misc';
+import URLOpener from './url-opener';
 
 const entityAnimations = {
   spawn: (sprite, scene) => {
@@ -37,6 +38,7 @@ const itemAlreadyPickedText = 'Someone just picked up this item 😢';
 
 entityManager = {
   scene: undefined,
+  entityInUse: undefined,
   previousNearestEntity: undefined,
   shouldCheckNearestEntity: false,
   entities: {},
@@ -48,6 +50,7 @@ entityManager = {
   destroy() {
     this.entities = {};
     this.previousNearestEntity = undefined;
+    this.stopInteracting();
   },
 
   onDocumentAdded(entity) {
@@ -135,13 +138,22 @@ entityManager = {
     }
 
     if (this.previousNearestEntity.action) {
-      const [action, value] = this.previousNearestEntity.action.split(':');
+      const [action, value] = this.previousNearestEntity.action.split(/:(.*)/s);
+      if (!value) {
+        lp.notif.warning('Invalid entity, please contact the level owner to fix it');
+        return;
+      }
+
+      this.entityInUse = this.previousNearestEntity;
+      window.dispatchEvent(new CustomEvent(eventTypes.onEntityInteractionStarted, { detail: { entity: this.entityInUse, action, value } }));
+
       if (action === 'modal') Session.set('modal', { template: value, entity: this.previousNearestEntity });
+      else if (action === 'url') URLOpener.open(value);
 
       return;
     }
 
-    Meteor.call('useEntity', this.previousNearestEntity?.entityId || this.previousNearestEntity._id, error => {
+    Meteor.call('useEntity', this.previousNearestEntity.entityId || this.previousNearestEntity._id, error => {
       if (error) lp.notif.error('Unable to use this for now');
     });
   },
@@ -238,6 +250,14 @@ entityManager = {
 
   entityDistanceTo(entity, position) {
     return (position.x - entity.x) ** 2 + (position.y - entity.y) ** 2;
+  },
+
+  stopInteracting() {
+    if (!this.entityInUse) return;
+
+    URLOpener.close();
+    window.dispatchEvent(new CustomEvent(eventTypes.onEntityInteractionStopped, { detail: { entity: this.entityInUse } }));
+    this.entityInUse = undefined;
   },
 
   tooltipTextFromActionType(actionType) {

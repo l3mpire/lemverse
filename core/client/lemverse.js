@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 import audioManager from './audio-manager';
 import meetingRoom from './meeting-room';
 import { setReaction } from './helpers';
+import URLOpener from './url-opener';
 import { guestAllowed, permissionTypes } from '../lib/misc';
 import initSentryClient from './sentry';
 
@@ -311,10 +312,7 @@ Template.lemverse.onCreated(function () {
       const worldScene = game.scene.getScene('WorldScene');
       const uiScene = game.scene.getScene('UIScene');
 
-      // ensures scene is fullscreen and without iframe loaded
-      zoneManager.closeIframeElement();
-      updateViewport(worldScene, viewportModes.fullscreen);
-
+      URLOpener.close();
       loadingScene.show();
 
       if (this.currentLevelId) {

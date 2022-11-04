@@ -1,7 +1,5 @@
 import { canAccessZone } from '../lib/misc';
 
-const iframeAllowAttributeSettings = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-
 const getZoneCenter = zone => [(zone.x1 + zone.x2) * 0.5, (zone.y1 + zone.y2) * 0.5];
 
 const newContentAnimation = { duration: 250, ease: 'Cubic', yoyo: true, hold: 2000, repeat: -1 };
@@ -19,8 +17,6 @@ const teleportUserOutsideZone = zone => {
 zoneManager = {
   activeZone: undefined,
   previousAvailableZones: [],
-  webpageContainer: undefined,
-  webpageIframeContainer: undefined,
   newContentSprites: {},
   scene: undefined,
   zones: [],
@@ -72,14 +68,6 @@ zoneManager = {
       x: zone.x1 + (zone.x2 - zone.x1) / 2,
       y: zone.y1 + (zone.y2 - zone.y1) / 2,
     };
-  },
-
-  openZoneURL(zone) {
-    this.getIframeElement().src = zone.url;
-    if (zone.yt) this.getIframeElement().allow = iframeAllowAttributeSettings;
-    this.getWebpageElement().classList.add('show');
-
-    updateViewport(game.scene.keys.WorldScene, zone.fullscreen ? viewportModes.small : viewportModes.splitScreen);
   },
 
   sortByNearest(zones, x, y) {
@@ -208,14 +196,6 @@ zoneManager = {
     return true;
   },
 
-  closeIframeElement() {
-    const iframe = this.getIframeElement();
-    if (iframe) iframe.src = '';
-
-    const webpageElement = this.getWebpageElement();
-    if (webpageElement) webpageElement.classList.remove('show');
-  },
-
   showNewContentIndicator(zone) {
     this.destroyNewContentIndicator(zone);
 
@@ -289,16 +269,6 @@ zoneManager = {
     });
 
     return zones;
-  },
-
-  getIframeElement() {
-    if (!this.webpageIframeContainer) this.webpageIframeContainer = document.querySelector('#webpageIframe');
-    return this.webpageIframeContainer;
-  },
-
-  getWebpageElement() {
-    if (!this.webpageContainer) this.webpageContainer = document.querySelector('#webpage');
-    return this.webpageContainer;
   },
 
   refreshZoneList() {

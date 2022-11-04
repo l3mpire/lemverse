@@ -270,6 +270,7 @@ userManager = {
     if (moving || this.controlledCharacter.wasMoving) {
       this.scene.physics.world.update(time, delta);
       networkManager.sendPlayerNewState(this.controlledCharacter);
+      this.stopInteracting();
     }
 
     if (!peer.hasActiveStreams()) peer.enableSensor(!(this.controlledCharacter.running && moving));
@@ -285,6 +286,10 @@ userManager = {
 
   interact() {
     entityManager.interactWithNearestEntity();
+  },
+
+  stopInteracting() {
+    entityManager.stopInteracting();
   },
 
   getPositionInFrontOfCharacter(character, distance = 0) {

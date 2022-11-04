@@ -2,6 +2,7 @@ import nipplejs from 'nipplejs';
 import Phaser from 'phaser';
 
 import networkManager from '../network-manager';
+import URLOpener from '../url-opener';
 
 import { clamp, isMobile } from '../helpers';
 
@@ -15,7 +16,7 @@ const onZoneEntered = e => {
   if (targetedLevelId) levelManager.loadLevel(targetedLevelId);
   else if (inlineURL) characterPopIns.initFromZone(zone);
 
-  if (url) zoneManager.openZoneURL(zone);
+  if (url) URLOpener.open(url, zone.fullscreen);
   if (disableCommunications) userManager.setUserInDoNotDisturbMode(true);
 };
 
@@ -27,7 +28,7 @@ const onZoneLeft = e => {
 
   if (url) {
     updateViewport(game.scene.keys.WorldScene, viewportModes.fullscreen);
-    zoneManager.closeIframeElement();
+    URLOpener.close();
   }
   if (disableCommunications) userManager.setUserInDoNotDisturbMode(false);
 };
