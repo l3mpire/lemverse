@@ -52,7 +52,7 @@ const onSubmit = (reason, reported, messageId) => {
   }
   const isAdmin = Meteor.users.findOne(Meteor.userId()).roles?.admin;
 
-  const text = document.querySelector('.js-command-input').value;
+  const text = document.querySelector('.report .js-command-input').value;
   const currentLevel = Meteor.user().profile.levelId;
   if (!text) {
     lp.notif.error('Please enter a message');
