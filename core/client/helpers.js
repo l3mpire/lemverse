@@ -18,6 +18,8 @@ eventTypes = Object.freeze({
   onEntityAdded: 'onEntityAdded',
   onEntityUpdated: 'onEntityUpdated',
   onEntityRemoved: 'onEntityRemoved',
+  onEntityInteractionStarted: 'onEntityInteractionStarted',
+  onEntityInteractionStopped: 'onEntityInteractionStopped',
   onLevelLoaded: 'onLevelLoaded',
   onLevelLoading: 'onLevelLoading',
   onLevelUnloaded: 'onLevelUnloaded',
