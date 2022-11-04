@@ -52,15 +52,20 @@
     flex-flow: wrap;
     align-items: center;
     min-height: 35px;
-
+    margin: 10px 0;
 
     label {
+      font-size: 0.85rem;
       width: 80px;
 
       &.entity-depth,
       &.entity-scale {
         width: 100%;
       }
+    }
+
+    input {
+      width: 100%;
     }
 
     select {
