@@ -138,6 +138,8 @@ entityManager = {
     }
 
     if (this.previousNearestEntity.action) {
+      if (this.entityInUse && this.entityInUse === this.previousNearestEntity) return;
+
       const [action, value] = this.previousNearestEntity.action.split(/:(.*)/s);
       if (!value) {
         lp.notif.warning('Invalid entity, please contact the level owner to fix it');
