@@ -42,7 +42,6 @@ const config = {
   },
   render: {
     pixelArt: true, // disable anti-aliasing & enable round pixels
-    powerPreference: 'low-power',
   },
   scale: {
     mode: Phaser.Scale.RESIZE,
