@@ -1,4 +1,5 @@
-import { generateRandomCharacterSkin, getSpawnLevel, levelSpawnPosition, completeUserProfile, generateGuestSkin } from '../lib/misc';
+import * as jwt from 'jsonwebtoken';
+import { generateRandomCharacterSkin, getSpawnLevel, levelSpawnPosition, completeUserProfile, generateGuestSkin, teleportUserInLevel } from '../lib/misc';
 
 Accounts.onCreateUser((options, user) => {
   log('onCreateUser', { options, user });
@@ -80,3 +81,23 @@ Accounts.updateOrCreateUserFromExternalService = function (serviceName, serviceD
 
   return result;
 };
+
+Accounts.registerLoginHandler('jwt', options => {
+  const token = options.jwt;
+  const secret = Meteor.settings.jwtAuthSecret;
+  if (!token || !secret) return undefined;
+  let decoded;
+  try {
+    decoded = jwt.verify(token, secret);
+  } catch (err) {
+    log('JWT invalid login:', err.message);
+    Accounts._handleError('Invalid token');
+  }
+  const user = Meteor.users.findOne({ 'emails.address': decoded.sub });
+  if (!user) Accounts._handleError('User not found');
+  if (decoded.level_id) {
+    const level = Levels.findOne(decoded.level_id) || getSpawnLevel(user);
+    teleportUserInLevel(user, level, 'jwt-login');
+  }
+  return { userId: user._id };
+});

@@ -534,6 +534,16 @@ Please note, that as stated in section `Deploy in production`, there is an addit
     "from": "The lembot <contact@domain.com>"
   },
 
+  "jwtAuthSecret": "your-256-bit-secret", // If specified, it allows user login using JWT
+  // For instance: https://app.lemverse.com?token={jwt_token}
+  // Example of the token payload:
+  // {
+  //   "sub": "user@example.com",
+  //   "nbf": 1667563200,
+  //   "exp": 1667570400,
+  //   "level_id": "lvl_nENCytZvbcHhxsFSt"
+  // }
+
   "meet": {
     "enableAuth": false
   },

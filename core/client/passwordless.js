@@ -11,21 +11,31 @@ const checkToken = ({ selector, token }) => {
   });
 };
 
+const checkJWT = jwt => {
+  if (!jwt) return;
+  Accounts.callLoginMethod({
+    methodArguments: [{ jwt }],
+    userCallback: err => {
+      if (err) {
+        lp.notif.error(err.message);
+        throw err;
+      }
+    },
+  });
+};
+
 /**
  * Parse querystring for token argument, if found use it to auto-login
  */
 Accounts.autoLoginWithToken = function () {
-  Meteor.startup(() => {
-    const params = new URL(window.location.href).searchParams;
+  const params = new URL(window.location.href).searchParams;
 
-    if (params.get('loginToken')) {
-      checkToken({
-        selector: params.get('selector'),
-        token: params.get('loginToken'),
-      });
-    }
-  });
+  if (params.get('loginToken')) {
+    checkToken({
+      selector: params.get('selector'),
+      token: params.get('loginToken'),
+    });
+  } else if (params.get('token')) {
+    checkJWT(params.get('token'));
+  }
 };
-
-// Run check for login token on page load
-Meteor.startup(() => Accounts.autoLoginWithToken());
