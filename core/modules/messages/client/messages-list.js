@@ -1,6 +1,5 @@
 import { canSubscribeToNotifications, messageModerationAllowed } from '../misc';
-import { currentLevel } from '../../../lib/misc';
-import { formatURLs, replaceTextVars } from '../../../client/helpers';
+import { getCurrentChannelName, formatDate, formatText, show } from './helpers';
 
 function computeReactionToolboxPosition(element) {
   const elemRect = element.getBoundingClientRect();
@@ -12,21 +11,6 @@ function computeReactionToolboxPosition(element) {
   };
 }
 
-const getCurrentChannelName = () => {
-  const channel = Session.get('messagesChannel');
-  if (!channel) return '-';
-
-  if (channel.includes('zon_')) return Zones.findOne(channel)?.name || 'Zone';
-  else if (channel.includes('lvl_')) return currentLevel(Meteor.user())?.name || 'Level';
-  else if (channel.includes('qst_')) return '';
-
-  const userIds = channel.split(';');
-  const users = Meteor.users.find({ _id: { $in: userIds } }).fetch();
-  const userNames = users.map(user => user.profile.name);
-
-  return userNames.join(' & ');
-};
-
 const sortedMessages = () => Messages.find({}, { sort: { createdAt: 1 } }).fetch();
 
 const scrollToBottom = () => {
@@ -34,14 +18,6 @@ const scrollToBottom = () => {
     const messagesElement = document.querySelector('.messages-list');
     if (messagesElement) messagesElement.scrollTop = messagesElement.scrollHeight;
   });
-};
-
-const formatText = text => {
-  let finalText = lp.purify(text);
-  finalText = formatURLs(finalText);
-  finalText = replaceTextVars(finalText);
-
-  return finalText.replace(/(?:\r\n|\r|\n)/g, '<br>');
 };
 
 Template.messagesListMessage.onCreated(function () {
@@ -152,13 +128,10 @@ Template.messagesList.helpers({
   },
   formattedSeparationDate(index) {
     const messages = sortedMessages();
-    const messageDate = new Date(messages[index].createdAt);
-
-    const date = new Date();
-    if (messageDate.getDate() === date.getDate()) return 'Today';
-    if (messageDate.getDate() === date.getDate() - 1) return 'Yesterday';
-
-    return messageDate.toDateString();
+    return formatDate(new Date(messages[index].createdAt));
+  },
+  show() {
+    return show();
   },
 });
 
