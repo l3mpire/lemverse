@@ -101,7 +101,6 @@ Template.lemverse.onCreated(function () {
         let ignoreNotification = false;
         if (notification.type !== 'vocal') {
           if (notification.channelId === Session.get('messagesChannel')) ignoreNotification = true;
-          else if (notification.channelId.includes(Meteor.userId()) && userProximitySensor.isUserNear({ _id: notification.createdBy })) ignoreNotification = true;
 
           if (ignoreNotification) {
             Notifications.remove(notification._id);
