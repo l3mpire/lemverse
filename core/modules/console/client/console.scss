@@ -11,6 +11,14 @@ $button-text-color: white;
   width: 100%;
   z-index: 100;
   overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s linear;
+
+  &.show {
+    opacity: 1;
+    pointer-events: all;
+  }
 
   form {
     display: flex;

@@ -82,7 +82,15 @@ Template.messagesList.onCreated(function () {
   this.fileSubscribeHandler = undefined;
 
   this.autorun(() => {
-    if (!Session.get('console')) {
+    if (Session.get('console')) return;
+
+    Tracker.nonreactive(() => {
+      Session.set('messagesUI', false);
+    });
+  });
+
+  this.autorun(() => {
+    if (!Session.get('messagesUI')) {
       this.fileSubscribeHandler?.stop();
       this.userSubscribeHandler?.stop();
       messagesModule.stopListeningMessagesChannel();
