@@ -95,17 +95,10 @@ Template.lemverse.onCreated(function () {
   this.subscribe('notifications', () => {
     this.handleObserveNotifications = Notifications.find({ createdAt: { $gte: new Date() } }).observe({
       async added(notification) {
-        // remove new notification when the notification is about a new message:
-        // … and the interface showing textual messages is open
-        // … or the sender is talking to the user in vocal (a bubble should be visible on the screen)
-        let ignoreNotification = false;
-        if (notification.type !== 'vocal') {
-          if (notification.channelId === Session.get('messagesChannel')) ignoreNotification = true;
-
-          if (ignoreNotification) {
-            Notifications.remove(notification._id);
-            return;
-          }
+        // remove notification when the user is already watching the channel targeted
+        if (notification.type !== 'vocal' && notification.channelId === Session.get('messagesChannel')) {
+          Notifications.remove(notification._id);
+          return;
         }
 
         if (!notification.type) {
