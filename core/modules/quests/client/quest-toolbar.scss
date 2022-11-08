@@ -8,6 +8,7 @@
   height: 45px;
   background-color: $main-color;
   border-radius: $radius $radius 0 0;
+  z-index: 10;
 
   &.show {
     display: block;
