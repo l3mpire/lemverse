@@ -8,7 +8,7 @@ const selectedEntity = () => Entities.findOne(Session.get('selectedEntityId'));
 const linkedEntity = () => Entities.findOne({ _id: selectedEntity()?.entityId });
 const targets = () => {
   const activeEntityId = Session.get('selectedEntityId');
-  return Entities.find({ _id: { $ne: activeEntityId }, actionType: entityActionType.none }).fetch();
+  return Entities.find({ _id: { $ne: activeEntityId }, actionType: { $ne: entityActionType.pickable } }).fetch();
 };
 
 Template.entityEditor.events({
