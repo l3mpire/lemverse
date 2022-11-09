@@ -28,32 +28,22 @@
                 Try to move in all directions
             </div>
             <div class="content direction-content {{direction}}">
-                <div class="keyboards">
                     <div class="keyboard">
-                        <div class="keyinput {{#if eq pressedKeyboard 'z'}}pressed{{/if}}">Z</div>
+                        <div class="keyinput {{#if eq direction 'up'}}pressed{{/if}}">↑</div>
                         <div class="bottom-keyinput">
-                            <div class="keyinput {{#if eq pressedKeyboard 'q'}}pressed{{/if}}">Q</div>
-                            <div class="keyinput {{#if eq pressedKeyboard 's'}}pressed{{/if}}">S</div>
-                            <div class="keyinput {{#if eq pressedKeyboard 'd'}}pressed{{/if}}">D</div>
+                            <div class="keyinput {{#if eq direction 'left'}}pressed{{/if}}">←</div>
+                            <div class="keyinput {{#if eq direction 'down'}}pressed{{/if}}">↓</div>
+                            <div class="keyinput {{#if eq direction 'right'}}pressed{{/if}}">→</div>
                         </div>
                     </div>
-                    <div class="keyboard">
-                        <div class="keyinput {{#if eq pressedKeyboard 'up'}}pressed{{/if}}">↑</div>
-                        <div class="bottom-keyinput">
-                            <div class="keyinput {{#if eq pressedKeyboard 'left'}}pressed{{/if}}">←</div>
-                            <div class="keyinput {{#if eq pressedKeyboard 'down'}}pressed{{/if}}">↓</div>
-                            <div class="keyinput {{#if eq pressedKeyboard 'right'}}pressed{{/if}}">→</div>
-                        </div>
-                    </div>
-                </div>
                 <div class="arrows">
-                    <div class="arrow">{{#if hasLearnedDirection 'up'}}✅{{else}}↑{{/if}}</div>
+                    <div class="arrow">{{#if hasLearnedDirection 'ArrowUp'}}✅{{else}}↑{{/if}}</div>
                     <div class="middle-arrow">
-                        <div class="arrow">{{#if hasLearnedDirection 'left'}}✅{{else}}←{{/if}}</div>
+                        <div class="arrow">{{#if hasLearnedDirection 'ArrowLeft'}}✅{{else}}←{{/if}}</div>
                         <div class="avatar {{direction}}" style="background-image: url({{ getAvatarUrl }});"></div>
-                        <div class="arrow">{{#if hasLearnedDirection 'right'}}✅{{else}}→{{/if}}</div>
+                        <div class="arrow">{{#if hasLearnedDirection 'ArrowRight'}}✅{{else}}→{{/if}}</div>
                     </div>
-                    <div class="arrow">{{#if hasLearnedDirection 'down'}}✅{{else}}↓{{/if}}</div>
+                    <div class="arrow">{{#if hasLearnedDirection 'ArrowDown'}}✅{{else}}↓{{/if}}</div>
                 </div>
             </div>
             <button disabled="{{#if not hasLearnedAllDirections}}disabled{{/if}}" class="button">Continue</button>

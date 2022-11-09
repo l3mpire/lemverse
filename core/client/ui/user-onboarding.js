@@ -1,27 +1,26 @@
 import { isMobile } from '../helpers';
 
 const ONBOARDING_LAST_STEP = 4;
-const keyboards = ['q', 'z', 's', 'd', 'up', 'down', 'right', 'left'];
+const keyboard = ['z', 'q', 's', 'd', 'w', 'a', 'down', 'right', 'left', 'up'];
 
 const getDirectionFromKey = key => {
   switch (key) {
-    case 'z':
-    case 'up':
+    case 'KeyW':
+    case 'ArrowUp':
       return 'up';
-    case 's':
-    case 'down':
+    case 'ArrowDown':
+    case 'KeyS':
       return 'down';
-    case 'q':
-    case 'left':
+    case 'KeyA':
+    case 'ArrowLeft':
       return 'left';
-    case 'd':
-    case 'right':
+    case 'KeyD':
+    case 'ArrowRight':
       return 'right';
     default:
       return null;
   }
 };
-
 
 const requestUserMedia = async () => {
   const constraints = userStreams.getStreamConstraints(streamTypes.main);
@@ -35,19 +34,19 @@ const requestUserMedia = async () => {
 };
 
 const bindKeyboards = () => {
-  keyboards.forEach(key => {
+  keyboard.forEach(key => {
     hotkeys(key, { keyup: true }, event => {
       if (event.repeat) return;
 
       const learnedDirections = Session.get('learnedDirections') || [];
 
       if (event.type === 'keydown') {
-        const direction = getDirectionFromKey(key);
+        const direction = getDirectionFromKey(event.code);
 
         if (!learnedDirections.includes(direction)) learnedDirections.push(direction);
 
         Session.set('learnedDirections', learnedDirections);
-        Session.set('pressedKeyboard', key);
+        Session.set('pressedKeyboard', event.code);
       } else {
         Session.set('pressedKeyboard', null);
       }
@@ -82,7 +81,6 @@ Template.userOnboarding.events({
 Template.userOnboarding.helpers({
   streamAccepted: () => Session.get('streamAccepted') || false,
   step: () => Session.get('onboardingStep') || 1,
-  pressedKeyboard: () => Session.get('pressedKeyboard') || null,
   hasLearnedDirection: key => {
     const learnedDirections = Session.get('learnedDirections') || [];
     return learnedDirections.includes(getDirectionFromKey(key));
