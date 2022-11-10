@@ -2,6 +2,7 @@ const userInterpolationInterval = 200;
 
 const networkManager = {
   throttledSendPlayerState: undefined,
+  lastUserUpdate: new Date(),
 
   init() {
     this.throttledSendPlayerState = throttle(this._sendPlayerNewState.bind(this), userInterpolationInterval, { leading: false });
@@ -63,6 +64,8 @@ const networkManager = {
     character.lwTargetX = state.x;
     character.lwTargetY = state.y;
     character.lwTargetDate = character.lwOriginDate + userInterpolationInterval;
+
+    this.lastUserUpdate = character.lwOriginDate;
   },
 
   sendPlayerNewState(state) {
