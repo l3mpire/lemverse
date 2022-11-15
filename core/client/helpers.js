@@ -251,7 +251,9 @@ const canAnswerCall = user => {
   if (userProximitySensor.isUserNear(user)) return true;
 
   const callDistanceThreshold = Meteor.settings.public.character.callDistanceThreshold || 300;
-  return userProximitySensor.distance(Meteor.user(), user) <= callDistanceThreshold;
+  const otherUser = Meteor.users.findOne(user._id, { fields: { 'profile.x': 1, 'profile.x': 1 }})
+
+  return userProximitySensor.distance(Meteor.user(), otherUser) <= callDistanceThreshold;
 };
 
 const toggleUIInputs = value => {
