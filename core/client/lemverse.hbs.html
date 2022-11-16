@@ -18,7 +18,7 @@
       </div>
     </div>
 
-    {{#if and guest (not onboarding)}}
+    {{#if and (and guest (not onboarding)) allowFormLogin}}
       {{> formAccount visible=loading}}
     {{else if onboarding}}
       {{> userOnboarding}}

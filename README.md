@@ -410,6 +410,7 @@ Please note, that as stated in section `Deploy in production`, there is an addit
       "allowAccountCreation": "all", // all for everyone, none for no-one, except:lvl_xxx to block a level
       "allowLevelCreation": true,
       "allowProfileEdition": true, // Shows 'My account' tab in the user settings menu
+      "allowFormLogin": true, // Disable to only allow JWT login (make sure to configure 'jwtAuthSecret' in this case)
       "contactURL": ""
     },
 

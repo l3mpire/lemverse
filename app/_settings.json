@@ -160,6 +160,7 @@
       "allowAccountCreation": "all",
       "allowLevelCreation": true,
       "allowProfileEdition": true,
+      "allowFormLogin": true,
       "contactURL": ""
     },
 

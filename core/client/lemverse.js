@@ -470,6 +470,7 @@ Template.lemverse.helpers({
   mainModules: () => Session.get('mainModules'),
   gameModules: () => Session.get('gameModules'),
   displayNotificationButton: () => (Meteor.settings.public.features?.notificationButton?.enabled !== false),
+  allowFormLogin: () => (Meteor.settings.public.permissions?.allowFormLogin !== false)
 });
 
 Template.lemverse.events({
