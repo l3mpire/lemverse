@@ -78,6 +78,7 @@ Template.messagesListMessage.events({
 });
 
 Template.messagesList.onCreated(function () {
+  Session.set('messagesUI', false);
   this.userSubscribeHandler = undefined;
   this.fileSubscribeHandler = undefined;
 
