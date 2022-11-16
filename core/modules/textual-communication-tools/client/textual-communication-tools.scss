@@ -13,6 +13,7 @@
   align-items: stretch;
   z-index: 100;
   opacity: 1;
+  pointer-events: none;
 
   .right-content {
     position: relative;
@@ -20,6 +21,8 @@
   }
 
   &.show {
-    
+    > * {
+      pointer-events: all;
+    }
   }
 }
