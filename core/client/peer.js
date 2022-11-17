@@ -501,6 +501,9 @@ peer = {
 
     debug(`createMyPeer: created`, { peerInstanceId: this.peerInstance.id });
 
+    // force reconnect
+    this.peerInstance.on('disconnected', () => this.getPeer());
+
     this.peerInstance.on('connection', connection => connection.on('data', data => userManager.onPeerDataReceived(data)));
 
     this.peerInstance.on('close', () => {
@@ -515,9 +518,7 @@ peer = {
         const userId = peerErr.message.split(' ').pop();
         const userUnavailable = Meteor.users.findOne(userId);
         lp.notif.warning(`User ${userUnavailable?.profile.name || userId} was unavailable`);
-      } else lp.notif.error(`Peer ${peerErr} (${peerErr.type})`);
-
-      debug(`peer error ${peerErr.type}`, peerErr);
+      } else debug(`peer error ${peerErr.type}`, peerErr);
     });
 
     this.peerInstance.on('call', remoteCall => {
