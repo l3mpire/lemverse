@@ -30,7 +30,7 @@ Template.registerHelper('tile2domY', index => {
 });
 
 Template.registerHelper('tilesets', () => {
-  const filters = { hidden: { $exists: false } };
+  const filters = { hidden: { $ne: true } };
   if (Meteor.user()?.roles?.admin) delete filters.hidden;
 
   return Tilesets.find(filters, { sort: { name: 1 } });
