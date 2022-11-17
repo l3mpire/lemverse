@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import meetingRoom from './meeting-room';
+import networkManager from './network-manager';
 
 viewportModes = Object.freeze({
   fullscreen: 'fullscreen',
@@ -141,7 +142,7 @@ sendDataToUsers = (type, data, emitterId, userIds = []) => {
   targets = targets.filter(target => target !== Meteor.userId());
   if (!targets.length) throw new Error('no-targets');
 
-  return peer.sendData(targets, { type, emitter: emitterId, data });
+  return networkManager.sendData(targets, { type, emitter: emitterId, data });
 };
 
 sendDataToUsersInZone = (type, data, emitterId) => {
@@ -150,7 +151,7 @@ sendDataToUsersInZone = (type, data, emitterId) => {
   const userInZoneIds = usersInZone.map(u => u._id);
   if (!userInZoneIds.length) throw new Error('no-targets');
 
-  return peer.sendData(userInZoneIds, { type, emitter: emitterId, data });
+  return networkManager.sendData(userInZoneIds, { type, emitter: emitterId, data });
 };
 
 kebabCase = string => string.replace(/([a-z])([A-Z])/g, '$1-$2').replace(/\s+/g, '-').toLowerCase();

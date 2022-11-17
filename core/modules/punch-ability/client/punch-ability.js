@@ -1,4 +1,5 @@
 import audioManager from '../../../client/audio-manager';
+import networkManager from '../../../client/network-manager';
 import { randomFloatInRange } from '../../../lib/misc';
 
 const playPunchAnimation = () => {
@@ -12,7 +13,7 @@ const punch = users => {
   playPunchAnimation();
 
   users.forEach(user => userManager.getCharacter(user._id)?.onDamage());
-  peer.sendData(users.map(user => user._id), { type: 'punch', emitter: Meteor.userId() });
+  networkManager.sendData(users.map(user => user._id), { type: 'punch', emitter: Meteor.userId() });
   Meteor.call('analyticsKick');
 };
 

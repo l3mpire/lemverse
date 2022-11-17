@@ -1,4 +1,5 @@
 import audioManager from './audio-manager';
+import networkManager from './network-manager';
 
 let mediaRecorder;
 let recordedChunks = [];
@@ -144,7 +145,7 @@ sendAudioChunksToUsersInZone = async chunks => {
   const userInZoneIds = usersInZone.map(u => u._id);
 
   try {
-    await peer.sendData(userInZoneIds, { type: 'audio', emitter: user._id, data: chunks });
+    await networkManager.sendData(userInZoneIds, { type: 'audio', emitter: user._id, data: chunks });
     lp.notif.success(`📣 Everyone has heard your powerful voice`);
   } catch { lp.notif.warning('❌ No one is there to hear you'); }
 };
