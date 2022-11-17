@@ -1,3 +1,5 @@
+@import "../../../client/_variables";
+
 .report {
   width: 90%;
   height: 80%;
@@ -10,8 +12,22 @@
       width: 100%;
       height: 80%;
     }
-    button {
-      margin-bottom: 0px;
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+
+      .js-ban-submit {
+        background-color: $new-red;
+
+        &:hover {
+          background-color: lighten($new-red, 5%);
+        }
+      }
+
+      button {
+        margin-bottom: 0px;
+      }
     }
   }
 }
