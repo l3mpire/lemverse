@@ -1,6 +1,6 @@
 import audioManager from '../../../client/audio-manager';
-import { guestAllowed } from '../../../lib/misc';
 import { moduleType } from '../../../client/helpers';
+import { guestAllowed, canUseLevelFeature } from '../../../lib/misc';
 
 const permissionType = 'useMessaging';
 
@@ -8,13 +8,28 @@ window.addEventListener('load', () => {
   registerModules(['textualCommunicationTools'], moduleType.GAME);
   registerModules(['userListMessageButton'], moduleType.USER_LIST);
 
-  registerModules(
-    [
-      { id: 'send-text', icon: '💬', shortcut: 56, order: 41, label: 'Text', closeMenu: true, scope: 'other' },
-      { id: 'open-console', icon: '💬', shortcut: 56, order: 41, label: 'Text', closeMenu: true, scope: 'me' },
-    ],
-    moduleType.RADIAL_MENU,
+  registerModules([
+    { id: 'open-console', icon: '💬', shortcut: 56, order: 41, label: 'Text', closeMenu: true, scope: 'me' },
+  ],
+  moduleType.RADIAL_MENU,
   );
+
+  Tracker.autorun(track => {
+    if (Session.get('loading')) return;
+
+    const user = Meteor.user();
+    if (!user) return;
+
+    if (user.roles?.admin || canUseLevelFeature(Meteor.user(), 'sendText')) {
+      registerModules([
+        { id: 'send-text', icon: '💬', shortcut: 56, order: 41, label: 'Text', closeMenu: true, scope: 'other' },
+      ],
+      moduleType.RADIAL_MENU,
+      );
+    }
+
+    track.stop();
+  });
 
   Tracker.autorun(() => {
     const user = Meteor.user({ fields: { guildId: 1 } });
@@ -81,7 +96,7 @@ const onMenuOptionSelected = e => {
 
   if (option.id === 'show-quests') Session.set('quests', { origin: 'menu' });
   else if (option.id === 'open-console') openConsole(true);
-  else if (option.id === 'send-text') {
+  else if (option.id === 'send-text' && user && canUseLevelFeature(Meteor.user(), 'sendText', true)) {
     const channel = [user._id, Meteor.userId()].sort().join(';');
     openMessagingInterface(channel);
   } else if (option.id === 'new-quest' && user) createQuestDraft([user._id], Meteor.userId());

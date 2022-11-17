@@ -1,6 +1,7 @@
 /* eslint-disable no-use-before-define */
 
 import { setReaction } from '../helpers';
+import { canUseLevelFeature } from '../../lib/misc';
 
 let menuOpenUsingKey = false;
 let menuHandler;
@@ -10,12 +11,10 @@ const metaKeyCode = 91;
 const keyToOpen = 'shift';
 const keyToOpenDelay = 200;
 const menuOffset = { x: 0, y: -6 };
-const horizontalMenuItemDistance = { x: 45, y: -90 };
 const radialMenuRadius = 72;
 const radialMenuOffsetY = 38;
 const mouseDistanceToCloseMenu = 105;
-const itemAmountRequiredForBackground = 2;
-const radialMenuStartingAngle = 3.8; // in radians
+const radialMenuStartingAngle = 0; // in radians
 Session.set('radialMenuModules', []);
 
 const menuCurrentUser = (options = {}) => {
@@ -54,16 +53,40 @@ const reactionMenuItems = [
 ];
 
 const mainMenuItems = [
+  { id: 'notifications', icon: '🔔', order: 0, shortcut: 54, label: 'Notifications', closeMenu: true },
   { id: 'reactions', icon: '😃', order: 1, shortcut: 53, label: 'Reactions' },
-  { id: 'notifications', icon: '🔔', order: 2, shortcut: 54, label: 'Notifications', closeMenu: true },
 ];
 
-const otherUserMenuItems = [
+let otherUserMenuItems = [
   { id: 'follow', icon: '🏃', order: 0, shortcut: 49, label: 'Follow', closeMenu: true },
   { id: 'send-love', icon: '❤️', order: 1, shortcut: 50, label: 'Send love' },
   { id: 'show-profile', icon: '👤', order: 2, label: 'Profile', shortcut: 51 },
   { id: 'send-vocal', icon: '🎙️', order: 3, label: 'Send vocal', shortcut: 52 },
 ];
+
+Tracker.autorun(track => {
+  if (Session.get('loading')) return;
+
+  const user = Meteor.user();
+  if (!user) return;
+
+  // If it's an admin, we show the item but if it's disabled for all, the action will be ignored
+  const isAdmin = user.roles?.admin;
+  if (!isAdmin && !canUseLevelFeature(user, 'reactions')) mainMenuItems.splice(1, 1);
+
+  otherUserMenuItems = otherUserMenuItems.reduce((acc, item) => {
+    if (item.id === 'follow' && (!isAdmin && !canUseLevelFeature(user, 'follow'))) return acc;
+    if (item.id === 'send-vocal' && (!isAdmin && !canUseLevelFeature(user, 'sendVocal'))) return acc;
+    if (item.id === 'send-love' && (!isAdmin && !canUseLevelFeature(user, 'sendLove'))) return acc;
+
+    item.order = acc.length;
+
+    return [...acc, item];
+  }, []);
+
+  track.stop();
+});
+
 
 const menuOptions = new ReactiveVar(mainMenuItems);
 
@@ -72,15 +95,15 @@ const additionalOptions = scope => Session.get('radialMenuModules').filter(optio
 const onMenuOptionSelected = e => {
   const { option, user } = e.detail;
 
-  if (option.id === 'reactions') buildMenuFromOptions(reactionMenuItems);
+  if (option.id === 'reactions' && canUseLevelFeature(Meteor.user(), 'reactions', true)) buildMenuFromOptions(reactionMenuItems);
   else if (option.id === 'notifications') toggleModal('notifications');
-  else if (option.id === 'send-love' && user) setReaction(Random.choice(lovePhrases(user.profile.name)));
-  else if (option.id === 'follow' && user) userManager.follow(user);
+  else if (option.id === 'send-love' && user && canUseLevelFeature(Meteor.user(), 'sendLove', true)) setReaction(Random.choice(lovePhrases(user.profile.name)));
+  else if (option.id === 'follow' && user && canUseLevelFeature(Meteor.user(), 'follow', true)) userManager.follow(user);
   else if (option.id === 'show-profile') Session.set('modal', { template: 'userProfile', userId: Session.get('menu')?.userId });
   else if (option.id === 'go-back') buildMenuFromOptions([...mainMenuItems, ...additionalOptions('me')]);
-  else if (option.id === 'custom-reaction') setReaction(Meteor.user().profile.defaultReaction || Meteor.settings.public.defaultReaction);
-  else if (option.id === 'emoji') setReaction(option.icon);
-  else if (option.id === 'send-vocal' && user) {
+  else if (option.id === 'custom-reaction' && canUseLevelFeature(Meteor.user(), 'reactions', true)) setReaction(Meteor.user().profile.defaultReaction || Meteor.settings.public.defaultReaction);
+  else if (option.id === 'emoji' && canUseLevelFeature(Meteor.user(), 'reactions', true)) setReaction(option.icon);
+  else if (option.id === 'send-vocal' && user && canUseLevelFeature(Meteor.user(), 'sendVocal', true)) {
     if (!userProximitySensor.isUserNear(user)) {
       lp.notif.error(`${user.profile.name} must be near you`);
       return;
@@ -110,21 +133,15 @@ const buildMenuFromOptions = options => {
   const newOptions = [];
   const allOptions = options.sort((a, b) => b.order - a.order);
 
-  if (allOptions.length <= itemAmountRequiredForBackground) {
-    for (let i = 0; i < allOptions.length; i++) {
-      const x = horizontalMenuItemDistance.x * (i - (options.length - 1) / 2);
-      newOptions.push({ ...options[i], x, y: horizontalMenuItemDistance.y });
-    }
-  } else {
-    const theta = (2 * Math.PI) / allOptions.length;
-    const offset = Math.PI / 2 - theta;
 
-    for (let i = 0; i < allOptions.length; i++) {
-      const currentAngle = (i * theta + offset) + radialMenuStartingAngle;
-      const x = radialMenuRadius * Math.cos(currentAngle);
-      const y = radialMenuRadius * Math.sin(currentAngle);
-      newOptions.push({ ...allOptions[i], x, y });
-    }
+  const theta = (2 * Math.PI) / allOptions.length;
+  const offset = Math.PI / 2 - theta;
+
+  for (let i = 0; i < allOptions.length; i++) {
+    const currentAngle = (i * theta + offset) + radialMenuStartingAngle;
+    const x = radialMenuRadius * Math.cos(currentAngle);
+    const y = radialMenuRadius * Math.sin(currentAngle);
+    newOptions.push({ ...allOptions[i], x, y });
   }
 
   menuOptions.set(newOptions);
@@ -244,7 +261,6 @@ Template.radialMenu.helpers({
   open() { return Session.get('menu'); },
   options() { return menuOptions.get(); },
   position() { return computeMenuPosition(); },
-  showBackground() { return menuOptions.get().length > itemAmountRequiredForBackground; },
   showShortcuts() { return Template.instance().showShortcuts.get(); },
   username() { return menuCurrentUser({ fields: { 'profile.name': 1 } })?.profile.name; },
 });

@@ -1,4 +1,5 @@
 import { toggleUIInputs } from '../../../client/helpers';
+import { canUseLevelFeature, currentLevel } from '../../../lib/misc';
 
 const inputSelector = '.console .js-command-input';
 const inputFileSelector = '.console .console-file';
@@ -138,5 +139,19 @@ Template.console.events({
     event.preventDefault();
     event.stopPropagation();
     onSubmit();
+  },
+});
+
+Template.console.helpers({
+  chatDisabled: () => {
+    const channel = Session.get('messagesChannel');
+    const user = Meteor.user({ fields: { _id: 1, 'profile.levelId': 1, roles: 1 } });
+
+    if (!user) return;
+
+    const level = currentLevel(user);
+
+    if (channel === level?._id) return !canUseLevelFeature(user, 'globalChat');
+    return false;
   },
 });

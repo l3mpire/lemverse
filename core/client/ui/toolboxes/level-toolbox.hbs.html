@@ -10,7 +10,75 @@
         <label for="level-toolbox-hidden">Hide from the list of levels</label>
       </div>
       <div>
-        <button id="level-toolbox-position" type="button" class="js-spawn-position button">Set spawn position (current {{ spawnPosition }})</button>
+        <div class="permission-list">
+          <label for="voice-amplifier">Shout :</label>
+          <select name="voice-amplifier" id="voice-amplifier" class="js-voice-amplifier-select select"
+            value="{{ shout }}" data-permission="shout">
+            {{#each dropdownValues}}
+            <option value="{{value}}" selected="{{#if eq shout value}}selected{{/if}}">{{label}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="permission-list">
+          <label for="global-chat">Global chat :</label>
+          <select name="global-chat" id="global-chat" class="js-global-chat-select select" data-permission="globalChat">
+            {{#each dropdownValues}}
+            <option value="{{value}}" selected="{{#if eq globalChat value}}selected{{/if}}">{{label}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="permission-list">
+          <label for="punch">Punch :</label>
+          <select name="punch" id="punch" class="js-punch-select select" data-permission="punch">
+            {{#each dropdownValues}}
+            <option value="{{value}}" selected="{{#if eq punch value}}selected{{/if}}">{{label}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="permission-list">
+          <label for="reactions">Reactions :</label>
+          <select name="reactions" id="reactions" class="js-reactions-select select" data-permission="reactions">
+            {{#each dropdownValues}}
+            <option value="{{value}}" selected="{{#if eq reactions value}}selected{{/if}}">{{label}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="permission-list">
+          <label for="follow">Follow :</label>
+          <select name="follow" id="follow" class="js-follow-select select" data-permission="follow">
+            {{#each dropdownValues}}
+            <option value="{{value}}" selected="{{#if eq follow value}}selected{{/if}}">{{label}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="permission-list">
+          <label for="sendVocal">Send vocal :</label>
+          <select name="send-vocal" id="send-vocal" class="js-send-vocal-select select" data-permission="sendVocal">
+            {{#each dropdownValues}}
+            <option value="{{value}}" selected="{{#if eq sendVocal value}}selected{{/if}}">{{label}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="permission-list">
+          <label for="sendLove">Send love :</label>
+          <select name="send-love" id="send-love" class="js-send-love-select select" data-permission="sendLove">
+            {{#each dropdownValues}}
+            <option value="{{value}}" selected="{{#if eq sendLove value}}selected{{/if}}">{{label}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="permission-list">
+          <label for="sendText">Send text :</label>
+          <select name="send-text" id="send-text" class="js-send-text-select select" data-permission="sendText">
+            {{#each dropdownValues}}
+            <option value="{{value}}" selected="{{#if eq sendText value}}selected{{/if}}">{{label}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+      <div>
+        <button id="level-toolbox-position" type="button" class="js-spawn-position button">Set spawn position (current
+          {{ spawnPosition }})</button>
       </div>
     </div>
   </div>

@@ -10,4 +10,15 @@
     font-size: 0.85rem;
     margin: 15px 0;
   }
+
+  .permission-list {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .select {
+    width: fit-content;
+    min-width: 110px;
+  }
 }
