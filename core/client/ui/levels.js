@@ -1,4 +1,4 @@
-import { isLevelOwner } from '../../lib/misc';
+import { isLevelOwner, teleportUserInLevel } from '../../lib/misc';
 
 const listMode = 'list';
 
@@ -19,7 +19,7 @@ const askLoadLevel = (levelId, incrementVisit = false) => {
     const data = { userId: Meteor.userId(), levelId, type: 'load-level' };
     window.parent.document.dispatchEvent(new CustomEvent(eventTypes.onPopInEvent, { detail: data }));
   } else {
-    Meteor.users.update(Meteor.userId(), { $set: { 'profile.levelId': levelId } });
+    teleportUserInLevel(Meteor.user(), Levels.findOne(levelId), 'load-level');
   }
 };
 

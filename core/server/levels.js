@@ -169,7 +169,7 @@ deleteLevel = levelId => {
 Meteor.publish('levels', function () {
   if (!this.userId) return undefined;
 
-  return Levels.find({ }, { fields: { name: 1, hide: 1, visit: 1, createdBy: 1, template: 1 } });
+  return Levels.find({ }, { fields: { name: 1, hide: 1, visit: 1, createdBy: 1, template: 1, spawn: 1 } });
 });
 
 Meteor.publish('levelTemplates', function () {
