@@ -20,6 +20,33 @@ const computeRoomName = zone => {
   return uuid;
 };
 
+const computeRoomToken = (user, roomName, moderator = false) => {
+  let group = 'guest';
+  if (user.roles?.admin) group = 'admin';
+  else if (moderator) group = 'moderator';
+
+  const { enableAuth, encryptionPassphrase, expiresIn, identifier } = Meteor.settings.meet;
+  if (!enableAuth) return undefined;
+
+  const { serverURL } = Meteor.settings.public.meet;
+
+  return jwt.sign({
+    context: {
+      user: {
+        id: user._id,
+        name: user.profile.name,
+        email: user.emails[0].address,
+      },
+      group,
+    },
+    aud: identifier,
+    iss: Meteor.settings.public.lp.product,
+    sub: serverURL,
+    room: roomName,
+    moderator,
+  }, encryptionPassphrase, { expiresIn });
+};
+
 Meteor.methods({
   computeMeetRoomAccess(zoneId) {
     if (!this.userId) return undefined;
@@ -43,35 +70,16 @@ Meteor.methods({
     }
 
     const moderator = user.roles?.admin || level.guildId === user.guildId;
-    let group = 'guest';
-    if (user.roles?.admin) group = 'admin';
-    else if (moderator) group = 'moderator';
-
-    const { enableAuth, encryptionPassphrase, expiresIn, identifier } = Meteor.settings.meet;
-    const { serverURL } = Meteor.settings.public.meet;
     const roomName = computeRoomName(zone);
-    let token;
-
-    if (enableAuth) {
-      token = jwt.sign({
-        context: {
-          user: {
-            id: user._id,
-            name: user.profile.name,
-            email: user.emails[0].address,
-          },
-          group,
-        },
-        aud: identifier,
-        iss: Meteor.settings.public.lp.product,
-        sub: serverURL,
-        room: roomName,
-        moderator,
-      }, encryptionPassphrase, { expiresIn });
-    }
+    const token = computeRoomToken(user, roomName, moderator);
 
     log('computeMeetRoomAccess: end', { roomName, token });
 
     return { roomName, token };
   },
 });
+
+export {
+  computeRoomName,
+  computeRoomToken,
+};
