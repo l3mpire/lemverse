@@ -247,7 +247,7 @@
       "start": true,
       "port": 7010,
       "key": "peerjs",
-      "alive_timeout": 60000,
+      "alive_timeout": 5000,
       "expire_timeout": 5000,
       "allow_discovery": true
     }
