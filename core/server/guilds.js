@@ -1,7 +1,7 @@
 import { EventEmitter } from 'node:events';
 import { canEditGuild } from '../lib/misc';
 
-const mainFields = { description: 1, logo: 1, name: 1, website: 1, createdBy: 1, owners: 1 };
+const mainFields = { description: 1, icon: 1, logo: 1, name: 1, website: 1, createdBy: 1, owners: 1 };
 
 /**
  * Guild event emitter
@@ -188,6 +188,7 @@ export {
   createGuild,
 
   guildEvents,
+  mainFields,
 };
 
 /**
