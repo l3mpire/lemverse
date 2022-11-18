@@ -326,9 +326,7 @@ userManager = {
         'profile.shareScreen': false,
       } }), 0);
       Meteor.call('user-status-idle');
-      peer.disable();
     } else {
-      peer.enable();
       this.clearMediaStates();
       Meteor.call('user-status-active');
     }

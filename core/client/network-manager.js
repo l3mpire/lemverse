@@ -68,6 +68,11 @@ const networkManager = {
     this.lastUserUpdate = character.lwOriginDate;
   },
 
+  // A simple wrapper: later we will use something else than peerjs
+  async sendData(userIds, data) {
+    return peer.sendData(userIds, data);
+  },
+
   sendPlayerNewState(state) {
     this.throttledSendPlayerState(state);
   },

@@ -5,7 +5,7 @@ import { canAnswerCall, meteorCallWithPromise } from './helpers';
 import { guestAllowed, permissionTypes } from '../lib/misc';
 
 const debug = (text, meta) => {
-  if (!Meteor.user()?.options?.debug) return;
+  if (!Meteor.user({ fields: { 'options.debug': 1 } })?.options?.debug) return;
   log(text, meta);
 };
 
@@ -42,6 +42,13 @@ peer = {
       peer.onProximityEnded(users);
     });
     this.enable();
+
+    Tracker.autorun(() => {
+      const user = Meteor.user({ fields: { 'status.idle': 1 } });
+      if (!user) return;
+
+      this.enableSensor(!user.status.idle);
+    });
 
     // For security reasons we periodically check that the users in discussion are still close to the calling users
     window.setInterval(() => {
@@ -275,7 +282,7 @@ peer = {
   },
 
   onProximityStarted(nearUsers) {
-    if (!this.isEnabled()) return;
+    if (!this.isEnabled() && this.sensorEnabled) return;
 
     nearUsers.forEach(nearUser => {
       if (nearUser.profile.guest && !guestAllowed(permissionTypes.talkToUsers)) return;
@@ -494,6 +501,9 @@ peer = {
 
     debug(`createMyPeer: created`, { peerInstanceId: this.peerInstance.id });
 
+    // force reconnect
+    this.peerInstance.on('disconnected', () => this.getPeer());
+
     this.peerInstance.on('connection', connection => connection.on('data', data => userManager.onPeerDataReceived(data)));
 
     this.peerInstance.on('close', () => {
@@ -508,9 +518,7 @@ peer = {
         const userId = peerErr.message.split(' ').pop();
         const userUnavailable = Meteor.users.findOne(userId);
         lp.notif.warning(`User ${userUnavailable?.profile.name || userId} was unavailable`);
-      } else lp.notif.error(`Peer ${peerErr} (${peerErr.type})`);
-
-      debug(`peer error ${peerErr.type}`, peerErr);
+      } else debug(`peer error ${peerErr.type}`, peerErr);
     });
 
     this.peerInstance.on('call', remoteCall => {
@@ -555,6 +563,6 @@ peer = {
   },
 
   isEnabled() {
-    return this.sensorEnabled && !meetingRoom.isOpen();
+    return this.enabled && !meetingRoom.isOpen();
   },
 };
