@@ -32,7 +32,7 @@ const formatText = text => {
   return finalText.replace(/(?:\r\n|\r|\n)/g, '<br>');
 };
 
-const show = () => Session.get('message-module');
+const show = () => Session.get('messagesUI');
 
 export {
   getCurrentChannelName,

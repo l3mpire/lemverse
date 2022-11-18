@@ -78,11 +78,20 @@ Template.messagesListMessage.events({
 });
 
 Template.messagesList.onCreated(function () {
+  Session.set('messagesUI', false);
   this.userSubscribeHandler = undefined;
   this.fileSubscribeHandler = undefined;
 
   this.autorun(() => {
-    if (!Session.get('console')) {
+    if (Session.get('console')) return;
+
+    Tracker.nonreactive(() => {
+      Session.set('messagesUI', false);
+    });
+  });
+
+  this.autorun(() => {
+    if (!Session.get('messagesUI')) {
       this.fileSubscribeHandler?.stop();
       this.userSubscribeHandler?.stop();
       messagesModule.stopListeningMessagesChannel();

@@ -45,6 +45,7 @@ openConsole = (autoSelectChannel = false) => {
   if (autoSelectChannel) messagesModule.autoSelectChannel();
   clearInputFields(true);
   Session.set('console', true);
+  Session.set('messagesUI', true);
   toggleUIInputs(true);
 
   return true;
@@ -128,6 +129,10 @@ Template.console.onDestroyed(() => {
   Session.set('console', false);
   document.removeEventListener('keydown', onKeyPressed);
   document.removeEventListener('paste', onPasteAction);
+});
+
+Template.console.helpers({
+  show() { return Session.get('console'); },
 });
 
 Template.console.events({

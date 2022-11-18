@@ -40,7 +40,7 @@
 </template>
 
 <template name="messagesList">
-  <div class="messages-module">
+  <div class="messages-module {{#if show}}show{{/if}}">
     <h3 class="channel-name">{{channelName}}</h3>
     <button type="button" class="js-message-list-close" title="Close" tabindex="15">
       <span class="simple-modal-close__text">✖</span>

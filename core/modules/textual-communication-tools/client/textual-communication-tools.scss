@@ -12,9 +12,8 @@
   flex-direction: row;
   align-items: stretch;
   z-index: 100;
+  opacity: 1;
   pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.25s linear;
 
   .right-content {
     position: relative;
@@ -22,7 +21,8 @@
   }
 
   &.show {
-    opacity: 1;
-    pointer-events: all;
+    > * {
+      pointer-events: all;
+    }
   }
 }

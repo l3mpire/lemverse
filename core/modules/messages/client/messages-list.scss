@@ -7,6 +7,14 @@
   overflow: hidden;
   background-color: rgba($main-color, 0.95);
   border-radius: $radius $radius 0 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s linear;
+
+  &.show {
+    opacity: 1;
+    pointer-events: all;
+  }
 
   .channel-name {
     margin: 0;
@@ -31,6 +39,7 @@
     line-height: 1;
     opacity: 0.8;
     color: white;
+    z-index: 10;
 
     &:hover {
       opacity: 1;
