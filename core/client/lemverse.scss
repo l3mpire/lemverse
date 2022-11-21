@@ -80,12 +80,8 @@ hr.separator {
   }
 }
 
-#meet {
-  position: absolute;
-  right: 0;
-  left: 50%;
-  top: 0;
-  height: 100vh;
+.meet {
+  height: 100%;
   visibility: hidden;
   opacity: 0;
   transition: opacity 0.25s;
@@ -105,11 +101,9 @@ hr.separator {
 }
 
 #webpage {
-  position: absolute;
-  right: 0;
-  left: 50%;
+  width: 100%;
   top: 0;
-  height: 100vh;
+  height: 100%;
   z-index: 3;
   visibility: hidden;
   opacity: 0;
@@ -125,7 +119,7 @@ hr.separator {
 
   iframe {
     width: 100%;
-    height: 100vh;
+    height: 100%;
     border: 0;
   }
 }

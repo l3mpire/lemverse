@@ -12,10 +12,16 @@
         {{> userPanel loading=loading}}
       </div>
 
-      <div id="meet"></div>
-      <div id="webpage">
-        <iframe src="" allowfullscreen="true" id="webpageIframe" title="Embedded content"></iframe>
-      </div>
+      {{# resizable id='resizableMeet' }}
+        <div class="meet"></div>
+      {{/resizable}}
+
+      {{# resizable id='resizableWebpage' }}
+        <div id="webpage">
+          <iframe src="" allowfullscreen="true" id="webpageIframe" title="Embedded content"></iframe>
+        </div>
+      {{/resizable}}
+
     </div>
 
     {{#if and (and guest (not onboarding)) allowFormLogin}}

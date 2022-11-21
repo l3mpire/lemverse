@@ -1,3 +1,5 @@
+import { toggleResizable } from './ui/components/resizable/resizable';
+
 const iframeAllowAttributeSettings = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
 
 const isYoutubeURL = url => /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w-]+\?v=|embed\/|v\/)?)([\w-]+)(\S+)?$/.test(url);
@@ -27,6 +29,7 @@ const urlOpener = {
     this.getIframeElement().src = urlToLoad;
     this.getWebpageElement().classList.add('show');
 
+    toggleResizable('.resizableWebpage', true);
     updateViewport(game.scene.keys.WorldScene, fullscreen ? viewportModes.small : viewportModes.splitScreen);
   },
 
@@ -39,7 +42,8 @@ const urlOpener = {
 
     const webpageElement = this.getWebpageElement();
     if (webpageElement) webpageElement.classList.remove('show');
-
+    
+    toggleResizable('.resizableWebpage', false);
     updateViewport(game.scene.keys.WorldScene, viewportModes.fullscreen);
   },
 

@@ -1,0 +1,153 @@
+@import "../../../_variables";
+
+.resizable {
+  background: white;
+  width: auto;
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  height: 100vh;
+  visibility: hidden;
+  right: 0;
+  left: 50%;
+  width: 50%;
+  border-left: 2px solid;
+  border-color: $primary-color !important;
+
+  .corner-resizers {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+
+    .corner-resizer {
+      width: 10px;
+      height: 10px;
+      border-radius: 20%;
+      background: white;
+      border: 1px solid $primary-color;
+      position: absolute;
+      visibility: hidden;
+    }
+
+    .top-left {
+      left: -5px;
+      top: -5px;
+      cursor: nwse-resize;
+    }
+
+    .top-right {
+      right: -5px;
+      top: -5px;
+      cursor: nesw-resize;
+    }
+
+    .bottom-left {
+      left: -5px;
+      bottom: -5px;
+      cursor: nesw-resize;
+    }
+
+    .bottom-right {
+      right: -5px;
+      bottom: -5px;
+      cursor: nwse-resize;
+    }
+
+    .drag {
+      bottom: -16px;
+      width: 32px;
+      height: 32px;
+      left: 50%;
+      cursor: move;
+    }
+  }
+
+  .width-resizers {
+    visibility: hidden;
+
+    .width-resizer {
+      background: white;
+      position: absolute;
+      top: 50%;
+      height: 48px;
+      width: 10px;
+      background: $primary-color;
+      cursor: ew-resize;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .border {
+        width: 2px;
+        border-radius: 8px;
+        height: 32px;
+        background: white;
+      }
+    }
+
+    .left-border {
+      left: -12px;
+      top: 50%;
+      border-radius: 8px 0px 0px 8px;
+    }
+
+    .right-border {
+      right: -12px;
+      top: 50%;
+      border-radius: 0px 8px 8px 0px;
+    }
+  }
+
+  .buttons {
+    position: absolute;
+    top: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 4px;
+    gap: 4px;
+
+    &.left {
+      left: -44px;
+    }
+
+    &.right {
+      right: -44px;
+    }
+
+    .button {
+      position: relative;
+      background-color: lighten($primary-color, 75%);
+      height: 36px;
+      width: 36px;
+      padding: 0;
+      margin: 0;
+      border-radius: $radius;
+      color: $primary-color;
+
+      &:hover {
+        background-color: lighten($primary-color, 20%);
+      }
+
+      svg {
+        transform: translateY(2px) scale(0.95);
+      }
+
+      &.active {
+        background-color: rgba($primary-color, 1);
+
+        .buttons button:not(.active) {
+          opacity: 0.5;
+        }
+      }
+    }
+  }
+}
+
+.show {
+  visibility: visible !important;
+}
+
+.full-border {
+  border: 2px solid $primary-color !important;
+}
