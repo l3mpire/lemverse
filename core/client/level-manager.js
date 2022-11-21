@@ -166,11 +166,13 @@ levelManager = {
 
   onLevelLoaded(levelDocument) {
     this.scene.scene.wake();
-    window.dispatchEvent(new CustomEvent(eventTypes.onLevelLoaded, { detail: { level: levelDocument } }));
 
     // simulate a first frame update to avoid weirds visual effects with characters animation and direction
     this.scene.update(0, 0);
-    setTimeout(() => game.scene.keys.LoadingScene.hide(() => this.scene.enableKeyboard(true)), 0);
+    setTimeout(() => game.scene.keys.LoadingScene.hide(() => {
+      this.scene.enableKeyboard(true);
+      window.dispatchEvent(new CustomEvent(eventTypes.onLevelLoaded, { detail: { level: levelDocument } }));
+    }), 0);
 
     if (Meteor.settings.public.debug) {
       this.layers[0].renderDebug(this.scene.add.graphics(), {
