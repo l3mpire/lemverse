@@ -38,6 +38,7 @@ const onZoneEntered = e => {
       meetingRoomService.open(data);
       linkedZoneId = _id;
       updateViewport(game.scene.keys.WorldScene, fullscreen ? viewportModes.small : viewportModes.splitScreen);
+      updateViewport(game.scene.keys.UIScene, fullscreen ? viewportModes.small : viewportModes.splitScreen);
       updateMeetStates(zone);
       meetingRoomService.fullscreen(fullscreen);
       Meteor.call('analyticsConferenceAttend', { zoneId: _id, zoneName: roomName });
@@ -52,6 +53,7 @@ function closeConference(meetingRoomService, _id, roomName) {
 
   userManager.clearMediaStates();
   updateViewport(game.scene.keys.WorldScene, viewportModes.fullscreen);
+  updateViewport(game.scene.keys.UIScene, viewportModes.fullscreen);
   meetingRoomService.fullscreen(false);
 }
 
