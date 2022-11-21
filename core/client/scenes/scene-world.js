@@ -182,9 +182,9 @@ WorldScene = new Phaser.Class({
     this.setClampedZoom(this.cameras.main, zoomConfig.default);
   },
 
-  resize(mode) {
+  resize() {
     this.setClampedZoom(this.cameras.main, this.cameras.main.zoom);
-    updateViewport(this, mode);
+    updateViewport(this, this.viewportMode);
   },
 
   setClampedZoom(camera, zoom) {
@@ -208,7 +208,7 @@ WorldScene = new Phaser.Class({
     this.events.removeListener('postupdate');
     this.events.off('postupdate', this.postUpdateMethod, this);
     this.events.off('sleep', this.sleepMethod, this);
-    this.scale.off('resize', this.updateViewportMethod);
+    this.scale.off('resize', this.resizeMethod, this);
     window.removeEventListener(eventTypes.onZoneEntered, onZoneEntered);
     window.removeEventListener(eventTypes.onZoneLeft, onZoneLeft);
 

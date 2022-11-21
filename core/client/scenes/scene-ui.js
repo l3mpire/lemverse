@@ -15,7 +15,8 @@ UIScene = new Phaser.Class({
     this.characterNamesObjects = {};
     this.preRenderMethod = this.preRender.bind(this);
     this.shutdownMethod = this.shutdown.bind(this);
-    this.updateViewportMethod = mode => updateViewport(this, mode);
+    this.viewportMode = viewportModes.fullscreen;
+    this.updateViewportMethod = () => updateViewport(this, this.viewportMode);
     this.reactionPool = this.add.group({ classType: CharacterReaction });
     this.UIElementsOffset = characterUIElementsOffset;
     this.physics.disableUpdate();
