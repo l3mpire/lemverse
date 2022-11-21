@@ -29,8 +29,6 @@ window.addEventListener('load', () => {
   });
 
   hotkeys('x', { scope: scopes.player }, e => {
-    e.preventDefault();
-    e.stopPropagation();
     if (e.repeat) return;
 
     punch(Object.values(userProximitySensor.nearUsers));
