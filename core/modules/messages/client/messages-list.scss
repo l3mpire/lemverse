@@ -10,6 +10,7 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s linear;
+  position: relative;
 
   &.show {
     opacity: 1;
