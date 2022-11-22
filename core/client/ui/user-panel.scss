@@ -67,7 +67,7 @@
 
   @include media-max("phone-down") {
     transform: translate(300px);
-    transition: transform .5s;
+    transition: transform 0.5s;
 
     &.visible {
       transform: translate(0px);
@@ -160,13 +160,17 @@
           background-color: $new-green;
         }
 
+        &:disabled {
+          background-color: hsl(0deg, 0%, 63%);
+        }
+
         @media (hover: hover) {
           &:hover {
             background-color: lighten($new-green, 20%);
           }
         }
 
-        &:not(.active):nth-child(-n+3)::before {
+        &:not(.active):nth-child(-n + 3)::before {
           content: "\\";
           position: absolute;
           color: $main-color;
