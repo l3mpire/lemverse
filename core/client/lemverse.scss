@@ -197,6 +197,7 @@ button.js-notifications {
   margin: 20px;
   border: 1px solid transparent;
   border-radius: 4px;
+  width: max-content;
 
   &.warning {
     color: #8a6d3b;
