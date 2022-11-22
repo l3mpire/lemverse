@@ -75,6 +75,7 @@
       "allowAccountCreation": "all",
       "allowLevelCreation": true,
       "allowProfileEdition": true,
+      "allowFormLogin": true,
       "contactURL": "",
       "guest": {
         "changeSkin": false,

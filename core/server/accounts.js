@@ -42,8 +42,13 @@ Accounts.onLogin(param => {
 });
 
 Accounts.validateLoginAttempt(param => {
-  const { user, methodName } = param;
+  const { user, methodName, type } = param;
   log('validateLoginAttempt: start', { type: param.type, allowed: param.allowed, methodName, username: param.methodArguments?.[0].user?.username, error: param.error, connection: param.connection, userId: user?._id });
+ 
+  if (Meteor.settings.public.permissions?.allowFormLogin === false && !(['jwt', 'resume', 'guest'].includes(type))) {
+    error(`validateLoginAttempt: ${type} login is disabled`);
+    return false;
+  }
 
   if (Meteor.settings.forbiddenIPs?.includes(lp.ip(param).ip)) {
     error('validateLoginAttempt: watched ip detected!', { ip: lp.ip(param).ip, userId: user?._id });
