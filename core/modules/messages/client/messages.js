@@ -115,4 +115,20 @@ messagesModule = {
     this.handleMessagesSubscribe?.stop();
     Session.set('messagesChannel', undefined);
   },
+  targetedChannel() {
+    const loadedChannel = Session.get('messagesChannel');
+    if (loadedChannel) {
+      return loadedChannel;
+    }
+
+    if (userProximitySensor.isNearSomeone()) {
+      return nearUserIdsToString();
+    }
+
+    if (zoneManager.activeZone) {
+      return zoneManager.activeZone._id;
+    }
+
+    return Meteor.user({ fields: { 'profile.levelId': 1 } }).profile.levelId;
+  },
 };
