@@ -104,10 +104,11 @@ userManager = {
     if (!character) return;
 
     const { x, y, direction, reaction, shareAudio, userMediaError, name, baseline, nameColor } = user.profile;
+    const showMutedIndicator = user.profile.guest ? guestAllowed(permissionTypes.talkToUsers) : !shareAudio;
 
     // update character instance
     networkManager.onCharacterStateReceived({ userId: user._id, x, y, direction });
-    character.showMutedStateIndicator(!shareAudio);
+    character.showMutedStateIndicator(showMutedIndicator);
 
     // is account transformed from guest to user?
     if (!user.profile.guest && oldUser?.profile.guest) {
