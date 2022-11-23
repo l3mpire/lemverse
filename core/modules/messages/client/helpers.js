@@ -21,7 +21,7 @@ const formatDate = date => {
   if (now.getDate() === date.getDate()) return 'Today';
   if (now.getDate() === date.getDate() - 1) return 'Yesterday';
 
-  return now.toDateString();
+  return date.toDateString();
 };
 
 const formatText = text => {
