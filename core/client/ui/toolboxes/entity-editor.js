@@ -1,7 +1,8 @@
 import { clamp, toggleUIInputs } from '../../helpers';
 
 const entityMaxScale = 3;
-const entityDepthRange = { min: -1, max: 1000 };
+const entityDepthRange = { min: -1, max: 9 };
+const layerOffset = 10000 - 6; // 6 default value is equal to 10000, all layers > 5 are offset by 10000 - 5
 
 const closeInterface = () => Session.set('selectedEntityId', undefined);
 const selectedEntity = () => Entities.findOne(Session.get('selectedEntityId'));
@@ -36,8 +37,10 @@ Template.entityEditor.events({
     const entity = selectedEntity();
     if (!entity) return;
 
-    const { valueAsNumber: value } = event.target;
-    Entities.update(entity._id, { $set: { 'gameObject.depth': clamp(value, entityDepthRange.min, entityDepthRange.max) } });
+    var { valueAsNumber: value } = event.target;
+    if (value >= 6) value += layerOffset;
+
+    Entities.update(entity._id, { $set: { 'gameObject.depth': clamp(value, entityDepthRange.min, entityDepthRange.max + layerOffset) } });
   },
   'input #entity-scale'(event) {
     const entity = selectedEntity();
