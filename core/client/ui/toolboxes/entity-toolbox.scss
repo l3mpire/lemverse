@@ -8,6 +8,11 @@
     margin: 10px;
   }
 
+  ul {
+    max-height: 65vh;
+    overflow-y: auto;
+  }
+
   .entity-list {
     list-style-type: none;
     margin: 0;
