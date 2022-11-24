@@ -19,12 +19,16 @@ const urlOpener = {
   webpageContainer: undefined,
   webpageIframeContainer: undefined,
 
-  open(url, fullscreen = false) {
+  open(url, fullscreen = false, style = {}) {
     const allowAttributesRequired = isYoutubeURL(url);
     const urlToLoad = allowAttributesRequired ? generateEmbeddedYoutubeURL(url) : url;
 
     if (allowAttributesRequired) this.getIframeElement().allow = iframeAllowAttributeSettings;
-    this.getIframeElement().src = urlToLoad;
+
+    var iframe = this.getIframeElement();
+    iframe.src = urlToLoad;
+    iframe.style = new String(Object.keys(style).map(key => `${key}: ${style[key]}`).join(';'));
+
     this.getWebpageElement().classList.add('show');
 
     updateViewport(game.scene.keys.WorldScene, fullscreen ? viewportModes.small : viewportModes.splitScreen);
@@ -35,6 +39,7 @@ const urlOpener = {
     if (iframe) {
       iframe.src = '';
       iframe.allow = '';
+      iframe.style = '';
     }
 
     const webpageElement = this.getWebpageElement();
