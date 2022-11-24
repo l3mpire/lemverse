@@ -1,5 +1,5 @@
 import { canSubscribeToNotifications, messageModerationAllowed } from '../misc';
-import { getCurrentChannelName, formatDate, formatText, show } from './helpers';
+import { channelIdToChannelName, formatDate, formatText, show } from './helpers';
 
 function computeReactionToolboxPosition(element) {
   const elemRect = element.getBoundingClientRect();
@@ -109,7 +109,7 @@ Template.messagesList.onCreated(function () {
 });
 
 Template.messagesList.helpers({
-  channelName() { return getCurrentChannelName(); },
+  channelName() { return channelIdToChannelName(Session.get('messagesChannel'), false); },
   messages() { return sortedMessages(); },
   canSubscribe() {
     return canSubscribeToNotifications(Session.get('messagesChannel'));

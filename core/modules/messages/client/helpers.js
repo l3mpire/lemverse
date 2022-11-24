@@ -1,19 +1,44 @@
 import { formatURLs, replaceTextVars } from '../../../client/helpers';
 import { currentLevel } from '../../../lib/misc';
 
-const getCurrentChannelName = () => {
-  const channel = Session.get('messagesChannel');
-  if (!channel) return '-';
+const channelIdToChannelName = (channelId, showUserList = false) => {
+  const currentUser = Meteor.user({ fields: { 'profile.levelId': 1 } });
 
-  if (channel.includes('zon_')) return Zones.findOne(channel)?.name || 'Zone';
-  else if (channel.includes('lvl_')) return currentLevel(Meteor.user())?.name || 'Level';
-  else if (channel.includes('qst_')) return '';
+  if (!channelId || channelId.includes('lvl_')) {
+    return currentLevel(currentUser)?.name || 'Level';
+  }
 
-  const userIds = channel.split(';');
-  const users = Meteor.users.find({ _id: { $in: userIds } }).fetch();
-  const userNames = users.map(user => user.profile.name);
+  if (channelId.includes('zon_')) {
+    return Zones.findOne(channelId)?.name || 'Zone';
+  } else if (channelId.includes('qst_')) {
+    return 'Quest';
+  }
 
-  return userNames.join(' & ');
+  const userIds = channelId.split(';');
+  if (showUserList) {
+    const users = Meteor.users.find({ _id: { $in: userIds } }).fetch();
+    const userNames = users.map(user => user.profile.name);
+
+    return userNames.join(' & ');
+  }
+
+  if (userIds.length > 2) {
+    if (channelId === nearUserIdsToString()) {
+      return 'Near users';
+    }
+
+    return 'Group talk';
+  } else if (userIds.length === 2) {
+    const otherUserId = userIds.splice(userIds.indexOf(currentUser._id), 1)[0];
+    const otherUser = Meteor.users.findOne(otherUserId, { fields: { 'profile.name': 1, name: 1 } });
+    if (!otherUser) {
+      return 'Other user & Me';
+    }
+
+    return `${otherUser.name || otherUser.profile.name} & Me`;
+  }
+
+  return 'Invalid channel';
 };
 
 const formatDate = date => {
@@ -35,7 +60,7 @@ const formatText = text => {
 const show = () => Session.get('messagesUI');
 
 export {
-  getCurrentChannelName,
+  channelIdToChannelName,
   formatDate,
   formatText,
   show,
