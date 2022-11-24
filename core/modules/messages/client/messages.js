@@ -116,13 +116,13 @@ messagesModule = {
     Session.set('messagesChannel', undefined);
   },
   targetedChannel() {
+    if (userProximitySensor.isNearSomeone()) {
+      return nearUserIdsToString();
+    }
+
     const loadedChannel = Session.get('messagesChannel');
     if (loadedChannel) {
       return loadedChannel;
-    }
-
-    if (userProximitySensor.isNearSomeone()) {
-      return nearUserIdsToString();
     }
 
     if (zoneManager.activeZone) {
