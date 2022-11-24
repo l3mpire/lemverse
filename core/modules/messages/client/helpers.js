@@ -29,7 +29,8 @@ const channelIdToChannelName = (channelId, showUserList = false) => {
 
     return 'Group talk';
   } else if (userIds.length === 2) {
-    const otherUserId = userIds.splice(userIds.indexOf(currentUser._id), 1)[0];
+    userIds.splice(userIds.indexOf(currentUser._id), 1);
+    const otherUserId = userIds[0];
     const otherUser = Meteor.users.findOne(otherUserId, { fields: { 'profile.name': 1, name: 1 } });
     if (!otherUser) {
       return 'Other user & Me';
