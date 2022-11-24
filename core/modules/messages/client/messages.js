@@ -129,6 +129,6 @@ messagesModule = {
       return zoneManager.activeZone._id;
     }
 
-    return Meteor.user({ fields: { 'profile.levelId': 1 } }).profile.levelId;
+    return Meteor.user({ fields: { 'profile.levelId': 1 } })?.profile.levelId;
   },
 };
