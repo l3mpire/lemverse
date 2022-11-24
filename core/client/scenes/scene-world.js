@@ -11,12 +11,12 @@ const zoomConfig = Meteor.settings.public.zoom;
 
 const onZoneEntered = e => {
   const { zone } = e.detail;
-  const { targetedLevelId, inlineURL, url, disableCommunications } = zone;
+  const { targetedLevelId, inlineURL, url, disableCommunications, style } = zone;
 
   if (targetedLevelId) levelManager.loadLevel(targetedLevelId);
   else if (inlineURL) characterPopIns.initFromZone(zone);
 
-  if (url) URLOpener.open(url, zone.fullscreen);
+  if (url) URLOpener.open(url, zone.fullscreen, style);
   if (disableCommunications) userManager.setUserInDoNotDisturbMode(true);
 };
 
