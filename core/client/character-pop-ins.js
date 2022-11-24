@@ -63,8 +63,14 @@ characterPopIns = {
     else if (content !== popIn.node.innerHTML) popIn.setHTML(content);
 
     const { style } = popIn.node;
-    if (config.width) style.width = `${config.width}px`;
-    if (config.height) style.height = `${config.height}px`;
+    if (config.width) {
+      if (typeof config.width === 'number') style.width = `${config.width}px`;
+      else style.width = config.width;
+    }
+    if (config.height) {
+      if (typeof config.height === 'number') style.height = `${config.height}px`;
+      else style.height = config.height;
+    }
 
     const className = config.className ? [this.className, config.className].join(' ') : this.className;
     popIn.setClassName(className);
