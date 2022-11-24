@@ -51,8 +51,8 @@ Template.userPanel.helpers({
   screenSharing() { return Meteor.user({ fields: { 'profile.shareScreen': 1 } })?.profile.shareScreen; },
   videoActive() { return talking() && Meteor.user({ fields: { 'profile.shareVideo': 1 } })?.profile.shareVideo; },
   displayUserPanel() { return Meteor.settings.public.features?.userPanel?.enabled !== false; },
-  canTalkToUser() { return Meteor.user({ fields: { 'profile.guest': 1 } })?.profile.guest && guestAllowed(permissionTypes.talkToUsers); },
-  canUseMessaging() { return Meteor.user({ fields: { 'profile.guest': 1 } })?.profile.guest && guestAllowed(permissionTypes.useMessaging); },
+  canTalkToUser() { return !Meteor.user({ fields: { 'profile.guest': 1 } })?.profile.guest || guestAllowed(permissionTypes.talkToUsers)},
+  canUseMessaging() { return !Meteor.user({ fields: { 'profile.guest': 1 } })?.profile.guest || guestAllowed(permissionTypes.useMessaging); },
 });
 
 Template.userPanel.events({
