@@ -41,34 +41,36 @@
 
 <template name="messagesList">
   <div class="messages-module {{#if show}}show{{/if}}">
-    <h3 class="channel-name">{{channelName}}</h3>
-    <button type="button" class="js-message-list-close" title="Close" tabindex="15">
-      <span class="simple-modal-close__text">✖</span>
-    </button>
-    <div class="actions">
-      {{#if canSubscribe}}
-        {{#if subscribed}}
-          <button type="button" class="js-channel-subscribe">Subscribe</button>
-        {{else}}
-          {{#if muted}}
-            <button type="button" class="js-channel-mute">Mute</button>
+    {{#if show}}
+      <h3 class="channel-name">{{channelName}}</h3>
+      <button type="button" class="js-message-list-close" title="Close" tabindex="15">
+        <span class="simple-modal-close__text">✖</span>
+      </button>
+      <div class="actions">
+        {{#if canSubscribe}}
+          {{#if subscribed}}
+            <button type="button" class="js-channel-subscribe">Subscribe</button>
           {{else}}
-            <button type="button" class="js-channel-unmute">Unmute</button>
+            {{#if muted}}
+              <button type="button" class="js-channel-mute">Mute</button>
+            {{else}}
+              <button type="button" class="js-channel-unmute">Unmute</button>
+            {{/if}}
+            <button type="button" class="js-channel-unsubscribe">Unsubscribe</button>
           {{/if}}
-          <button type="button" class="js-channel-unsubscribe">Unsubscribe</button>
         {{/if}}
-      {{/if}}
-    </div>
-    <div class="messages-list">
-      {{#each message in messages}}
-        {{#unless sameDay @index}}
-          <div class="separation-day">
-            <div class="text">{{formattedSeparationDate @index}}</div>
-          </div>
-        {{/unless}}
-        {{> messagesListMessage message=message }}
-      {{/each}}
-    </div>
-    {{> messageReaction}}
+      </div>
+      <div class="messages-list">
+        {{#each message in messages}}
+          {{#unless sameDay @index}}
+            <div class="separation-day">
+              <div class="text">{{formattedSeparationDate @index}}</div>
+            </div>
+          {{/unless}}
+          {{> messagesListMessage message=message }}
+        {{/each}}
+      </div>
+      {{> messageReaction}}
+    {{/if}}
   </div>
 </template>
