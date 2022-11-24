@@ -5,7 +5,12 @@ const channelIdToChannelName = (channelId, showUserList = false) => {
   const currentUser = Meteor.user({ fields: { 'profile.levelId': 1 } });
 
   if (!channelId || channelId.includes('lvl_')) {
-    return currentLevel(currentUser)?.name || 'Level';
+    const defaultLevelValue = 'Level';
+    if (!currentUser) {
+      return defaultLevelValue;
+    }
+
+    return currentLevel(currentUser)?.name || defaultLevelValue;
   }
 
   if (channelId.includes('zon_')) {
