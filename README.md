@@ -224,12 +224,18 @@ Here is the structure of a basic JSON for a door:
     // Physics component (optional)
     "collider": {
       "radius": 15, // use "radius" to create a circle. Use "width" and "height" to create a rectangle
-      "offsetX": -15, // collider offset on X
-      "offsetY": -30, // collider offset on Y
+      "x": -15, // collider offset on X
+      "y": -30, // collider offset on Y
       "immovable": false, // static or dynamic physic body
       "dragX": 0.05, // drag on x = "friction"/velocity slowdown speed
       "dragY": 0.05, // drag on y = "friction"/velocity slowdown speed
       "collideTilemap": true // enable or disable collision with walls
+    },
+    "trigger": {
+      "width": 15, // radius is not supported for triggers
+      "height": 15,
+      "x": -15, // collider offset on X
+      "y": -30 // collider offset on Y
     }
   }
 }

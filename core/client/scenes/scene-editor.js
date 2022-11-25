@@ -14,6 +14,34 @@ let isSelecting = false;
 let selection = {};
 let timerResetCopyPaste;
 
+function drawTrigger(collider, gameObject, entity, scale) {
+  let collision;
+  if (gameObject.radius) {
+    // the problem is that the collider is drawn at the center of the entity, but the position is at the top left corner
+    collision = {
+      x: gameObject.x + gameObject.radius,
+      y: gameObject.y + gameObject.radius,
+      radius: gameObject.radius,
+    };
+  } else {
+    collision = { x: gameObject.x, y: gameObject.y, w: gameObject.width, h: gameObject.height };
+  }
+
+  // eslint-disable-next-line no-restricted-syntax, guard-for-in
+  for (const key in collision) {
+    collision[key] *= scale ?? 1;
+  }
+  collision.x += entity.x;
+  collision.y += entity.y;
+
+  if (gameObject.radius) {
+    collider.strokeCircle(collision.x, collision.y, collision.radius);
+    collider.fillCircle(collision.x, collision.y, collision.radius);
+  } else {
+    collider.strokeRect(collision.x, collision.y, collision.w, collision.h);
+    collider.fillRect(collision.x, collision.y, collision.w, collision.h);
+  }
+}
 
 function compareMouseMovements(currentPosition, lastMousePosition) {
   return currentPosition.x === lastMousePosition.x && currentPosition.y === lastMousePosition.y;
@@ -59,16 +87,16 @@ EditorScene = new Phaser.Class({
     Phaser.Scene.call(this, { key: 'EditorScene' });
   },
 
-  newEntityCollider() {
+  newEntityCollider(color = 0xff0000) {
     const collider = this.add.graphics();
     collider.setDefaultStyles({
       lineStyle: {
         width: 2,
-        color: 0x00ff00,
+        color,
         alpha: 1,
       },
       fillStyle: {
-        color: 0x00ff00,
+        color,
         alpha: 0.25,
       },
     });
@@ -98,6 +126,7 @@ EditorScene = new Phaser.Class({
     this.marker.setDepth(editorGraphicsDepth);
 
     this.entityCollider = {};
+    this.entityTrigger = {};
 
     this.areaSelector = this.add.graphics();
     this.areaSelector.setDefaultStyles({
@@ -173,6 +202,10 @@ EditorScene = new Phaser.Class({
     const zoneId = Session.get('selectedZoneId');
 
     Object.values(this.entityCollider).forEach(val => {
+      val.clear();
+    });
+
+    Object.values(this.entityTrigger).forEach(val => {
       val.clear();
     });
 
@@ -477,35 +510,14 @@ EditorScene = new Phaser.Class({
         if (entity.gameObject?.collider) {
           if (!this.entityCollider[entity._id]) this.entityCollider[entity._id] = this.newEntityCollider()
           const collider = this.entityCollider[entity._id]
-
           if (entity.gameObject.scale < 0) return
-
-          var collision;
-          if (entity.gameObject.collider.radius) {
-            // the problem is that the collider is drawn at the center of the entity, but the position is at the top left corner
-            collision = {
-              x: entity.gameObject.collider.x + entity.gameObject.collider.radius,
-              y: entity.gameObject.collider.y + entity.gameObject.collider.radius,
-              radius: entity.gameObject.collider.radius,
-            }
-          }
-          else {
-            collision = { x: entity.gameObject.collider.x, y: entity.gameObject.collider.y, w: entity.gameObject.collider.width, h: entity.gameObject.collider.height };
-          }
-
-          for (const key in collision) {
-            collision[key] *= entity.gameObject.scale ?? 1;
-          }
-          collision.x += entity.x;
-          collision.y += entity.y;
-
-          if (entity.gameObject.collider.radius) {
-            collider.strokeCircle(collision.x, collision.y, collision.radius);
-            collider.fillCircle(collision.x, collision.y, collision.radius);
-          } else {
-            collider.strokeRect(collision.x, collision.y, collision.w, collision.h);
-            collider.fillRect(collision.x, collision.y, collision.w, collision.h);
-          }
+          drawTrigger(collider, entity.gameObject.collider, entity, entity.gameObject.scale);
+        }
+        if (entity.gameObject?.trigger && !entity.gameObject.trigger.radius) {
+          if (!this.entityTrigger[entity._id]) this.entityTrigger[entity._id] = this.newEntityCollider(0x4444aa)
+          const trigger = this.entityTrigger[entity._id]
+          if (entity.gameObject.scale < 0) return
+          drawTrigger(trigger, entity.gameObject.trigger, entity, entity.gameObject.scale);
         }
       });
     }

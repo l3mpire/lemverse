@@ -269,6 +269,16 @@ userManager = {
     } else this.controlledCharacter.setAnimationPaused(true);
 
     if (moving || this.controlledCharacter.wasMoving) {
+      const lastTriggersArray = Object.keys(this.controlledCharacter.lastTriggers);
+      const triggersArray = Object.keys(this.controlledCharacter.triggers);
+      const outersection = lastTriggersArray.filter(trigger => !triggersArray.includes(trigger));
+      for (const trigger of outersection) {
+        this.controlledCharacter.lastTriggers[trigger]();
+      }
+
+      this.controlledCharacter.lastTriggers = this.controlledCharacter.triggers;
+      this.controlledCharacter.triggers = {};
+
       this.scene.physics.world.update(time, delta);
       networkManager.sendPlayerNewState(this.controlledCharacter);
       this.stopInteracting();

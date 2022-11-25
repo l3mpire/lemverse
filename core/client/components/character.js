@@ -41,6 +41,9 @@ class Character extends Phaser.GameObjects.Container {
     this.running = false;
     this.chatCircle = undefined;
 
+    this.triggers = {};
+    this.lastTriggers = {};
+
     this.skinPartsContainer = this.scene.add.container(0, 0);
     this.skinPartsContainer.setScale(3);
     this.add(this.skinPartsContainer);
