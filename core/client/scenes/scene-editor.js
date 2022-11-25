@@ -59,6 +59,24 @@ EditorScene = new Phaser.Class({
     Phaser.Scene.call(this, { key: 'EditorScene' });
   },
 
+  newEntityCollider() {
+    const collider = this.add.graphics();
+    collider.setDefaultStyles({
+      lineStyle: {
+        width: 2,
+        color: 0x00ff00,
+        alpha: 1,
+      },
+      fillStyle: {
+        color: 0x00ff00,
+        alpha: 0.25,
+      },
+    });
+
+    return collider.setDepth(editorGraphicsDepth);
+  },
+
+
   init() {
     this.isMouseDown = false;
     this.undoTiles = [];
@@ -78,6 +96,8 @@ EditorScene = new Phaser.Class({
       },
     });
     this.marker.setDepth(editorGraphicsDepth);
+
+    this.entityCollider = {};
 
     this.areaSelector = this.add.graphics();
     this.areaSelector.setDefaultStyles({
@@ -151,6 +171,11 @@ EditorScene = new Phaser.Class({
     Session.set('pointerY', worldPoint.y | 0);
 
     const zoneId = Session.get('selectedZoneId');
+
+    Object.values(this.entityCollider).forEach(val => {
+      val.clear();
+    });
+
     if (this.mode === editorModes.zones) {
       if (this.input.manager.activePointer.isDown && canvasClicked) this.isMouseDown = true;
 
@@ -445,6 +470,44 @@ EditorScene = new Phaser.Class({
           }
         }
       }
+    } else if (this.mode === editorModes.entities) {
+      const entities = Entities.find({ mapId: map._id }).fetch();
+
+      entities.forEach(entity => {
+        if (entity.gameObject?.collider) {
+          if (!this.entityCollider[entity._id]) this.entityCollider[entity._id] = this.newEntityCollider()
+          const collider = this.entityCollider[entity._id]
+
+          if (entity.gameObject.scale < 0) return
+
+          var collision;
+          if (entity.gameObject.collider.radius) {
+            // the problem is that the collider is drawn at the center of the entity, but the position is at the top left corner
+            collision = {
+              x: entity.gameObject.collider.x + entity.gameObject.collider.radius,
+              y: entity.gameObject.collider.y + entity.gameObject.collider.radius,
+              radius: entity.gameObject.collider.radius,
+            }
+          }
+          else {
+            collision = { x: entity.gameObject.collider.x, y: entity.gameObject.collider.y, w: entity.gameObject.collider.width, h: entity.gameObject.collider.height };
+          }
+
+          for (const key in collision) {
+            collision[key] *= entity.gameObject.scale ?? 1;
+          }
+          collision.x += entity.x;
+          collision.y += entity.y;
+
+          if (entity.gameObject.collider.radius) {
+            collider.strokeCircle(collision.x, collision.y, collision.radius);
+            collider.fillCircle(collision.x, collision.y, collision.radius);
+          } else {
+            collider.strokeRect(collision.x, collision.y, collision.w, collision.h);
+            collider.fillRect(collision.x, collision.y, collision.w, collision.h);
+          }
+        }
+      });
     }
   },
 
