@@ -4,6 +4,8 @@ import { guestAllowed } from '../../../lib/misc';
 
 import meetingRoom from '../../../client/meeting-room';
 
+import { toggleResizable } from '../../../client/ui/components/resizable/resizable';
+
 let linkedZoneId;
 const permissionType = 'useMeetingRoom';
 
@@ -235,6 +237,7 @@ meetHighLevel = {
 
   show(value) {
     this.nodeElement().classList.toggle('show', !!value);
+    toggleResizable('.resizableMeet', !!value);
   },
 
   fullscreen(value) {
@@ -278,7 +281,7 @@ meetHighLevel = {
   },
 
   nodeElement() {
-    if (!this.node) this.node = document.querySelector('#meet');
+    if (!this.node) this.node = document.querySelector('.meet');
     return this.node;
   },
 
