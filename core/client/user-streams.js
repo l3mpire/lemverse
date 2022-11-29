@@ -229,28 +229,6 @@ userStreams = {
     return false;
   },
 
-  generateFakeMediaStream() {
-    const silence = () => {
-      const ctx = new AudioContext();
-      const oscillator = ctx.createOscillator();
-      const dst = oscillator.connect(ctx.createMediaStreamDestination());
-      oscillator.start();
-
-      return Object.assign(dst.stream.getAudioTracks()[0], { enabled: false });
-    };
-
-    const black = ({ width = 280, height = 180 } = {}) => {
-      const canvas = Object.assign(document.createElement('canvas'), { width, height });
-      const context = canvas.getContext('2d');
-      context.fillRect(0, 0, width, height);
-
-      const stream = canvas.captureStream();
-      return Object.assign(stream.getVideoTracks()[0], { enabled: true });
-    };
-
-    return new MediaStream([black(), silence()]);
-  },
-
   async enumerateDevices() {
     const devices = await navigator.mediaDevices.enumerateDevices();
 
