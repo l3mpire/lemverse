@@ -242,3 +242,8 @@ userStreams = {
     return { mics, cams };
   },
 };
+
+export {
+  screenShareDefaultConfig,
+  videoDefaultConfig,
+};

@@ -1,4 +1,4 @@
-const screenShareDefaultFrameRate = 5;
+import { screenShareDefaultConfig } from '../user-streams';
 
 const updateSettingsStream = async template => {
   const constraints = userStreams.getStreamConstraints(streamTypes.main);
@@ -51,7 +51,7 @@ Template.settingsMedias.events({
 });
 
 Template.settingsMedias.helpers({
-  frameRate() { return Meteor.user({ 'profile.screenShareFrameRate': 1 }).profile.screenShareFrameRate || screenShareDefaultFrameRate; },
+  frameRate() { return Meteor.user({ 'profile.screenShareFrameRate': 1 }).profile.screenShareFrameRate || screenShareDefaultConfig.defaultFrameRate; },
   audioRecorders() { return Template.instance().audioRecorders.get(); },
   videoRecorders() { return Template.instance().videoRecorders.get(); },
 });
