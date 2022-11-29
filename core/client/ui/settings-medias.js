@@ -1,3 +1,5 @@
+const screenShareDefaultFrameRate = 5;
+
 const updateSettingsStream = async template => {
   const constraints = userStreams.getStreamConstraints(streamTypes.main);
   constraints.forceNew = true;
@@ -5,10 +7,9 @@ const updateSettingsStream = async template => {
   const stream = await userStreams.requestUserMedia(constraints);
   if (!stream) { lp.notif.error(`unable to get a valid stream`); return; }
 
-  userStreams.enumerateDevices().then(({ mics, cams }) => {
-    template.audioRecorders.set(mics);
-    template.videoRecorders.set(cams);
-  });
+  const { mics, cams } = await userStreams.enumerateDevices();
+  template.audioRecorders.set(mics);
+  template.videoRecorders.set(cams);
 
   const video = document.querySelector('#js-video-preview');
   video.srcObject = stream;
@@ -50,7 +51,7 @@ Template.settingsMedias.events({
 });
 
 Template.settingsMedias.helpers({
-  frameRate() { return Meteor.user().profile.screenShareFrameRate || 22; },
+  frameRate() { return Meteor.user({ 'profile.screenShareFrameRate': 1 }).profile.screenShareFrameRate || screenShareDefaultFrameRate; },
   audioRecorders() { return Template.instance().audioRecorders.get(); },
   videoRecorders() { return Template.instance().videoRecorders.get(); },
 });
