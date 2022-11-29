@@ -487,7 +487,7 @@ peer = {
     const { port, url: host, path, config } = result;
 
     const peerConfig = {
-      debug: Meteor.user().options?.debug ? 2 : 0,
+      debug: user.options?.debug ? 2 : 0,
       host,
       port,
       path,
@@ -496,7 +496,7 @@ peer = {
 
     if (skipConfig) delete peerConfig.config;
     if (this.peerInstance) this.destroy();
-    this.peerInstance = new Peer(Meteor.userId(), peerConfig);
+    this.peerInstance = new Peer(user._id, peerConfig);
     this.peerLoading = false;
 
     debug(`createMyPeer: created`, { peerInstanceId: this.peerInstance.id });
