@@ -216,6 +216,7 @@ Template.lemverse.onCreated(function () {
       } else if (user.profile.shareScreen) {
         await userStreams.createScreenStream();
         userStreams.screen(true);
+        userProximitySensor.callProximityStartedForAllNearUsers();
       } else {
         userStreams.screen(false);
       }

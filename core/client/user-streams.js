@@ -41,16 +41,16 @@ userStreams = {
 
   screen(enabled) {
     const { instance: screenStream } = this.streams.screen;
-    if (screenStream && !enabled) {
-      this.stopTracks(screenStream);
-      this.streams.screen.instance = undefined;
-      Object.entries(peer.calls).forEach(([key, call]) => {
-        if (key.indexOf('-screen') === -1) return;
-        debug('me -> you screen ****** I stop sharing screen, call closing', key);
-        call.close();
-        delete peer.calls[key];
-      });
-    }
+    if (!screenStream || enabled) return;
+
+    this.stopTracks(screenStream);
+    this.streams.screen.instance = undefined;
+    Object.entries(peer.calls).forEach(([key, call]) => {
+      if (key.indexOf('-screen') === -1) return;
+      debug('me -> you screen ****** I stop sharing screen, call closing', key);
+      call.close();
+      delete peer.calls[key];
+    });
   },
 
   destroyStream(type) {
