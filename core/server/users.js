@@ -1,4 +1,5 @@
 import { completeUserProfile, getSpawnLevel, levelSpawnPosition, teleportUserInLevel } from '../lib/misc';
+import { mainFields as guildMainFields } from './guilds';
 
 const mainFields = { options: 1, profile: 1, roles: 1, status: { idle: 1, online: 1 }, beta: 1, guildId: 1 };
 
@@ -20,7 +21,7 @@ Meteor.publish('users', function (levelId) {
 
   const users = Meteor.users.find(filters, { fields: mainFields });
   const guildIds = users.map(u => u.guildId).filter(Boolean);
-  const guilds = Guilds.find({ _id: { $in: [...new Set(guildIds)] } });
+  const guilds = Guilds.find({ _id: { $in: [...new Set(guildIds)] } }, { fields: guildMainFields });
 
   return [users, guilds];
 });
