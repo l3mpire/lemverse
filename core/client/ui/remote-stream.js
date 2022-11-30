@@ -1,13 +1,6 @@
 const maxAttempt = 10;
 const delayBetweenAttempt = 2000; // in ms
 
-const findRemoteUser = userId => Meteor.users.findOne(userId,
-  { fields: {
-    'profile.userMediaError': 1,
-    'profile.shareAudio': 1,
-    'profile.shareVideo': 1,
-  } });
-
 const removeAllFullScreenElement = ignoredElement => {
   document.querySelectorAll('.stream .fullscreen').forEach(stream => {
     if (stream.parentElement !== ignoredElement) stream.classList.remove('fullscreen');
@@ -69,27 +62,54 @@ Template.screenshare.onDestroyed(function () {
   destroyVideoSource(this.find('video'));
 });
 
-Template.remoteStream.onCreated(function () {
-  this.talking = new ReactiveVar(false);
-});
-
 Template.remoteStream.onDestroyed(() => {
   if (!isModalOpen()) game.scene.getScene('WorldScene')?.enableMouse(true);
 });
 
+Template.remoteStream.onRendered(function () {
+  const avatarDomElement = this.firstNode.querySelector('.avatar');
+  if (!avatarDomElement) return;
+
+  avatarDomElement.onerror = event => {
+    event.target.src = Meteor.settings.public.avatarFallback;
+  };
+});
+
 Template.remoteStream.helpers({
-  mediaState() { return findRemoteUser(this.remoteUser._id)?.profile; },
-  hasMainStream() { return this.remoteUser.main?.srcObject; },
-  hasScreenStream() { return this.remoteUser.screen?.srcObject; },
+  mediaState() {
+    const fields = { 'profile.shareAudio': 1, 'profile.shareVideo': 1 };
+    const user = Meteor.users.findOne(this.remoteUser._id, { fields });
+
+    return user?.profile || { shareAudio: false, shareVideo: false };
+  },
+  hasMainStream() {
+    return this.remoteUser.main?.srcObject;
+  },
+  hasScreenStream() {
+    return this.remoteUser.screen?.srcObject;
+  },
   state() {
-    const user = findRemoteUser(this.remoteUser._id);
+    const fields = { 'profile.userMediaError': 1 };
+    const user = Meteor.users.findOne(this.remoteUser._id, { fields });
     if (!user) return 'user-error';
     if (user.profile.userMediaError) return 'media-error';
 
     return this.remoteUser.waitingCallAnswer ? 'calling' : 'connected';
   },
-  isTalking() { return Template.instance().talking.get(); },
-  talkingVar() { return Template.instance().talking; },
+  name() {
+    const fields = { 'profile.username': 1, 'profile.name': 1 };
+    const user = Meteor.users.findOne(this.remoteUser._id, { fields });
+    if (!user) return 'Guest';
+
+    return user.profile.name || user.username || 'Guest';
+  },
+  avatar() {
+    const fields = { 'profile.avatar': 1, 'profile.name': 1 };
+    const user = Meteor.users.findOne(this.remoteUser._id, { fields });
+    if (!user) return generateRandomAvatarURLForUser({ _id: 'usr_a', profile: { name: 'Guest', avatar: 'cat' } });
+
+    return generateRandomAvatarURLForUser(user);
+  },
 });
 
 Template.remoteStream.events({
@@ -99,7 +119,7 @@ Template.remoteStream.events({
     const { target } = event;
     removeAllFullScreenElement(target);
     target.classList.toggle('fullscreen');
-    const closeBtn = target.parentElement.querySelector('.js-fullscreen-close')
+    const closeBtn = target.parentElement.querySelector('.js-fullscreen-close');
     closeBtn?.classList.toggle('visible', target.classList.contains('fullscreen'));
 
     updatePhaserMouseInputState();

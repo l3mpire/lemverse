@@ -369,8 +369,6 @@ peer = {
     if (!streamsByUsers.find(usr => usr._id === user._id)) {
       streamsByUsers.push({
         _id: user._id,
-        name: user.profile.name,
-        avatar: generateRandomAvatarURLForUser(user),
         main: {},
         screen: {},
         waitingCallAnswer: true,
