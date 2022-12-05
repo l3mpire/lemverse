@@ -4,7 +4,7 @@ import { guestAllowed } from '../../../lib/misc';
 
 import meetingRoom from '../../../client/meeting-room';
 
-import { toggleResizable } from '../../../client/ui/components/resizable/resizable';
+import toggleResizable from '../../../client/ui/components/resizable/resizable';
 
 let linkedZoneId;
 const permissionType = 'useMeetingRoom';
@@ -107,14 +107,6 @@ window.addEventListener('load', () => {
   const scriptLowLevel = document.createElement('script');
   scriptLowLevel.src = `https://${Meteor.settings.public.meet.serverURL}/libs/lib-jitsi-meet.min.js`;
   head.appendChild(scriptLowLevel);
-
-  hotkeys('f', { scope: scopes.player }, event => {
-    if (event.repeat || !linkedZoneId) return;
-    event.preventDefault();
-
-    const zone = Zones.findOne(linkedZoneId);
-    if (zone) zoneManager.setFullscreen(zone, !zone.fullscreen);
-  });
 
   window.addEventListener(eventTypes.onZoneEntered, onZoneEntered);
   window.addEventListener(eventTypes.onZoneLeft, onZoneLeft);

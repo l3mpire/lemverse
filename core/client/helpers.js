@@ -16,6 +16,7 @@ editorModes = Object.freeze({
 });
 
 eventTypes = Object.freeze({
+  onElementResized: 'onElementResized',
   onEntityAdded: 'onEntityAdded',
   onEntityUpdated: 'onEntityUpdated',
   onEntityRemoved: 'onEntityRemoved',
@@ -34,6 +35,7 @@ eventTypes = Object.freeze({
   onTileChanged: 'onTileChanged',
   onUsersComeCloser: 'onUsersComeCloser',
   onUsersMovedAway: 'onUsersMovedAway',
+  onViewportUpdated: 'onViewportUpdated',
   onZoneEntered: 'onZoneEntered',
   onZoneLeft: 'onZoneLeft',
   onZoneAdded: 'onZoneAdded',
@@ -100,15 +102,17 @@ updateViewport = (scene, mode) => {
   if (meet.lowLevel) return;
 
   const lemverseTag = document.querySelector('.lemverse');
-  lemverseTag.classList.toggle('screen-splitted', mode === viewportModes.splitScreen);
-  lemverseTag.classList.toggle('screen-splitted-75', mode === viewportModes.small);
+  lemverseTag.classList.toggle('screen-splitted', (mode !== viewportModes.fullscreen && Session.get('screenMode') !== 'unlocked'));
+  lemverseTag.classList.toggle('dockToTheLeft', Session.get('screenSide') === 'left');
+  lemverseTag.classList.toggle('dockToTheRight', Session.get('screenSide') === 'right');
 
   const { width, height } = getSimulationSize();
-  if (mode === viewportModes.small) scene.cameras.main.setViewport(0, 0, width / 3, height);
-  else if (mode === viewportModes.splitScreen) scene.cameras.main.setViewport(0, 0, width / 2, height);
-  else scene.cameras.main.setViewport(0, 0, width, height);
+  scene.cameras.main.setViewport(0, 0, width, height);
 
   scene.viewportMode = mode;
+
+  const event = new CustomEvent(eventTypes.onViewportUpdated);
+  window.dispatchEvent(event);
 };
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
