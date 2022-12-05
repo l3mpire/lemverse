@@ -24,6 +24,8 @@ eventTypes = Object.freeze({
   onLevelLoaded: 'onLevelLoaded',
   onLevelLoading: 'onLevelLoading',
   onLevelUnloaded: 'onLevelUnloaded',
+  onMeetStarted: 'onMeetStarted',
+  onMeetEnded: 'onMeetEnded',
   onMenuOptionSelected: 'onMenuOptionSelected',
   onMenuOptionUnselected: 'onMenuOptionUnselected',
   onNotificationClicked: 'onNotificationClicked',

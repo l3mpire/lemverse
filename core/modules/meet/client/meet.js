@@ -183,6 +183,8 @@ meetHighLevel = {
       const { setupScreenSharingRender } = window.electron.jitsiMeetElectronUtils;
       setupScreenSharingRender(this.api);
     }
+
+    window.dispatchEvent(new CustomEvent(eventTypes.onMeetStarted, { detail: { api: this.api } }));
   },
 
   convertActionToEmojis(message) {
@@ -233,6 +235,8 @@ meetHighLevel = {
     this.api = undefined;
     this.show(false);
     peer.enable();
+
+    window.dispatchEvent(new CustomEvent(eventTypes.onMeetEnded));
   },
 
   show(value) {
