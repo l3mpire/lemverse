@@ -41,11 +41,12 @@
     </div>
     <div class='corner-resizers'>
       {{> Template.contentBlock }}
-      <div class='resizer corner-resizer top-left'></div>
-      <div class='resizer corner-resizer top-right'></div>
-      <div class='resizer corner-resizer bottom-left'></div>
-      <div class='resizer corner-resizer bottom-right'></div>
-      <svg class='resizer corner-resizer drag' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <div draggable="true" class='resizer corner-resizer top-left'></div>
+      <div draggable="true" class='resizer corner-resizer top-right'></div>
+      <div draggable="true" class='resizer corner-resizer bottom-left'></div>
+      <div draggable="true" class='resizer corner-resizer bottom-right'></div>
+      <div draggable="true" class='resizer corner-resizer drag' >
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M6.375 15.375L3 12L6.375 8.625" stroke="#373737" stroke-width="1.125" stroke-linecap="round"
           stroke-linejoin="round" />
         <path d="M17.625 15.375L21 12L17.625 8.625" stroke="#373737" stroke-width="1.125" stroke-linecap="round"
@@ -58,9 +59,10 @@
         <rect x="11.4375" y="20.4375" width="16.875" height="1.125" rx="0.5625" transform="rotate(-90 11.4375 20.4375)"
           fill="#373737" />
       </svg>
+      </div>
     </div>
     <div class="width-resizers">
-      <div class="resizer width-resizer {{#if eq screenSide 'left'}}right-border{{else}}left-border{{/if}}">
+      <div draggable="true" class="resizer width-resizer {{#if eq screenSide 'left'}}right-border{{else}}left-border{{/if}}">
         <div class='border'></div>
       </div>
     </div>

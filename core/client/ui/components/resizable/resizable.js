@@ -1,118 +1,132 @@
-const makeResizableDiv = (containerId) => {
+// Ghost image for drag event
+const ghost = new Image();
+ghost.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=';
+
+function resize(event, element) {
+  const { classList } = event.srcElement;
+  const { target, pageX, pageY, clientX, clientY } = event;
+  const {
+    originalWidth,
+    originalHeight,
+    originalMouseX,
+    originalMouseY,
+    originalX,
+    originalY,
+    minimumSize,
+    startPosX,
+    startPosY,
+  } = target.dataset;
+
+  if (pageX === 0) {
+    return;
+  }
+
+  let newWidth;
+  let newHeight;
+  let newLeft;
+  let newTop;
+
+  if (classList.contains('bottom-right')) {
+    newWidth = parseInt(originalWidth, 10) + (pageX - originalMouseX);
+    newHeight = parseInt(originalHeight, 10) + (pageY - originalMouseY);
+  } else if (classList.contains('bottom-left')) {
+    newHeight = parseInt(originalHeight, 10) + (pageY - originalMouseY);
+    newWidth = originalWidth - (pageX - originalMouseX);
+    if (newWidth > minimumSize) {
+      newLeft = Math.max(parseInt(originalX, 10) + (pageX - originalMouseX), 44);
+    }
+  } else if (classList.contains('top-right')) {
+    newWidth = parseInt(originalWidth, 10) + (pageX - originalMouseX);
+    newHeight = originalHeight - (pageY - originalMouseY);
+
+    if (newHeight > minimumSize) {
+      newTop = parseInt(originalY, 10) + (pageY - originalMouseY);
+    }
+  } else if (classList.contains('top-left')) {
+    newWidth = originalWidth - (pageX - originalMouseX);
+    newHeight = originalHeight - (pageY - originalMouseY);
+
+    if (newWidth > minimumSize) {
+      newLeft = parseInt(originalX, 10) + (pageX - originalMouseX);
+    }
+
+    if (newHeight > minimumSize) {
+      newTop = parseInt(originalY, 10) + (pageY - originalMouseY);
+    }
+  } else if (classList.contains('drag')) {
+    const newPosX = startPosX - clientX;
+    const newPosY = startPosY - clientY;
+
+    target.dataset.startPosX = clientX;
+    target.dataset.startPosY = clientY;
+
+    newTop = Math.max(element.offsetTop - newPosY, 0);
+    newLeft = Math.max(element.offsetLeft - newPosX, 44);
+  } else if (classList.contains('width-resizer') && classList.contains('left-border')) {
+    newWidth = originalWidth - (pageX - originalMouseX);
+  } else if (classList.contains('width-resizer') && classList.contains('right-border')) {
+    newWidth = parseInt(originalWidth, 10) + (pageX - originalMouseX);
+  }
+
+  element.style.top = newTop ? `${newTop}px` : element.style.top;
+  element.style.left = newLeft ? `${newLeft}px` : element.style.left;
+  element.style.width = newWidth ? `${newWidth}px` : element.style.width;
+  element.style.height = newHeight ? `${newHeight}px` : element.style.height;
+}
+
+function stopResize(element) {
+  element.querySelectorAll('iframe').forEach(frame => {
+    frame.style.pointerEvents = 'all';
+  });
+}
+
+const makeResizableDiv = containerId => {
   const element = document.querySelector(containerId);
-  const resizers = document.querySelectorAll(`${containerId} .resizer`);
-  const minimumSize = 100;
-  let originalWidth = 0;
-  let originalHeight = 0;
-  let originalX = 0;
-  let originalY = 0;
-  let originalMouseX = 0;
-  let originalMouseY = 0;
-  let startPosX = 0;
-  let startPosY = 0;
+  const resizers = element.querySelectorAll('.resizer');
+
+  const resizeObserver = new ResizeObserver(entries => {
+    for (let idx = 0; idx < entries.length; ++idx) {
+      const event = new CustomEvent(eventTypes.onElementResized, { detail: entries[idx] });
+      window.dispatchEvent(event);
+    }
+  });
+  resizeObserver.observe(element);
 
   for (let i = 0; i < resizers.length; i++) {
     const currentResizer = resizers[i];
-    currentResizer.addEventListener('mousedown', e => {
-      e.preventDefault();
-      originalWidth = parseFloat(getComputedStyle(element, null).getPropertyValue('width').replace('px', ''));
-      originalHeight = parseFloat(getComputedStyle(element, null).getPropertyValue('height').replace('px', ''));
-      originalX = element.getBoundingClientRect().left;
-      originalY = element.getBoundingClientRect().top;
-      originalMouseX = e.pageX;
-      originalMouseY = e.pageY;
-      startPosX = e.clientX;
-      startPosY = e.clientY;
+    currentResizer.addEventListener('dragstart', event => {
+      element.querySelectorAll('iframe').forEach(frame => {
+        frame.style.pointerEvents = 'none';
+      });
+      const boundingRect = element.getBoundingClientRect();
+      const { target, pageX, pageY, clientX, clientY } = event;
 
-      window.addEventListener('mousemove', resize);
-      window.addEventListener('mouseup', stopResize);
+      target.dataset.minimumSize = 100;
+      target.dataset.originalWidth = boundingRect.width;
+      target.dataset.originalHeight = boundingRect.height;
+      target.dataset.originalX = boundingRect.left;
+      target.dataset.originalY = boundingRect.top;
+      target.dataset.originalMouseX = pageX;
+      target.dataset.originalMouseY = pageY;
+      target.dataset.startPosX = clientX;
+      target.dataset.startPosY = clientY;
+
+      event.dataTransfer.setDragImage(ghost, 0, 0);
     });
-
-    function resize(e) {
-      const { classList } = currentResizer;
-
-      if (classList.contains('bottom-right')) {
-        const width = originalWidth + (e.pageX - originalMouseX);
-        const height = originalHeight + (e.pageY - originalMouseY);
-        if (width > minimumSize) {
-          element.style.width = `${width}px`;
-        }
-        if (height > minimumSize) {
-          element.style.height = `${height}px`;
-        }
-      } else if (classList.contains('bottom-left')) {
-        const height = originalHeight + (e.pageY - originalMouseY);
-        const width = originalWidth - (e.pageX - originalMouseX);
-
-        if (height > minimumSize) {
-          element.style.height = `${height}px`;
-        }
-
-        if (width > minimumSize) {
-          element.style.width = `${width}px`;
-          element.style.left = `${originalX + (e.pageX - originalMouseX)}px`;
-        }
-      } else if (classList.contains('top-right')) {
-        const width = originalWidth + (e.pageX - originalMouseX);
-        const height = originalHeight - (e.pageY - originalMouseY);
-
-        if (width > minimumSize) {
-          element.style.width = `${width}px`;
-        }
-
-        if (height > minimumSize) {
-          element.style.height = `${height}px`;
-          element.style.top = `${originalY + (e.pageY - originalMouseY)}px`;
-        }
-      } else if (classList.contains('top-left')) {
-        const width = originalWidth - (e.pageX - originalMouseX);
-        const height = originalHeight - (e.pageY - originalMouseY);
-
-        if (width > minimumSize) {
-          element.style.width = `${width}px`;
-          element.style.left = `${originalX + (e.pageX - originalMouseX)}px`;
-        }
-
-        if (height > minimumSize) {
-          element.style.height = `${height}px`;
-          element.style.top = `${originalY + (e.pageY - originalMouseY)}px`;
-        }
-      } else if (classList.contains('drag')) {
-        newPosX = startPosX - e.clientX;
-        newPosY = startPosY - e.clientY;
-
-        startPosX = e.clientX;
-        startPosY = e.clientY;
-
-        element.style.top = `${element.offsetTop - newPosY}px`;
-        element.style.left = `${element.offsetLeft - newPosX}px`;
-      } else if (classList.contains('width-resizer') && classList.contains('left-border')) {
-        const width = originalWidth - (e.pageX - originalMouseX);
-
-        if (width > minimumSize) {
-          element.style.width = `${width}px`;
-          element.style.left = `${originalX + (e.pageX - originalMouseX)}px`;
-        }
-      } else if (classList.contains('width-resizer') && classList.contains('right-border')) {
-        const width = originalWidth + (e.pageX - originalMouseX);
-
-        if (width > minimumSize) {
-          element.style.width = `${width}px`;
-        }
-      }
-    }
-
-    function stopResize() {
-      window.removeEventListener('mousemove', resize);
-    }
+    currentResizer.addEventListener('drag', event => {
+      resize(event, element);
+    });
+    currentResizer.addEventListener('dragend', () => {
+      stopResize(element);
+    });
   }
-}
+};
 
 
 function moveToSideScreen(resizable) {
   if (Session.get('screenSide') === 'right') {
     resizable.style.right = 0;
-    resizable.style.left = '50%';
+    resizable.style.left = 'initial';
     resizable.style.width = '50%';
     // We need to set border style splitted and use $primary-color on .css side because it's not supported here
     resizable.style.borderLeftWidth = '2px';
@@ -120,7 +134,7 @@ function moveToSideScreen(resizable) {
     resizable.style.borderRight = 'none';
   } else {
     resizable.style.left = 0;
-    resizable.style.right = '50%';
+    resizable.style.right = 'initial';
     resizable.style.width = '50%';
     resizable.style.borderLeft = 'none';
     resizable.style.borderRightWidth = '2px';
@@ -130,7 +144,7 @@ function moveToSideScreen(resizable) {
 
 // This toggle function is useful when you want to wrap a container that appear and disappear.
 // Like zones, you'll have to call this function when ever you show the zone.
-export function toggleResizable(id, value) {
+export default function toggleResizable(id, value) {
   document.querySelector(id).classList.toggle('show', value);
   document.querySelector(`${id} .width-resizers`).classList.toggle('show', value);
 
@@ -140,11 +154,10 @@ export function toggleResizable(id, value) {
   }
 }
 
-
 Template.resizable.onCreated(() => {
   const containerId = `.${Template.instance().data.id}`;
 
-  window.addEventListener('load', () => {
+  window.addEventListener('onLevelLoaded', () => {
     Session.set('screenMode', 'locked');
     Session.set('screenSide', 'right');
 
@@ -171,6 +184,9 @@ Template.resizable.events({
 
     Session.set('screenMode', 'unlocked');
     Session.set('screenSide', 'right');
+
+    updateViewport(game.scene.keys.WorldScene);
+    updateViewport(game.scene.keys.UIScene);
   },
   'click .resizable #unlocked'(event) {
     event.preventDefault();
@@ -193,6 +209,9 @@ Template.resizable.events({
     widthResizers.classList.add('show');
 
     Session.set('screenMode', 'locked');
+
+    updateViewport(game.scene.keys.WorldScene);
+    updateViewport(game.scene.keys.UIScene);
   },
   'click .resizable #switch'(event) {
     event.preventDefault();
@@ -204,6 +223,9 @@ Template.resizable.events({
     Session.get('screenSide') === 'right' ? Session.set('screenSide', 'left') : Session.set('screenSide', 'right');
 
     moveToSideScreen(resizable);
+
+    updateViewport(game.scene.keys.WorldScene);
+    updateViewport(game.scene.keys.UIScene);
   },
 });
 

@@ -86,6 +86,45 @@ Template.lemverse.onCreated(function () {
     peer.destroy();
   });
 
+  window.addEventListener(eventTypes.onElementResized, event => {
+    const { WorldScene, UIScene } = game.scene.keys;
+    if (WorldScene.viewportMode !== viewportModes.fullscreen && Session.get('screenMode') !== 'unlocked') {
+      const parentElement = this.firstNode.querySelector('.simulation');
+      const parentWidth = parentElement.getBoundingClientRect().width;
+      const elementWidth = event.detail.borderBoxSize[0].inlineSize;
+      const width = parentWidth - elementWidth;
+      this.firstNode.style.setProperty('--game-modules-adaptative-size', `${width}px`);
+
+      const offset = (Session.get('screenSide') === 'right') ? -elementWidth / 2 : elementWidth / 2;
+
+      WorldScene.cameras.main.followOffset.x = offset;
+      UIScene.cameras.main.followOffset.x = offset;
+    }
+  });
+
+  window.addEventListener(eventTypes.onZoneLeft, event => {
+    const user = Meteor.user();
+    const insideZones = zoneManager.findZonesForPosition({
+      x: user.profile.x,
+      y: user.profile.y,
+    });
+
+    let isSpecialZone = false;
+    for (let idx = 0; idx < insideZones.length; ++idx) {
+      const zone = insideZones[idx];
+      if (zone.url?.length > 0 || zone.roomName?.length > 0) {
+        isSpecialZone = true;
+        break;
+      }
+    }
+
+    if (!isSpecialZone) {
+      const { WorldScene, UIScene } = game.scene.keys;
+      WorldScene.cameras.main.followOffset.x = 0;
+      UIScene.cameras.main.followOffset.x = 0;
+    }
+  });
+
   const extractedLevelId = extractLevelIdFromURL();
   if (extractedLevelId) Meteor.call('teleportUserInLevel', extractedLevelId);
 

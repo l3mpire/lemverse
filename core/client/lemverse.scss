@@ -135,13 +135,28 @@ hr.separator {
   }
 }
 
-.screen-splitted {
+.lemverse.screen-splitted {
   .js-streams,
   .user-panel {
     right: initial;
     left: 0;
   }
+
+  > .simulation > #gameModules {
+    position: absolute;
+    left: 0px;
+    right: initial;
+    width: var(--game-modules-adaptative-size, 50%);
+  }
+
+  &.dockToTheLeft > .simulation {
+    > #gameModules {
+      left: initial;
+      right: 0px;
+    }
+  }
 }
+
 
 button.js-notifications {
   position: absolute;

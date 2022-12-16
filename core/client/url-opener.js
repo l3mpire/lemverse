@@ -1,4 +1,4 @@
-import { toggleResizable } from './ui/components/resizable/resizable';
+import toggleResizable from './ui/components/resizable/resizable';
 
 const iframeAllowAttributeSettings = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
 
@@ -35,6 +35,7 @@ const urlOpener = {
 
     toggleResizable('.resizableWebpage', true);
     updateViewport(game.scene.keys.WorldScene, fullscreen ? viewportModes.small : viewportModes.splitScreen);
+    updateViewport(game.scene.keys.UIScene, fullscreen ? viewportModes.small : viewportModes.splitScreen);
   },
 
   close() {
@@ -47,9 +48,10 @@ const urlOpener = {
 
     const webpageElement = this.getWebpageElement();
     if (webpageElement) webpageElement.classList.remove('show');
-    
+
     toggleResizable('.resizableWebpage', false);
     updateViewport(game.scene.keys.WorldScene, viewportModes.fullscreen);
+    updateViewport(game.scene.keys.UIScene, viewportModes.fullscreen);
   },
 
   getIframeElement() {
