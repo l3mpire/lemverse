@@ -169,14 +169,12 @@ Template.lemverse.onCreated(function () {
   this.autorun(() => {
     const user = Meteor.user({ fields: { 'profile.shareAudio': 1 } });
     if (!user) return;
-    Tracker.nonreactive(() => {
+    Tracker.nonreactive(async () => {
       if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
       else if (!user.profile.shareAudio) userStreams.audio(false);
       else if (user.profile.shareAudio) {
-        userStreams.createStream().then(() => {
-          userStreams.audio(true);
-          userProximitySensor.callProximityStartedForAllNearUsers();
-        });
+        await userStreams.createStream();
+        userProximitySensor.callProximityStartedForAllNearUsers();
       }
 
       if (meetingRoom.isOpen()) {
@@ -190,15 +188,13 @@ Template.lemverse.onCreated(function () {
   this.autorun(() => {
     const user = Meteor.user({ fields: { 'profile.shareVideo': 1 } });
     if (!user) return;
-    Tracker.nonreactive(() => {
+    Tracker.nonreactive(async () => {
       if (userProximitySensor.nearUsersCount() === 0) userStreams.destroyStream(streamTypes.main);
       else if (!user.profile.shareVideo) userStreams.video(false);
       else if (user.profile.shareVideo) {
         const forceNewStream = userStreams.shouldCreateNewStream(streamTypes.main, true, true);
-        userStreams.createStream(forceNewStream).then(() => {
-          userStreams.video(true);
-          userProximitySensor.callProximityStartedForAllNearUsers();
-        });
+        await userStreams.createStream(forceNewStream);
+        userProximitySensor.callProximityStartedForAllNearUsers();
       }
 
       if (meetingRoom.isOpen()) {
@@ -212,13 +208,15 @@ Template.lemverse.onCreated(function () {
   this.autorun(() => {
     const user = Meteor.user({ fields: { 'profile.shareScreen': 1 } });
     if (!user) return;
-    Tracker.nonreactive(() => {
+    Tracker.nonreactive(async () => {
       if (meetingRoom.isOpen()) {
         const meetingRoomService = meetingRoom.getMeetingRoomService();
         if (user.profile.shareScreen) meetingRoomService.shareScreen();
         else meetingRoomService.unshareScreen();
       } else if (user.profile.shareScreen) {
-        userStreams.createScreenStream().then(() => userStreams.screen(true));
+        await userStreams.createScreenStream();
+        userStreams.screen(true);
+        userProximitySensor.callProximityStartedForAllNearUsers();
       } else {
         userStreams.screen(false);
       }
