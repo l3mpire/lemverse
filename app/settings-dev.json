@@ -14,6 +14,8 @@
       "faviconURL": "https://assets.website-files.com/62b4ba92180b4210cc065959/62bdafd68a5ffb164edbdf51_Favicon%20(1).png"
     },
 
+    "avatarFallback": "lemverse.png",
+
     "debug": false,
 
     "defaultReaction": "❤️",

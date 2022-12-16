@@ -12,6 +12,8 @@
       "enableOnboarding": false
     },
 
+    "avatarFallback": "lemverse.png",
+
     "debug": false,
 
     "defaultReaction": "❤️",
