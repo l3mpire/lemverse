@@ -21,6 +21,18 @@ const urlOpener = {
   webpageContainer: undefined,
   webpageIframeContainer: undefined,
 
+  openHtml(html, fullscreen = false, style = {}) {
+    var iframe = this.getIframeElement();
+    iframe.contentWindow.document.write(html);
+    iframe.style = new String(Object.keys(style).map(key => `${key}: ${style[key]}`).join(';'));
+
+    this.getWebpageElement().classList.add('show');
+
+    toggleResizable('.resizableWebpage', true);
+    updateViewport(game.scene.keys.WorldScene, fullscreen ? viewportModes.small : viewportModes.splitScreen);
+    updateViewport(game.scene.keys.UIScene, fullscreen ? viewportModes.small : viewportModes.splitScreen);
+  },
+
   open(url, fullscreen = false, style = {}) {
     const allowAttributesRequired = isYoutubeURL(url);
     const urlToLoad = allowAttributesRequired ? generateEmbeddedYoutubeURL(url) : url;
