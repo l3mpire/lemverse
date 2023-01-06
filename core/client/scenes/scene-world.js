@@ -11,22 +11,23 @@ const zoomConfig = Meteor.settings.public.zoom;
 
 const onZoneEntered = e => {
   const { zone } = e.detail;
-  const { targetedLevelId, inlineURL, url, disableCommunications, style } = zone;
+  const { targetedLevelId, inlineURL, url, disableCommunications, style, html } = zone;
 
   if (targetedLevelId) levelManager.loadLevel(targetedLevelId);
   else if (inlineURL) characterPopIns.initFromZone(zone);
 
+  if (html) URLOpener.openHtml(html, zone.fullscreen, style);
   if (url) URLOpener.open(url, zone.fullscreen, style);
   if (disableCommunications) userManager.setUserInDoNotDisturbMode(true);
 };
 
 const onZoneLeft = e => {
   const { zone } = e.detail;
-  const { popInConfiguration, disableCommunications, url } = zone;
+  const { popInConfiguration, disableCommunications, url, html } = zone;
 
   if (!popInConfiguration?.autoOpen) characterPopIns.destroyPopIn(`${Meteor.userId()}-${zone._id}`);
 
-  if (url) {
+  if (url || html) {
     updateViewport(game.scene.keys.WorldScene, viewportModes.fullscreen);
     URLOpener.close();
   }
