@@ -216,6 +216,7 @@
 
   "botUserId": "",
 
+  "respawnEnabled": false,
   "respawnDelay": 480,
 
   "email": {

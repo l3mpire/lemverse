@@ -161,11 +161,11 @@ Meteor.methods({
 
 Meteor.users.find({ 'status.online': true }).observeChanges({
   added(id) {
+    const { respawnDelay, respawnEnabled } = Meteor.settings;
+    if (!respawnDelay || !respawnEnabled) return;
+
     const user = Meteor.users.findOne(id);
     if (!user.status.lastLogoutAt) return;
-
-    const { respawnDelay } = Meteor.settings;
-    if (!respawnDelay) return;
 
     const diffInMinutes = (Date.now() - new Date(user.status.lastLogoutAt).getTime()) / 60000;
     if (diffInMinutes < respawnDelay) return;
