@@ -33,7 +33,7 @@
 - Want to walk inside your own coworking office?
 - Want to try something new?
 
-If you have answer `yes` to one of those questions, then `lemverse` is for you!  
+If you have answered `yes` to one of those questions, then `lemverse` is for you!  
 You can either launch it locally, on a server or join us at [lemverse.com](https://lemverse.com).
 
 > ℹ️ Can't wait to install lemverse? You can go directly to the [Getting started](#getting-started) section  
@@ -60,7 +60,7 @@ Here are the description of all parts:
 
 3. This is the list of all tilesets.
 
-- You can either remove the tileset with hitting the cross
+- You can either remove the tileset by hitting the cross
 - Rename it, by double clicking on it
 
 4. The view of the tileset
@@ -69,7 +69,7 @@ Here are the description of all parts:
 - Layer `2` is the default and thus is not displayed
 - Hit `c` to change the tile to be a collision tile (will be displayed in red)
 
-Once you have imported the tileset and do some tweak about collision and layering, you can begin to create your universe!
+Once you have imported the tileset and done some tweak about collision and layering, you can begin to create your universe!
 
 ## Character Editor
 
@@ -80,8 +80,8 @@ To add a new resource, simply drag & drop over the page.
 Here are the description of all parts:  
 <img alt="login" src="./app/public/character-editor.png">
 
-1. Different type of filter to change the dropdown
-2. Here are the list of all resources available in the current category
+1. Different types of filters to change the dropdown
+2. Here is the list of all resources available in the current category
 3. Display of the character part to help you figure out how to categorize it.
 4. The five possible categories to change the part.
 
@@ -108,7 +108,7 @@ Here are the description of all parts:
 - You can hit `cmd+z` to undo what you just did.
 - Or use the `eraser` tool to remove one layer (shortcut from `0` to `8`) or hit `c` to remove all layers upon selection.
 
-3. It's the dropdown of all your tilesets. You can select another one to be able to copy/paste others tiles.
+3. It's the dropdown of all your tilesets. You can select another one to be able to copy/paste other tiles.
 4. Information about your current pointer on map.
 
 - You have the position
@@ -270,15 +270,15 @@ Activating camera, sharing screen can be annoying with the mouse itself, so simp
 
 ### Editing the level
 
-Like describe in a previous part, we must use `e` to launch the edit mode.
+Like described in the previous part, we must use `e` to launch the edit mode.
 
-### Shout to your surrounding!
+### Shout out to your surrounding!
 
 Like in real life, you can shout around you.  
 We restricted this to the zone you are currently in.
 
 To do so, simply hit `r` and speak!  
-Once you finished, just release the touch and your message will be send to everybody and play instantly.
+Once you finished, just release the touch and your message will be sent to everybody and played instantly.
 
 ### Leave a message!
 
@@ -331,12 +331,12 @@ For the `level` structure, here are an explanation of all fields:
 }
 ```
 
-You can use the level id everywhere it's useful, like in the `defaultLevelId` property in `settings.json` (More information bellow).
+You can use the level id everywhere it's useful, like in the `defaultLevelId` property in `settings.json` (More information below).
 
 ## Tell me more about `settings.json`!
 
-This file regroup all information about the settings.  
-Please note, that as stated in section `Deploy in production`, there is an additional file with sensitive information that will me merge with the one in the repository.
+This file regroups all information about the settings.  
+Please note, that as stated in section `Deploy in production`, there is an additional file with sensitive information that will be merged with the one in the repository.
 
 ℹ️ It's better to copy the file `_settings.json` available in the app folder instead of copying the excerpt below
 
