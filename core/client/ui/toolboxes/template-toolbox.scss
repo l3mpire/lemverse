@@ -1,0 +1,29 @@
+@import "../../_variables";
+
+.template-toolbox {
+  padding: 0 10px 10px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  > :first-child {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: auto;
+    gap: 10px;
+  }
+
+  .js-template-select {
+    width: 100%;
+  }
+
+  form {
+    display: inline-block;
+  }
+
+  button {
+    float: right;
+  }
+}

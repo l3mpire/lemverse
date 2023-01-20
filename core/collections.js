@@ -52,4 +52,10 @@ Guilds = lp.collectionRegister('guilds', 'gui', [], {
   remove(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
 });
 
+Templates = lp.collectionRegister('templates', 'tpl', [], {
+  insert(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
+  update(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
+  remove(userId) { return Meteor.users.findOne(userId)?.roles?.admin; },
+});
+
 Files = fileSystemAdapter();
