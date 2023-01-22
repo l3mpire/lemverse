@@ -20,15 +20,15 @@
   },
   "homepage": "https://github.com/l3mpire/lemverse#readme",
   "devDependencies": {
-    "@babel/core": "^7.20.5",
+    "@babel/core": "^7.20.12",
     "@babel/eslint-parser": "^7.19.1",
     "@babel/eslint-plugin": "^7.19.1",
-    "editorconfig-checker": "^4.0.2",
-    "eslint": "^8.29.0",
+    "editorconfig-checker": "^5.0.1",
+    "eslint": "^8.32.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-meteor": "^7.3.0",
-    "eslint-plugin-import": "^2.26.0",
-    "stylelint": "^14.16.0",
+    "eslint-plugin-import": "^2.27.5",
+    "stylelint": "^14.16.1",
     "stylelint-config-standard-scss": "^6.1.0"
   }
 }
