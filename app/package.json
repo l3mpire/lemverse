@@ -1,7 +1,7 @@
 {
   "name": "lemverse",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "scripts": {
     "start": "meteor run",
     "test": "meteor test --once --driver-package meteortesting:mocha",
@@ -10,7 +10,7 @@
     "desktop": "meteor-desktop"
   },
   "dependencies": {
-    "@babel/runtime": "^7.20.13",
+    "@babel/runtime": "^7.22.10",
     "@sentry/browser": "7.16.0",
     "@sentry/node": "7.16.0",
     "@sentry/tracing": "7.16.0",
@@ -19,18 +19,18 @@
     "body-parser": "^1.20.2",
     "escape-string-regexp": "^5.0.0",
     "fast-json-stable-stringify": "^2.1.0",
-    "favicons": "^7.1.1",
+    "favicons": "^7.1.4",
     "file-type": "^16.5.3",
     "gm": "^1.25.0",
-    "hotkeys-js": "^3.10.1",
-    "jquery": "^3.6.3",
-    "jsonwebtoken": "^9.0.0",
+    "hotkeys-js": "^3.12",
+    "jquery": "^3.7.0",
+    "jsonwebtoken": "^9.0.1",
     "meteor-node-stubs": "^1.2.5",
     "multer": "1.4.5-lts.1",
-    "nipplejs": "^0.10.0",
+    "nipplejs": "^0.10.1",
     "node-cron": "^3.0.2",
     "peer": "^1.0.0",
     "peerjs": "^1.4.7",
-    "phaser": "^3.55.2"
+    "phaser": "3.55.2"
   }
 }
