@@ -60,14 +60,16 @@ const notifyUsers = message => {
     userIds = Meteor.users.find({ _id: { $ne: createdBy }, 'status.online': true, 'profile.levelId': channel }, { fields: { 'profile._id': 1 } }).fetch().map(item => item._id);
   } else userIds = channel.split(';').filter(userId => userId !== createdBy);
 
-  const notifications = userIds.map(userId => ({
-    _id: Notifications.id(),
-    channelId: channel,
-    userId,
-    createdAt: new Date(),
-    createdBy,
-  }));
-  Notifications.rawCollection().insertMany(notifications);
+  if (userIds.length) {
+    const notifications = userIds.map(userId => ({
+      _id: Notifications.id(),
+      channelId: channel,
+      userId,
+      createdAt: new Date(),
+      createdBy,
+    }));
+    Promise.await(Notifications.rawCollection().insertMany(notifications));
+  }
 
   log('notifyUsers: done', { userIds });
 };
