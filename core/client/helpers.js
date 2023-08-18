@@ -108,9 +108,20 @@ updateViewport = (scene, mode) => {
   lemverseTag.classList.toggle('dockToTheLeft', Session.get('screenSide') === 'left');
   lemverseTag.classList.toggle('dockToTheRight', Session.get('screenSide') === 'right');
 
-  const { width, height } = getSimulationSize();
-  scene.cameras.main.setViewport(0, 0, width, height);
+  const { width, height } = document.querySelector('#gameModules').getBoundingClientRect();
+  let computedWidth = width;
+  let computedHeight = height;
+  if (Session.get('screenMode') === 'locked') {
+    if (mode === viewportModes.small) {
+      computedWidth = width * 3.0;
+      computedHeight = height;
+    } else if (mode === viewportModes.splitScreen) {
+      computedWidth = width * 2.0;
+      computedHeight = height;
+    }
+  }
 
+  scene.cameras.main.setViewport(0, 0, computedWidth, computedHeight);
   scene.viewportMode = mode;
 
   const event = new CustomEvent(eventTypes.onViewportUpdated);
