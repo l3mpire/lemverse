@@ -158,7 +158,7 @@ Template.resizable.onCreated(() => {
   const containerId = `.${Template.instance().data.id}`;
 
   window.addEventListener('onLevelLoaded', () => {
-    Session.set('screenMode', 'locked');
+    Session.set('screenMode', 'unlocked');
     Session.set('screenSide', 'right');
 
     makeResizableDiv(containerId);
@@ -175,7 +175,7 @@ Template.resizable.events({
     const cornerResizers = document.querySelectorAll(`${containerId} .corner-resizer`);
     const widthResizers = document.querySelector(`${containerId} .width-resizers`);
 
-    resizable.style.top = '25%';
+    resizable.style.top = '0%';
     resizable.style.left = '25%';
     resizable.style.height = '50%';
     resizable.style.width = '50%';

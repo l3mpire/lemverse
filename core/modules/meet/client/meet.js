@@ -25,6 +25,24 @@ const onZoneEntered = e => {
   const meetingRoomService = jitsiLowLevel ? meetLowLevel : meetHighLevel;
   meetingRoom.setMeetingRoomService(meetingRoomService);
 
+  const containerId = '.resizableMeet';
+  const resizable = document.querySelector(containerId);
+  const cornerResizers = document.querySelectorAll(`${containerId} .corner-resizer`);
+  const widthResizers = document.querySelector(`${containerId} .width-resizers`);
+
+  resizable.style.top = '0%';
+  resizable.style.left = '25%';
+  resizable.style.height = '50%';
+  resizable.style.width = '50%';
+  cornerResizers.forEach(resizer => resizer.classList.add('show'));
+  widthResizers.classList.remove('show');
+
+  Session.set('screenMode', 'unlocked');
+  Session.set('screenSide', 'right');
+
+  updateViewport(game.scene.keys.WorldScene);
+  updateViewport(game.scene.keys.UIScene);
+
   if (!meetingRoomService.api && roomName) {
     const user = Meteor.user();
     if (user.profile.guest && !guestAllowed(permissionType)) {
