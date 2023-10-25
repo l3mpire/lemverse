@@ -12,7 +12,7 @@ COPY ./core $APP_SOURCE_FOLDER/core/
 RUN bash $SCRIPTS_FOLDER/build-meteor-bundle.sh
 
 # Use the specific version of Node expected by your Meteor release, per https://docs.meteor.com/changelog.html; this is expected for Meteor 2.5
-FROM node:14.19.3-buster-slim
+FROM node:14.21.3-buster-slim
 
 ENV APP_BUNDLE_FOLDER /opt/bundle
 ENV SCRIPTS_FOLDER /docker
