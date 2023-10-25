@@ -488,7 +488,6 @@ Template.lemverse.onDestroyed(function () {
   hotkeys.unbind('f', scopes.player);
   hotkeys.unbind('j', scopes.player);
   hotkeys.unbind('l', scopes.player);
-  hotkeys.unbind('r', scopes.player);
   hotkeys.unbind('p', scopes.player);
   hotkeys.unbind('u', scopes.player);
   hotkeys.unbind('x', scopes.player);

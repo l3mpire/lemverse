@@ -1,5 +1,26 @@
 {
   "public": {
+    "features": {
+      "useMessaging": {
+        "enabled": false
+      },
+      "userPanel": {
+        "enabled": false
+      },
+      "createLevel": {
+        "enabled": false
+      },
+      "notificationButton": {
+        "enabled": false
+      },
+      "useShoutAbility": {
+        "enabled": false
+      },
+      "punchAbility": {
+        "enabled": true
+      }
+    },
+
     "lp": {
       "product": "lemverse",
       "website": "http://localhost:3000",

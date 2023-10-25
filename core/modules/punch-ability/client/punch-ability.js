@@ -18,6 +18,8 @@ const punch = users => {
 };
 
 window.addEventListener('load', () => {
+  if (!Meteor.settings.public.features?.punchAbility?.enabled) return;
+
   window.addEventListener(eventTypes.onPeerDataReceived, e => {
     const { data, userEmitter } = e.detail;
     if (data.type !== 'punch') return;

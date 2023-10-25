@@ -1,6 +1,8 @@
 import { moduleType } from '../../../client/helpers';
 
 window.addEventListener('load', () => {
+  if (!Meteor.settings.public.features?.useShoutAbility?.enabled) return;
+
   registerModules([
     { id: 'shout', icon: '📢', label: 'Shout', order: 40, shortcut: 55, scope: 'me' },
     moduleType.RADIAL_MENU,
