@@ -226,7 +226,7 @@ userManager = {
     this.inputVector.set(0, 0);
     if (isModalOpen()) return false;
 
-    const { keys, nippleMoving, nippleData } = this.scene;
+    const { keys, nippleMoving, nippleData, input } = this.scene;
 
     if (nippleMoving) this.inputVector.set(nippleData.vector.x, -nippleData.vector.y);
     else {
@@ -237,6 +237,18 @@ userManager = {
       // Vertical movement
       if (keys.up.isDown || keys.z.isDown || keys.w.isDown) this.inputVector.y = -1;
       else if (keys.down.isDown || keys.s.isDown) this.inputVector.y = 1;
+    }
+
+    // when the mouse left click is down, we want to apply steering to the current direction of the character
+    if (input.activePointer.isDown) {
+      // we compute the current direction vector between the mouse and our character on the screen
+      const directionVector = (new Phaser.Math.Vector2(input.activePointer.x, input.activePointer.y))
+        .subtract(new Phaser.Math.Vector2(this.controlledCharacter.x, this.controlledCharacter.y))
+        .normalize();
+
+      // we steer the character in the direction of the mouse, so it can be used along with other controls (keyboard etc.)
+      this.inputVector.x += directionVector.x;
+      this.inputVector.y += directionVector.y;
     }
 
     const moving = this.inputVector.x !== 0 || this.inputVector.y !== 0;
