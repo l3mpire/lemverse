@@ -1,0 +1,18 @@
+<template name="templateToolbox">
+  <div class="template-toolbox">
+    <div>
+      <div class="template-selector">
+        <select class="js-template-select">
+          {{#each templates}}
+          <option selected="{{#if eq selectedTemplateId _id}}selected{{/if}}" value={{_id}}>{{name}}</option>
+          {{/each}}
+        </select>
+      </div>
+      <button class="js-use-template">Use Template</button>
+      <form class="js-rename-template">
+        <input type="text" placeholder="Rename Template" name="rename" style="width: 80%">
+        <button type="submit">Rename</button>
+      </form>
+    </div>
+  </div>
+</template>

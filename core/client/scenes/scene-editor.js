@@ -12,7 +12,8 @@ const previewInfo = {
 
 let isSelecting = false;
 let selection = {};
-let timerResetCopyPaste;
+let templateSelection = undefined;
+let timerAction;
 
 
 function compareMouseMovements(currentPosition, lastMousePosition) {
@@ -153,6 +154,7 @@ EditorScene = new Phaser.Class({
     this.updateEditionMarker();
     selection = {};
     isSelecting = false;
+    templateSelection = undefined;
   },
 
   update() {
@@ -175,6 +177,16 @@ EditorScene = new Phaser.Class({
     Object.values(this.entityCollider).forEach(val => {
       val.clear();
     });
+
+    if (this.mode === editorModes.templates) {
+      const templateId = Session.get('templateId');
+      if (!templateId) return;
+      const template = Templates.findOne(templateId);
+
+      templateSelection = template
+      isSelecting = false;
+      Session.set('editorSelectedMenu', editorModes.tiles);
+    }
 
     if (this.mode === editorModes.zones) {
       if (this.input.manager.activePointer.isDown && canvasClicked) this.isMouseDown = true;
@@ -311,6 +323,36 @@ EditorScene = new Phaser.Class({
             }
           }
           previewInfo.previousTiles = previousTiles;
+        } else if (templateSelection) {
+          clearLastPreviewTiles();
+          previousTiles = [];
+
+          const layers = map.layers.length;
+          for (let x = 0; x < templateSelection.width; x++) {
+            for (let y = 0; y < templateSelection.height; y++) {
+              const currentTileX = pointerTileX + x;
+              const currentTileY = pointerTileY + y;
+              for (let layer = 0; layer < layers; layer++) {
+                const previousTile = map.getTileAt(currentTileX, currentTileY, false, layer);
+                previousTiles.push({
+                  index: previousTile?.index,
+                  x: currentTileX,
+                  y: currentTileY,
+                  layer,
+                });
+              }
+            }
+          }
+          previewInfo.previousTiles = previousTiles;
+          for (let i = 0; i < templateSelection.tiles.length; i++) {
+            const tile = templateSelection.tiles[i];
+            const currentTileX = pointerTileX + tile.x;
+            const currentTileY = pointerTileY + tile.y;
+
+            if (map.getTileAt(currentTileX, currentTileY, false, tile.layer)?.index === tile.index) continue;
+
+            map.putTileAt(tile.index, currentTileX, currentTileY, false, tile.layer)?.setAlpha(0.65);
+          }
         } else {
           clearLastPreviewTiles();
         }
@@ -330,17 +372,82 @@ EditorScene = new Phaser.Class({
         isSelecting = false;
         this.updateEditionMarker(selection);
       }
+      if (selection.x !== undefined && !isSelecting && !shiftIsDown && altIsDown) {
+        const tilesToSave = [];
+
+        for (let x = 0; x < selection.w; x++) {
+          for (let y = 0; y < selection.h; y++) {
+            const copyX = selection.x + x;
+            const copyY = selection.y + y;
+
+            const layers = map.layers.length;
+            for (let layer = 0; layer < layers; layer++) {
+              const tileToCopy = map.getTileAt(copyX, copyY, false, layer);
+
+              // Disabling this for now to have an algorithm in Θ(x*y*l) instead of Θ(x*y*(l+m)) with a higher memory usage
+              // eslint-disable-next-line no-continue
+              if (!tileToCopy) continue;
+
+              tilesToSave.push({
+                x: x,
+                y: y,
+                layer: layer,
+                index: tileToCopy.index
+              })
+            }
+          }
+        }
+        Templates.insert({
+          _id: Templates.id(),
+          tiles: tilesToSave,
+          width: selection.w,
+          height: selection.h,
+          name: "New Template"
+        });
+        this.clearCopyPasteMode();
+      }
+
+      if (templateSelection && !isSelecting && !shiftIsDown && !altIsDown && this.input.manager.activePointer.isDown && canvasClicked) {
+        const date = Date.now();
+        if (timerAction) {
+          if (date - timerAction < 500) {
+            return;
+          }
+        }
+        timerAction = date;
+
+        for (var i = 0; i < templateSelection.tiles.length; i++) {
+          var tile = templateSelection.tiles[i];
+          const databaseTilesetToCopy = Tilesets.findOne({ gid: { $lte: tile.index } }, { sort: { gid: -1 } });
+          const tileToCopyLocalIndex = tile.index - databaseTilesetToCopy.gid;
+
+          const tileToRemove = map.getTileAt(tile.x + pointerTileX, tile.y + pointerTileY, false, tile.layer);
+
+          if (tileToRemove) {
+            map.removeTileAt(tile.x + pointerTileX, tile.y + pointerTileY, false, tile.layer);
+          }
+
+          const data = {
+            x: pointerTileX + tile.x,
+            y: pointerTileY + tile.y,
+            index: tileToCopyLocalIndex,
+            tilesetId: databaseTilesetToCopy._id,
+          };
+
+          insertTile(data);
+        }
+      }
 
       // pasting
       if (selection.x !== undefined && !isSelecting && !shiftIsDown && this.input.manager.activePointer.isDown && canvasClicked) {
         // lock paste every 100ms to avoid spamming
         const date = Date.now();
-        if (timerResetCopyPaste) {
-          if (date - timerResetCopyPaste < 500) {
+        if (timerAction) {
+          if (date - timerAction < 500) {
             return;
           }
         }
-        timerResetCopyPaste = date;
+        timerAction = date;
         clearLastPreviewTiles();
         previewInfo.previousTiles = [];
         for (let x = 0; x < selection.w; x++) {
@@ -404,7 +511,7 @@ EditorScene = new Phaser.Class({
         if (!isSelecting) {
           // start a new copy-selection
           this.clearCopyPasteMode();
-          timerResetCopyPaste = Date.now();
+          timerAction = Date.now();
 
 
           this.marker.defaultStrokeColor = 0x0000ff;
@@ -625,3 +732,4 @@ EditorScene = new Phaser.Class({
     this.areaSelector.setVisible(false);
   },
 });
+

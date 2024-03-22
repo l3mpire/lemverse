@@ -11,6 +11,7 @@ viewportModes = Object.freeze({
 editorModes = Object.freeze({
   entities: 'entities',
   tiles: 'tiles',
+  templates: 'templates',
   zones: 'zones',
   level: 'level',
 });

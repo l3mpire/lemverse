@@ -54,6 +54,9 @@
       <li class="tab js-menus-select {{#if eq (Session 'editorSelectedMenu') 'zones'}}active{{/if}}" data-menu="zones">
         Zones
       </li>
+      <li class="tab js-menus-select {{#if eq (Session 'editorSelectedMenu') 'templates'}}active{{/if}}" data-menu="templates">
+        Templates
+      </li>
       <li class="tab js-menus-select {{#if eq (Session 'editorSelectedMenu') 'entities'}}active{{/if}}"
         data-menu="entities">
         Entities
@@ -69,6 +72,9 @@
       {{/if}}
       {{#if eq (Session 'editorSelectedMenu') 'zones'}}
       {{> zonesToolbox}}
+      {{/if}}
+      {{#if eq (Session 'editorSelectedMenu') 'templates'}}
+      {{> templateToolbox}}
       {{/if}}
       {{#if eq (Session 'editorSelectedMenu') 'level'}}
       {{> levelToolbox}}
