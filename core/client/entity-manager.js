@@ -214,6 +214,7 @@ entityManager = {
 
     if (nearestEntity) {
       if (nearestEntity === this.previousNearestEntity) return;
+      if (nearestEntity.actionType === entityActionType.actionable && nearestEntity.gameObject?.trigger) return;
 
       if (!this.previousNearestEntity) {
         characterPopIns.createOrUpdate(
@@ -282,7 +283,7 @@ entityManager = {
     if (!entity.gameObject) return undefined;
 
     let mainSprite;
-    const { collider, sprite, animations, text } = entity.gameObject;
+    const { collider, sprite, trigger, animations, text } = entity.gameObject;
     if (sprite) {
       mainSprite = this.spawnSpriteFromConfig(sprite);
       gameObject.add(mainSprite);
@@ -295,6 +296,43 @@ entityManager = {
 
     // configuration: https://rexrainbow.github.io/phaser3-rex-notes/docs/site/arcade-body/
     if (collider) this.spawnColliderFromConfig(gameObject, collider);
+
+
+    const overlapEnd = () => {
+      const dbEntitiy = Entities.findOne(gameObject.getData('id'));
+      if (!dbEntitiy) return;
+
+      if (dbEntitiy.actionType === entityActionType.actionable) {
+        Entities.update(dbEntitiy._id, { $set: { state: 'off' } });
+      }
+    };
+    const overlapStart = user => {
+      const id = gameObject.getData('id');
+      user.triggers[id] = overlapEnd;
+
+      if (user.lastTriggers[id]) return;
+
+      const dbEntitiy = Entities.findOne(id);
+      if (!dbEntitiy) return;
+
+      if (dbEntitiy.actionType === entityActionType.actionable) {
+        Entities.update(id, { $set: { state: 'on' } });
+      }
+    };
+
+    if (trigger && !trigger.radius) {
+      const user = userManager.getControlledCharacter();
+
+      // eslint-disable-next-line no-restricted-syntax, guard-for-in
+      for (const key in trigger) {
+        trigger[key] *= entity.gameObject.scale ?? 1;
+      }
+
+      const triggerObject = this.scene.add.rectangle(gameObject.x + trigger.x + trigger.width / 2, gameObject.y + trigger.y + trigger.height / 2, trigger.width, trigger.height);
+
+      this.scene.physics.add.existing(triggerObject);
+      this.scene.physics.add.overlap(user, triggerObject, overlapStart, null, this);
+    }
 
     // pickable/loots animations
     const pickable = entity.actionType === entityActionType.pickable;
