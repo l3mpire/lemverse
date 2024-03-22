@@ -1,0 +1,62 @@
+version: "3.8"
+services:
+  reverseproxy:
+    build:
+      context: .
+      dockerfile: reverse-proxy/nginx.Dockerfile
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      # update here with the the paths to your certificate folders if necessary 
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    networks:
+      - net_lemverse
+    depends_on:
+      - mongodb
+      - lemverse
+    restart: always
+  mongodb:
+    image: mongo:5.0.3
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - db:/data/db # Volume to keep database data between restarts
+    restart: unless-stopped
+    networks:
+      - net_lemverse
+  lemverse:
+    image: lempire/lemverse:latest
+    container_name: lemverse
+    restart: unless-stopped
+    networks:
+      - net_lemverse
+    depends_on:
+      - mongodb
+    ports:
+      - "3000:3000"
+    volumes:
+      - lemverse:/var/tmp/lemverse # Volume for upload tileset and keep them between restart
+    environment:
+      ROOT_URL: ${APP_ROOT_URL:-http://localhost}
+      MONGO_URL: mongodb://mongodb:27017/meteor
+      PORT: 3000
+      METEOR_SETTINGS: ${METEOR_SETTINGS}
+  peer:
+    image: peerjs/peerjs-server:0.6.1
+    container_name: peer
+    restart: unless-stopped
+    networks:
+      - net_lemverse
+    command: [ "--port", "9000", "--path", "/peer" ]
+volumes:
+  lemverse:
+    driver: local
+  db:
+    driver: local
+# Custom network so all services can communicate using a FQDN
+networks:
+  net_lemverse:
+    driver: bridge
+    name: net_lemverse
