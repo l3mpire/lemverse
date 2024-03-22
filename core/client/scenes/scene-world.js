@@ -4,7 +4,7 @@ import Phaser from 'phaser';
 import networkManager from '../network-manager';
 import URLOpener from '../url-opener';
 
-import { clamp, isMobile } from '../helpers';
+import { clamp, isMobile, updateFollowOffset } from '../helpers';
 
 const fixedUpdateInterval = 200;
 const zoomConfig = Meteor.settings.public.zoom;
@@ -70,9 +70,12 @@ WorldScene = new Phaser.Class({
       document.activeElement.blur();
     });
 
+    const throttledUpdateFollowOffset = throttle(() => updateFollowOffset(), 100);
+
     // Notes: tilesets with extrusion are required to avoid potential black lines between tiles (see https://github.com/sporadic-labs/tile-extruder)
     this.input.on('wheel', (_pointer, _gameObjects, _deltaX, deltaY) => {
       this.zoomDelta(deltaY);
+      throttledUpdateFollowOffset();
     });
 
     if (isMobile()) {
