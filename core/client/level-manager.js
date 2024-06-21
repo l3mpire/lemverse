@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 
 import networkManager from './network-manager';
 
-const defaultMapConfig = { width: 100, height: 100, tileWidth: 48, tileHeight: 48 };
+const defaultMapConfig = { width: 100, height: 100, tileWidth: 16, tileHeight: 16 };
 const defaultLayerCount = 9;
 const defaultLayerDepth = { 6: 10000, 7: 10001, 8: 10002 };
 const defaultTileset = { layer: 2, firstgid: 0, tileProperties: {} };
@@ -73,7 +73,10 @@ levelManager = {
       newTilesets.push(tilesetImage);
 
       const collisionTileIndexes = _.map(tileset.collisionTileIndexes, i => i + tileset.gid);
-      this.layers.forEach(layer => layer.setCollision(collisionTileIndexes));
+      this.layers.forEach(layer => {
+        layer.setCollision(collisionTileIndexes);
+        layer.setScale(3);
+      });
     });
 
     if (newTilesets.length) this.layers.forEach(layer => layer.setTilesets([...layer.tileset, ...newTilesets]));

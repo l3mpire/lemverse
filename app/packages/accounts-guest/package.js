@@ -29,7 +29,7 @@ Package.onUse(api => {
   api.use('useraccounts:semantic-ui@1.12.0', 'client', { weak: true });
   api.use('useraccounts:unstyled@1.12.0', 'client', { weak: true });
 
-  api.use('blaze@=2.5.0', 'client');
+  api.use('blaze@=2.7.1', 'client');
   api.use(
     'iron:router@=1.0.13 || 1.0.12 || =1.0.11 || =1.0.10 || =1.0.9',
     'client',

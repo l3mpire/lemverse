@@ -5,7 +5,8 @@ import { Random } from 'meteor/random';
 import { FilesCollection } from 'meteor/ostrio:files';
 import stream from 'stream';
 
-import S3 from 'aws-sdk/clients/s3'; /* http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html */
+// IMPORTANT: Import disabled due to missing http2 package from smithy (aws-sdk sub-dependency)
+// import { S3Client } from '@aws-sdk/client-s3'; /* http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html */
 /* See fs-extra and graceful-fs NPM packages */
 /* For better i/o performance */
 import fs from 'fs';
@@ -30,7 +31,8 @@ function fileSystemAdapter() {
 
   // AWS S3 FileCollection
   const bound = Meteor.bindEnvironment(callback => callback());
-  const s3 = new S3({
+  const S3Client = {};
+  const s3 = new S3Client({
     secretAccessKey: s3Conf.secret,
     accessKeyId: s3Conf.key,
     region: s3Conf.region,

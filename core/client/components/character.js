@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 
 import { allowPhaserMouseInputs } from '../helpers';
-import { createConfettiEffect, createSmokeEffect } from '../effects/particles';
+import { createBloodEffect, createSmokeEffect } from '../effects/particles';
 import CharacterChatCircle from './character-chat-circle';
 
 const configuration = {
@@ -101,8 +101,8 @@ class Character extends Phaser.GameObjects.Container {
   onDamage() {
     this.flashColor(configuration.colorStates.takeDamage);
 
-    const effect = createConfettiEffect(this.scene, this.x, this.y);
-    effect.emitters.list.forEach(emitter => emitter.explode());
+    const particles = createBloodEffect(this.scene, this.x, this.y);
+    particles.explode();
   }
 
   playAnimation(animationName, direction = configuration.defaultDirection, forceUpdate = false) {
@@ -168,7 +168,7 @@ class Character extends Phaser.GameObjects.Container {
   }
 
   updateStep() {
-    if (this.walkSmokeEffectEmitter) this.walkSmokeEffectEmitter.emitter.on = this.wasMoving;
+    if (this.walkSmokeEffectEmitter) this.walkSmokeEffectEmitter.emitting = this.wasMoving;
     this.setDepthFromPosition();
   }
 
@@ -228,9 +228,9 @@ class Character extends Phaser.GameObjects.Container {
   enableEffects(value) {
     if (value) {
       this.walkSmokeEffectEmitter = createSmokeEffect(this.scene, 0, 0);
-      this.walkSmokeEffectEmitter.emitter.startFollow(this);
+      this.walkSmokeEffectEmitter.startFollow(this);
     } else {
-      this.walkSmokeEffectEmitter?.particles?.destroy();
+      this.walkSmokeEffectEmitter?.destroy();
       this.walkSmokeEffectEmitter = undefined;
     }
   }

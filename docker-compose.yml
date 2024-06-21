@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   mongodb:
-    image: mongo:5.0.3
+    image: mongo:6.0.15
     environment:
       - PUID=1000
       - PGID=1000

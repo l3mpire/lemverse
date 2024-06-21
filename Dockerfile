@@ -1,4 +1,4 @@
-FROM geoffreybooth/meteor-base:2.7.3 AS builder
+FROM geoffreybooth/meteor-base:2.16 AS builder
 
 # Copy app package.json and package-lock.json into container
 COPY ./app/package*.json $APP_SOURCE_FOLDER/
