@@ -67,7 +67,7 @@ const updateWindowTitle = levelDocument => {
     game.scene.getScene('LoadingScene')?.setText(levelDocument.name);
   }
 
-  const title = titleParts.reverse().join(' - ');
+  const title = titleParts.toReversed().join(' - ');
   window.history.replaceState({}, title, Meteor.settings.public.lp.website);
 };
 
@@ -102,22 +102,14 @@ Template.lemverse.onCreated(function () {
     }
   });
 
-  window.addEventListener(eventTypes.onZoneLeft, event => {
+  window.addEventListener(eventTypes.onZoneLeft, () => {
     const user = Meteor.user();
     const insideZones = zoneManager.findZonesForPosition({
       x: user.profile.x,
       y: user.profile.y,
     });
 
-    let isSpecialZone = false;
-    for (let idx = 0; idx < insideZones.length; ++idx) {
-      const zone = insideZones[idx];
-      if (zone.url?.length > 0 || zone.roomName?.length > 0) {
-        isSpecialZone = true;
-        break;
-      }
-    }
-
+    const isSpecialZone = insideZones.some(zone => zone.url?.length > 0 || zone.roomName?.length > 0);
     if (!isSpecialZone) {
       const { WorldScene, UIScene } = game.scene.keys;
       WorldScene.cameras.main.followOffset.x = 0;
