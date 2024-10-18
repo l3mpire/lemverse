@@ -3,7 +3,7 @@ import Character from './components/character';
 import audioManager from './audio-manager';
 import networkManager from './network-manager';
 import meetingRoom from './meeting-room';
-import { textDirectionToVector, vectorToTextDirection } from './helpers';
+import { allowPhaserMouseInputs, textDirectionToVector, vectorToTextDirection } from './helpers';
 import { guestAllowed, permissionTypes } from '../lib/misc';
 
 const defaultUserMediaColorError = '0xd21404';
@@ -240,7 +240,7 @@ userManager = {
     }
 
     // when the mouse left click is down, we want to apply steering to the current direction of the character
-    if (input.activePointer.isDown) {
+    if (input.activePointer.isDown && allowPhaserMouseInputs()) {
       // we compute the current direction vector between the mouse and our character on the screen
       const directionVector = (new Phaser.Math.Vector2(input.activePointer.x, input.activePointer.y))
         .subtract(new Phaser.Math.Vector2(this.controlledCharacter.x, this.controlledCharacter.y))
