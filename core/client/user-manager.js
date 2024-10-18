@@ -241,14 +241,17 @@ userManager = {
 
     // when the mouse left click is down, we want to apply steering to the current direction of the character
     if (input.activePointer.isDown && allowPhaserMouseInputs()) {
-      // we compute the current direction vector between the mouse and our character on the screen
-      const directionVector = (new Phaser.Math.Vector2(input.activePointer.x, input.activePointer.y))
-        .subtract(new Phaser.Math.Vector2(this.controlledCharacter.x, this.controlledCharacter.y))
-        .normalize();
+      const worldPoint = input.activePointer.positionToCamera(this.scene.cameras.main);
+      const directionVector = [worldPoint.x - this.controlledCharacter.x, worldPoint.y - this.controlledCharacter.y];
+      const directionLength = Math.sqrt(Math.abs(directionVector[0] * directionVector[0] + directionVector[1] * directionVector[1]));
 
-      // we steer the character in the direction of the mouse, so it can be used along with other controls (keyboard etc.)
-      this.inputVector.x += directionVector.x;
-      this.inputVector.y += directionVector.y;
+      if (Math.abs(directionLength) > 2) {
+        const len = 1 / Math.sqrt(directionLength);
+
+        // we steer the character in the direction of the mouse, so it can be used along with other controls (keyboard etc.)
+        this.inputVector.x += directionVector[0] * len;
+        this.inputVector.y += directionVector[1] * len;
+      }
     }
 
     const moving = this.inputVector.x !== 0 || this.inputVector.y !== 0;
