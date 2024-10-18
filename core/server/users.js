@@ -135,11 +135,15 @@ Meteor.methods({
       avatar: Match.Optional(String),
       bio: Match.Optional(String),
       defaultReaction: Match.Optional(String),
-      name: Match.Optional(String),
+      name: String,
       baseline: Match.Optional(String),
       nameColor: Match.Optional(String),
       website: Match.Optional(String),
     });
+
+    if (fields.name.length < 2) {
+      throw new Meteor.Error('invalid-name', 'Name must be at least 2 characters long');
+    }
 
     const fieldsToUnsetKeys = Object.entries(fields).filter(field => !field[1]).map(field => field[0]);
     const fieldsToSetKeys = Object.entries(fields).filter(field => !fieldsToUnsetKeys.includes(field[0])).map(field => field[0]);

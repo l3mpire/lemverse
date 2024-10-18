@@ -5,6 +5,11 @@ const user = () => Meteor.user();
 const submit = template => {
   const fields = template.fieldsUpdated;
 
+  if (!fields.name) {
+    lp.notif.error('A name is required');
+    return;
+  }
+
   Meteor.call('updateUserAccount', fields, error => {
     if (error) {
       lp.notif.error('An error occured while updating account, please try later');
