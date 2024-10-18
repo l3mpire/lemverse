@@ -28,7 +28,7 @@ UIScene = new Phaser.Class({
 
     // cameras
     this.cameras.main.setViewport(0, 0, width, height);
-    this.cameras.main.setRoundPixels(false);
+    this.cameras.main.setRoundPixels(true);
 
     // plugins
     characterPopIns.init(this);
