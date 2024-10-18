@@ -148,7 +148,7 @@ Meteor.methods({
     let message = Messages.findOne(messageId);
     if (!message) throw new Meteor.Error('not-found', 'Not found');
 
-    if (!message.reactions || !message.reactions[reaction]?.includes(this.userId)) {
+    if (!message.reactions?.[reaction]?.includes(this.userId)) {
       Messages.update(messageId, { $addToSet: { [`reactions.${reaction}`]: this.userId } });
     } else {
       Messages.update(messageId, { $pull: { [`reactions.${reaction}`]: this.userId } });
@@ -163,7 +163,7 @@ Meteor.methods({
     check(create, Boolean);
 
     const { zoneLastSeenDates } = Meteor.user();
-    if (create || (zoneLastSeenDates && zoneLastSeenDates[channelId])) {
+    if (create || zoneLastSeenDates?.[channelId]) {
       Meteor.users.update(this.userId, {
         $set: {
           [`zoneLastSeenDates.${channelId}`]: new Date(),
