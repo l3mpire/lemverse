@@ -53,7 +53,7 @@
     "peer": {
       "answerMaxAttempt": 5,
       "answerDelayBetweenAttempt": 750,
-      "avatarAPI": "https://source.unsplash.com/320x240/?[user_avatar]&sig=[user_id]",
+      "avatarAPI": "https://picsum.photos/320/240?[user_avatar]&sig=[user_id]",
       "callDelay": 250,
       "delayBeforeClosingCall": 1000,
       "sounds": {

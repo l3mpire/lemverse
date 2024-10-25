@@ -374,7 +374,7 @@ Please note, that as stated in section `Deploy in production`, there is an addit
       // Settings about webrtc connection
       "answerMaxAttempt": 5,
       "answerDelayBetweenAttempt": 750,
-      "avatarAPI": "https://source.unsplash.com/320x240/?cat&sig=[user_id]", // Avatar when users do not share their camera
+      "avatarAPI": "https://picsum.photos/320/240?cat&sig=[user_id]", // Avatar when users do not share their camera
       "callDelay": 250, // Delay before a call is started, useful to avoid a call when you pass by someone
       "delayBeforeClosingCall": 1000,
       "sounds": {
