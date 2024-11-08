@@ -24,7 +24,7 @@ try {
   _.extend(Meteor.settings, fileSettings);
   log('Meteor.settings: extended it with lemverse.json');
 } catch (err) {
-  if (lp.isProduction()) error('Meteor.settings: lemverse.json cannot read file', { err });
+  if (lp.isProduction()) log('Meteor.settings: /usr/local/etc/lemverse.json file not found');
 }
 
 Meteor.startup(() => {
