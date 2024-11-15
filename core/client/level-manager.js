@@ -22,7 +22,11 @@ levelManager = {
     this.initMapLayers();
     this.addTilesetsToLayers(Tilesets.find().fetch());
 
-    // physics
+    // todo: debug why we need to multiply by 48 instead of tile size (phaser bug?)
+    this.map.widthInPixels = (level.width || defaultMapConfig.width) * 48;
+    this.map.heightInPixels = (level.height || defaultMapConfig.height) * 48;
+
+    // physics bounds
     this.scene.physics.world.bounds.width = this.map.widthInPixels;
     this.scene.physics.world.bounds.height = this.map.heightInPixels;
   },
