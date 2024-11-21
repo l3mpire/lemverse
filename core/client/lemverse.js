@@ -2,7 +2,7 @@ import hotkeys from 'hotkeys-js';
 import Phaser from 'phaser';
 import audioManager from './audio-manager';
 import meetingRoom from './meeting-room';
-import { setReaction } from './helpers';
+import { setReaction, updateFollowOffset } from './helpers';
 import URLOpener from './url-opener';
 import { guestAllowed, permissionTypes } from '../lib/misc';
 import initSentryClient from './sentry';
@@ -87,19 +87,7 @@ Template.lemverse.onCreated(function () {
   });
 
   window.addEventListener(eventTypes.onElementResized, event => {
-    const { WorldScene, UIScene } = game.scene.keys;
-    if (WorldScene.viewportMode !== viewportModes.fullscreen && Session.get('screenMode') !== 'unlocked') {
-      const parentElement = this.firstNode.querySelector('.simulation');
-      const parentWidth = parentElement.getBoundingClientRect().width;
-      const elementWidth = event.detail.borderBoxSize[0].inlineSize;
-      const width = parentWidth - elementWidth;
-      this.firstNode.style.setProperty('--game-modules-adaptative-size', `${width}px`);
-
-      const offset = (Session.get('screenSide') === 'right') ? -elementWidth / 2 : elementWidth / 2;
-
-      WorldScene.cameras.main.followOffset.x = offset;
-      UIScene.cameras.main.followOffset.x = offset;
-    }
+    updateFollowOffset();
   });
 
   window.addEventListener(eventTypes.onZoneLeft, () => {
